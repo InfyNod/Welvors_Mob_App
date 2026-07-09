@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
@@ -13,11 +14,7 @@ class FoundingBatchScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.check_circle,
-            color: AppColors.pinkDeep,
-            size: 24,
-          ),
+          const Icon(Icons.check_circle, color: AppColors.pinkDeep, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -48,46 +45,49 @@ class FoundingBatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPerkItem(String emoji, String title, String subtitle, String value, {bool isFree = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 20)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppText.body.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                    color: AppColors.ink,
-                  ),
+  Widget _buildPerkItem(
+    String emoji,
+    String title,
+    String subtitle,
+    String value, {
+    bool isFree = false,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 20)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppText.body.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: AppColors.ink,
                 ),
-                Text(
-                  subtitle,
-                  style: AppText.body.copyWith(
-                    color: AppColors.muted,
-                    fontSize: 11,
-                  ),
+              ),
+              Text(
+                subtitle,
+                style: AppText.body.copyWith(
+                  color: AppColors.muted,
+                  fontSize: 11,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Text(
-            value,
-            style: AppText.body.copyWith(
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-              color: isFree ? Colors.green : AppColors.pinkDeep,
-            ),
+        ),
+        Text(
+          value,
+          style: AppText.body.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+            color: isFree ? Colors.green : AppColors.pinkDeep,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -95,26 +95,24 @@ class FoundingBatchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.canvas,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.ink),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimens.pad, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimens.pad,
+                  vertical: 24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Pill
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.pinkDeep.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
@@ -148,7 +146,10 @@ class FoundingBatchScreen extends StatelessWidget {
                     // Title
                     Text(
                       'Serious hearts, early\naccess.',
-                      style: AppText.display.copyWith(fontSize: 32, height: 1.1),
+                      style: AppText.display.copyWith(
+                        fontSize: 32,
+                        height: 1.1,
+                      ),
                     ),
                     const SizedBox(height: 12),
 
@@ -165,11 +166,34 @@ class FoundingBatchScreen extends StatelessWidget {
 
                     // Pricing Card
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFDF7F9),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: [0.1, 1.0],
+                          colors: [
+                            Colors.white,
+                            Color(0xFFFFF0F5), // Baby pink
+                          ],
+                        ),
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: AppColors.pinkSoft),
+                        border: Border.all(
+                          color: const Color.fromARGB(
+                            255,
+                            245,
+                            179,
+                            193,
+                          ).withOpacity(0.9),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.pinkSoft.withOpacity(0.15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,7 +220,10 @@ class FoundingBatchScreen extends StatelessWidget {
                               ),
                               const Spacer(),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: AppColors.pinkDeep,
                                   borderRadius: BorderRadius.circular(20),
@@ -241,12 +268,20 @@ class FoundingBatchScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: AppColors.line.withOpacity(0.5)),
+                        border: Border.all(
+                          color: const Color.fromARGB(
+                            255,
+                            245,
+                            179,
+                            193,
+                          ).withOpacity(0.9),
+                          width: 1.5,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                            color: AppColors.pinkSoft.withOpacity(0.1),
+                            blurRadius: 24,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
@@ -262,7 +297,7 @@ class FoundingBatchScreen extends StatelessWidget {
                                   '🎁 Your first-month Premium perks',
                                   style: AppText.body.copyWith(
                                     fontWeight: FontWeight.w800,
-                                    fontSize: 15,
+                                    fontSize: 18,
                                     color: AppColors.ink,
                                   ),
                                 ),
@@ -276,157 +311,244 @@ class FoundingBatchScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 24),
-                                _buildPerkItem('🚀', 'Weekly Boosts', '1/week · 4 a month · ₹350', '₹1,400'),
-                                _buildPerkItem('💝', 'Weekly Compliments', '1/week · 4 a month · ₹150', '₹600'),
-                                _buildPerkItem('🗓️', 'Weekly Date Plans', '1/week · 4 a month · ₹100', '₹400'),
-                                _buildPerkItem('🔄', 'Daily Rewinds', '3/day · 90 a month · ₹20', '₹1,800'),
-                                _buildPerkItem('🌕', 'Welcome Coins', '100 coins · one-time joining bonus', 'FREE', isFree: true),
+                                _buildPerkItem(
+                                  '🚀',
+                                  'Weekly Boosts',
+                                  '1/week · 4 a month × ₹350',
+                                  '₹1,400',
+                                ),
+                                Divider(
+                                  height: 32,
+                                  color: AppColors.pinkSoft.withOpacity(0.9),
+                                ),
+                                _buildPerkItem(
+                                  '💝',
+                                  'Weekly Compliments',
+                                  '1/week · 4 a month × ₹150',
+                                  '₹600',
+                                ),
+                                Divider(
+                                  height: 32,
+                                  color: AppColors.pinkSoft.withOpacity(0.9),
+                                ),
+                                _buildPerkItem(
+                                  '🗓️',
+                                  'Weekly Date Plans',
+                                  '1/week · 4 a month × ₹100',
+                                  '₹400',
+                                ),
+                                Divider(
+                                  height: 32,
+                                  color: AppColors.pinkSoft.withOpacity(0.9),
+                                ),
+                                _buildPerkItem(
+                                  '🔄',
+                                  'Daily Rewinds',
+                                  '3/day · 90 a month × ₹20',
+                                  '₹1,800',
+                                ),
+                                Divider(
+                                  height: 32,
+                                  color: AppColors.pinkSoft.withOpacity(0.9),
+                                ),
+                                _buildPerkItem(
+                                  '🪙',
+                                  'Welcome Coins',
+                                  '100 coins · one-time joining bonus',
+                                  'FREE',
+                                  isFree: true,
+                                ),
                               ],
                             ),
                           ),
                           // Summary Box
                           Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
                             width: double.infinity,
-                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF903657), // Dark maroon/pink
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(24),
-                                bottomRight: Radius.circular(24),
-                              ),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 20,
                             ),
-                            child: Column(
+                            decoration: BoxDecoration(
+                              color: AppColors.pinkDeep,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text('💎', style: TextStyle(fontSize: 16)),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Total first-month value',
-                                      style: AppText.body.copyWith(
-                                        color: Colors.white70,
-                                        fontSize: 13,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            '💎',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Total first-month value',
+                                            style: AppText.body.copyWith(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      '₹4,200+',
-                                      style: AppText.display.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 24,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '+ 100 Welcome Coins one-time',
+                                        style: AppText.body.copyWith(
+                                          color: Colors.white.withOpacity(0.85),
+                                          fontSize: 13,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(height: 4),
                                 Text(
-                                  '+ 100 Welcome Coins one-time',
-                                  style: AppText.body.copyWith(
-                                    color: Colors.white70,
-                                    fontSize: 11,
+                                  '₹4,200+',
+                                  style: AppText.display.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 26,
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: Text.rich(
+                              TextSpan(
+                                text: 'You pay just ',
+                                style: AppText.body.copyWith(
+                                  color: AppColors.ink,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: '₹999',
+                                    style: const TextStyle(
+                                      decoration: TextDecoration.lineThrough,
+                                      color: AppColors.muted,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' ₹299 ',
+                                    style: TextStyle(
+                                      color: AppColors.pinkDeep,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const TextSpan(text: 'today'),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                         ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    Center(
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'You pay just ',
-                          style: AppText.body.copyWith(color: AppColors.ink, fontSize: 13, fontWeight: FontWeight.w600),
-                          children: [
-                            TextSpan(
-                              text: '₹999',
-                              style: const TextStyle(decoration: TextDecoration.lineThrough, color: AppColors.muted),
-                            ),
-                            const TextSpan(
-                              text: ' ₹299 ',
-                              style: TextStyle(color: AppColors.pinkDeep, fontWeight: FontWeight.bold),
-                            ),
-                            const TextSpan(text: 'today'),
-                          ],
-                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
 
                     // Insta Card
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.line.withOpacity(0.5)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF833AB4), Color(0xFFFD1D1D), Color(0xFFF56040)],
-                                begin: Alignment.bottomLeft,
-                                end: Alignment.topRight,
+                    GestureDetector(
+                      onTap: () async {
+                        final Uri url = Uri.parse(
+                          'https://www.instagram.com/welvors_official?utm_source=qr&igsh=MTk5ZnVlZTJkd3kwZA%3D%3D',
+                        );
+                        if (!await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        )) {
+                          debugPrint('Could not launch $url');
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.pinkSoft.withOpacity(0.08),
+                              blurRadius: 20,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF833AB4),
+                                    Color(0xFFFD1D1D),
+                                    Color(0xFFF56040),
+                                  ],
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Follow @velvors',
-                                  style: AppText.body.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Daily launch updates & early\ninvites',
-                                  style: AppText.body.copyWith(
-                                    color: AppColors.muted,
-                                    fontSize: 11,
-                                    height: 1.3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.pinkSoft),
-                            ),
-                            child: Text(
-                              'Follow',
-                              style: AppText.body.copyWith(
-                                color: AppColors.pinkDeep,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 20,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Follow @welvors_official',
+                                    style: AppText.body.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Daily launch updates & early\ninvites',
+                                    style: AppText.body.copyWith(
+                                      color: AppColors.muted,
+                                      fontSize: 11,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.pinkSoft.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                'Follow',
+                                style: AppText.body.copyWith(
+                                  color: AppColors.pinkDeep,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -453,7 +575,7 @@ class FoundingBatchScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 6),
                   ],
                 ),
               ),
@@ -472,7 +594,9 @@ class FoundingBatchScreen extends StatelessWidget {
                 onTap: () {
                   // TODO: Implement payment logic
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Payment Gateway Coming Soon!')),
+                    const SnackBar(
+                      content: Text('Payment Gateway Coming Soon!'),
+                    ),
                   );
                 },
               ),
