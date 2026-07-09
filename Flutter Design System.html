@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velvors — Flutter Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --ink:#1F1F1F;
+  --ink60:#5F5C56;
+  --muted:#8A8680;
+  --line:#EFECE6;
+  --soft:#F5F2EC;
+  --pink:#E85A7A;
+  --pink-soft:#FFE7EC;
+  --pink-deep:#C73A5E;
+  --green:#2EAF6B;
+  --green-soft:#E8F8EF;
+  --gold:#E8A53D;
+  --blue:#3DA9FF;
+  --page:#EFEBE4;
+  --shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.05);
+  --code-bg:#211D2B;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--page);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;color:var(--ink);}
+body{padding:0 0 90px;}
+code,.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:940px;margin:0 auto;padding:0 28px;}
+
+/* hero */
+.top{background:linear-gradient(150deg,#2A2433,#1A1722);color:#fff;padding:54px 0 46px;position:relative;overflow:hidden;}
+.top::after{content:"";position:absolute;top:-60px;right:-40px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(232,90,122,.35),transparent 70%);}
+.top .wrap{position:relative;z-index:2;}
+.brandrow{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#E85A7A,#C73A5E);display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:0 8px 22px rgba(232,90,122,.4);}
+.brandname{font-size:20px;font-weight:800;letter-spacing:-.3px;}
+.top h1{font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1.05;max-width:680px;}
+.top p{font-size:15px;opacity:.74;margin-top:14px;max-width:600px;line-height:1.6;}
+.top .meta{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;}
+.tag{font-size:12px;font-weight:700;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:6px 13px;}
+
+/* section */
+section{margin-top:52px;}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--pink);letter-spacing:1px;}
+.sec-h{font-size:25px;font-weight:800;letter-spacing:-.5px;margin:5px 0 6px;}
+.sec-d{font-size:14px;color:var(--ink60);line-height:1.6;max-width:660px;margin-bottom:24px;}
+.sec-d b{color:var(--ink);}
+
+/* colour grid */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:14px;}
+.sw{background:var(--bg);border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:var(--shadow);}
+.sw .chip{height:80px;display:flex;align-items:flex-end;padding:9px 11px;}
+.sw .chip .role{font-size:10.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.28);border-radius:6px;padding:2px 7px;backdrop-filter:blur(2px);}
+.sw .chip.lt .role{color:var(--ink);background:rgba(255,255,255,.7);}
+.sw .info{padding:11px 12px 13px;}
+.sw .nm{font-size:13px;font-weight:700;}
+.sw .hex{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;}
+.sw .var{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--pink-deep);margin-top:5px;font-weight:600;}
+
+/* code block */
+.code{background:var(--code-bg);border-radius:14px;padding:20px 22px;overflow-x:auto;box-shadow:0 10px 30px rgba(33,29,43,.18);margin-top:4px;}
+.code pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.72;color:#E9E4F0;white-space:pre;}
+.code .cm{color:#7C7391;font-style:italic;}
+.code .kw{color:#FF9DB6;}
+.code .ty{color:#8AD8FF;}
+.code .st{color:#B7E39A;}
+.code .nu{color:#F5C878;}
+.code .fn{color:#D9B8FF;}
+.code-lbl{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);margin:0 0 8px 2px;}
+.code-lbl .fdot{width:8px;height:8px;border-radius:50%;background:var(--pink);}
+
+/* type scale */
+.tbl{background:var(--bg);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px;}
+.trow{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:center;padding:15px 20px;border-bottom:1px solid var(--line);}
+.trow:last-child{border-bottom:none;}
+.trow .sample{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.trow .specs{display:flex;flex-direction:column;gap:3px;text-align:right;}
+.trow .specs .a{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);}
+.trow .specs .b{font-size:11px;color:var(--muted);}
+
+/* token table */
+.ttab{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;border-collapse:collapse;}
+.ttab th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding:13px 18px;background:var(--soft);}
+.ttab td{padding:13px 18px;font-size:13.5px;border-top:1px solid var(--line);vertical-align:middle;}
+.ttab td.k{font-weight:700;width:38%;}
+.ttab td .mono{font-size:12.5px;color:var(--pink-deep);}
+
+/* radius demo */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;margin-bottom:16px;}
+.rcell{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:18px 14px;text-align:center;border-radius:12px;}
+.rbox{height:46px;background:var(--pink-soft);border:1.5px solid var(--pink);margin-bottom:11px;}
+.rcell .rn{font-size:13px;font-weight:700;}
+.rcell .rv{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* component showcase */
+.comp{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.cc{background:var(--bg);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px;}
+.cc.full{grid-column:1 / -1;}
+.cc-lbl{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.cc-lbl .wname{font-family:'JetBrains Mono',monospace;color:var(--pink-deep);text-transform:none;letter-spacing:0;font-size:11px;}
+.cc-stage{display:flex;flex-wrap:wrap;gap:10px;align-items:center;min-height:54px;margin-bottom:16px;}
+.cc-specs{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink60);line-height:1.7;border-top:1px dashed var(--line);padding-top:13px;}
+.cc-specs b{color:var(--pink-deep);font-weight:600;}
+
+/* live demo components (mirror the app) */
+.d-btn{background:var(--pink);color:#fff;border:none;padding:0 22px;height:52px;border-radius:14px;font-size:15px;font-weight:800;font-family:inherit;box-shadow:0 8px 20px rgba(232,90,122,.3);}
+.d-btn.dark{background:var(--ink);box-shadow:none;}
+.d-btn.ghost{background:#fff;border:1.5px solid var(--pink);color:var(--pink-deep);box-shadow:none;}
+.d-pill{font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--soft);color:var(--ink);border:1px solid transparent;}
+.d-pill.on{background:var(--pink-soft);color:var(--pink);border-color:var(--pink);}
+.d-spill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px;box-shadow:var(--shadow);}
+.d-spill .dot{width:7px;height:7px;border-radius:50%;}
+.d-input{width:100%;height:50px;border:1.5px solid var(--line);border-radius:14px;padding:0 16px;font-size:14.5px;font-family:inherit;color:var(--ink);}
+.d-input:focus{outline:none;border-color:var(--pink);}
+.d-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);width:100%;display:flex;align-items:center;gap:12px;}
+.d-card .ic{width:40px;height:40px;border-radius:12px;background:var(--pink-soft);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.d-card .t{font-size:14px;font-weight:800;}
+.d-card .s{font-size:12px;color:var(--ink60);margin-top:2px;}
+.d-toggle{width:46px;height:28px;border-radius:999px;background:var(--green);position:relative;flex-shrink:0;}
+.d-toggle::after{content:"";position:absolute;top:3px;left:21px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.2);}
+.d-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);}
+
+/* tier badges */
+.tiers{display:flex;flex-wrap:wrap;gap:12px;}
+.tb{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:800;letter-spacing:.3px;}
+.tb.premium{background:linear-gradient(135deg,#FFE7EC,#FFD3DD);color:#B23354;border:1px solid #F3C2CD;}
+.tb.vip{background:linear-gradient(135deg,#2A2433,#191622);color:#FFD96B;border:1px solid rgba(255,217,107,.45);}
+.tb.elite{background:linear-gradient(135deg,#FFD96B,#E8A53D);color:#5a3d05;border:1px solid #E8A53D;}
+
+/* callout */
+.note{background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--pink);border-radius:12px;box-shadow:var(--shadow);padding:16px 20px;margin-top:16px;}
+.note b{color:var(--pink-deep);}
+.note p{font-size:13.5px;color:var(--ink60);line-height:1.6;}
+
+/* file tree */
+.tree{background:var(--code-bg);border-radius:14px;padding:20px 22px;box-shadow:0 10px 30px rgba(33,29,43,.18);}
+.tree pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;color:#C9C2D6;white-space:pre;}
+.tree .dir{color:#8AD8FF;}
+.tree .fl{color:#E9E4F0;}
+.tree .cm2{color:#7C7391;}
+
+/* footer */
+.foot{margin-top:52px;background:var(--bg);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px 26px;}
+.foot h3{font-size:16px;font-weight:800;margin-bottom:10px;}
+.foot p{font-size:13.5px;color:var(--ink60);line-height:1.65;margin-bottom:10px;}
+.foot code{background:var(--soft);border-radius:6px;padding:2px 7px;font-size:12px;color:var(--pink-deep);}
+
+@media(max-width:680px){
+  .comp{grid-template-columns:1fr;}
+  .trow{grid-template-columns:1fr;gap:8px;}
+  .trow .specs{text-align:left;}
+  .top h1{font-size:30px;}
+}
+@media print{
+  body{background:#fff;padding:0;}
+  .code,.tree{box-shadow:none;}
+  section{break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <div class="brandrow">
+      <div class="logo">💗</div>
+      <div class="brandname">Velvors</div>
+    </div>
+    <h1>Flutter Design System</h1>
+    <p>The complete UI foundation for building Velvors in Flutter — colours, type, spacing and every core component translated into ready-to-paste Dart. Build the token files and shared widgets once; assemble every screen from them.</p>
+    <div class="meta">
+      <span class="tag">Flutter · Material 3</span>
+      <span class="tag">google_fonts · DM Sans</span>
+      <span class="tag">390 × 844 reference</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ 00 SETUP ============ -->
+  <section>
+    <div class="sec-num">00 — SETUP</div>
+    <div class="sec-h">Project setup</div>
+    <div class="sec-d">One font family (<b>DM Sans</b> via <code>google_fonts</code>) and a small set of token files. Add the dependency, then create <code>lib/theme/</code> as the single source of truth.</div>
+    <div class="code-lbl"><span class="fdot"></span>pubspec.yaml</div>
+    <div class="code"><pre><span class="kw">dependencies</span>:
+  <span class="ty">flutter</span>:
+    <span class="kw">sdk</span>: flutter
+  <span class="ty">google_fonts</span>: <span class="st">^6.2.1</span>   <span class="cm"># DM Sans, no asset bundling needed</span>
+
+<span class="cm"># If you prefer bundling the font instead of google_fonts,</span>
+<span class="cm"># drop the .ttf files in assets/fonts/ and register a family here.</span></pre></div>
+  </section>
+
+  <!-- ============ 01 COLOURS ============ -->
+  <section>
+    <div class="sec-num">01 — FOUNDATION</div>
+    <div class="sec-h">Colour palette</div>
+    <div class="sec-d">Warm editorial neutrals with a single confident rose accent. <b>Gold</b> is reserved for premium / VIP states, <b>green</b> for success &amp; verified, <b>blue</b> for match/info. Reference <code>AppColors</code> constants — never hardcode an ARGB twice.</div>
+    <div class="cgrid">
+      <div class="sw"><div class="chip" style="background:#E85A7A"><span class="role">Accent</span></div><div class="info"><div class="nm">Rose</div><div class="hex">#E85A7A</div><div class="var">AppColors.pink</div></div></div>
+      <div class="sw"><div class="chip" style="background:#C73A5E"><span class="role">Accent dark</span></div><div class="info"><div class="nm">Rose deep</div><div class="hex">#C73A5E</div><div class="var">AppColors.pinkDeep</div></div></div>
+      <div class="sw"><div class="chip lt" style="background:#FFE7EC"><span class="role">Accent soft</span></div><div class="info"><div class="nm">Rose soft</div><div class="hex">#FFE7EC</div><div class="var">AppColors.pinkSoft</div></div></div>
+      <div class="sw"><div class="chip" style="background:#1F1F1F"><span class="role">Text</span></div><div class="info"><div class="nm">Ink</div><div class="hex">#1F1F1F</div><div class="var">AppColors.ink</div></div></div>
+      <div class="sw"><div class="chip" style="background:#5F5C56"><span class="role">Text 2</span></div><div class="info"><div class="nm">Ink 60</div><div class="hex">#5F5C56</div><div class="var">AppColors.ink60</div></div></div>
+      <div class="sw"><div class="chip" style="background:#8A8680"><span class="role">Hint</span></div><div class="info"><div class="nm">Muted</div><div class="hex">#8A8680</div><div class="var">AppColors.muted</div></div></div>
+      <div class="sw"><div class="chip lt" style="background:#EFECE6"><span class="role">Border</span></div><div class="info"><div class="nm">Line</div><div class="hex">#EFECE6</div><div class="var">AppColors.line</div></div></div>
+      <div class="sw"><div class="chip lt" style="background:#F5F2EC"><span class="role">Fill</span></div><div class="info"><div class="nm">Soft</div><div class="hex">#F5F2EC</div><div class="var">AppColors.soft</div></div></div>
+      <div class="sw"><div class="chip lt" style="background:#FFFFFF;border-bottom:1px solid #EFECE6"><span class="role">Card</span></div><div class="info"><div class="nm">Card / surface</div><div class="hex">#FFFFFF</div><div class="var">AppColors.card</div></div></div>
+      <div class="sw"><div class="chip lt" style="background:#E5E2DC"><span class="role">App bg</span></div><div class="info"><div class="nm">Canvas</div><div class="hex">#E5E2DC</div><div class="var">AppColors.canvas</div></div></div>
+      <div class="sw"><div class="chip" style="background:#2EAF6B"><span class="role">Success</span></div><div class="info"><div class="nm">Green</div><div class="hex">#2EAF6B</div><div class="var">AppColors.green</div></div></div>
+      <div class="sw"><div class="chip lt" style="background:#E8F8EF"><span class="role">Success soft</span></div><div class="info"><div class="nm">Green soft</div><div class="hex">#E8F8EF</div><div class="var">AppColors.greenSoft</div></div></div>
+      <div class="sw"><div class="chip" style="background:#3DA9FF"><span class="role">Info / match</span></div><div class="info"><div class="nm">Blue</div><div class="hex">#3DA9FF</div><div class="var">AppColors.blue</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E8A53D"><span class="role">Premium</span></div><div class="info"><div class="nm">Gold</div><div class="hex">#E8A53D</div><div class="var">AppColors.gold</div></div></div>
+    </div>
+
+    <div class="code-lbl" style="margin-top:20px"><span class="fdot"></span>lib/theme/app_colors.dart</div>
+    <div class="code"><pre><span class="kw">import</span> <span class="st">'package:flutter/material.dart'</span>;
+
+<span class="kw">class</span> <span class="ty">AppColors</span> {
+  <span class="kw">static const</span> <span class="ty">Color</span> pink      = <span class="ty">Color</span>(<span class="nu">0xFFE85A7A</span>); <span class="cm">// accent</span>
+  <span class="kw">static const</span> <span class="ty">Color</span> pinkDeep  = <span class="ty">Color</span>(<span class="nu">0xFFC73A5E</span>);
+  <span class="kw">static const</span> <span class="ty">Color</span> pinkSoft  = <span class="ty">Color</span>(<span class="nu">0xFFFFE7EC</span>);
+  <span class="kw">static const</span> <span class="ty">Color</span> ink       = <span class="ty">Color</span>(<span class="nu">0xFF1F1F1F</span>); <span class="cm">// primary text</span>
+  <span class="kw">static const</span> <span class="ty">Color</span> ink60     = <span class="ty">Color</span>(<span class="nu">0xFF5F5C56</span>); <span class="cm">// secondary text</span>
+  <span class="kw">static const</span> <span class="ty">Color</span> muted     = <span class="ty">Color</span>(<span class="nu">0xFF8A8680</span>); <span class="cm">// hint / helper</span>
+  <span class="kw">static const</span> <span class="ty">Color</span> line      = <span class="ty">Color</span>(<span class="nu">0xFFEFECE6</span>); <span class="cm">// borders / dividers</span>
+  <span class="kw">static const</span> <span class="ty">Color</span> soft      = <span class="ty">Color</span>(<span class="nu">0xFFF5F2EC</span>); <span class="cm">// chip / fill</span>
+  <span class="kw">static const</span> <span class="ty">Color</span> card      = <span class="ty">Color</span>(<span class="nu">0xFFFFFFFF</span>);
+  <span class="kw">static const</span> <span class="ty">Color</span> canvas    = <span class="ty">Color</span>(<span class="nu">0xFFE5E2DC</span>); <span class="cm">// scaffold bg</span>
+  <span class="kw">static const</span> <span class="ty">Color</span> green     = <span class="ty">Color</span>(<span class="nu">0xFF2EAF6B</span>);
+  <span class="kw">static const</span> <span class="ty">Color</span> greenSoft = <span class="ty">Color</span>(<span class="nu">0xFFE8F8EF</span>);
+  <span class="kw">static const</span> <span class="ty">Color</span> blue      = <span class="ty">Color</span>(<span class="nu">0xFF3DA9FF</span>);
+  <span class="kw">static const</span> <span class="ty">Color</span> gold      = <span class="ty">Color</span>(<span class="nu">0xFFE8A53D</span>);
+
+  <span class="cm">// soft, warm elevation used on every card</span>
+  <span class="kw">static const</span> <span class="ty">List</span>&lt;<span class="ty">BoxShadow</span>&gt; shadow = [
+    <span class="ty">BoxShadow</span>(color: <span class="ty">Color</span>(<span class="nu">0x0A000000</span>), blurRadius: <span class="nu">3</span>,  offset: <span class="ty">Offset</span>(<span class="nu">0</span>, <span class="nu">1</span>)),
+    <span class="ty">BoxShadow</span>(color: <span class="ty">Color</span>(<span class="nu">0x0D000000</span>), blurRadius: <span class="nu">14</span>, offset: <span class="ty">Offset</span>(<span class="nu">0</span>, <span class="nu">4</span>)),
+  ];
+}</pre></div>
+  </section>
+
+  <!-- ============ 02 GRADIENTS / TIERS ============ -->
+  <section>
+    <div class="sec-num">02 — FOUNDATION</div>
+    <div class="sec-h">Plan tier gradients</div>
+    <div class="sec-d">The three paid tiers each have a fixed gradient + text colour. These appear on the home package badge, upgrade screens and locked features. Keep them exactly consistent everywhere.</div>
+    <div class="tiers" style="margin-bottom:18px">
+      <span class="tb premium">💎 Premium+</span>
+      <span class="tb vip">👑 VIP</span>
+      <span class="tb elite">✦ VIP Elite</span>
+    </div>
+    <div class="code-lbl"><span class="fdot"></span>lib/theme/app_gradients.dart</div>
+    <div class="code"><pre><span class="kw">class</span> <span class="ty">AppGradients</span> {
+  <span class="cm">// Premium+  → soft rose</span>
+  <span class="kw">static const</span> premium = <span class="ty">LinearGradient</span>(
+    begin: <span class="ty">Alignment</span>.topLeft, end: <span class="ty">Alignment</span>.bottomRight,
+    colors: [<span class="ty">Color</span>(<span class="nu">0xFFFFE7EC</span>), <span class="ty">Color</span>(<span class="nu">0xFFFFD3DD</span>)],
+  ); <span class="cm">// text: Color(0xFFB23354)</span>
+
+  <span class="cm">// VIP  → dark plum, gold text</span>
+  <span class="kw">static const</span> vip = <span class="ty">LinearGradient</span>(
+    begin: <span class="ty">Alignment</span>.topLeft, end: <span class="ty">Alignment</span>.bottomRight,
+    colors: [<span class="ty">Color</span>(<span class="nu">0xFF2A2433</span>), <span class="ty">Color</span>(<span class="nu">0xFF191622</span>)],
+  ); <span class="cm">// text: Color(0xFFFFD96B)</span>
+
+  <span class="cm">// VIP Elite  → gold</span>
+  <span class="kw">static const</span> elite = <span class="ty">LinearGradient</span>(
+    begin: <span class="ty">Alignment</span>.topLeft, end: <span class="ty">Alignment</span>.bottomRight,
+    colors: [<span class="ty">Color</span>(<span class="nu">0xFFFFD96B</span>), <span class="ty">Color</span>(<span class="nu">0xFFE8A53D</span>)],
+  ); <span class="cm">// text: Color(0xFF5A3D05)</span>
+}</pre></div>
+    <div class="note"><p><b>Two separate worlds.</b> Free &amp; Premium share one pool; VIP &amp; VIP Elite share a separate pool. The tiers never mix in discovery, filters, chat or visibility. The gradient only signals which tier a user holds — it does not connect the pools.</p></div>
+  </section>
+
+  <!-- ============ 03 TYPE ============ -->
+  <section>
+    <div class="sec-num">03 — FOUNDATION</div>
+    <div class="sec-h">Typography</div>
+    <div class="sec-d">One family — <b>DM Sans</b>, weights 400–800. Weight carries hierarchy more than size. Tight letter-spacing on big headings, wide uppercase tracking on small labels.</div>
+    <div class="tbl">
+      <div class="trow"><div class="sample" style="font-size:30px;font-weight:700;letter-spacing:-.5px">Aanya, 24</div><div class="specs"><span class="a">30 · w700 · -0.5</span><span class="b">display · profile name</span></div></div>
+      <div class="trow"><div class="sample" style="font-size:25px;font-weight:800;letter-spacing:-.5px">Page heading</div><div class="specs"><span class="a">25 · w800 · -0.5</span><span class="b">h1 · screen title</span></div></div>
+      <div class="trow"><div class="sample" style="font-size:18px;font-weight:700">Section / sheet title</div><div class="specs"><span class="a">18 · w700</span><span class="b">h2 · card &amp; sheet</span></div></div>
+      <div class="trow"><div class="sample" style="font-size:15px;font-weight:800">Primary button</div><div class="specs"><span class="a">15 · w800</span><span class="b">button label</span></div></div>
+      <div class="trow"><div class="sample" style="font-size:14px;font-weight:600">Body / list label</div><div class="specs"><span class="a">14 · w600</span><span class="b">body · default</span></div></div>
+      <div class="trow"><div class="sample" style="font-size:13px;font-weight:600">Chip · pill · value</div><div class="specs"><span class="a">13 · w600</span><span class="b">compact UI text</span></div></div>
+      <div class="trow"><div class="sample" style="font-size:11.5px;color:#8A8680">Sub-text &amp; helper copy</div><div class="specs"><span class="a">11.5 · w400</span><span class="b">muted · line-h 1.35</span></div></div>
+      <div class="trow"><div class="sample d-eyebrow">EYEBROW / SECTION LABEL</div><div class="specs"><span class="a">11 · w800 · +1.2</span><span class="b">uppercase label</span></div></div>
+    </div>
+    <div class="code-lbl"><span class="fdot"></span>lib/theme/app_text.dart</div>
+    <div class="code"><pre><span class="kw">import</span> <span class="st">'package:flutter/material.dart'</span>;
+<span class="kw">import</span> <span class="st">'package:google_fonts/google_fonts.dart'</span>;
+<span class="kw">import</span> <span class="st">'app_colors.dart'</span>;
+
+<span class="kw">class</span> <span class="ty">AppText</span> {
+  <span class="kw">static</span> <span class="ty">TextStyle</span> _base(<span class="ty">double</span> s, <span class="ty">FontWeight</span> w,
+      {<span class="ty">Color</span> c = <span class="ty">AppColors</span>.ink, <span class="ty">double</span> ls = <span class="nu">0</span>, <span class="ty">double</span>? lh}) =&gt;
+    <span class="ty">GoogleFonts</span>.<span class="fn">dmSans</span>(fontSize: s, fontWeight: w, color: c,
+      letterSpacing: ls, height: lh);
+
+  <span class="kw">static final</span> display = _base(<span class="nu">30</span>, <span class="ty">FontWeight</span>.w700, ls: -<span class="nu">0.5</span>, lh: <span class="nu">1.05</span>);
+  <span class="kw">static final</span> h1      = _base(<span class="nu">25</span>, <span class="ty">FontWeight</span>.w800, ls: -<span class="nu">0.5</span>);
+  <span class="kw">static final</span> h2      = _base(<span class="nu">18</span>, <span class="ty">FontWeight</span>.w700);
+  <span class="kw">static final</span> button  = _base(<span class="nu">15</span>, <span class="ty">FontWeight</span>.w800, c: <span class="ty">Colors</span>.white);
+  <span class="kw">static final</span> body    = _base(<span class="nu">14</span>, <span class="ty">FontWeight</span>.w600);
+  <span class="kw">static final</span> pill    = _base(<span class="nu">13</span>, <span class="ty">FontWeight</span>.w600);
+  <span class="kw">static final</span> sub     = _base(<span class="nu">11.5</span>, <span class="ty">FontWeight</span>.w400, c: <span class="ty">AppColors</span>.muted, lh: <span class="nu">1.35</span>);
+  <span class="kw">static final</span> eyebrow = _base(<span class="nu">11</span>, <span class="ty">FontWeight</span>.w800, c: <span class="ty">AppColors</span>.muted, ls: <span class="nu">1.2</span>);
+}</pre></div>
+  </section>
+
+  <!-- ============ 04 SPACING / RADIUS ============ -->
+  <section>
+    <div class="sec-num">04 — FOUNDATION</div>
+    <div class="sec-h">Radius, spacing &amp; elevation</div>
+    <div class="sec-d">Rounded but not bubbly. Cards 16px, inputs &amp; small cards 14px, pills fully round. One soft, warm-tinted shadow (already in <code>AppColors.shadow</code>) used everywhere.</div>
+    <div class="rgrid">
+      <div class="rcell"><div class="rbox" style="border-radius:16px"></div><div class="rn">Card</div><div class="rv">16–18</div></div>
+      <div class="rcell"><div class="rbox" style="border-radius:14px"></div><div class="rn">Input / button</div><div class="rv">14</div></div>
+      <div class="rcell"><div class="rbox" style="border-radius:12px"></div><div class="rn">Icon tile</div><div class="rv">12</div></div>
+      <div class="rcell"><div class="rbox" style="border-radius:999px"></div><div class="rn">Pill / chip</div><div class="rv">999</div></div>
+      <div class="rcell"><div class="rbox" style="border-radius:8px"></div><div class="rn">Badge / tag</div><div class="rv">6–8</div></div>
+    </div>
+    <table class="ttab" style="margin-bottom:16px">
+      <tr><th>Token</th><th>Value</th></tr>
+      <tr><td class="k">Screen / card padding</td><td><span class="mono">EdgeInsets.symmetric(horizontal: 16)</span></td></tr>
+      <tr><td class="k">Gap between cards</td><td><span class="mono">10</span></td></tr>
+      <tr><td class="k">Element gap (Row/Column)</td><td><span class="mono">8–12</span> (SizedBox / Wrap spacing)</td></tr>
+      <tr><td class="k">Primary button height</td><td><span class="mono">52</span></td></tr>
+      <tr><td class="k">Input / select height</td><td><span class="mono">50</span></td></tr>
+      <tr><td class="k">Icon tile</td><td><span class="mono">40 × 40</span>, radius 12</td></tr>
+    </table>
+    <div class="code-lbl"><span class="fdot"></span>lib/theme/app_dimens.dart</div>
+    <div class="code"><pre><span class="kw">class</span> <span class="ty">AppDimens</span> {
+  <span class="kw">static const double</span> pad       = <span class="nu">16</span>;   <span class="cm">// screen horizontal padding</span>
+  <span class="kw">static const double</span> gap       = <span class="nu">10</span>;   <span class="cm">// between cards</span>
+  <span class="kw">static const double</span> btnH      = <span class="nu">52</span>;   <span class="cm">// primary button</span>
+  <span class="kw">static const double</span> inputH    = <span class="nu">50</span>;
+  <span class="kw">static const double</span> rCard     = <span class="nu">16</span>;
+  <span class="kw">static const double</span> rInput    = <span class="nu">14</span>;
+  <span class="kw">static const double</span> rTile     = <span class="nu">12</span>;
+  <span class="kw">static const double</span> rPill     = <span class="nu">999</span>;
+}</pre></div>
+  </section>
+
+  <!-- ============ 05 THEME ============ -->
+  <section>
+    <div class="sec-num">05 — THEME</div>
+    <div class="sec-h">ThemeData</div>
+    <div class="sec-d">Wire the tokens into a single Material 3 theme so <code>Theme.of(context)</code> defaults match the design. Set the scaffold background to the warm canvas and the seed to rose.</div>
+    <div class="code-lbl"><span class="fdot"></span>lib/theme/app_theme.dart</div>
+    <div class="code"><pre><span class="kw">import</span> <span class="st">'package:flutter/material.dart'</span>;
+<span class="kw">import</span> <span class="st">'package:google_fonts/google_fonts.dart'</span>;
+<span class="kw">import</span> <span class="st">'app_colors.dart'</span>;
+
+<span class="ty">ThemeData</span> <span class="fn">buildTheme</span>() {
+  <span class="kw">final</span> base = <span class="ty">ThemeData</span>(useMaterial3: <span class="kw">true</span>, brightness: <span class="ty">Brightness</span>.light);
+  <span class="kw">return</span> base.copyWith(
+    scaffoldBackgroundColor: <span class="ty">AppColors</span>.canvas,
+    colorScheme: <span class="ty">ColorScheme</span>.<span class="fn">fromSeed</span>(
+      seedColor: <span class="ty">AppColors</span>.pink,
+      primary: <span class="ty">AppColors</span>.pink,
+      surface: <span class="ty">AppColors</span>.card,
+    ),
+    textTheme: <span class="ty">GoogleFonts</span>.<span class="fn">dmSansTextTheme</span>(base.textTheme)
+        .<span class="fn">apply</span>(bodyColor: <span class="ty">AppColors</span>.ink, displayColor: <span class="ty">AppColors</span>.ink),
+    dividerColor: <span class="ty">AppColors</span>.line,
+  );
+}</pre></div>
+  </section>
+
+  <!-- ============ 06 COMPONENTS ============ -->
+  <section>
+    <div class="sec-num">06 — COMPONENTS</div>
+    <div class="sec-h">Core widgets</div>
+    <div class="sec-d">Live examples + the exact Flutter build. Create each once in <code>lib/widgets/</code>; the whole app is assembled from them.</div>
+    <div class="comp">
+
+      <div class="cc">
+        <div class="cc-lbl">Buttons <span class="wname">PrimaryButton</span></div>
+        <div class="cc-stage">
+          <button class="d-btn">Primary</button>
+          <button class="d-btn ghost">Ghost</button>
+        </div>
+        <div class="cc-specs">primary&nbsp; bg <b>pink</b> · white · <b>h52</b> · radius <b>14</b><br>ghost&nbsp;&nbsp;&nbsp; 1.5px <b>pink</b> border · pinkDeep text<br>disabled&nbsp; opacity <b>0.4</b> · no shadow</div>
+      </div>
+
+      <div class="cc">
+        <div class="cc-lbl">Chips <span class="wname">SelectChip</span></div>
+        <div class="cc-stage">
+          <span class="d-pill">Travel</span>
+          <span class="d-pill on">Coffee</span>
+          <span class="d-pill">Books</span>
+        </div>
+        <div class="cc-specs">rest&nbsp;&nbsp;&nbsp; bg <b>soft</b> · 13/w600 · pad <b>8×14</b><br>selected&nbsp; bg <b>pinkSoft</b> · <b>pink</b> text + border</div>
+      </div>
+
+      <div class="cc">
+        <div class="cc-lbl">Stat pill <span class="wname">StatPill</span></div>
+        <div class="cc-stage">
+          <span class="d-spill"><span class="dot" style="background:#3DA9FF"></span>92% Match</span>
+          <span class="d-spill"><span class="dot" style="background:#2EAF6B"></span>98% Trust</span>
+        </div>
+        <div class="cc-specs">white · 1px <b>line</b> · 12/w700 · soft shadow<br>colour dot 7px · tap → detail page</div>
+      </div>
+
+      <div class="cc">
+        <div class="cc-lbl">Input <span class="wname">AppTextField</span></div>
+        <div class="cc-stage" style="display:block">
+          <input class="d-input" placeholder="First name" value="Aanya">
+        </div>
+        <div class="cc-specs">h<b>50</b> · radius <b>14</b> · 1.5px <b>line</b><br>focus → border <b>pink</b> · text 14.5</div>
+      </div>
+
+      <div class="cc">
+        <div class="cc-lbl">List card <span class="wname">ListCard</span></div>
+        <div class="cc-stage" style="display:block">
+          <div class="d-card"><div class="ic">🚀</div><div><div class="t">Boost Wallet</div><div class="s">3 boosts available</div></div></div>
+        </div>
+        <div class="cc-specs">white · 1px <b>line</b> · radius <b>16</b> · pad 14<br>icon tile 40 · title 14/w800 · sub 12 <b>ink60</b></div>
+      </div>
+
+      <div class="cc">
+        <div class="cc-lbl">Toggle &amp; tier tag <span class="wname">Switch</span></div>
+        <div class="cc-stage">
+          <div class="d-toggle"></div>
+          <span class="tb elite" style="padding:6px 12px;font-size:11px">✦ Elite</span>
+          <span class="d-eyebrow">Optional</span>
+        </div>
+        <div class="cc-specs">on → track <b>green</b> · 46×28 · knob 22<br>tier tag → tier gradient · locked features</div>
+      </div>
+
+    </div>
+
+    <div class="code-lbl" style="margin-top:20px"><span class="fdot"></span>lib/widgets/primary_button.dart</div>
+    <div class="code"><pre><span class="kw">class</span> <span class="ty">PrimaryButton</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {
+  <span class="kw">final</span> <span class="ty">String</span> label;
+  <span class="kw">final</span> <span class="ty">VoidCallback</span>? onTap;   <span class="cm">// null → disabled</span>
+  <span class="kw">const</span> <span class="fn">PrimaryButton</span>(<span class="kw">this</span>.label, {<span class="kw">this</span>.onTap, super.key});
+
+  @override
+  <span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) {
+    <span class="kw">final</span> on = onTap != <span class="kw">null</span>;
+    <span class="kw">return</span> <span class="ty">Opacity</span>(
+      opacity: on ? <span class="nu">1</span> : <span class="nu">0.4</span>,
+      child: <span class="ty">GestureDetector</span>(
+        onTap: onTap,
+        child: <span class="ty">Container</span>(
+          height: <span class="ty">AppDimens</span>.btnH,
+          alignment: <span class="ty">Alignment</span>.center,
+          decoration: <span class="ty">BoxDecoration</span>(
+            color: <span class="ty">AppColors</span>.pink,
+            borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="ty">AppDimens</span>.rInput),
+            boxShadow: on ? [<span class="ty">BoxShadow</span>(
+              color: <span class="ty">AppColors</span>.pink.<span class="fn">withOpacity</span>(<span class="nu">0.3</span>),
+              blurRadius: <span class="nu">20</span>, offset: <span class="kw">const</span> <span class="ty">Offset</span>(<span class="nu">0</span>, <span class="nu">8</span>))] : <span class="kw">null</span>,
+          ),
+          child: <span class="ty">Text</span>(label, style: <span class="ty">AppText</span>.button),
+        ),
+      ),
+    );
+  }
+}</pre></div>
+
+    <div class="code-lbl" style="margin-top:16px"><span class="fdot"></span>lib/widgets/select_chip.dart</div>
+    <div class="code"><pre><span class="kw">class</span> <span class="ty">SelectChip</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {
+  <span class="kw">final</span> <span class="ty">String</span> label;
+  <span class="kw">final</span> <span class="ty">bool</span> selected;
+  <span class="kw">final</span> <span class="ty">VoidCallback</span> onTap;
+  <span class="kw">const</span> <span class="fn">SelectChip</span>(<span class="kw">this</span>.label,
+      {<span class="kw">required this</span>.selected, <span class="kw">required this</span>.onTap, super.key});
+
+  @override
+  <span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) =&gt; <span class="ty">GestureDetector</span>(
+    onTap: onTap,
+    child: <span class="ty">AnimatedContainer</span>(
+      duration: <span class="kw">const</span> <span class="ty">Duration</span>(milliseconds: <span class="nu">150</span>),
+      padding: <span class="kw">const</span> <span class="ty">EdgeInsets</span>.<span class="fn">symmetric</span>(horizontal: <span class="nu">14</span>, vertical: <span class="nu">8</span>),
+      decoration: <span class="ty">BoxDecoration</span>(
+        color: selected ? <span class="ty">AppColors</span>.pinkSoft : <span class="ty">AppColors</span>.soft,
+        borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="ty">AppDimens</span>.rPill),
+        border: <span class="ty">Border</span>.<span class="fn">all</span>(
+          color: selected ? <span class="ty">AppColors</span>.pink : <span class="ty">Colors</span>.transparent),
+      ),
+      child: <span class="ty">Text</span>(label, style: <span class="ty">AppText</span>.pill.<span class="fn">copyWith</span>(
+        color: selected ? <span class="ty">AppColors</span>.pink : <span class="ty">AppColors</span>.ink)),
+    ),
+  );
+}</pre></div>
+
+    <div class="code-lbl" style="margin-top:16px"><span class="fdot"></span>lib/widgets/list_card.dart</div>
+    <div class="code"><pre><span class="kw">class</span> <span class="ty">ListCard</span> <span class="kw">extends</span> <span class="ty">StatelessWidget</span> {
+  <span class="kw">final</span> <span class="ty">String</span> emoji, title, sub;
+  <span class="kw">final</span> <span class="ty">VoidCallback</span>? onTap;
+  <span class="kw">const</span> <span class="fn">ListCard</span>({<span class="kw">required this</span>.emoji, <span class="kw">required this</span>.title,
+      <span class="kw">required this</span>.sub, <span class="kw">this</span>.onTap, super.key});
+
+  @override
+  <span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> context) =&gt; <span class="ty">GestureDetector</span>(
+    onTap: onTap,
+    child: <span class="ty">Container</span>(
+      padding: <span class="kw">const</span> <span class="ty">EdgeInsets</span>.<span class="fn">all</span>(<span class="nu">14</span>),
+      decoration: <span class="ty">BoxDecoration</span>(
+        color: <span class="ty">AppColors</span>.card,
+        borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="ty">AppDimens</span>.rCard),
+        border: <span class="ty">Border</span>.<span class="fn">all</span>(color: <span class="ty">AppColors</span>.line),
+        boxShadow: <span class="ty">AppColors</span>.shadow,
+      ),
+      child: <span class="ty">Row</span>(children: [
+        <span class="ty">Container</span>(width: <span class="nu">40</span>, height: <span class="nu">40</span>,
+          alignment: <span class="ty">Alignment</span>.center,
+          decoration: <span class="ty">BoxDecoration</span>(color: <span class="ty">AppColors</span>.pinkSoft,
+            borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="ty">AppDimens</span>.rTile)),
+          child: <span class="ty">Text</span>(emoji, style: <span class="kw">const</span> <span class="ty">TextStyle</span>(fontSize: <span class="nu">19</span>))),
+        <span class="kw">const</span> <span class="ty">SizedBox</span>(width: <span class="nu">12</span>),
+        <span class="ty">Expanded</span>(child: <span class="ty">Column</span>(
+          crossAxisAlignment: <span class="ty">CrossAxisAlignment</span>.start,
+          children: [
+            <span class="ty">Text</span>(title, style: <span class="ty">AppText</span>.body.<span class="fn">copyWith</span>(fontWeight: <span class="ty">FontWeight</span>.w800)),
+            <span class="kw">const</span> <span class="ty">SizedBox</span>(height: <span class="nu">2</span>),
+            <span class="ty">Text</span>(sub, style: <span class="ty">AppText</span>.sub.<span class="fn">copyWith</span>(color: <span class="ty">AppColors</span>.ink60)),
+          ])),
+        <span class="kw">const</span> <span class="ty">Icon</span>(<span class="ty">Icons</span>.chevron_right, color: <span class="ty">AppColors</span>.muted),
+      ]),
+    ),
+  );
+}</pre></div>
+  </section>
+
+  <!-- ============ 07 STRUCTURE ============ -->
+  <section>
+    <div class="sec-num">07 — ARCHITECTURE</div>
+    <div class="sec-h">File structure</div>
+    <div class="sec-d">Keep tokens in <code>theme/</code>, shared widgets in <code>widgets/</code>, and one folder per feature. Screens only compose tokens + widgets — no raw hex or font sizes inside screen files.</div>
+    <div class="tree"><pre><span class="cm2">lib/</span>
+├─ <span class="dir">theme/</span>
+│   ├─ <span class="fl">app_colors.dart</span>      <span class="cm2"># palette + shadow</span>
+│   ├─ <span class="fl">app_gradients.dart</span>   <span class="cm2"># tier gradients</span>
+│   ├─ <span class="fl">app_text.dart</span>        <span class="cm2"># TextStyles</span>
+│   ├─ <span class="fl">app_dimens.dart</span>      <span class="cm2"># spacing / radius</span>
+│   └─ <span class="fl">app_theme.dart</span>       <span class="cm2"># ThemeData</span>
+├─ <span class="dir">widgets/</span>              <span class="cm2"># shared, reusable</span>
+│   ├─ <span class="fl">primary_button.dart</span>
+│   ├─ <span class="fl">select_chip.dart</span>
+│   ├─ <span class="fl">stat_pill.dart</span>
+│   ├─ <span class="fl">app_text_field.dart</span>
+│   ├─ <span class="fl">list_card.dart</span>
+│   └─ <span class="fl">tier_badge.dart</span>
+├─ <span class="dir">features/</span>
+│   ├─ <span class="dir">onboarding/</span>
+│   ├─ <span class="dir">home/</span>
+│   ├─ <span class="dir">chat/</span>
+│   ├─ <span class="dir">date_now/</span>
+│   ├─ <span class="dir">wallet/</span>
+│   └─ <span class="dir">profile/</span>
+└─ <span class="fl">main.dart</span></pre></div>
+  </section>
+
+  <!-- ============ HOW TO USE ============ -->
+  <div class="foot">
+    <h3>How to build from this</h3>
+    <p><b>1.</b> Add <code>google_fonts</code>, create the five files in <code>lib/theme/</code> exactly as above. <b>2.</b> Wrap <code>MaterialApp</code> with <code>theme: buildTheme()</code>. <b>3.</b> Build the six shared widgets in <code>lib/widgets/</code>. <b>4.</b> Compose screens from tokens + widgets only.</p>
+    <p>Any value you don't see here can be read live from the HTML prototypes — open a screen, inspect the element, and its font-size / colour / padding map 1:1 to the tokens above (CSS <code>var(--pink)</code> → <code>AppColors.pink</code>).</p>
+    <p style="margin-bottom:0">Reference frame is <code>390 × 844</code> (iPhone). Use <code>MediaQuery</code> / flexible layouts — do not hardcode the 390 width into screens; only the token values are fixed.</p>
+  </div>
+
+</div>
+</body>
+</html>
