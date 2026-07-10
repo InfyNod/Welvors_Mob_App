@@ -81,7 +81,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
 
               // Title
               Text(
-                "You're in, deeee!",
+                "You're in, ${userData.name.isNotEmpty ? userData.name.split(' ').first : 'there'}!",
                 style: AppText.display.copyWith(fontSize: 32),
                 textAlign: TextAlign.center,
               ),
