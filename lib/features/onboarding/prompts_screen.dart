@@ -307,7 +307,7 @@ class _PromptsScreenState extends State<PromptsScreen> {
                   ),
                   
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 0),
+                    padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
                     child: Column(
                       children: [
                         PrimaryButton(

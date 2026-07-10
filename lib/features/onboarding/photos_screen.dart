@@ -306,7 +306,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
             AppDimens.pad,
             8,
             AppDimens.pad,
-            24,
+            20,
           ),
           child: PrimaryButton(
             _isSubmitting ? 'Uploading...' : 'Continue',

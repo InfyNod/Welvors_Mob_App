@@ -285,22 +285,43 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'LIFESTYLE',
-                  style: AppText.eyebrow.copyWith(
-                    color: AppColors.pinkDeep,
-                    fontSize: 11,
-                    letterSpacing: 1.5,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'LIFESTYLE',
+                      style: AppText.eyebrow.copyWith(
+                        color: AppColors.pinkDeep,
+                        fontSize: 11,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.pinkSoft.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${_answers.values.where((v) => v.isNotEmpty).length}/10',
+                        style: AppText.sub.copyWith(
+                          color: AppColors.pinkDeep,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'How do you live?',
+                  'Let’s talk lifestyle.',
                   style: AppText.display.copyWith(fontSize: 32),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Add more details to find people who match your vibe.',
+                  'Habits meet harmony — you go first. This helps us match you on the things that shape everyday life.',
                   style: AppText.body.copyWith(
                     color: AppColors.ink60,
                     height: 1.5,
@@ -353,11 +374,19 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                       expandedContent: isMulti
                           ? _buildMultiSubOptions(
                               chips: options.map((e) => e['label'].toString()).toList(),
-                              helperText: 'Pick as many as you like',
+                              helperText: title.toLowerCase().contains('pet') ? 'Pick up to 3' : 'Pick as many as you like',
                               selectedValues: selectedValues,
-                              maxSelection: 10,
+                              maxSelection: title.toLowerCase().contains('pet') ? 3 : 10,
                               onChanged: (newList) {
                                 setState(() {
+                                  int currentCount = _answers.values.where((v) => v.isNotEmpty).length;
+                                  bool isNewCategory = _answers[questionId] == null || _answers[questionId]!.isEmpty;
+                                  if (isNewCategory && newList.isNotEmpty && currentCount >= 10) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('You can only select up to 10 lifestyles.')),
+                                    );
+                                    return;
+                                  }
                                   _answers[questionId] = newList;
                                 });
                               },
@@ -371,6 +400,14 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                                   if (val == null) {
                                     _answers[questionId] = [];
                                   } else {
+                                    int currentCount = _answers.values.where((v) => v.isNotEmpty).length;
+                                    bool isNewCategory = _answers[questionId] == null || _answers[questionId]!.isEmpty;
+                                    if (isNewCategory && currentCount >= 10) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('You can only select up to 10 lifestyles.')),
+                                      );
+                                      return;
+                                    }
                                     _answers[questionId] = [val];
                                     _expandedCard = null;
                                   }
@@ -384,7 +421,7 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 0),
+          padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

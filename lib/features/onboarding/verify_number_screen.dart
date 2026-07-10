@@ -578,6 +578,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                                     controller: _otpController,
                                     focusNode: _otpFocusNode,
                                     keyboardType: TextInputType.number,
+                                    autofillHints: const [AutofillHints.oneTimeCode],
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
                                       LengthLimitingTextInputFormatter(6),
@@ -730,7 +731,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
             AppDimens.pad,
             16,
             AppDimens.pad,
-            0,
+            20,
           ),
           child: PrimaryButton(
             _isLoading ? 'Please wait...' : (_isOtpSent ? 'Verify' : 'Send code'),

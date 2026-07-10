@@ -165,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
             
             Expanded(
               child: CustomScrollView(
-                physics: const NeverScrollableScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 slivers: [
                   SliverFillRemaining(
                     hasScrollBody: false,
@@ -374,6 +374,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         controller: _otpController,
                                         focusNode: _otpFocusNode,
                                         keyboardType: TextInputType.number,
+                                        autofillHints: const [AutofillHints.oneTimeCode],
                                         inputFormatters: [
                                           FilteringTextInputFormatter.digitsOnly,
                                           LengthLimitingTextInputFormatter(6),

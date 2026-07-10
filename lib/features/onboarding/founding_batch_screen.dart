@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
+import 'payment_success_screen.dart';
 
 class FoundingBatchScreen extends StatelessWidget {
   const FoundingBatchScreen({super.key});
@@ -592,10 +593,10 @@ class FoundingBatchScreen extends StatelessWidget {
               child: PrimaryButton(
                 'Pay ₹299 · Join the waitlist',
                 onTap: () {
-                  // TODO: Implement payment logic
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Payment Gateway Coming Soon!'),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PaymentSuccessScreen(),
                     ),
                   );
                 },

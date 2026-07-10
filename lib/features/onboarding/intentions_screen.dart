@@ -150,7 +150,7 @@ class _IntentionsScreenState extends State<IntentionsScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 0),
+          padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
           child: PrimaryButton(
             _isLoading ? 'Saving...' : 'Continue',
             onTap: _isFormValid && !_isLoading

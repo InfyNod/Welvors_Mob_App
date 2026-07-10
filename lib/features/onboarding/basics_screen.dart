@@ -809,7 +809,7 @@ class _BasicsScreenState extends State<BasicsScreen> {
             AppDimens.pad,
             16,
             AppDimens.pad,
-            0,
+            20,
           ),
           child: PrimaryButton(
             'Continue',
