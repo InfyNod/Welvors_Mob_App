@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
+import 'waitlist_confirmed_screen.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
   const PaymentSuccessScreen({super.key});
@@ -10,7 +11,7 @@ class PaymentSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F0EA),
+      backgroundColor: AppColors.canvas,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -53,7 +54,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                     '₹299',
                     style: AppText.display.copyWith(
                       fontSize: 38,
-                      color: const Color(0xFF28A76F),
+                      color: AppColors.green,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -115,7 +116,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                             Text(
                               '₹299',
                               style: AppText.body.copyWith(
-                                color: const Color(0xFF28A76F),
+                                color: AppColors.green,
                                 fontWeight: FontWeight.w800,
                                 fontSize: 16,
                               ),
@@ -130,7 +131,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFE8F6F0),
+                                color: AppColors.greenSoft,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -148,7 +149,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                                   Text(
                                     'Paid · Success',
                                     style: AppText.body.copyWith(
-                                      color: const Color(0xFF28A76F),
+                                      color: AppColors.green,
                                       fontSize: 10,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -166,15 +167,19 @@ class PaymentSuccessScreen extends StatelessWidget {
                   // Black Button
                   GestureDetector(
                     onTap: () {
-                      // Navigate back or to a confirmation screen
-                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WaitlistConfirmedScreen(),
+                        ),
+                      );
                     },
                     child: Container(
                       width: double.infinity,
                       height: 54,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
+                        color: AppColors.ink,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
