@@ -5,11 +5,11 @@ import 'features/onboarding/landing_screen.dart';
 import 'blocs/onboarding/onboarding_bloc.dart';
 
 void main() {
-  runApp(const VelvorsApp());
+  runApp(const WelvorsApp());
 }
 
-class VelvorsApp extends StatelessWidget {
-  const VelvorsApp({super.key});
+class WelvorsApp extends StatelessWidget {
+  const WelvorsApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class VelvorsApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Velvors',
+        title: 'Welvors',
         theme: buildTheme(),
         debugShowCheckedModeBanner: false,
         home: const LandingScreen(),

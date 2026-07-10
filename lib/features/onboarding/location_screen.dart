@@ -150,7 +150,7 @@ class _LocationScreenState extends State<LocationScreen> {
               children: [
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.velvors',
+                  userAgentPackageName: 'com.example.welvors',
                 ),
               ],
             ),

@@ -385,7 +385,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Only verified members can join Velvors. Your number stays private — never shown on your profile or shared.',
+                                  'Only verified members can join Welvors. Your number stays private — never shown on your profile or shared.',
                                   style: AppText.sub.copyWith(
                                     fontSize: 13,
                                     color: AppColors.ink.withOpacity(0.8),
@@ -708,7 +708,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Only verified members can join Velvors. Your number stays private — never shown on your profile or shared.',
+                                  'Only verified members can join Welvors. Your number stays private — never shown on your profile or shared.',
                                   style: AppText.sub.copyWith(
                                     fontSize: 13,
                                     color: AppColors.ink.withOpacity(0.8),

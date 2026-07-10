@@ -823,7 +823,7 @@ class _BasicsScreenState extends State<BasicsScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
-                            'You must be at least 18 to use Velvors.',
+                            'You must be at least 18 to use Welvors.',
                           ),
                           duration: Duration(seconds: 3),
                         ),

@@ -149,7 +149,7 @@ class CompletionScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     // Subtitle
                     Text(
-                      'Your profile is saved and ready. Velvors\nopens in small founding batches — here\'s\nhow to lock your spot before the doors\nopen.',
+                      'Your profile is saved and ready. Welvors\nopens in small founding batches — here\'s\nhow to lock your spot before the doors\nopen.',
                       textAlign: TextAlign.center,
                       style: AppText.sub.copyWith(
                         color: AppColors.ink60,

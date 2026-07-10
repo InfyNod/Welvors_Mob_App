@@ -116,9 +116,9 @@ class _TermsBottomSheetWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(AppDimens.pad),
                 children: const [
                   _Section(
-                    title: 'Welcome to Velvors',
+                    title: 'Welcome to Welvors',
                     content:
-                        'Velvors is a dating service for adults seeking genuine, serious connections. By creating an account you confirm you are at least 18 years old and that the information you provide is true and your own.',
+                        'Welvors is a dating service for adults seeking genuine, serious connections. By creating an account you confirm you are at least 18 years old and that the information you provide is true and your own.',
                   ),
                   _Section(
                     title: 'Your account',

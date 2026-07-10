@@ -192,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 16),
                           
-                          // Velvors logo
+                          // Welvors logo
                           Center(
                             child: RichText(
                               text: TextSpan(

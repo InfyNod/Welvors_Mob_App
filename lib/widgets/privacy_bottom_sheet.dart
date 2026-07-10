@@ -143,7 +143,7 @@ class _PrivacyBottomSheetWidget extends StatelessWidget {
                   _Section(
                     title: 'Contact',
                     content:
-                        'Questions about your data? Reach our Grievance Officer at privacy@velvors.com.',
+                        'Questions about your data? Reach our Grievance Officer at privacy@welvors.com.',
                   ),
                 ],
               ),

@@ -5,7 +5,7 @@ class UserData {
   factory UserData() => _instance;
   UserData._internal();
 
-  String name = 'Velvors User';
+  String name = 'Welvors User';
   int age = 22;
   String phone = '+91 98765 43210';
   String email = 'user@example.com';
