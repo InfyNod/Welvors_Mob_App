@@ -7,19 +7,20 @@ class ApiService {
   static const String baseUrl = 'https://dating-app-backend-plum.vercel.app/api';
 
   /// Fetches onboarding intentions from the server.
-  /// Returns a list of maps containing 'title', 'subtitle', and 'id'.
-  static Future<List<Map<String, dynamic>>> fetchIntentions() async {
+  /// Returns a map containing 'title', 'description', and 'options' list.
+  static Future<Map<String, dynamic>> fetchIntentions() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/onboarding/intention/get'));
       
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null && decoded['data'].isNotEmpty) {
-          // The API structure has the main options array inside the first data object
           final data = decoded['data'][0];
+          
+          List<Map<String, dynamic>> parsedOptions = [];
           if (data['options'] != null) {
             final List<dynamic> optionsRaw = data['options'];
-            return optionsRaw.map((opt) {
+            parsedOptions = optionsRaw.map((opt) {
               return {
                 'id': opt['id'] ?? '',
                 'intentionId': opt['intentionId'] ?? '',
@@ -28,12 +29,18 @@ class ApiService {
               };
             }).toList();
           }
+          
+          return {
+            'title': data['title'] ?? '',
+            'description': data['description'] ?? '',
+            'options': parsedOptions,
+          };
         }
       }
-      return [];
+      return {};
     } catch (e) {
       debugPrint('Error fetching intentions: $e');
-      return [];
+      return {};
     }
   }
 

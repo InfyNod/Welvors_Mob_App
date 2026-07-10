@@ -16,8 +16,11 @@ class IntentionsScreen extends StatefulWidget {
 
 class _IntentionsScreenState extends State<IntentionsScreen> {
   String? _selectedIntention;
+  String _apiTitle = '';
+  String _apiDescription = '';
   List<Map<String, dynamic>> _intentions = [];
   bool _isLoading = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -26,10 +29,18 @@ class _IntentionsScreenState extends State<IntentionsScreen> {
   }
 
   Future<void> _fetchIntentions() async {
-    final intentions = await ApiService.fetchIntentions();
+    final response = await ApiService.fetchIntentions();
     if (mounted) {
       setState(() {
-        _intentions = intentions;
+        if (response.isNotEmpty) {
+          if (response['title'] != null && response['title'].toString().isNotEmpty) {
+            _apiTitle = response['title'];
+          }
+          if (response['description'] != null && response['description'].toString().isNotEmpty) {
+            _apiDescription = response['description'].toString().replaceAll('"', '');
+          }
+          _intentions = response['options'] ?? [];
+        }
         _isLoading = false;
       });
     }
@@ -116,12 +127,12 @@ class _IntentionsScreenState extends State<IntentionsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'What are you looking for?',
+                  _apiTitle,
                   style: AppText.display.copyWith(fontSize: 32),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'All good if it changes. We\'ll share this with matches.',
+                  _apiDescription,
                   style: AppText.body.copyWith(
                     color: AppColors.ink60,
                     height: 1.5,
@@ -152,10 +163,10 @@ class _IntentionsScreenState extends State<IntentionsScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
           child: PrimaryButton(
-            _isLoading ? 'Saving...' : 'Continue',
-            onTap: _isFormValid && !_isLoading
+            _isSaving ? 'Saving...' : 'Continue',
+            onTap: _isFormValid && !_isLoading && !_isSaving
                 ? () async {
-                    setState(() => _isLoading = true);
+                    setState(() => _isSaving = true);
 
                     userData.intentions = _selectedIntention ?? 'A long-term relationship';
                     
@@ -163,7 +174,7 @@ class _IntentionsScreenState extends State<IntentionsScreen> {
                     await Future.delayed(const Duration(seconds: 1));
 
                     if (mounted) {
-                      setState(() => _isLoading = false);
+                      setState(() => _isSaving = false);
                       widget.onNext();
                     }
                   }
