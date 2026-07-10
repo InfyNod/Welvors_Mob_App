@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
 import 'package:lottie/lottie.dart';
@@ -16,6 +17,7 @@ class WaitlistConfirmedScreen extends StatefulWidget {
 class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
   late Timer _timer;
   late Duration _timeLeft;
+  bool _isCopied = false;
 
   @override
   void initState() {
@@ -171,24 +173,14 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                     ),
                     const SizedBox(height: 24),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildTimeBox(
-                          _timeLeft.inDays.toString().padLeft(2, '0'),
-                          'DAYS',
-                        ),
-                        _buildTimeBox(
-                          (_timeLeft.inHours % 24).toString().padLeft(2, '0'),
-                          'HRS',
-                        ),
-                        _buildTimeBox(
-                          (_timeLeft.inMinutes % 60).toString().padLeft(2, '0'),
-                          'MIN',
-                        ),
-                        _buildTimeBox(
-                          (_timeLeft.inSeconds % 60).toString().padLeft(2, '0'),
-                          'SEC',
-                        ),
+                        Expanded(child: _buildTimeBox(_timeLeft.inDays.toString().padLeft(2, '0'), 'DAYS')),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildTimeBox((_timeLeft.inHours % 24).toString().padLeft(2, '0'), 'HRS')),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildTimeBox((_timeLeft.inMinutes % 60).toString().padLeft(2, '0'), 'MIN')),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildTimeBox((_timeLeft.inSeconds % 60).toString().padLeft(2, '0'), 'SEC')),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -524,21 +516,30 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                               letterSpacing: 2,
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.pinkDeep,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'Copy',
-                              style: AppText.body.copyWith(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
+                          GestureDetector(
+                            onTap: () {
+                              Clipboard.setData(const ClipboardData(text: 'DEEE156'));
+                              setState(() => _isCopied = true);
+                              Future.delayed(const Duration(seconds: 2), () {
+                                if (mounted) setState(() => _isCopied = false);
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _isCopied ? Colors.green : AppColors.pinkDeep,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                _isCopied ? 'Copied!' : 'Copy',
+                                style: AppText.body.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                           ),
@@ -652,7 +653,6 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
 
   Widget _buildTimeBox(String value, String label) {
     return Container(
-      width: 66,
       padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -673,12 +673,15 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
       ),
       child: Column(
         children: [
-          Text(
-            value,
-            style: AppText.display.copyWith(
-              color: AppColors.pinkDeep,
-              fontSize: 32,
-              height: 1.0,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: AppText.display.copyWith(
+                color: AppColors.pinkDeep,
+                fontSize: 28,
+                height: 1.0,
+              ),
             ),
           ),
           const SizedBox(height: 6),
@@ -763,17 +766,22 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
   Widget _buildDetailRow(String label, String value, {Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: AppText.body.copyWith(color: AppColors.muted, fontSize: 13),
         ),
-        Text(
-          value,
-          style: AppText.body.copyWith(
-            color: valueColor ?? AppColors.ink,
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: AppText.body.copyWith(
+              color: valueColor ?? AppColors.ink,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ],
