@@ -7,6 +7,9 @@ class UserData {
 
   String name = 'Velvors User';
   int age = 22;
+  String phone = '+91 98765 43210';
+  String email = 'user@example.com';
+  String welvorsId = 'WLV-1XN6-8256';
   String gender = 'Man';
   String sexualOrientation = 'Not specified';
   String interestedIn = 'Everyone';

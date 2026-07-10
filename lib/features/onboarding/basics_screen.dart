@@ -834,6 +834,7 @@ class _BasicsScreenState extends State<BasicsScreen> {
                     setState(() => _isLoading = true);
 
                     userData.name = _nameController.text.trim();
+                    userData.email = _emailController.text.trim();
                     userData.age = _age ?? 18;
                     userData.gender = _selectedGender ?? 'Man';
                     userData.sexualOrientation =

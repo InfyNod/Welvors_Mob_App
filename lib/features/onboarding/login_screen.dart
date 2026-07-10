@@ -9,7 +9,8 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'onboarding_flow_screen.dart';
+import 'waitlist_confirmed_screen.dart';
+import 'user_data.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -112,11 +113,14 @@ class _LoginScreenState extends State<LoginScreen> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
         
+        // Save phone to UserData
+        userData.phone = '+91 ${_phoneController.text.trim()}';
+        
         if (mounted) {
-          // Navigate to Onboarding
+          // Navigate to Waitlist Confirmed
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const OnboardingFlowScreen()),
+            MaterialPageRoute(builder: (context) => const WaitlistConfirmedScreen()),
           );
         }
       } else {

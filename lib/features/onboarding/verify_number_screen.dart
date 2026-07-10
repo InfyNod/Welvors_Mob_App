@@ -8,6 +8,7 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'user_data.dart';
 
 class VerifyNumberScreen extends StatefulWidget {
   final VoidCallback onVerifySuccess;
@@ -110,6 +111,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
+        
+        // Save phone to UserData
+        userData.phone = '+91 ${_phoneController.text.trim()}';
         
         if (mounted) {
           widget.onVerifySuccess();

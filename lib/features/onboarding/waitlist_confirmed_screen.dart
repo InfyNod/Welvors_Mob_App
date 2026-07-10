@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
 import 'package:lottie/lottie.dart';
-
+import 'user_data.dart';
 
 class WaitlistConfirmedScreen extends StatefulWidget {
   const WaitlistConfirmedScreen({super.key});
@@ -192,7 +192,10 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Divider(color: AppColors.pinkDeep.withOpacity(0.15), height: 1),
+                    Divider(
+                      color: AppColors.pinkDeep.withOpacity(0.15),
+                      height: 1,
+                    ),
                     const SizedBox(height: 20),
                     RichText(
                       textAlign: TextAlign.center,
@@ -233,11 +236,11 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                 iconColor: AppColors.blue,
                 title: 'Your details',
                 children: [
-                  _buildDetailRow('Name', 'deeee, 23'),
-                  _buildDetailRow('Phone', '+91 98765 43210'),
-                  _buildDetailRow('Email', 'd@gmail.om'),
-                  _buildDetailRow('City', 'Bengaluru'),
-                  _buildDetailRow('Welvors ID', 'WLV-1XN6-8256'),
+                  _buildDetailRow('Name', '${userData.name}, ${userData.age}'),
+                  _buildDetailRow('Phone', userData.phone.isEmpty ? 'Not specified' : userData.phone),
+                  _buildDetailRow('Email', userData.email.isEmpty ? 'Not specified' : userData.email),
+                  _buildDetailRow('City', userData.location.isEmpty ? 'Not specified' : userData.location),
+                  _buildDetailRow('Welvors ID', userData.welvorsId.isEmpty ? 'Not specified' : userData.welvorsId),
                 ],
               ),
               const SizedBox(height: 16),
@@ -264,7 +267,10 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
               // Invite Card
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
@@ -306,19 +312,19 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                     Transform.translate(
                       offset: const Offset(0, -16),
                       child: Text(
-                      'Invite friends, share the perks',
-                      style: AppText.display.copyWith(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 22,
-                        color: AppColors.ink,
+                        'Invite friends, share the perks',
+                        style: AppText.display.copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 22,
+                          color: AppColors.ink,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(height: 0),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
+                    const SizedBox(height: 0),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
                         style: AppText.body.copyWith(
                           color: AppColors.muted,
                           fontSize: 13,
@@ -366,7 +372,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                             color: AppColors.pink.withOpacity(0.04),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ],
                       ),
                       child: Column(
@@ -636,7 +642,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 0),
             ],
           ),
         ),
