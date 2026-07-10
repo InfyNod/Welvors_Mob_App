@@ -174,13 +174,39 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                     const SizedBox(height: 24),
                     Row(
                       children: [
-                        Expanded(child: _buildTimeBox(_timeLeft.inDays.toString().padLeft(2, '0'), 'DAYS')),
+                        Expanded(
+                          child: _buildTimeBox(
+                            _timeLeft.inDays.toString().padLeft(2, '0'),
+                            'DAYS',
+                          ),
+                        ),
                         const SizedBox(width: 8),
-                        Expanded(child: _buildTimeBox((_timeLeft.inHours % 24).toString().padLeft(2, '0'), 'HRS')),
+                        Expanded(
+                          child: _buildTimeBox(
+                            (_timeLeft.inHours % 24).toString().padLeft(2, '0'),
+                            'HRS',
+                          ),
+                        ),
                         const SizedBox(width: 8),
-                        Expanded(child: _buildTimeBox((_timeLeft.inMinutes % 60).toString().padLeft(2, '0'), 'MIN')),
+                        Expanded(
+                          child: _buildTimeBox(
+                            (_timeLeft.inMinutes % 60).toString().padLeft(
+                              2,
+                              '0',
+                            ),
+                            'MIN',
+                          ),
+                        ),
                         const SizedBox(width: 8),
-                        Expanded(child: _buildTimeBox((_timeLeft.inSeconds % 60).toString().padLeft(2, '0'), 'SEC')),
+                        Expanded(
+                          child: _buildTimeBox(
+                            (_timeLeft.inSeconds % 60).toString().padLeft(
+                              2,
+                              '0',
+                            ),
+                            'SEC',
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -229,10 +255,26 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                 title: 'Your details',
                 children: [
                   _buildDetailRow('Name', '${userData.name}, ${userData.age}'),
-                  _buildDetailRow('Phone', userData.phone.isEmpty ? 'Not specified' : userData.phone),
-                  _buildDetailRow('Email', userData.email.isEmpty ? 'Not specified' : userData.email),
-                  _buildDetailRow('City', userData.location.isEmpty ? 'Not specified' : userData.location),
-                  _buildDetailRow('Welvors ID', userData.welvorsId.isEmpty ? 'Not specified' : userData.welvorsId),
+                  _buildDetailRow(
+                    'Phone',
+                    userData.phone.isEmpty ? 'Not specified' : userData.phone,
+                  ),
+                  _buildDetailRow(
+                    'Email',
+                    userData.email.isEmpty ? 'Not specified' : userData.email,
+                  ),
+                  _buildDetailRow(
+                    'City',
+                    userData.location.isEmpty
+                        ? 'Not specified'
+                        : userData.location,
+                  ),
+                  _buildDetailRow(
+                    'Welvors ID',
+                    userData.welvorsId.isEmpty
+                        ? 'Not specified'
+                        : userData.welvorsId,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -319,31 +361,29 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                       text: TextSpan(
                         style: AppText.body.copyWith(
                           color: AppColors.muted,
-                          fontSize: 13,
+                          fontSize: 14,
                           height: 1.5,
                         ),
-                        children: [
-                          const TextSpan(
+                        children: const [
+                          TextSpan(
                             text: 'Refer a friend and they lock the ',
                           ),
                           TextSpan(
                             text: 'exact same founding benefits',
-                            style: AppText.body.copyWith(
+                            style: TextStyle(
                               color: AppColors.pinkDeep,
-                              fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const TextSpan(text: ' you just did — plus '),
+                          TextSpan(text: ' you just did — plus '),
                           TextSpan(
                             text: 'you both get ₹100',
-                            style: AppText.body.copyWith(
+                            style: TextStyle(
                               color: AppColors.pinkDeep,
-                              fontSize: 13,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          const TextSpan(text: ' in Welvors Coins at launch.'),
+                          TextSpan(text: ' in Welvors Coins at launch.'),
                         ],
                       ),
                     ),
@@ -518,7 +558,9 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Clipboard.setData(const ClipboardData(text: 'DEEE156'));
+                              Clipboard.setData(
+                                const ClipboardData(text: 'DEEE156'),
+                              );
                               setState(() => _isCopied = true);
                               Future.delayed(const Duration(seconds: 2), () {
                                 if (mounted) setState(() => _isCopied = false);
@@ -530,7 +572,9 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: _isCopied ? Colors.green : AppColors.pinkDeep,
+                                color: _isCopied
+                                    ? Colors.green
+                                    : AppColors.pinkDeep,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
