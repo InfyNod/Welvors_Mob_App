@@ -20,6 +20,60 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
   late Animation<Color?> _color2;
   final TextEditingController _inviteCodeController = TextEditingController();
   bool _isInviteCodeValid = false;
+  String _selectedTab = 'Joined';
+
+  final List<Map<String, dynamic>> _allReferrals = [
+    {
+      'name': 'Rahul M.',
+      'status': 'Joined · Bought VIP',
+      'amount': '+₹600',
+      'amountSub': 'credited',
+      'initials': 'RM',
+      'isRewarded': true,
+    },
+    {
+      'name': 'Sneha K.',
+      'status': 'Joined · Bought Premium+',
+      'amount': '+₹600',
+      'amountSub': 'credited',
+      'initials': 'SK',
+      'isRewarded': true,
+    },
+    {
+      'name': 'Arjun P.',
+      'status': 'Joined · Bought Elite',
+      'amount': '+₹600',
+      'amountSub': 'credited',
+      'initials': 'AP',
+      'isRewarded': true,
+    },
+    {
+      'name': 'Meera S.',
+      'status': 'Joined · ₹500 pending on plan',
+      'amount': '+₹100',
+      'amountSub': '₹500 pending',
+      'initials': 'MS',
+      'isRewarded': true,
+    },
+    {
+      'name': 'Karan T.',
+      'status': 'Just joined with your code',
+      'amount': '₹100 soon',
+      'amountSub': '',
+      'amountColor': Colors.orange.shade700,
+      'initials': 'KT',
+      'isPending': true,
+    },
+  ];
+
+  List<Map<String, dynamic>> get _filteredReferrals {
+    if (_selectedTab == 'Rewarded') {
+      return _allReferrals.where((r) => r['isRewarded'] == true).toList();
+    } else if (_selectedTab == 'Pending') {
+      return _allReferrals.where((r) => r['isPending'] == true).toList();
+    }
+    return _allReferrals;
+  }
 
   @override
   void initState() {
@@ -565,11 +619,11 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildReferralTab('Joined', '5', true),
+                  _buildReferralTab('Joined', '5', _selectedTab == 'Joined'),
                   const SizedBox(width: 8),
-                  _buildReferralTab('Rewarded', '4', false),
+                  _buildReferralTab('Rewarded', '4', _selectedTab == 'Rewarded'),
                   const SizedBox(width: 8),
-                  _buildReferralTab('Pending', '3', false),
+                  _buildReferralTab('Pending', '1', _selectedTab == 'Pending'),
                 ],
               ),
             ),
@@ -594,48 +648,37 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                 ],
               ),
               child: Column(
-                children: [
-                  _buildReferralItem(
-                    name: 'Rahul M.',
-                    status: 'Joined · Bought VIP',
-                    amount: '+₹600',
-                    amountSub: 'credited',
-                    initials: 'RM',
-                  ),
-                  Divider(height: 1, color: Colors.grey.shade200),
-                  _buildReferralItem(
-                    name: 'Sneha K.',
-                    status: 'Joined · Bought Premium+',
-                    amount: '+₹600',
-                    amountSub: 'credited',
-                    initials: 'SK',
-                  ),
-                  Divider(height: 1, color: Colors.grey.shade200),
-                  _buildReferralItem(
-                    name: 'Arjun P.',
-                    status: 'Joined · Bought Elite',
-                    amount: '+₹600',
-                    amountSub: 'credited',
-                    initials: 'AP',
-                  ),
-                  Divider(height: 1, color: Colors.grey.shade200),
-                  _buildReferralItem(
-                    name: 'Meera S.',
-                    status: 'Joined · ₹500 pending on plan',
-                    amount: '+₹100',
-                    amountSub: '₹500 pending',
-                    initials: 'MS',
-                  ),
-                  Divider(height: 1, color: Colors.grey.shade200),
-                  _buildReferralItem(
-                    name: 'Karan T.',
-                    status: 'Just joined with your code',
-                    amount: '₹100 soon',
-                    amountSub: '',
-                    amountColor: Colors.orange.shade700,
-                    initials: 'KT',
-                  ),
-                ],
+                children: _filteredReferrals.isEmpty
+                    ? [
+                        const Padding(
+                          padding: EdgeInsets.all(24.0),
+                          child: Center(
+                            child: Text(
+                              'No referrals yet',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        )
+                      ]
+                    : _filteredReferrals.asMap().entries.map((entry) {
+                        final int index = entry.key;
+                        final Map<String, dynamic> r = entry.value;
+                        return Column(
+                          children: [
+                            if (index > 0)
+                              Divider(height: 1, color: Colors.grey.shade200),
+                            _buildReferralItem(
+                              name: r['name'],
+                              status: r['status'],
+                              amount: r['amount'],
+                              amountSub: r['amountSub'],
+                              initials: r['initials'],
+                              amountColor:
+                                  r['amountColor'] ?? const Color(0xFF2E7D32),
+                            ),
+                          ],
+                        );
+                      }).toList(),
               ),
             ),
             const SizedBox(height: 24),
@@ -754,44 +797,51 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
   }
 
   Widget _buildReferralTab(String label, String count, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.pinkSoft.withOpacity(0.3) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isSelected ? AppColors.pinkDeep : Colors.grey.shade200,
-          width: 1.5,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? AppColors.pinkDeep : Colors.black87,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              fontSize: 13,
-            ),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedTab = label;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.pinkSoft.withOpacity(0.3) : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isSelected ? AppColors.pinkDeep : Colors.grey.shade200,
+            width: 1.5,
           ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.pinkDeep : Colors.grey.shade200,
-              shape: BoxShape.circle,
-            ),
-            child: Text(
-              count,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black54,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+                color: isSelected ? AppColors.pinkDeep : Colors.black87,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                fontSize: 13,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.pinkDeep : Colors.grey.shade200,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                count,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black54,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
