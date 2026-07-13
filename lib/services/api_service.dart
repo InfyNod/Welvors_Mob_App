@@ -200,6 +200,28 @@ class ApiService {
     }
   }
 
+  /// Completes the user onboarding profile.
+  static Future<bool> completeOnboarding() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/profile/complete-onboarding'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+      
+      debugPrint('Complete Onboarding: ${response.statusCode} - ${response.body}');
+      return (response.statusCode == 200 || response.statusCode == 201);
+    } catch (e) {
+      debugPrint('Error completing onboarding: $e');
+      return false;
+    }
+  }
+
   /// Fetches things you love (interests) questions from the server.
   static Future<List<dynamic>> fetchInterests() async {
     try {
