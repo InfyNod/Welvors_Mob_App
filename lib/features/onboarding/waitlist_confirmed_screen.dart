@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
 import 'refer_and_earn_screen.dart';
-import '../../theme/app_text.dart';
 import 'package:lottie/lottie.dart';
 import 'user_data.dart';
 
@@ -595,27 +595,40 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                     const SizedBox(height: 20),
 
                     // Share Link Button
-                    Container(
-                      width: double.infinity,
-                      height: 48,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.pinkDeep,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.link, size: 16, color: Colors.white),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Share invite link',
-                            style: AppText.button.copyWith(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
+                    Builder(
+                      builder: (context) => GestureDetector(
+                        onTap: () {
+                          final box = context.findRenderObject() as RenderBox?;
+                          Share.share(
+                            'Join Velvors with my invite code TANISHKA250 and get rewards! 🚀\nhttps://velvors.com',
+                            sharePositionOrigin: box != null
+                                ? box.localToGlobal(Offset.zero) & box.size
+                                : null,
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.pinkDeep,
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.link, size: 16, color: Colors.white),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Share invite link',
+                                style: AppText.button.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),

@@ -99,11 +99,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
           ),
         ),
         title: Text(
-          'Refer & Earn', 
-          style: AppText.h2.copyWith(
-            fontSize: 18,
-            letterSpacing: 0.5,
-          ),
+          'Refer & Earn',
+          style: AppText.h2.copyWith(fontSize: 18, letterSpacing: 0.5),
         ),
       ),
       body: SingleChildScrollView(
