@@ -21,6 +21,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
   late Animation<Color?> _color2;
   final TextEditingController _inviteCodeController = TextEditingController();
   bool _isInviteCodeValid = false;
+  bool _isApplyingCode = false;
   String _selectedTab = 'Joined';
 
   bool _isLoading = true;
@@ -118,6 +119,34 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
 
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _applyReferralCode() async {
+    final code = _inviteCodeController.text.trim();
+    if (code.length != 8) return;
+
+    setState(() => _isApplyingCode = true);
+    FocusScope.of(context).unfocus();
+
+    final result = await ApiService.applyReferralCode(code);
+    
+    if (mounted) {
+      setState(() => _isApplyingCode = false);
+      
+      final bool success = result?['success'] == true;
+      final String message = result?['message'] ?? (success ? 'Referral code applied successfully!' : 'Failed to apply code.');
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: success ? Colors.green : Colors.red,
+        ),
+      );
+
+      if (success) {
+        _inviteCodeController.clear();
+      }
     }
   }
 
@@ -550,13 +579,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                       ),
                       const SizedBox(width: 12),
                       GestureDetector(
-                        onTap: _isInviteCodeValid
-                            ? () {
-                                // Handle Apply
-                                FocusScope.of(
-                                  context,
-                                ).unfocus(); // dismiss keyboard
-                              }
+                        onTap: (_isInviteCodeValid && !_isApplyingCode)
+                            ? _applyReferralCode
                             : null,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
@@ -569,13 +593,19 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                 : AppColors.pinkDeep.withOpacity(0.4),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text(
-                            'Apply',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: _isApplyingCode 
+                              ? const SizedBox(
+                                  width: 20, 
+                                  height: 20, 
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                                )
+                              : Text(
+                                  'Apply',
+                                  style: AppText.button.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
                         ),
                       ),
                     ],

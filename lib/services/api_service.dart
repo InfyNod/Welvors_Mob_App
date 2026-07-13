@@ -145,6 +145,29 @@ class ApiService {
     }
   }
 
+  /// Applies a referral code.
+  static Future<Map<String, dynamic>?> applyReferralCode(String code) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/apply-referral'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'referralCode': code}),
+      );
+
+      debugPrint('Apply Referral Status: ${response.statusCode}');
+      return jsonDecode(response.body);
+    } catch (e) {
+      debugPrint('Error applying referral code: $e');
+      return {'success': false, 'message': 'Network error occurred'};
+    }
+  }
+
   /// Fetches lifestyle questions from the server.
   static Future<List<Map<String, dynamic>>> fetchLifestyle() async {
     try {
@@ -327,16 +350,44 @@ class ApiService {
     }
   }
 
-  /// Verifies OTP and returns the token or error string.
-  static Future<Map<String, dynamic>> verifyOtp(String phoneNumber, String otp) async {
+  /// Validates a referral code.
+  static Future<Map<String, dynamic>?> validateReferralCode(String code) async {
     try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/referral-validate'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'referralCode': code}),
+      );
+      
+      debugPrint('Referral Validate: ${response.statusCode} - ${response.body}');
+      try {
+        return jsonDecode(response.body);
+      } catch (_) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          return {'success': true};
+        }
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error validating referral code: $e');
+      return null;
+    }
+  }
+
+  /// Verifies OTP and returns the token or error string.
+  static Future<Map<String, dynamic>> verifyOtp(String phoneNumber, String otp, [String? referralCode]) async {
+    try {
+      final body = {
+        'phoneNumber': phoneNumber,
+        'otp': otp,
+      };
+      if (referralCode != null && referralCode.isNotEmpty) {
+        body['referralCode'] = referralCode;
+      }
       final response = await http.post(
         Uri.parse('$baseUrl/user/verify-otp'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'phoneNumber': phoneNumber,
-          'otp': otp,
-        }),
+        body: jsonEncode(body),
       );
       
       debugPrint('OTP Verify: ${response.statusCode} - ${response.body}');

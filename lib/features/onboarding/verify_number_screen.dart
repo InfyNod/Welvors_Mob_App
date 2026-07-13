@@ -24,11 +24,14 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
 
   final TextEditingController _otpController = TextEditingController();
   final FocusNode _otpFocusNode = FocusNode();
+  final TextEditingController _inviteCodeController = TextEditingController();
 
   bool _isPhoneValid = false;
   bool _isOtpSent = false;
   bool _isInviteCodeEntered = false;
   bool _isLoading = false;
+  bool _isApplyingCode = false;
+  bool _isInviteCodeVerified = false;
 
   int _timerSeconds = 30;
   Timer? _resendTimer;
@@ -102,7 +105,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
       }
     } else {
       setState(() => _isLoading = true);
-      final result = await ApiService.verifyOtp(_phoneController.text, _otpController.text);
+      final result = await ApiService.verifyOtp(_phoneController.text, _otpController.text, _inviteCodeController.text.trim());
       setState(() => _isLoading = false);
 
       final token = result['token'];
@@ -124,6 +127,35 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
             SnackBar(content: Text(errorMsg ?? 'Invalid OTP. Please try again.')),
           );
         }
+      }
+    }
+  }
+
+  Future<void> _applyReferralCode() async {
+    final code = _inviteCodeController.text.trim();
+    if (code.length != 8) return;
+
+    setState(() => _isApplyingCode = true);
+    FocusScope.of(context).unfocus();
+
+    final result = await ApiService.validateReferralCode(code);
+    
+    if (mounted) {
+      setState(() => _isApplyingCode = false);
+      
+      final bool success = result?['success'] == true;
+      final String message = result?['message'] ?? (success ? 'Referral code applied successfully!' : 'Invalid referral code.');
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: success ? Colors.green : Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      if (success) {
+        setState(() => _isInviteCodeVerified = true);
       }
     }
   }
@@ -396,131 +428,6 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 32),
-                        // Invite Code Divider
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: AppColors.line.withOpacity(0.6),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Text(
-                                'Have an invite code?',
-                                style: AppText.sub.copyWith(
-                                  fontSize: 11,
-                                  color: AppColors.ink.withOpacity(0.4),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: AppColors.line.withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        // Invite Code Input
-                        Row(
-                          children: [
-                            // Invite Code Input Box
-                            Expanded(
-                              child: Container(
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: _isInviteCodeEntered
-                                        ? AppColors.pinkDeep
-                                        : AppColors.line,
-                                    width: 1.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: TextField(
-                                  textCapitalization:
-                                      TextCapitalization.characters,
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(8),
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(r'[a-zA-Z0-9]'),
-                                    ),
-                                  ],
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _isInviteCodeEntered =
-                                          val.trim().length == 8;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: 'Enter friend\'s code (optional)',
-                                    hintStyle: AppText.body.copyWith(
-                                      color: AppColors.ink.withOpacity(0.4),
-                                      fontSize: 15,
-                                    ),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 16,
-                                    ),
-                                  ),
-                                  style: AppText.body.copyWith(fontSize: 16),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Apply Button Box
-                            Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: _isInviteCodeEntered
-                                    ? AppColors.pinkDeep
-                                    : AppColors.pinkSoft.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: TextButton(
-                                onPressed: _isInviteCodeEntered ? () {} : null,
-                                style: TextButton.styleFrom(
-                                  foregroundColor: _isInviteCodeEntered
-                                      ? Colors.white
-                                      : AppColors.pinkDeep,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                ),
-                                child: Text(
-                                  'Apply',
-                                  style: AppText.body.copyWith(
-                                    color: _isInviteCodeEntered
-                                        ? Colors.white
-                                        : AppColors.pinkDeep,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Your friend earns a reward when you activate a plan.',
-                          style: AppText.sub.copyWith(
-                            fontSize: 11,
-                            color: AppColors.ink.withOpacity(0.5),
-                          ),
-                        ),
                       ],
 
                       if (_isOtpSent) ...[
@@ -686,37 +593,140 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                               ),
                             ),
                           ),
+
                         const SizedBox(height: 32),
-                        // Security Box (Visible in OTP state too)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF4EFE7),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.lock_outline,
-                                color: AppColors.green,
-                                size: 16,
+                        // Invite Code Divider
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: AppColors.line.withOpacity(0.6),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'Only verified members can join Welvors. Your number stays private — never shown on your profile or shared.',
-                                  style: AppText.sub.copyWith(
-                                    fontSize: 13,
-                                    color: AppColors.ink.withOpacity(0.8),
-                                    height: 1.5,
-                                  ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Text(
+                                'Have an invite code?',
+                                style: AppText.sub.copyWith(
+                                  fontSize: 11,
+                                  color: AppColors.ink.withOpacity(0.4),
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ],
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: AppColors.line.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        // Invite Code Input
+                        Row(
+                          children: [
+                            // Invite Code Input Box
+                            Expanded(
+                              child: Container(
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: _isInviteCodeEntered
+                                        ? AppColors.pinkDeep
+                                        : AppColors.line,
+                                    width: 1.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: TextField(
+                                  controller: _inviteCodeController,
+                                  readOnly: _isInviteCodeVerified,
+                                  textCapitalization:
+                                      TextCapitalization.characters,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(8),
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z0-9]'),
+                                    ),
+                                  ],
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _isInviteCodeEntered =
+                                          val.trim().length == 8;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter friend\'s code (optional)',
+                                    hintStyle: AppText.body.copyWith(
+                                      color: AppColors.ink.withOpacity(0.4),
+                                      fontSize: 15,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 16,
+                                    ),
+                                  ),
+                                  style: AppText.body.copyWith(fontSize: 16),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Apply Button Box
+                            Container(
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: _isInviteCodeEntered
+                                    ? AppColors.pinkDeep
+                                    : AppColors.pinkSoft.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: TextButton(
+                                onPressed: (_isInviteCodeEntered && !_isInviteCodeVerified && !_isApplyingCode) 
+                                    ? _applyReferralCode 
+                                    : null,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: _isInviteCodeVerified
+                                      ? Colors.white
+                                      : (_isInviteCodeEntered ? Colors.white : AppColors.pinkDeep),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                  ),
+                                ),
+                                child: _isApplyingCode
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                      )
+                                    : Text(
+                                        _isInviteCodeVerified ? 'Applied' : 'Apply',
+                                        style: AppText.body.copyWith(
+                                          color: _isInviteCodeVerified
+                                              ? Colors.white
+                                              : (_isInviteCodeEntered ? Colors.white : AppColors.pinkDeep),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Your friend earns a reward when you activate a plan.',
+                          style: AppText.sub.copyWith(
+                            fontSize: 11,
+                            color: AppColors.ink.withOpacity(0.5),
                           ),
                         ),
                       ],
