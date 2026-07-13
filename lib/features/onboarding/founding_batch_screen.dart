@@ -6,8 +6,66 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import 'payment_success_screen.dart';
 
-class FoundingBatchScreen extends StatelessWidget {
+import '../../services/api_service.dart';
+
+class FoundingBatchScreen extends StatefulWidget {
   const FoundingBatchScreen({super.key});
+
+  @override
+  State<FoundingBatchScreen> createState() => _FoundingBatchScreenState();
+}
+
+class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
+  bool _isLoading = true;
+  String _originalPrice = '999';
+  String _finalPrice = '299';
+  String _totalBenefitsValue = '4,200';
+  int _welcomeCoins = 100;
+  String _description = 'Everything that unlocks the day we launch — free with your spot.';
+  List<Map<String, dynamic>> _perks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final data = await ApiService.fetchWaitlistOffer();
+    if (data != null && mounted) {
+      setState(() {
+        _originalPrice = data['originalPrice']?.toString() ?? '999';
+        _finalPrice = data['finalPrice']?.toString() ?? '299';
+        _totalBenefitsValue = data['totalBenefitsValue']?.toString() ?? '4,200';
+        _welcomeCoins = data['welcomeCoins'] ?? 100;
+        if (data['description'] != null && data['description'].isNotEmpty) {
+          _description = data['description'];
+        }
+        
+        final List apiPerks = data['perks'] ?? [];
+        _perks = apiPerks.map<Map<String, dynamic>>((p) {
+          return {
+            'title': p['title'] ?? '',
+            'value': p['value']?.toString() ?? '',
+            'subtitle': p['subtitle'] ?? '',
+          };
+        }).toList();
+
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  String _getEmojiForPerk(String title) {
+    final t = title.toLowerCase();
+    if (t.contains('boost')) return '🚀';
+    if (t.contains('compliment')) return '💝';
+    if (t.contains('date plan')) return '🗓️';
+    if (t.contains('rewind')) return '↩️';
+    return '✨';
+  }
 
   Widget _buildCheckItem(String title, String subtitle) {
     return Padding(
@@ -94,6 +152,13 @@ class FoundingBatchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.canvas,
+        body: Center(child: CircularProgressIndicator(color: AppColors.pinkDeep)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
@@ -203,14 +268,14 @@ class FoundingBatchScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                '₹299',
+                                '₹$_finalPrice',
                                 style: AppText.display.copyWith(fontSize: 40),
                               ),
                               const SizedBox(width: 8),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: Text(
-                                  '₹999',
+                                  '₹$_originalPrice',
                                   style: AppText.body.copyWith(
                                     color: AppColors.muted,
                                     fontSize: 16,
@@ -304,7 +369,7 @@ class FoundingBatchScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Everything that unlocks the day we launch — free with\nyour founding spot, for your first month.',
+                                  _description,
                                   style: AppText.body.copyWith(
                                     color: AppColors.muted,
                                     fontSize: 12,
@@ -312,50 +377,27 @@ class FoundingBatchScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 24),
-                                _buildPerkItem(
-                                  '🚀',
-                                  'Weekly Boosts',
-                                  '1/week · 4 a month × ₹350',
-                                  '₹1,400',
-                                ),
-                                Divider(
-                                  height: 32,
-                                  color: AppColors.pinkSoft.withOpacity(0.9),
-                                ),
-                                _buildPerkItem(
-                                  '💝',
-                                  'Weekly Compliments',
-                                  '1/week · 4 a month × ₹150',
-                                  '₹600',
-                                ),
-                                Divider(
-                                  height: 32,
-                                  color: AppColors.pinkSoft.withOpacity(0.9),
-                                ),
-                                _buildPerkItem(
-                                  '🗓️',
-                                  'Weekly Date Plans',
-                                  '1/week · 4 a month × ₹100',
-                                  '₹400',
-                                ),
-                                Divider(
-                                  height: 32,
-                                  color: AppColors.pinkSoft.withOpacity(0.9),
-                                ),
-                                _buildPerkItem(
-                                  '🔄',
-                                  'Daily Rewinds',
-                                  '3/day · 90 a month × ₹20',
-                                  '₹1,800',
-                                ),
-                                Divider(
-                                  height: 32,
-                                  color: AppColors.pinkSoft.withOpacity(0.9),
-                                ),
+                                ..._perks.asMap().entries.map((entry) {
+                                  final perk = entry.value;
+                                  return Column(
+                                    children: [
+                                      _buildPerkItem(
+                                        _getEmojiForPerk(perk['title']),
+                                        perk['title'],
+                                        perk['subtitle'],
+                                        '₹${perk['value']}',
+                                      ),
+                                      Divider(
+                                        height: 32,
+                                        color: AppColors.pinkSoft.withOpacity(0.9),
+                                      ),
+                                    ],
+                                  );
+                                }),
                                 _buildPerkItem(
                                   '🪙',
                                   'Welcome Coins',
-                                  '100 coins · one-time joining bonus',
+                                  '$_welcomeCoins coins · one-time joining bonus',
                                   'FREE',
                                   isFree: true,
                                 ),
@@ -401,7 +443,7 @@ class FoundingBatchScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '+ 100 Welcome Coins one-time',
+                                        '+ $_welcomeCoins Welcome Coins one-time',
                                         style: AppText.body.copyWith(
                                           color: Colors.white.withOpacity(0.85),
                                           fontSize: 13,
@@ -411,7 +453,7 @@ class FoundingBatchScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '₹4,200+',
+                                  '₹$_totalBenefitsValue+',
                                   style: AppText.display.copyWith(
                                     color: Colors.white,
                                     fontSize: 26,
@@ -432,15 +474,15 @@ class FoundingBatchScreen extends StatelessWidget {
                                 ),
                                 children: [
                                   TextSpan(
-                                    text: '₹999',
+                                    text: '₹$_originalPrice',
                                     style: const TextStyle(
                                       decoration: TextDecoration.lineThrough,
                                       color: AppColors.muted,
                                     ),
                                   ),
-                                  const TextSpan(
-                                    text: ' ₹299 ',
-                                    style: TextStyle(
+                                  TextSpan(
+                                    text: ' ₹$_finalPrice ',
+                                    style: const TextStyle(
                                       color: AppColors.pinkDeep,
                                       fontWeight: FontWeight.bold,
                                     ),

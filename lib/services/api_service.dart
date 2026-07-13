@@ -61,6 +61,90 @@ class ApiService {
     }
   }
 
+  /// Fetches referral dashboard data.
+  static Future<Map<String, dynamic>?> fetchReferralDashboard() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/user/referral/dashboard'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('Referral Dashboard Status: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true) {
+          return decoded['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching referral dashboard: $e');
+      return null;
+    }
+  }
+
+  /// Fetches Refer & Earn informational details (e.g., rewards and rules).
+  static Future<Map<String, dynamic>?> fetchReferEarnInfo() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/referEarn/get'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('Refer Earn Info Status: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return decoded['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching refer earn info: $e');
+      return null;
+    }
+  }
+
+  /// Fetches waitlist offer details for the Founding Batch screen.
+  static Future<Map<String, dynamic>?> fetchWaitlistOffer() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/user/waitlist/get'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('Waitlist Offer Status: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return decoded['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching waitlist offer: $e');
+      return null;
+    }
+  }
+
   /// Fetches lifestyle questions from the server.
   static Future<List<Map<String, dynamic>>> fetchLifestyle() async {
     try {

@@ -7,6 +7,7 @@ import '../../theme/app_text.dart';
 import 'refer_and_earn_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'user_data.dart';
+import '../../services/api_service.dart';
 
 class WaitlistConfirmedScreen extends StatefulWidget {
   const WaitlistConfirmedScreen({super.key});
@@ -17,21 +18,62 @@ class WaitlistConfirmedScreen extends StatefulWidget {
 }
 
 class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
-  late Timer _timer;
-  late Duration _timeLeft;
+  Timer? _timer;
+  Duration _timeLeft = const Duration(days: 0);
   bool _isCopied = false;
+  bool _isLoading = true;
+  String _originalPrice = '1000';
+  String _totalBenefitsValue = '2400';
+  DateTime? _launchDate;
 
   @override
   void initState() {
     super.initState();
-    _timeLeft = const Duration(days: 89, hours: 23, minutes: 51, seconds: 25);
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final data = await ApiService.fetchWaitlistOffer();
+    if (data != null && mounted) {
+      setState(() {
+        _originalPrice = data['originalPrice']?.toString() ?? '1000';
+        _totalBenefitsValue = data['totalBenefitsValue']?.toString() ?? '2400';
+        if (data['launchDate'] != null) {
+          _launchDate = DateTime.tryParse(data['launchDate']);
+        }
+        _updateTimeLeft();
+        _startTimer();
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _updateTimeLeft();
+        _startTimer();
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _updateTimeLeft() {
+    if (_launchDate != null) {
+      final now = DateTime.now();
+      if (_launchDate!.isAfter(now)) {
+        _timeLeft = _launchDate!.difference(now);
+      } else {
+        _timeLeft = Duration.zero;
+      }
+    } else {
+      _timeLeft = const Duration(days: 89, hours: 23, minutes: 51, seconds: 25);
+    }
+  }
+
+  void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
-          if (_timeLeft.inSeconds > 0) {
-            _timeLeft -= const Duration(seconds: 1);
-          } else {
-            _timer.cancel();
+          _updateTimeLeft();
+          if (_timeLeft.inSeconds <= 0) {
+            _timer?.cancel();
           }
         });
       }
@@ -40,12 +82,19 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.canvas,
+        body: Center(child: CircularProgressIndicator(color: AppColors.pinkDeep)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
@@ -441,7 +490,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                                 ),
                               ),
                               Text(
-                                '₹999',
+                                '₹$_originalPrice',
                                 style: AppText.body.copyWith(
                                   fontSize: 13,
                                   color: AppColors.muted,
@@ -498,7 +547,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                               ),
                               const Spacer(),
                               Text(
-                                '₹4,200+',
+                                '₹$_totalBenefitsValue+',
                                 style: AppText.body.copyWith(
                                   fontSize: 15,
                                   color: AppColors.pinkDeep,

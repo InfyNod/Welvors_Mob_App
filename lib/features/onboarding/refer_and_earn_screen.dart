@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
+import '../../services/api_service.dart';
 
 class ReferAndEarnScreen extends StatefulWidget {
   const ReferAndEarnScreen({super.key});
@@ -22,49 +23,19 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
   bool _isInviteCodeValid = false;
   String _selectedTab = 'Joined';
 
-  final List<Map<String, dynamic>> _allReferrals = [
-    {
-      'name': 'Rahul M.',
-      'status': 'Joined · Bought VIP',
-      'amount': '+₹600',
-      'amountSub': 'credited',
-      'initials': 'RM',
-      'isRewarded': true,
-    },
-    {
-      'name': 'Sneha K.',
-      'status': 'Joined · Bought Premium+',
-      'amount': '+₹600',
-      'amountSub': 'credited',
-      'initials': 'SK',
-      'isRewarded': true,
-    },
-    {
-      'name': 'Arjun P.',
-      'status': 'Joined · Bought Elite',
-      'amount': '+₹600',
-      'amountSub': 'credited',
-      'initials': 'AP',
-      'isRewarded': true,
-    },
-    {
-      'name': 'Meera S.',
-      'status': 'Joined · ₹500 pending on plan',
-      'amount': '+₹100',
-      'amountSub': '₹500 pending',
-      'initials': 'MS',
-      'isRewarded': true,
-    },
-    {
-      'name': 'Karan T.',
-      'status': 'Just joined with your code',
-      'amount': '₹100 soon',
-      'amountSub': '',
-      'amountColor': Colors.orange.shade700,
-      'initials': 'KT',
-      'isPending': true,
-    },
-  ];
+  bool _isLoading = true;
+  String _referralCode = '';
+  String _shareLink = '';
+  int _totalEarned = 0;
+  int _joinedCount = 0;
+  int _rewardedCount = 0;
+  int _pendingCount = 0;
+  List<Map<String, dynamic>> _allReferrals = [];
+
+  String _signupReward = '';
+  String _packageReward = '';
+  String _rewardsTitle = '';
+  List<String> _rewardsDescriptions = [];
 
   List<Map<String, dynamic>> get _filteredReferrals {
     if (_selectedTab == 'Rewarded') {
@@ -75,9 +46,85 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
     return _allReferrals;
   }
 
+  Future<void> _fetchData() async {
+    final results = await Future.wait([
+      ApiService.fetchReferralDashboard(),
+      ApiService.fetchReferEarnInfo(),
+    ]);
+
+    final data = results[0];
+    final infoData = results[1];
+
+    if (mounted) {
+      setState(() {
+        if (data != null) {
+          final stats = data['stats'] ?? {};
+          final List history = data['history'] ?? [];
+
+          _referralCode = data['referralCode'] ?? '';
+          _shareLink = data['shareLink'] ?? '';
+          if (_shareLink.isNotEmpty && !_shareLink.startsWith('http')) {
+            _shareLink = 'https://$_shareLink';
+          }
+          
+          _totalEarned = stats['totalEarned'] ?? 0;
+          _joinedCount = stats['joined'] ?? 0;
+          _rewardedCount = stats['rewarded'] ?? 0;
+          _pendingCount = stats['pending'] ?? 0;
+
+          _allReferrals = history.map<Map<String, dynamic>>((item) {
+            final String name = item['name'] ?? 'User';
+            final String statusStr = item['status'] ?? '';
+            final int totalReward = item['totalReward'] ?? 0;
+            final bool isRewarded = totalReward > 0 || statusStr == 'REWARDED';
+            
+            String initials = '';
+            if (name.isNotEmpty) {
+              final parts = name.split(' ');
+              if (parts.length > 1 && parts[1].isNotEmpty) {
+                initials = '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+              } else {
+                initials = name[0].toUpperCase();
+              }
+            }
+
+            return {
+              'name': name,
+              'status': isRewarded ? 'Joined · Rewarded' : 'Joined',
+              'amount': isRewarded ? '+₹$totalReward' : '',
+              'amountSub': isRewarded ? 'credited' : '',
+              'amountColor': const Color(0xFF2E7D32),
+              'initials': initials,
+              'profileImage': item['profileImage'],
+              'isRewarded': isRewarded,
+              'isPending': !isRewarded,
+            };
+          }).toList();
+        }
+
+        if (infoData != null) {
+          _signupReward = infoData['signupReward']?.toString() ?? '100';
+          _packageReward = infoData['packageReward']?.toString() ?? '500';
+          _rewardsTitle = infoData['title']?.toString().toUpperCase() ?? 'HOW REWARDS WORK';
+          
+          if (infoData['descriptions'] != null) {
+            final List descriptions = infoData['descriptions'];
+            _rewardsDescriptions = descriptions
+                .map((d) => d['description']?.toString() ?? '')
+                .where((s) => s.isNotEmpty)
+                .toList();
+          }
+        }
+
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _fetchData();
     _inviteCodeController.addListener(() {
       final isValid = _inviteCodeController.text.trim().length == 8;
       if (_isInviteCodeValid != isValid) {
@@ -157,8 +204,10 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
           style: AppText.h2.copyWith(fontSize: 18, letterSpacing: 0.5),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.pinkDeep))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -245,14 +294,14 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
               icon: Icons.login,
               title: 'Friend joins Welvors',
               description: 'They sign up & log in using your code.',
-              rewardText: '+₹100',
+              rewardText: '+₹$_signupReward',
             ),
             _buildTimelineSpacing(),
             _buildTimelineItem(
               icon: Icons.diamond_outlined,
               title: 'They buy any plan',
               description: 'Premium+, VIP or Elite — any package counts.',
-              rewardText: '+₹500',
+              rewardText: '+₹$_packageReward',
               isLast: true,
             ),
 
@@ -302,9 +351,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                   ),
                   const SizedBox(height: 8),
                   GestureDetector(
-                    onTap: () => _copyToClipboard('TANISHKA250'),
+                    onTap: () => _copyToClipboard(_referralCode),
                     child: Text(
-                      'TANISHKA250',
+                      _referralCode.isEmpty ? '...' : _referralCode,
                       style: AppText.display.copyWith(
                         color: AppColors.pinkDeep,
                         fontSize: 28,
@@ -314,7 +363,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                   ),
                   const SizedBox(height: 16),
                   GestureDetector(
-                    onTap: () => _copyToClipboard('TANISHKA250'),
+                    onTap: () => _copyToClipboard(_referralCode),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -381,7 +430,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                     onTap: () {
                       final box = context.findRenderObject() as RenderBox?;
                       Share.share(
-                        'Join Velvors with my invite code TANISHKA250 and get rewards! 🚀\nhttps://velvors.com',
+                        'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
                         sharePositionOrigin: box != null
                             ? box.localToGlobal(Offset.zero) & box.size
                             : null,
@@ -399,7 +448,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                 onTap: () {
                   final box = context.findRenderObject() as RenderBox?;
                   Share.share(
-                    'Join Velvors with my invite code TANISHKA250 and get rewards! 🚀\nhttps://velvors.com',
+                    'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
                     sharePositionOrigin: box != null
                         ? box.localToGlobal(Offset.zero) & box.size
                         : null,
@@ -567,10 +616,10 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Total earned',
                         style: TextStyle(
                           color: Colors.white70,
@@ -578,17 +627,17 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        '₹1,900',
-                        style: TextStyle(
+                        '₹$_totalEarned',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 6),
-                      Text(
+                      const SizedBox(height: 6),
+                      const Text(
                         'Withdraw to UPI anytime',
                         style: TextStyle(
                           color: Colors.white,
@@ -619,11 +668,11 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildReferralTab('Joined', '5', _selectedTab == 'Joined'),
+                  _buildReferralTab('Joined', '$_joinedCount', _selectedTab == 'Joined'),
                   const SizedBox(width: 8),
-                  _buildReferralTab('Rewarded', '4', _selectedTab == 'Rewarded'),
+                  _buildReferralTab('Rewarded', '$_rewardedCount', _selectedTab == 'Rewarded'),
                   const SizedBox(width: 8),
-                  _buildReferralTab('Pending', '1', _selectedTab == 'Pending'),
+                  _buildReferralTab('Pending', '$_pendingCount', _selectedTab == 'Pending'),
                 ],
               ),
             ),
@@ -707,7 +756,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'HOW REWARDS WORK',
+                        _rewardsTitle,
                         style: TextStyle(
                           color: AppColors.pinkDeep,
                           fontWeight: FontWeight.bold,
@@ -718,21 +767,17 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                     ],
                   ),
                   const SizedBox(height: 16),
-                  _buildRewardRule(
-                    '₹100 is credited once your friend joins (signs up & logs in) with your code.',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildRewardRule(
-                    '₹500 is credited when that friend activates any paid package (Premium+, VIP or Elite).',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildRewardRule(
-                    'Rewards land in your Velvors wallet and can be withdrawn to UPI / bank.',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildRewardRule(
-                    'Self-referrals or fake accounts are not eligible and may lead to a ban.',
-                  ),
+                  ..._rewardsDescriptions.asMap().entries.map((entry) {
+                    final int index = entry.key;
+                    final String desc = entry.value;
+                    return Column(
+                      children: [
+                        _buildRewardRule(desc),
+                        if (index < _rewardsDescriptions.length - 1)
+                          const SizedBox(height: 12),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),
@@ -1023,6 +1068,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
     required String amountSub,
     Color amountColor = const Color(0xFF2E7D32),
     String initials = '',
+    String? profileImage,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -1031,7 +1077,10 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
           CircleAvatar(
             radius: 20,
             backgroundColor: AppColors.pinkSoft.withOpacity(0.2),
-            child: initials.isNotEmpty
+            backgroundImage: profileImage != null && profileImage.isNotEmpty
+                ? NetworkImage(profileImage)
+                : null,
+            child: (profileImage == null || profileImage.isEmpty) && initials.isNotEmpty
                 ? Text(
                     initials,
                     style: const TextStyle(
@@ -1040,7 +1089,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                       fontSize: 13,
                     ),
                   )
-                : const Icon(Icons.person, color: AppColors.pinkDeep),
+                : (profileImage == null || profileImage.isEmpty)
+                    ? const Icon(Icons.person, color: AppColors.pinkDeep)
+                    : null,
           ),
           const SizedBox(width: 14),
           Expanded(
