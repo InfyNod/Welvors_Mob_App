@@ -37,7 +37,7 @@ class _CareerScreenState extends State<CareerScreen> {
   List<String> _professionOptions = [];
   Map<String, int> _professionsMap = {};
   bool _isProfessionsLoading = true;
-  
+
   List<String> _experienceOptions = [];
   Map<String, int> _experiencesMap = {};
   bool _isExperiencesLoading = true;
@@ -70,15 +70,15 @@ class _CareerScreenState extends State<CareerScreen> {
     final employmentTypesFuture = ApiService.fetchEmploymentTypes();
     final salaryRangesFuture = ApiService.fetchSalaryRanges();
     final ambitionsFuture = ApiService.fetchAmbitions();
-    
+
     final results = await Future.wait([
-      professionsFuture, 
-      experiencesFuture, 
-      employmentTypesFuture, 
+      professionsFuture,
+      experiencesFuture,
+      employmentTypesFuture,
       salaryRangesFuture,
       ambitionsFuture,
     ]);
-    
+
     final professions = results[0] as Map<String, int>;
     final experiences = results[1] as Map<String, int>;
     final employmentTypes = results[2] as Map<String, int>;
@@ -537,16 +537,24 @@ class _CareerScreenState extends State<CareerScreen> {
                 ),
 
                 _buildChipSelection(
-                  label: _isEmploymentTypesLoading ? 'Loading employment types...' : 'Employment type',
-                  options: _employmentTypeOptions.isEmpty ? ['Loading...'] : _employmentTypeOptions,
+                  label: _isEmploymentTypesLoading
+                      ? 'Loading employment types...'
+                      : 'Employment type',
+                  options: _employmentTypeOptions.isEmpty
+                      ? ['Loading...']
+                      : _employmentTypeOptions,
                   selectedValue: _employmentType,
                   onChanged: (val) => setState(() => _employmentType = val),
                 ),
 
                 _buildDropdownField(
-                  hint: _isSalaryRangesLoading ? 'Loading salary ranges...' : 'Salary range · optional',
+                  hint: _isSalaryRangesLoading
+                      ? 'Loading salary ranges...'
+                      : 'Salary range · optional',
                   value: _salaryRange,
-                  options: _salaryRangeOptions.isEmpty ? ['Loading...'] : _salaryRangeOptions,
+                  options: _salaryRangeOptions.isEmpty
+                      ? ['Loading...']
+                      : _salaryRangeOptions,
                   onChanged: (val) => setState(() => _salaryRange = val),
                   focusNode: _salaryFocus,
                 ),
@@ -554,8 +562,12 @@ class _CareerScreenState extends State<CareerScreen> {
                 const SizedBox(height: 24),
                 _buildSectionHeader('🚀', 'Ambition'),
                 _buildChipSelection(
-                  label: _isAmbitionsLoading ? 'Loading ambitions...' : 'Ambition level',
-                  options: _ambitionOptions.isEmpty ? ['Loading...'] : _ambitionOptions,
+                  label: _isAmbitionsLoading
+                      ? 'Loading ambitions...'
+                      : 'Ambition level',
+                  options: _ambitionOptions.isEmpty
+                      ? ['Loading...']
+                      : _ambitionOptions,
                   selectedValue: _ambitionLevel,
                   onChanged: (val) => setState(() => _ambitionLevel = val),
                 ),
@@ -569,7 +581,7 @@ class _CareerScreenState extends State<CareerScreen> {
                     filled: true,
                     fillColor: Colors.white,
                     hintText:
-                        'Big dreams · e.g. Travel the world, build a\nhome, start something of my own...',
+                        'Big dreams · e.g. Travel the world, build a home, start something of my own...',
                     hintStyle: AppText.body.copyWith(
                       color: AppColors.muted,
                       fontSize: 15,
@@ -612,30 +624,39 @@ class _CareerScreenState extends State<CareerScreen> {
                 onTap: (_isFormValid && !_isSubmitting)
                     ? () async {
                         setState(() => _isSubmitting = true);
-                        
+
                         // Map Education Level to Prisma Enum (uppercase, spaces and hyphens to underscores)
                         String formattedEdu = (_educationLevel ?? 'Other')
                             .toUpperCase()
                             .replaceAll(' ', '_')
                             .replaceAll('-', '_');
-                        
+
                         int gradYear = 2024;
                         if (_gradYearController.text.isNotEmpty) {
-                          gradYear = int.tryParse(_gradYearController.text) ?? 2024;
+                          gradYear =
+                              int.tryParse(_gradYearController.text) ?? 2024;
                         }
 
                         // Call Education API
                         final eduError = await ApiService.submitEducation({
                           "highestEdu": formattedEdu,
-                          "collegeName": _collegeController.text.isNotEmpty ? _collegeController.text : "Not specified",
-                          "degree": _degreeController.text.isNotEmpty ? _degreeController.text : "Not specified",
-                          "graduationYear": gradYear
+                          "collegeName": _collegeController.text.isNotEmpty
+                              ? _collegeController.text
+                              : "Not specified",
+                          "degree": _degreeController.text.isNotEmpty
+                              ? _degreeController.text
+                              : "Not specified",
+                          "graduationYear": gradYear,
                         });
 
                         if (eduError != null) {
                           setState(() => _isSubmitting = false);
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Education Error: $eduError')));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Education Error: $eduError'),
+                              ),
+                            );
                           }
                           return;
                         }
@@ -643,26 +664,33 @@ class _CareerScreenState extends State<CareerScreen> {
                         // Map Work IDs
                         final profId = _professionsMap[_profession] ?? 1;
                         final expId = _experiencesMap[_experience] ?? 1;
-                        final empTypeId = _employmentTypesMap[_employmentType] ?? 1;
+                        final empTypeId =
+                            _employmentTypesMap[_employmentType] ?? 1;
                         final salId = _salaryRangesMap[_salaryRange] ?? 1;
                         final ambId = _ambitionsMap[_ambitionLevel] ?? 1;
 
                         // Call Work API
                         final workError = await ApiService.submitWork({
                           "professionId": profId,
-                          "companyName": _companyController.text.isNotEmpty ? _companyController.text : "Not specified",
+                          "companyName": _companyController.text.isNotEmpty
+                              ? _companyController.text
+                              : "Not specified",
                           "employmentTypeId": empTypeId,
                           "experienceId": expId,
                           "ambitionId": ambId,
                           "salaryRangeId": salId,
-                          "bigDreams": _dreamsController.text.isNotEmpty ? _dreamsController.text : "Not specified"
+                          "bigDreams": _dreamsController.text.isNotEmpty
+                              ? _dreamsController.text
+                              : "Not specified",
                         });
 
                         setState(() => _isSubmitting = false);
 
                         if (workError != null) {
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Work Error: $workError')));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Work Error: $workError')),
+                            );
                           }
                           return;
                         }
@@ -672,7 +700,7 @@ class _CareerScreenState extends State<CareerScreen> {
                         userData.college = _collegeController.text;
                         userData.degree = _degreeController.text;
                         userData.gradYear = _gradYearController.text;
-                        
+
                         userData.company = _companyController.text;
                         userData.profession = _profession ?? 'Other';
                         userData.career = _profession ?? 'Other';
@@ -681,7 +709,7 @@ class _CareerScreenState extends State<CareerScreen> {
                         userData.salaryRange = _salaryRange ?? 'Other';
                         userData.ambitionLevel = _ambitionLevel ?? 'Other';
                         userData.dreams = _dreamsController.text;
-                        
+
                         widget.onNext();
                       }
                     : null,

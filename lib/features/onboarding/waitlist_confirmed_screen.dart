@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
+import 'refer_and_earn_screen.dart';
+import '../../theme/app_text.dart';
 import 'package:lottie/lottie.dart';
 import 'user_data.dart';
 
@@ -619,32 +621,42 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                     const SizedBox(height: 12),
 
                     // View referral history Button
-                    Container(
-                      width: double.infinity,
-                      height: 48,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.pinkSoft,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.pinkDeep),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.bar_chart,
-                            size: 16,
-                            color: Color(0xFFD94A4A),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ReferAndEarnScreen(),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'View referral history',
-                            style: AppText.button.copyWith(
-                              color: AppColors.pinkDeep,
-                              fontSize: 14,
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 48,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.pinkSoft,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.pinkDeep),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.bar_chart,
+                              size: 16,
+                              color: Color(0xFFD94A4A),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            Text(
+                              'View referral history',
+                              style: AppText.button.copyWith(
+                                color: AppColors.pinkDeep,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
