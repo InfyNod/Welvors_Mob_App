@@ -71,16 +71,40 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
       appBar: AppBar(
         backgroundColor: AppColors.canvas,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black,
-            size: 20,
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black87,
+                size: 16,
+              ),
+            ),
           ),
-          onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Refer & Earn', style: AppText.h2.copyWith(fontSize: 18)),
-        centerTitle: false,
+        title: Text(
+          'Refer & Earn', 
+          style: AppText.h2.copyWith(
+            fontSize: 18,
+            letterSpacing: 0.5,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -523,22 +547,11 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                       ),
                     ],
                   ),
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFFFD54F), Color(0xFFFFB300)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.monetization_on,
-                      color: Colors.white,
-                      size: 32,
-                    ),
+                  Lottie.asset(
+                    'assets/moneybag.json',
+                    width: 95,
+                    height: 95,
+                    repeat: true,
                   ),
                 ],
               ),
