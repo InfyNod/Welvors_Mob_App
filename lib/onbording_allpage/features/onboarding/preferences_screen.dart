@@ -333,7 +333,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               userData.interestedIn = _selectedPreference ?? 'Everyone';
               
               // Backend Prisma schema expects the Gender enum, usually uppercase like 'WOMEN', 'MEN', 'EVERYONE'
-              final interestedInValue = (_selectedPreference ?? 'Everyone').toUpperCase();
+              String interestedInValue = 'EVERYONE';
+              if (_selectedPreference == 'Man') interestedInValue = 'MEN';
+              if (_selectedPreference == 'Women') interestedInValue = 'WOMEN';
               final errorMsg = await ApiService.submitInterestedIn(interestedInValue);
               setState(() => _isLoading = false);
 

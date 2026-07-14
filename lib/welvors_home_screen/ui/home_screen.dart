@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/home_bloc.dart';
-
+import '../../onbording_allpage/theme/app_colors.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -84,34 +84,65 @@ class _ProfileDetailsView extends StatelessWidget {
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 24),
-                const Text(
-                  'LOOKING FOR',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.pinkAccent,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.pink.shade50,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    profile.lookingFor,
-                    style: const TextStyle(
-                      color: Colors.pink,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                const SizedBox(height: 16),
+                const Divider(color: Colors.black12, height: 1),
+                const SizedBox(height: 16),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'LOOKING FOR',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black45,
+                        letterSpacing: 1.2,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.pink.shade50,
+                              Colors.pink.shade100.withOpacity(0.3),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          border: Border.all(color: Colors.pink.shade100, width: 1.5),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.search_rounded, 
+                              size: 16, 
+                              color: AppColors.pinkDeep
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                profile.lookingFor,
+                                style: const TextStyle(
+                                  color: AppColors.pinkDeep,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -214,11 +245,16 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Colors.pinkAccent.withOpacity(0.15), 
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: Colors.pink.withOpacity(0.05),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -233,7 +269,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
-                  color: Colors.pinkAccent,
+                  color: AppColors.pinkDeep,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -245,7 +281,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 ),
                 child: const Icon(
                   Icons.favorite_border,
-                  color: Colors.pinkAccent,
+                  color: AppColors.pinkDeep,
                   size: 18,
                 ),
               ),
@@ -266,7 +302,7 @@ class _ProfileDetailsView extends StatelessWidget {
   ) {
     return Row(
       children: [
-        Icon(icon, color: Colors.pinkAccent.shade200, size: 24),
+        Icon(icon, color: AppColors.pinkDeep, size: 24),
         const SizedBox(width: 16),
         Text(
           title,

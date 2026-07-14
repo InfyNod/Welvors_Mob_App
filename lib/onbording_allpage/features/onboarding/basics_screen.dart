@@ -4,6 +4,7 @@ import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import 'user_data.dart';
+import '../../services/api_service.dart';
 
 class BasicsScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -840,12 +841,67 @@ class _BasicsScreenState extends State<BasicsScreen> {
                     userData.sexualOrientation =
                         _selectedOrientation ?? 'Not specified';
 
-                    // Simulate API delay
-                    await Future.delayed(const Duration(seconds: 1));
+                    // Map gender to backend enum
+                    String mappedGender = 'PREFER_NOT_TO_SAY';
+                    if (_selectedGender == 'Man') mappedGender = 'MEN';
+                    if (_selectedGender == 'Woman') mappedGender = 'WOMEN';
+                    if (_selectedGender == 'Non-binary') mappedGender = 'NON_BINARY';
+
+                    // Convert height (e.g. 5'9") to cm (number)
+                    int heightCm = 170; // default
+                    if (_selectedHeight != null) {
+                      try {
+                        final parts = _selectedHeight!.split('\'');
+                        final feet = int.parse(parts[0]);
+                        final inches = int.parse(parts[1].replaceAll('"', ''));
+                        final totalInches = (feet * 12) + inches;
+                        heightCm = (totalInches * 2.54).round();
+                      } catch (e) {
+                        debugPrint('Height parse error: $e');
+                      }
+                    }
+
+                    // Map sexual orientation to backend gender_option enum
+                    String mappedOrientation = 'NOT_LISTED';
+                    if (_selectedOrientation != null) {
+                      switch (_selectedOrientation) {
+                        case 'Straight': mappedOrientation = 'STRAIGHT'; break;
+                        case 'Gay': mappedOrientation = 'GAY'; break;
+                        case 'Lesbian': mappedOrientation = 'LESBIAN'; break;
+                        case 'Bisexual': mappedOrientation = 'BISEXUAL'; break;
+                        case 'Pansexual': mappedOrientation = 'PANSEXUAL'; break;
+                        case 'Asexual': mappedOrientation = 'ASEXUAL'; break;
+                        case 'Aromantic': mappedOrientation = 'AROMATIC'; break;
+                        case 'Queer': mappedOrientation = 'QUEER'; break;
+                        case 'Questioning': mappedOrientation = 'NOT_LISTED'; break;
+                        case 'Prefer not to say': mappedOrientation = 'NOT_LISTED'; break;
+                      }
+                    }
+
+                    final data = {
+                      'fullName': userData.name,
+                      'email': userData.email,
+                      'gender': mappedGender,
+                      'gender_option': mappedOrientation,
+                      'height': heightCm,
+                      if (_selectedDateOfBirth != null)
+                        'birth_date': '${_selectedDateOfBirth!.year}-${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}-${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}',
+                    };
+
+                    final error = await ApiService.submitBasicInfo(data);
 
                     if (mounted) {
                       setState(() => _isLoading = false);
-                      widget.onNext();
+                      if (error != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(error),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      } else {
+                        widget.onNext();
+                      }
                     }
                   }
                 : null,

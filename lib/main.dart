@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/onbording_allpage/features/onboarding/landing_screen.dart';
 import 'onbording_allpage/theme/app_theme.dart';
 import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
 import 'welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
@@ -27,7 +28,8 @@ class WelvorsApp extends StatelessWidget {
         title: 'Welvors',
         theme: buildTheme(),
         debugShowCheckedModeBanner: false,
-        home: const TopAndBottomNavScreen(),
+        // home: const TopAndBottomNavScreen(),
+        home: const LandingScreen(),
       ),
     );
   }
