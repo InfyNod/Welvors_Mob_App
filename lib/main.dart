@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'theme/app_theme.dart';
-import 'features/onboarding/landing_screen.dart';
-import 'blocs/onboarding/onboarding_bloc.dart';
+import 'onbording_allpage/theme/app_theme.dart';
+import 'onbording_allpage/features/onboarding/landing_screen.dart';
+import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
 
 void main() {
   runApp(const WelvorsApp());
