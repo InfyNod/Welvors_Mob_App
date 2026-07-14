@@ -1,411 +1,303 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/home_bloc.dart';
-import 'date_now_screen.dart';
-import 'admirers_screen.dart';
-import 'chat_screen.dart';
-import 'events_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeBloc()..add(LoadHomeDataEvent()),
-      child: const _HomeScreenView(),
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        if (state is HomeLoaded && state.profiles.isNotEmpty) {
+          final currentProfile = state.profiles.first;
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                SizedBox(
+                  height:
+                      MediaQuery.of(context).size.height *
+                      0.75, // Scalable height for cards
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: _CardsStack(),
+                  ),
+                ),
+                _ProfileDetailsView(profile: currentProfile),
+                const SizedBox(
+                  height: 100,
+                ), // Padding for bottom nav & floating rose
+              ],
+            ),
+          );
+        } else {
+          return const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: _CardsStack(),
+          );
+        }
+      },
     );
   }
 }
 
-class _HomeScreenView extends StatefulWidget {
-  const _HomeScreenView();
+class _ProfileDetailsView extends StatelessWidget {
+  final ProfileModel profile;
 
-  @override
-  State<_HomeScreenView> createState() => _HomeScreenViewState();
-}
-
-class _HomeScreenViewState extends State<_HomeScreenView> {
-  int _selectedIndex = 0;
-  Offset _rosePosition = const Offset(300, 500); // Initial rough position
-  bool _isRoseVisible = true;
+  const _ProfileDetailsView({required this.profile});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Match Tags Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildPillTag(profile.matchPercentage, Colors.blue),
+              _buildPillTag(profile.trustPercentage, Colors.green),
+              _buildPillTag(profile.replyTime, Colors.orange),
+            ],
+          ),
+          const SizedBox(height: 16),
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: SafeArea(bottom: false, child: _buildTopBar()),
-      ),
-      body: NotificationListener<UserScrollNotification>(
-        onNotification: (notification) {
-          if (notification.direction == ScrollDirection.reverse) {
-            // Scrolling down -> Hide rose
-            if (_isRoseVisible) setState(() => _isRoseVisible = false);
-          } else if (notification.direction == ScrollDirection.forward) {
-            // Scrolling up -> Show rose
-            if (!_isRoseVisible) setState(() => _isRoseVisible = true);
-          }
-          return false;
-        },
-        child: Stack(
-          children: [
-            _getSelectedScreen(),
-
-            // Draggable Floating Rose Button (Only on Home Screen)
-            if (_selectedIndex == 0)
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                left: _isRoseVisible
-                    ? _rosePosition.dx
-                    : screenWidth + 100, // Slides off-screen
-                top: _rosePosition.dy,
-                child: GestureDetector(
-                  onTap: () {
-                    // TODO: Implement send rose logic here in the future
-                  },
-                  onPanUpdate: (details) {
-                    setState(() {
-                      _rosePosition = Offset(
-                        (_rosePosition.dx + details.delta.dx).clamp(
-                          0.0,
-                          screenWidth - 80,
-                        ),
-                        (_rosePosition.dy + details.delta.dy).clamp(
-                          0.0,
-                          screenHeight - 160,
-                        ),
-                      );
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.pinkAccent.shade100,
-                          const Color.fromARGB(244, 237, 231, 233),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.8),
-                        width: 3,
-                      ),
-                      boxShadow: [
-                        // Premium Glow Effect
-                        BoxShadow(
-                          color: Colors.redAccent.withOpacity(0.5),
-                          blurRadius: 20,
-                          spreadRadius: 4,
-                          offset: const Offset(0, 8),
-                        ),
-                        BoxShadow(
-                          color: Colors.pinkAccent.withOpacity(0.3),
-                          blurRadius: 10,
-                          spreadRadius: 1,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Text('🌹', style: TextStyle(fontSize: 34)),
+          // ABOUT Section
+          _buildDetailCard(
+            title: 'ABOUT',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  profile.about,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    height: 1.4,
                   ),
                 ),
+                const SizedBox(height: 24),
+                const Text(
+                  'LOOKING FOR',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.pinkAccent,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.pink.shade50,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    profile.lookingFor,
+                    style: const TextStyle(
+                      color: Colors.pink,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // THE BASICS Section
+          _buildDetailCard(
+            title: 'THE BASICS',
+            child: Column(
+              children: [
+                _buildBasicRow(
+                  Icons.cake_outlined,
+                  'Age',
+                  '${profile.age} years old',
+                  '19 Feb 1999',
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.height_outlined,
+                  'Height',
+                  profile.height.split(' • ').first,
+                  profile.height.split(' • ').last,
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.mosque_outlined,
+                  'Religion',
+                  profile.religion.split(' • ').first,
+                  profile.religion.split(' • ').last,
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.location_on_outlined,
+                  'Lives in',
+                  profile.location.split(', ').first,
+                  profile.location.split(', ').last,
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.translate,
+                  'Mother tongue',
+                  profile.motherTongue,
+                  '',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPillTag(String text, Color dotColor) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.black12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(
+                color: dotColor,
+                shape: BoxShape.circle,
               ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              text,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  Widget _getSelectedScreen() {
-    switch (_selectedIndex) {
-      case 0:
-        return const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: _CardsStack(),
-        );
-      case 1:
-        return const DateNowScreen();
-      case 2:
-        return const AdmirersScreen();
-      case 3:
-        return const ChatScreen();
-      case 4:
-        return const EventsScreen();
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildTopBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
+  Widget _buildDetailCard({required String title, required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left side (Menu Icon)
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: _buildTopIcon(Icons.menu, color: Colors.black87),
-            ),
-          ),
-
-          // Center (Daily 25)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.pinkAccent,
+                  letterSpacing: 1.2,
                 ),
-                const SizedBox(width: 6),
-                const Text(
-                  'Daily 25',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-
-          // Right side (Action Icons)
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                _buildTopIcon(Icons.bolt, color: Colors.amber.shade700),
-                const SizedBox(width: 10),
-                _buildTopIcon(Icons.tune, color: Colors.black54),
-                const SizedBox(width: 10),
-                _buildNotificationIcon(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTopIcon(IconData icon, {Color? color}) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Icon(icon, size: 22, color: color),
-    );
-  }
-
-  Widget _buildNotificationIcon() {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          const Icon(Icons.notifications_none, size: 22, color: Colors.black54),
-          Positioned(
-            right: 2,
-            top: 2,
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 1.5),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final screenWidth = constraints.maxWidth;
-            // Active tab gets 32% of width, rest is divided among 4 inactive tabs
-            final activeWidth = screenWidth * 0.32;
-            final inactiveWidth = (screenWidth - activeWidth) / 4;
-
-            double getLeftOffset(int index) {
-              double left = 0;
-              for (int i = 0; i < index; i++) {
-                left += (i == _selectedIndex) ? activeWidth : inactiveWidth;
-              }
-              return left;
-            }
-
-            final indicatorLeft = getLeftOffset(_selectedIndex) + 4;
-            final indicatorWidth = activeWidth - 8;
-
-            return SizedBox(
-              height: 44, // Slightly decreased height
-              child: Stack(
-                children: [
-                  // Snake sliding background
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOutCubic,
-                    left: indicatorLeft,
-                    top: 0,
-                    bottom: 0,
-                    width: indicatorWidth,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.pinkAccent.shade100,
-                            Colors.redAccent,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                  ),
-                  // Tab Icons
-                  Row(
-                    children: [
-                      _buildNavItem(
-                        Icons.home_filled,
-                        'Home',
-                        0,
-                        0 == _selectedIndex ? activeWidth : inactiveWidth,
-                      ),
-                      _buildNavItem(
-                        Icons.play_circle_outline,
-                        'Date Now',
-                        1,
-                        1 == _selectedIndex ? activeWidth : inactiveWidth,
-                      ),
-                      _buildNavItem(
-                        Icons.favorite_border,
-                        'Admirers',
-                        2,
-                        2 == _selectedIndex ? activeWidth : inactiveWidth,
-                      ),
-                      _buildNavItem(
-                        Icons.chat_bubble_outline,
-                        'Chat',
-                        3,
-                        3 == _selectedIndex ? activeWidth : inactiveWidth,
-                      ),
-                      _buildNavItem(
-                        Icons.calendar_today_outlined,
-                        'Events',
-                        4,
-                        4 == _selectedIndex ? activeWidth : inactiveWidth,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, int index, double width) {
-    final isActive = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-        width: width,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  color: isActive ? Colors.white : Colors.grey.shade400,
-                  size: isActive ? 20 : 26,
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.pink.shade100, width: 1.5),
                 ),
-                if (isActive) ...[
-                  const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      label,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+                child: const Icon(
+                  Icons.favorite_border,
+                  color: Colors.pinkAccent,
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBasicRow(
+    IconData icon,
+    String title,
+    String value,
+    String subtitle,
+  ) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.pinkAccent.shade200, size: 24),
+        const SizedBox(width: 16),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black54,
+            fontWeight: FontWeight.w500,
           ),
         ),
-      ),
+        const Spacer(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (subtitle.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 12, color: Colors.black45),
+              ),
+            ],
+          ],
+        ),
+      ],
     );
   }
 }
@@ -436,8 +328,6 @@ class _CardsStack extends StatelessWidget {
                   final profile = entry.value;
                   final isFront = index == 0;
 
-                  // Key is crucial here! Without it, Flutter reuses the same state
-                  // for the top card, breaking the swipe animation for subsequent cards.
                   final widgetKey = ValueKey(profile.imageUrl);
 
                   return isFront

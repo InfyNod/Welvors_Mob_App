@@ -10,6 +10,11 @@ class ProfileModel extends Equatable {
   final String matchPercentage;
   final String trustPercentage;
   final String replyTime;
+  final String about;
+  final String lookingFor;
+  final String height;
+  final String religion;
+  final String motherTongue;
 
   const ProfileModel({
     required this.imageUrl,
@@ -21,15 +26,35 @@ class ProfileModel extends Equatable {
     required this.matchPercentage,
     required this.trustPercentage,
     required this.replyTime,
+    required this.about,
+    required this.lookingFor,
+    required this.height,
+    required this.religion,
+    required this.motherTongue,
   });
 
   @override
-  List<Object?> get props => [imageUrl, name, age, location, job, intent, matchPercentage, trustPercentage, replyTime];
+  List<Object?> get props => [
+    imageUrl,
+    name,
+    age,
+    location,
+    job,
+    intent,
+    matchPercentage,
+    trustPercentage,
+    replyTime,
+    about,
+    lookingFor,
+    height,
+    religion,
+    motherTongue,
+  ];
 }
 
 abstract class HomeState extends Equatable {
   const HomeState();
-  
+
   @override
   List<Object?> get props => [];
 }
