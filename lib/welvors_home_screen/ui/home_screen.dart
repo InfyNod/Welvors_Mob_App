@@ -1,9 +1,12 @@
 import 'dart:math';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_player/video_player.dart';
 import '../bloc/home_bloc.dart';
 import '../../onbording_allpage/theme/app_colors.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -30,9 +33,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 _ProfileDetailsView(profile: currentProfile),
-                const SizedBox(
-                  height: 100,
-                ), // Padding for bottom nav & floating rose
+                const SizedBox(height: 14),
               ],
             ),
           );
@@ -87,59 +88,81 @@ class _ProfileDetailsView extends StatelessWidget {
                 const SizedBox(height: 16),
                 const Divider(color: Colors.black12, height: 1),
                 const SizedBox(height: 16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'LOOKING FOR',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black45,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.pink.shade50,
-                              Colors.pink.shade100.withOpacity(0.3),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                    Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: Colors.pinkAccent,
+                            borderRadius: BorderRadius.circular(2),
                           ),
-                          border: Border.all(color: Colors.pink.shade100, width: 1.5),
-                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.search_rounded, 
-                              size: 16, 
-                              color: AppColors.pinkDeep
-                            ),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                profile.lookingFor,
-                                style: const TextStyle(
-                                  color: AppColors.pinkDeep,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                        const SizedBox(width: 8),
+                        const Text(
+                          'LOOKING FOR',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.pinkAccent,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 16,
+                      ),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.pink.shade50.withOpacity(0.6),
+                            Colors.pinkAccent.withOpacity(0.03),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.pinkAccent.withOpacity(0.3),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.pinkAccent.withOpacity(0.2),
+                            blurRadius: 20,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.auto_awesome_rounded,
+                            color: Colors.pinkAccent,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              profile.lookingFor,
+                              style: const TextStyle(
+                                color: AppColors.pinkDeep,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                                letterSpacing: 0.5,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -188,6 +211,725 @@ class _ProfileDetailsView extends StatelessWidget {
                   profile.motherTongue,
                   '',
                 ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(Icons.nightlight_round, 'Zodiac', 'Scorpio', ''),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.favorite,
+                  'Love language',
+                  'Words of affirmation',
+                  'Compliments mean the most',
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.phone_in_talk_outlined,
+                  'Communication',
+                  'Phone calls over texts',
+                  '',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Video Intro Player
+          const ProfileVideoPlayer(videoPath: 'assets/video.mp4'),
+          const SizedBox(height: 16),
+
+          // Prompt Card
+          Container(
+            padding: const EdgeInsets.only(
+              left: 20,
+              top: 20,
+              right: 20,
+              bottom: 12,
+            ),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'The way to win me over is..',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.pinkAccent,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'A good book rec and a strong chai opinion.',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // CAREER & AMBITION Section
+          _buildDetailCard(
+            title: 'CAREER & AMBITION',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildBasicRow(
+                  Icons.school_outlined,
+                  'Education',
+                  'NIFT Pune',
+                  'B. Des Fashion Design · 3rd year',
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.work_outline_rounded,
+                  'Work as',
+                  'Fashion Design',
+                  'Freelance · 2 yrs exp',
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.attach_money_rounded,
+                  'Income',
+                  '₹8-12 L / year',
+                  'Growing steadily',
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.computer_rounded,
+                  'Work style',
+                  'Creative · Hybrid',
+                  '',
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.trending_up_rounded,
+                  'Ambition level',
+                  'HIGHLY DRIVEN',
+                  '',
+                ),
+                const Divider(height: 32, color: Colors.black12),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.pinkAccent,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'HER BIG DREAM',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.pinkAccent,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Launch her own sustainable Indian fashion label — handcrafted, slow fashion made with heart. Also wants to travel every fashion capital before 30.',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Additional Profile Photo
+          Container(
+            width: double.infinity,
+            height: 550,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              image: DecorationImage(
+                image: NetworkImage(profile.imageUrl),
+                fit: BoxFit.cover,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Second Prompt Card
+          Container(
+            padding: const EdgeInsets.only(
+              left: 20,
+              top: 20,
+              right: 20,
+              bottom: 12,
+            ),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'My simple pleasures..',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.pinkAccent,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Roadside chai after a long trek, no signal, good company.',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // INTERESTS & HOBBIES Section
+          Container(
+            padding: const EdgeInsets.all(20),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.pinkAccent,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'INTERESTS & HOBBIES',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.pinkAccent,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 12,
+                  children: [
+                    _buildInterestPill('✈️', 'Travel'),
+                    _buildInterestPill('☕️', 'Coffee'),
+                    _buildInterestPill('⛰️', 'Trekking'),
+                    _buildInterestPill('📸', 'Photography'),
+                    _buildInterestPill('🎵', 'Music'),
+                    _buildInterestPill('🥘', 'Cooking'),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // LIFESTYLE Section
+          Container(
+            padding: const EdgeInsets.all(20),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.pinkAccent,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'LIFESTYLE',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.pinkAccent,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildLifestyleRow(
+                  Icons.restaurant_outlined,
+                  'Diet',
+                  'Vegetarian',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.wine_bar_outlined,
+                  'Drinking',
+                  'Socially',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.smoking_rooms_outlined,
+                  'Smoking',
+                  'Non-smoker',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.fitness_center_outlined,
+                  'Fitness',
+                  'Gym 4×/week',
+                  subValue: 'Yoga · Trekking',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.flight_takeoff_outlined,
+                  'Travel',
+                  '4–5 trips/year',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(Icons.pets_outlined, 'Pets', 'Cat parent'),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.dark_mode_outlined,
+                  'Sleep',
+                  'Night Owl',
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Additional Profile Photo 2
+          Container(
+            width: double.infinity,
+            height: 550,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              image: DecorationImage(
+                image: NetworkImage(profile.imageUrl),
+                fit: BoxFit.cover,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // FAMILY Section
+          Container(
+            padding: const EdgeInsets.all(20),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.pinkAccent,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'FAMILY',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.pinkAccent,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildLifestyleRow(
+                  Icons.people_alt_outlined,
+                  'Family type',
+                  'Nuclear',
+                  subValue: 'Close-knit',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.person_outline,
+                  'Father',
+                  'Retired banker',
+                  subValue: 'Bank of Maharashtra',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.woman_outlined,
+                  'Mother',
+                  'Homemaker',
+                  subValue: 'Former school teacher',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.group_outlined,
+                  'Siblings',
+                  'Sister — unmarried, studying',
+                  subValue: 'Brother — married, working',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.location_on_outlined,
+                  'Family home',
+                  'Pune',
+                  subValue: 'Native: Nashik',
+                ),
+                const Divider(height: 1, color: Colors.black12),
+                _buildLifestyleRow(
+                  Icons.account_balance_wallet_outlined,
+                  'Family income',
+                  '₹25–40 L / year',
+                  subValue: 'Household, approx',
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Grew up in a close, easy-going Marathi family that values ambition as much as togetherness. My parents married for love and never made it about timelines — they\'d want the same warmth for me.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Final Profile Photo
+          Container(
+            width: double.infinity,
+            height: 550,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              image: DecorationImage(
+                image: NetworkImage(profile.imageUrl),
+                fit: BoxFit.cover,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Third Prompt Card
+          Container(
+            padding: const EdgeInsets.only(
+              left: 20,
+              top: 20,
+              right: 20,
+              bottom: 12,
+            ),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'We\'ll get along if…',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.pinkAccent,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'You can debate me for an hour and still want dessert after.',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -200,16 +942,17 @@ class _ProfileDetailsView extends StatelessWidget {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black12),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: dotColor.withOpacity(0.2), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+              color: dotColor.withOpacity(0.08),
+              blurRadius: 12,
+              spreadRadius: 2,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -217,24 +960,132 @@ class _ProfileDetailsView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 6,
-              height: 6,
+              width: 8,
+              height: 8,
               decoration: BoxDecoration(
                 color: dotColor,
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: dotColor.withOpacity(0.4),
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 6),
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
+            Flexible(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: Colors.black.withOpacity(0.85),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildInterestPill(String emoji, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.pink.shade100, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.pink.shade50,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLifestyleRow(
+    IconData icon,
+    String label,
+    String value, {
+    String? subValue,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: subValue != null
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.pink.shade50.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: AppColors.pinkDeep, size: 20),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                ),
+              ),
+              if (subValue != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  subValue,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black45,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -245,16 +1096,13 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.pinkAccent.withOpacity(0.15), 
-          width: 1.5,
-        ),
+        border: Border.all(color: Colors.grey.shade300, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.pink.withOpacity(0.05),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
+            color: Colors.pink.withOpacity(0.06),
+            blurRadius: 30,
+            spreadRadius: 0,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -264,26 +1112,27 @@ class _ProfileDetailsView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.pinkDeep,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.pink.shade100, width: 1.5),
-                ),
-                child: const Icon(
-                  Icons.favorite_border,
-                  color: AppColors.pinkDeep,
-                  size: 18,
-                ),
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: Colors.pinkAccent,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.pinkAccent,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -301,37 +1150,49 @@ class _ProfileDetailsView extends StatelessWidget {
     String subtitle,
   ) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, color: AppColors.pinkDeep, size: 24),
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.pink.shade50.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: AppColors.pinkDeep, size: 20),
+        ),
         const SizedBox(width: 16),
         Text(
           title,
           style: const TextStyle(
             fontSize: 15,
             color: Colors.black54,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        const Spacer(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (subtitle.isNotEmpty) ...[
-              const SizedBox(height: 2),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
               Text(
-                subtitle,
-                style: const TextStyle(fontSize: 12, color: Colors.black45),
+                value,
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              if (subtitle.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 12, color: Colors.black45),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ],
     );
@@ -704,6 +1565,238 @@ class _ProfileCardUI extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class ProfileVideoPlayer extends StatefulWidget {
+  final String videoPath;
+  const ProfileVideoPlayer({super.key, required this.videoPath});
+
+  @override
+  State<ProfileVideoPlayer> createState() => _ProfileVideoPlayerState();
+}
+
+class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
+  late VideoPlayerController _controller;
+  bool _showControls = true;
+  bool _isMuted = true;
+  Timer? _hideTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset(widget.videoPath)
+      ..initialize()
+          .then((_) {
+            _controller.setLooping(true);
+            _controller.setVolume(_isMuted ? 0.0 : 1.0);
+            // Video is initially paused, so we don't start the hide timer yet
+            setState(() {});
+          })
+          .catchError((error) {
+            debugPrint("Video Init Error: $error");
+            // We can just stop loading by calling setState
+            if (mounted) {
+              setState(() {});
+            }
+          });
+
+    _controller.addListener(_videoListener);
+  }
+
+  void _videoListener() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  String _formatDuration(Duration duration) {
+    String minutes = duration.inMinutes.toString();
+    String seconds = duration.inSeconds
+        .remainder(60)
+        .toString()
+        .padLeft(2, '0');
+    return "$minutes:$seconds";
+  }
+
+  void _toggleMute() {
+    setState(() {
+      _isMuted = !_isMuted;
+      _controller.setVolume(_isMuted ? 0.0 : 1.0);
+    });
+  }
+
+  void _startHideTimer() {
+    _hideTimer?.cancel();
+    _hideTimer = Timer(const Duration(seconds: 1), () {
+      if (mounted) {
+        setState(() {
+          _showControls = false;
+        });
+      }
+    });
+  }
+
+  void _toggleControls() {
+    setState(() {
+      _showControls = !_showControls;
+    });
+    if (_showControls) {
+      _startHideTimer();
+    }
+  }
+
+  void _togglePlayPause() {
+    setState(() {
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      } else {
+        _controller.play();
+      }
+      _showControls = true;
+      _startHideTimer();
+    });
+  }
+
+  @override
+  void dispose() {
+    _hideTimer?.cancel();
+    _controller.removeListener(_videoListener);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 550,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: Colors.black,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: GestureDetector(
+          onTap: _toggleControls,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (_controller.value.isInitialized)
+                FittedBox(
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: _controller.value.size.width,
+                    height: _controller.value.size.height,
+                    child: VideoPlayer(_controller),
+                  ),
+                )
+              else
+                Container(
+                  color: Colors.grey.shade900,
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.pinkAccent),
+                  ),
+                ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 120,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.8),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+              ),
+              Center(
+                child: AnimatedOpacity(
+                  opacity: _showControls ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: GestureDetector(
+                    onTap: _togglePlayPause,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _controller.value.isPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        color: Colors.black87,
+                        size: 36,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 16,
+                bottom: 16,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _controller.value.isInitialized
+                        ? 'Video intro · ${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}'
+                        : 'Video intro',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              if (_controller.value.isInitialized)
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: GestureDetector(
+                    onTap: _toggleMute,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isMuted
+                            ? Icons.volume_off_rounded
+                            : Icons.volume_up_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
