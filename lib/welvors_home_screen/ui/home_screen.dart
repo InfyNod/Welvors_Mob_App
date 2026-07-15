@@ -105,7 +105,7 @@ class _ProfileDetailsView extends StatelessWidget {
                         const Text(
                           'LOOKING FOR',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: FontWeight.w900,
                             color: Colors.pinkAccent,
                             letterSpacing: 1.5,
@@ -262,7 +262,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 const Text(
                   'The way to win me over is..',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: Colors.pinkAccent,
                     letterSpacing: 0.5,
@@ -368,7 +368,7 @@ class _ProfileDetailsView extends StatelessWidget {
                     const Text(
                       'HER BIG DREAM',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 13,
                         fontWeight: FontWeight.w900,
                         color: Colors.pinkAccent,
                         letterSpacing: 1.5,
@@ -421,7 +421,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 const Text(
                   'My simple pleasures..',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: Colors.pinkAccent,
                     letterSpacing: 0.5,
@@ -685,8 +685,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 _buildLifestyleRow(
                   Icons.group_outlined,
                   'Siblings',
-                  'Sister — unmarried, studying',
-                  subValue: 'Brother — married, working',
+                  'Sister—unmarried, studying\nBrother—married, working',
                 ),
                 const Divider(height: 18, color: Colors.black12),
                 _buildLifestyleRow(
@@ -747,7 +746,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 const Text(
                   'We\'ll get along if…',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: Colors.pinkAccent,
                     letterSpacing: 0.5,
@@ -926,6 +925,7 @@ class _ProfileDetailsView extends StatelessWidget {
           children: [
             Text(
               value,
+              textAlign: TextAlign.right,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
