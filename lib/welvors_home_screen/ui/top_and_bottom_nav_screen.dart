@@ -30,8 +30,17 @@ class _TopAndBottomNavView extends StatefulWidget {
 
 class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   int _selectedIndex = 0;
-  Offset? _rosePosition; // Initialized dynamically
   bool _isRoseVisible = true;
+  
+  final ValueNotifier<Offset?> _rosePositionNotifier = ValueNotifier(null);
+  final ValueNotifier<bool> _isDraggingRoseNotifier = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    _rosePositionNotifier.dispose();
+    _isDraggingRoseNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,19 +66,14 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
             final maxWidth = constraints.maxWidth;
             final maxHeight = constraints.maxHeight;
 
-            // Initialize to bottom-right corner safely
-            _rosePosition ??= Offset(maxWidth - 95, maxHeight - 110);
-
-            // Clamp current position to ensure it stays within bounds
-            final currentPos = Offset(
-              _rosePosition!.dx.clamp(0.0, maxWidth - 70),
-              _rosePosition!.dy.clamp(0.0, maxHeight - 70),
-            );
-
-            // Calculate dock position
-            final double dockedLeft = currentPos.dx > maxWidth / 2
-                ? maxWidth - 25
-                : -45;
+            // Initialize to bottom-right corner safely, waiting for a valid height
+            if (_rosePositionNotifier.value == null && maxHeight > 200) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (_rosePositionNotifier.value == null) {
+                  _rosePositionNotifier.value = Offset(maxWidth - 82, maxHeight - 95);
+                }
+              });
+            }
 
             return Stack(
               children: [
@@ -77,13 +81,36 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
 
                 // Draggable Floating Rose Button (Only on Home Screen)
                 if (_selectedIndex == 0)
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves
-                        .easeOutBack, // Gives a bouncy, smooth feel like iOS
-                    left: _isRoseVisible ? currentPos.dx : dockedLeft,
-                    top: currentPos.dy,
+                  AnimatedBuilder(
+                    animation: Listenable.merge([_rosePositionNotifier, _isDraggingRoseNotifier]),
+                    builder: (context, child) {
+                      final currentRosePos = _rosePositionNotifier.value ?? Offset(maxWidth - 82, maxHeight - 95);
+                      
+                      final currentPos = Offset(
+                        currentRosePos.dx.clamp(0.0, maxWidth - 70),
+                        currentRosePos.dy.clamp(0.0, maxHeight - 70),
+                      );
+
+                      final double dockedLeft = currentPos.dx > maxWidth / 2 ? maxWidth - 25 : -45;
+
+                      return AnimatedPositioned(
+                        duration: _isDraggingRoseNotifier.value
+                            ? Duration.zero
+                            : const Duration(milliseconds: 300),
+                        curve: Curves.easeOutBack,
+                        left: _isRoseVisible ? currentPos.dx : dockedLeft,
+                        top: currentPos.dy,
+                        child: child!,
+                      );
+                    },
                     child: GestureDetector(
+                      onPanStart: (details) {
+                        if (!_isRoseVisible) return;
+                        _isDraggingRoseNotifier.value = true;
+                      },
+                      onPanEnd: (details) {
+                        _isDraggingRoseNotifier.value = false;
+                      },
                       onTap: () {
                         if (!_isRoseVisible) {
                           // Tap to undock
@@ -93,20 +120,18 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                         }
                       },
                       onPanUpdate: (details) {
-                        if (!_isRoseVisible)
-                          return; // Prevent dragging while docked
-                        setState(() {
-                          _rosePosition = Offset(
-                            (currentPos.dx + details.delta.dx).clamp(
-                              0.0,
-                              maxWidth - 70,
-                            ),
-                            (currentPos.dy + details.delta.dy).clamp(
-                              0.0,
-                              maxHeight - 70,
-                            ),
-                          );
-                        });
+                        if (!_isRoseVisible) return; // Prevent dragging while docked
+                        
+                        final currentRosePos = _rosePositionNotifier.value ?? Offset(maxWidth - 82, maxHeight - 95);
+                        final currentPos = Offset(
+                          currentRosePos.dx.clamp(0.0, maxWidth - 70),
+                          currentRosePos.dy.clamp(0.0, maxHeight - 70),
+                        );
+                        
+                        _rosePositionNotifier.value = Offset(
+                          (currentPos.dx + details.delta.dx).clamp(0.0, maxWidth - 70),
+                          (currentPos.dy + details.delta.dy).clamp(0.0, maxHeight - 70),
+                        );
                       },
                       child: AnimatedOpacity(
                         duration: const Duration(milliseconds: 300),
@@ -151,7 +176,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                           ),
                           child: const Text(
                             '🌹',
-                            style: TextStyle(fontSize: 34),
+                            style: TextStyle(fontSize: 28),
                           ),
                         ),
                       ),
@@ -200,7 +225,10 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
           BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(20),
@@ -219,7 +247,10 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                     const SizedBox(width: 6),
                     Text(
                       'Daily ${state.remainingSwipes}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),

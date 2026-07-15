@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../bloc/home_bloc.dart';
 import '../../onbording_allpage/theme/app_colors.dart';
 
@@ -16,31 +17,42 @@ class HomeScreen extends StatelessWidget {
       builder: (context, state) {
         if (state is HomeLoaded && state.profiles.isNotEmpty) {
           final currentProfile = state.profiles.first;
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                SizedBox(
-                  height:
-                      MediaQuery.of(context).size.height *
-                      0.75, // Scalable height for cards
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: constraints
+                          .maxHeight, // Exactly fits the visible viewport
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
+                        child: _CardsStack(),
+                      ),
                     ),
-                    child: _CardsStack(),
-                  ),
+                    _ProfileDetailsView(profile: currentProfile),
+                    const SizedBox(height: 14),
+                  ],
                 ),
-                _ProfileDetailsView(profile: currentProfile),
-                const SizedBox(height: 14),
-              ],
-            ),
+              );
+            },
           );
         } else {
-          return const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: _CardsStack(),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                height: constraints.maxHeight,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: const _CardsStack(),
+              );
+            },
           );
         }
       },
@@ -55,6 +67,12 @@ class _ProfileDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasVideo = profile.videoUrl != null;
+    final int slot2Index = hasVideo ? 1 : 2;
+    final int slot3Index = hasVideo ? 2 : 3;
+    final int slot4Index = hasVideo ? 3 : 4;
+    final int bottomIndexStart = hasVideo ? 4 : 5;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
@@ -124,7 +142,12 @@ class _ProfileDetailsView extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: [
                             Colors.pink.shade50.withOpacity(0.6),
-                            Colors.pinkAccent.withOpacity(0.03),
+                            const Color.fromARGB(
+                              255,
+                              237,
+                              152,
+                              181,
+                            ).withOpacity(0.03),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -148,7 +171,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           const Icon(
                             Icons.auto_awesome_rounded,
                             color: Colors.pinkAccent,
-                            size: 20,
+                            size: 19,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -231,9 +254,14 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // Video Intro Player
-          const ProfileVideoPlayer(videoPath: 'assets/video.mp4'),
-          const SizedBox(height: 16),
+          // Slot 1: After THE BASICS
+          if (hasVideo) ...[
+            ProfileVideoPlayer(videoPath: profile.videoUrl!),
+            const SizedBox(height: 16),
+          ] else if (profile.images.length > 1) ...[
+            _buildImageWithRose(profile.images[1]),
+            const SizedBox(height: 16),
+          ],
 
           // Prompt Card
           Container(
@@ -390,9 +418,11 @@ class _ProfileDetailsView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Additional Profile Photo
-          _buildImageWithRose(profile.imageUrl),
-          const SizedBox(height: 16),
+          // Slot 2: After CAREER
+          if (profile.images.length > slot2Index) ...[
+            _buildImageWithRose(profile.images[slot2Index]),
+            const SizedBox(height: 16),
+          ],
 
           // Second Prompt Card
           Container(
@@ -615,9 +645,11 @@ class _ProfileDetailsView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Additional Profile Photo 2
-          _buildImageWithRose(profile.imageUrl),
-          const SizedBox(height: 16),
+          // Slot 3: After LIFESTYLE
+          if (profile.images.length > slot3Index) ...[
+            _buildImageWithRose(profile.images[slot3Index]),
+            const SizedBox(height: 16),
+          ],
 
           // FAMILY Section
           Container(
@@ -715,9 +747,11 @@ class _ProfileDetailsView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Final Profile Photo
-          _buildImageWithRose(profile.imageUrl),
-          const SizedBox(height: 16),
+          // Slot 4: After FAMILY
+          if (profile.images.length > slot4Index) ...[
+            _buildImageWithRose(profile.images[slot4Index]),
+            const SizedBox(height: 16),
+          ],
 
           // Third Prompt Card
           Container(
@@ -794,6 +828,15 @@ class _ProfileDetailsView extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+
+          // Bottom Slots: Extra photos below "We'll get along if..."
+          if (profile.images.length > bottomIndexStart) ...[
+            for (int i = bottomIndexStart; i < profile.images.length; i++) ...[
+              _buildImageWithRose(profile.images[i]),
+              const SizedBox(height: 16),
+            ]
+          ],
         ],
       ),
     );
@@ -1137,7 +1180,7 @@ class _CardsStack extends StatelessWidget {
                   final profile = entry.value;
                   final isFront = index == 0;
 
-                  final widgetKey = ValueKey(profile.imageUrl);
+                  final widgetKey = ValueKey(profile.images.first);
 
                   return isFront
                       ? _DraggableCard(key: widgetKey, profile: profile)
@@ -1263,9 +1306,9 @@ class _DraggableCardState extends State<_DraggableCard>
     }
 
     return GestureDetector(
-      onPanStart: _onPanStart,
-      onPanUpdate: _onPanUpdate,
-      onPanEnd: _onPanEnd,
+      onHorizontalDragStart: _onPanStart,
+      onHorizontalDragUpdate: _onPanUpdate,
+      onHorizontalDragEnd: _onPanEnd,
       child: Transform.translate(
         offset: _position,
         child: Transform.rotate(
@@ -1289,7 +1332,7 @@ class _ProfileCardUI extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         image: DecorationImage(
-          image: NetworkImage(profile.imageUrl),
+          image: NetworkImage(profile.images.first),
           fit: BoxFit.cover,
         ),
         boxShadow: [
@@ -1508,7 +1551,7 @@ class ProfileVideoPlayer extends StatefulWidget {
 class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
   late VideoPlayerController _controller;
   bool _showControls = true;
-  bool _isMuted = true;
+  bool _isMuted = false;
   Timer? _hideTimer;
 
   @override
@@ -1597,9 +1640,19 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 550,
+    return VisibilityDetector(
+      key: Key(widget.videoPath),
+      onVisibilityChanged: (visibilityInfo) {
+        if (visibilityInfo.visibleFraction == 0 && _controller.value.isPlaying) {
+          _controller.pause();
+          setState(() {
+            _showControls = true;
+          });
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        height: 550,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         color: Colors.black,
@@ -1748,6 +1801,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                 ),
               ),
             ],
+          ),
           ),
         ),
       ),

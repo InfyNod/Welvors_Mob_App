@@ -7,8 +7,15 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final List<ProfileModel> _dummyProfiles = [
     const ProfileModel(
-      imageUrl:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+      images: const [
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=800&q=80',
+      ],
+      videoUrl: 'assets/video.mp4',
       name: 'Shraddha',
       age: 21,
       location: 'Pune, Maharashtra',
@@ -25,8 +32,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       motherTongue: 'Marathi',
     ),
     const ProfileModel(
-      imageUrl:
-          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+      images: const [
+        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
+      ],
+      // No videoUrl
       name: 'Priya',
       age: 23,
       location: 'Mumbai, Maharashtra',
@@ -43,8 +55,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       motherTongue: 'Gujarati',
     ),
     const ProfileModel(
-      imageUrl:
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
+      images: const [
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=800&q=80',
+      ],
+      // No videoUrl
       name: 'Ananya',
       age: 25,
       location: 'Delhi, India',

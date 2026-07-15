@@ -1,7 +1,8 @@
 part of 'home_bloc.dart';
 
 class ProfileModel extends Equatable {
-  final String imageUrl;
+  final List<String> images;
+  final String? videoUrl;
   final String name;
   final int age;
   final String location;
@@ -17,7 +18,8 @@ class ProfileModel extends Equatable {
   final String motherTongue;
 
   const ProfileModel({
-    required this.imageUrl,
+    required this.images,
+    this.videoUrl,
     required this.name,
     required this.age,
     required this.location,
@@ -35,7 +37,8 @@ class ProfileModel extends Equatable {
 
   @override
   List<Object?> get props => [
-    imageUrl,
+    images,
+    videoUrl,
     name,
     age,
     location,
