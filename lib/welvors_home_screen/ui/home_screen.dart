@@ -835,7 +835,7 @@ class _ProfileDetailsView extends StatelessWidget {
             for (int i = bottomIndexStart; i < profile.images.length; i++) ...[
               _buildImageWithRose(profile.images[i]),
               const SizedBox(height: 16),
-            ]
+            ],
           ],
         ],
       ),
@@ -1203,7 +1203,11 @@ class _StaticCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _ProfileCardUI(profile: profile, glowColor: Colors.transparent);
+    return _ProfileCardUI(
+      profile: profile,
+      glowColor: Colors.transparent,
+      dragPercent: 0.0,
+    );
   }
 }
 
@@ -1313,7 +1317,11 @@ class _DraggableCardState extends State<_DraggableCard>
         offset: _position,
         child: Transform.rotate(
           angle: angle,
-          child: _ProfileCardUI(profile: widget.profile, glowColor: glowColor),
+          child: _ProfileCardUI(
+            profile: widget.profile,
+            glowColor: glowColor,
+            dragPercent: dragPercent,
+          ),
         ),
       ),
     );
@@ -1323,8 +1331,13 @@ class _DraggableCardState extends State<_DraggableCard>
 class _ProfileCardUI extends StatelessWidget {
   final ProfileModel profile;
   final Color glowColor;
+  final double dragPercent;
 
-  const _ProfileCardUI({required this.profile, required this.glowColor});
+  const _ProfileCardUI({
+    required this.profile,
+    required this.glowColor,
+    required this.dragPercent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1402,6 +1415,61 @@ class _ProfileCardUI extends StatelessWidget {
               ),
             ),
           ),
+
+          // Cross Animation (Visible on Left Swipe)
+          if (dragPercent < 0)
+            Positioned(
+              right: 30,
+              top:
+                  MediaQuery.of(context).size.height *
+                  0.2, // approximately top third
+              child: Opacity(
+                opacity: (-dragPercent * 1.5).clamp(
+                  0.0,
+                  1.0,
+                ), // fades in quickly
+                child: Transform.scale(
+                  scale: (0.5 + (-dragPercent * 0.5)).clamp(
+                    0.5,
+                    1.0,
+                  ), // grows slightly
+                  child: Lottie.asset(
+                    'assets/nolike.json',
+                    width: 110,
+                    height: 110,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+
+          // Like Animation (Visible on Right Swipe)
+          if (dragPercent > 0)
+            Positioned(
+              left: 10,
+              top:
+                  MediaQuery.of(context).size.height *
+                  0.16, // Move Like animation slightly down
+              child: Opacity(
+                opacity: (dragPercent * 1.5).clamp(
+                  0.0,
+                  1.0,
+                ), // fades in quickly
+                child: Transform.scale(
+                  scale: (0.5 + (dragPercent * 0.5)).clamp(
+                    0.5,
+                    1.0,
+                  ), // grows slightly
+                  child: Lottie.asset(
+                    'assets/like.json',
+                    width: 190,
+                    height: 190,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+
           // Bottom gradient & details
           Positioned(
             bottom: 0,
@@ -1643,7 +1711,8 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
     return VisibilityDetector(
       key: Key(widget.videoPath),
       onVisibilityChanged: (visibilityInfo) {
-        if (visibilityInfo.visibleFraction == 0 && _controller.value.isPlaying) {
+        if (visibilityInfo.visibleFraction == 0 &&
+            _controller.value.isPlaying) {
           _controller.pause();
           setState(() {
             _showControls = true;
@@ -1653,155 +1722,160 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
       child: Container(
         width: double.infinity,
         height: 550,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: Colors.black,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: GestureDetector(
-          onTap: _toggleControls,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (_controller.value.isInitialized)
-                FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: _controller.value.size.width,
-                    height: _controller.value.size.height,
-                    child: VideoPlayer(_controller),
-                  ),
-                )
-              else
-                Container(
-                  color: Colors.grey.shade900,
-                  child: const Center(
-                    child: CircularProgressIndicator(color: Colors.pinkAccent),
-                  ),
-                ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: 120,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.8),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color: Colors.black,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: GestureDetector(
+            onTap: _toggleControls,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (_controller.value.isInitialized)
+                  FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: _controller.value.size.width,
+                      height: _controller.value.size.height,
+                      child: VideoPlayer(_controller),
+                    ),
+                  )
+                else
+                  Container(
+                    color: Colors.grey.shade900,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.pinkAccent,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              Center(
-                child: AnimatedOpacity(
-                  opacity: _showControls ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: GestureDetector(
-                    onTap: _togglePlayPause,
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        _controller.value.isPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                        color: Colors.black87,
-                        size: 36,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: 120,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.8),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 16,
-                bottom: 16,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    _controller.value.isInitialized
-                        ? 'Video intro · ${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}'
-                        : 'Video intro',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                Center(
+                  child: AnimatedOpacity(
+                    opacity: _showControls ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: GestureDetector(
+                      onTap: _togglePlayPause,
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          _controller.value.isPlaying
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
+                          color: Colors.black87,
+                          size: 36,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              if (_controller.value.isInitialized)
+                Positioned(
+                  left: 16,
+                  bottom: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      _controller.value.isInitialized
+                          ? 'Video intro · ${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}'
+                          : 'Video intro',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                if (_controller.value.isInitialized)
+                  Positioned(
+                    right: 16,
+                    bottom: 72,
+                    child: GestureDetector(
+                      onTap: _toggleMute,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          _isMuted
+                              ? Icons.volume_off_rounded
+                              : Icons.volume_up_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
                 Positioned(
                   right: 16,
-                  bottom: 72,
-                  child: GestureDetector(
-                    onTap: _toggleMute,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        shape: BoxShape.circle,
+                  bottom: 16,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1.5,
                       ),
-                      child: Icon(
-                        _isMuted
-                            ? Icons.volume_off_rounded
-                            : Icons.volume_up_rounded,
-                        color: Colors.white,
-                        size: 20,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text('🌹', style: TextStyle(fontSize: 18)),
                       ),
                     ),
                   ),
                 ),
-              Positioned(
-                right: 16,
-                bottom: 16,
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade200, width: 1.5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 2.0),
-                      child: Text('🌹', style: TextStyle(fontSize: 18)),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
         ),
       ),
