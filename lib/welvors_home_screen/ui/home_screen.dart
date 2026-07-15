@@ -19,43 +19,132 @@ class HomeScreen extends StatelessWidget {
           final currentProfile = state.profiles.first;
           return LayoutBuilder(
             builder: (context, constraints) {
-              return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: constraints
-                          .maxHeight, // Exactly fits the visible viewport
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<HomeBloc>().add(LoadHomeDataEvent());
+                  await Future.delayed(const Duration(milliseconds: 800));
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: constraints
+                            .maxHeight, // Exactly fits the visible viewport
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          child: _CardsStack(),
                         ),
-                        child: _CardsStack(),
                       ),
-                    ),
-                    _ProfileDetailsView(profile: currentProfile),
-                    const SizedBox(height: 14),
-                  ],
+                      _ProfileDetailsView(profile: currentProfile),
+                      const SizedBox(height: 14),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        } else if (state is HomeEmpty) {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<HomeBloc>().add(LoadHomeDataEvent());
+                  await Future.delayed(const Duration(milliseconds: 800));
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  child: SizedBox(
+                    height: constraints.maxHeight,
+                    child: _buildEmptyState(context),
+                  ),
                 ),
               );
             },
           );
         } else {
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              return Container(
-                height: constraints.maxHeight,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                child: const _CardsStack(),
-              );
-            },
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.pink),
           );
         }
       },
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.pink.shade50,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.hourglass_empty_rounded,
+              size: 64,
+              color: AppColors.pinkDeep,
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            "You're all caught up!",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              "We are looking for more profiles for you. Check back later or pull down to refresh.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+                height: 1.4,
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton.icon(
+            onPressed: () {
+              context.read<HomeBloc>().add(LoadHomeDataEvent());
+            },
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            label: const Text(
+              "Refresh Profiles",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.pink,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32,
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              elevation: 4,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1296,6 +1385,7 @@ class _DraggableCardState extends State<_DraggableCard>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final angle = _position.dx / 400; // slight rotation
 
     // Calculate glow opacity based on drag distance
@@ -1334,7 +1424,7 @@ class _DraggableCardState extends State<_DraggableCard>
           // Cross Animation (Visible on Left Swipe) sliding in from Left Edge
           if (dragPercent < 0)
             Positioned(
-              left: -120 + (dragPercent.abs() * 140),
+              left: -125 + (dragPercent.abs() * ((screenWidth / 2) + 55)),
               top: MediaQuery.of(context).size.height * 0.25,
               child: Opacity(
                 opacity: dragPercent.abs().clamp(0.0, 1.0),
@@ -1352,8 +1442,8 @@ class _DraggableCardState extends State<_DraggableCard>
           // Like Animation (Visible on Right Swipe) sliding in from Right Edge
           if (dragPercent > 0)
             Positioned(
-              right: -120 + (dragPercent * 140),
-              top: MediaQuery.of(context).size.height * 0.21,
+              right: -200 + (dragPercent * ((screenWidth / 2) + 90)),
+              top: MediaQuery.of(context).size.height * 0.20,
               child: Opacity(
                 opacity: dragPercent.clamp(0.0, 1.0),
                 child: IgnorePointer(
