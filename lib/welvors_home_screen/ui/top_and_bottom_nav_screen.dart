@@ -248,15 +248,19 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
 
           // Right side (Action Icons)
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                _buildTopIcon(Icons.bolt, color: Colors.amber.shade700),
-                const SizedBox(width: 10),
-                _buildTopIcon(Icons.tune, color: Colors.black54),
-                const SizedBox(width: 10),
-                _buildNotificationIcon(),
-              ],
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTopIcon(Icons.bolt, color: Colors.amber.shade700),
+                  const SizedBox(width: 10),
+                  _buildTopIcon(Icons.tune, color: Colors.black54),
+                  const SizedBox(width: 10),
+                  _buildNotificationIcon(),
+                ],
+              ),
             ),
           ),
         ],
