@@ -1172,6 +1172,7 @@ class _CardsStack extends StatelessWidget {
           }
 
           return Stack(
+            clipBehavior: Clip.none,
             children: state.profiles
                 .asMap()
                 .entries
@@ -1283,11 +1284,13 @@ class _DraggableCardState extends State<_DraggableCard>
       end: target,
     ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
     _animController.forward(from: 0).then((_) {
-      if (mounted) {
-        context.read<HomeBloc>().add(
-          SwipeProfileEvent(isRightSwipe: isRightSwipe),
-        );
-      }
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          context.read<HomeBloc>().add(
+            SwipeProfileEvent(isRightSwipe: isRightSwipe),
+          );
+        }
+      });
     });
   }
 
@@ -1313,16 +1316,57 @@ class _DraggableCardState extends State<_DraggableCard>
       onHorizontalDragStart: _onPanStart,
       onHorizontalDragUpdate: _onPanUpdate,
       onHorizontalDragEnd: _onPanEnd,
-      child: Transform.translate(
-        offset: _position,
-        child: Transform.rotate(
-          angle: angle,
-          child: _ProfileCardUI(
-            profile: widget.profile,
-            glowColor: glowColor,
-            dragPercent: dragPercent,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Transform.translate(
+            offset: _position,
+            child: Transform.rotate(
+              angle: angle,
+              child: _ProfileCardUI(
+                profile: widget.profile,
+                glowColor: glowColor,
+                dragPercent: dragPercent,
+              ),
+            ),
           ),
-        ),
+
+          // Cross Animation (Visible on Left Swipe) sliding in from Left Edge
+          if (dragPercent < 0)
+            Positioned(
+              left: -120 + (dragPercent.abs() * 140),
+              top: MediaQuery.of(context).size.height * 0.25,
+              child: Opacity(
+                opacity: dragPercent.abs().clamp(0.0, 1.0),
+                child: IgnorePointer(
+                  child: Lottie.asset(
+                    'assets/nolike.json',
+                    width: 110,
+                    height: 110,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+
+          // Like Animation (Visible on Right Swipe) sliding in from Right Edge
+          if (dragPercent > 0)
+            Positioned(
+              right: -120 + (dragPercent * 140),
+              top: MediaQuery.of(context).size.height * 0.21,
+              child: Opacity(
+                opacity: dragPercent.clamp(0.0, 1.0),
+                child: IgnorePointer(
+                  child: Lottie.asset(
+                    'assets/like.json',
+                    width: 180,
+                    height: 180,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -1415,60 +1459,6 @@ class _ProfileCardUI extends StatelessWidget {
               ),
             ),
           ),
-
-          // Cross Animation (Visible on Left Swipe)
-          if (dragPercent < 0)
-            Positioned(
-              right: 30,
-              top:
-                  MediaQuery.of(context).size.height *
-                  0.2, // approximately top third
-              child: Opacity(
-                opacity: (-dragPercent * 1.5).clamp(
-                  0.0,
-                  1.0,
-                ), // fades in quickly
-                child: Transform.scale(
-                  scale: (0.5 + (-dragPercent * 0.5)).clamp(
-                    0.5,
-                    1.0,
-                  ), // grows slightly
-                  child: Lottie.asset(
-                    'assets/nolike.json',
-                    width: 110,
-                    height: 110,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-
-          // Like Animation (Visible on Right Swipe)
-          if (dragPercent > 0)
-            Positioned(
-              left: 10,
-              top:
-                  MediaQuery.of(context).size.height *
-                  0.16, // Move Like animation slightly down
-              child: Opacity(
-                opacity: (dragPercent * 1.5).clamp(
-                  0.0,
-                  1.0,
-                ), // fades in quickly
-                child: Transform.scale(
-                  scale: (0.5 + (dragPercent * 0.5)).clamp(
-                    0.5,
-                    1.0,
-                  ), // grows slightly
-                  child: Lottie.asset(
-                    'assets/like.json',
-                    width: 190,
-                    height: 190,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
 
           // Bottom gradient & details
           Positioned(
