@@ -62,22 +62,40 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ),
   ];
 
+  final List<ProfileModel> _swipedProfiles = [];
+
   HomeBloc() : super(HomeInitial()) {
     on<LoadHomeDataEvent>((event, emit) {
-      emit(HomeLoaded(profiles: List.from(_dummyProfiles)));
+      emit(HomeLoaded(profiles: List.from(_dummyProfiles), remainingSwipes: 25));
     });
 
     on<SwipeProfileEvent>((event, emit) {
       if (state is HomeLoaded) {
         final currentState = state as HomeLoaded;
         if (currentState.profiles.isNotEmpty) {
+          _swipedProfiles.add(currentState.profiles.first);
           final updatedProfiles = List<ProfileModel>.from(currentState.profiles)
             ..removeAt(0);
+          final newSwipes = currentState.remainingSwipes > 0 ? currentState.remainingSwipes - 1 : 0;
           if (updatedProfiles.isEmpty) {
-            emit(HomeEmpty());
+            emit(HomeEmpty(remainingSwipes: newSwipes));
           } else {
-            emit(HomeLoaded(profiles: updatedProfiles));
+            emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes));
           }
+        }
+      }
+    });
+
+    on<UndoSwipeEvent>((event, emit) {
+      if (_swipedProfiles.isNotEmpty) {
+        final lastSwiped = _swipedProfiles.removeLast();
+        final newSwipes = state.remainingSwipes < 25 ? state.remainingSwipes + 1 : 25;
+        if (state is HomeLoaded) {
+          final currentState = state as HomeLoaded;
+          final updatedProfiles = [lastSwiped, ...currentState.profiles];
+          emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes));
+        } else if (state is HomeEmpty) {
+          emit(HomeLoaded(profiles: [lastSwiped], remainingSwipes: newSwipes));
         }
       }
     });

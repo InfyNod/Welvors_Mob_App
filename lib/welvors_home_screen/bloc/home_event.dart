@@ -16,3 +16,5 @@ class SwipeProfileEvent extends HomeEvent {
   @override
   List<Object> get props => [isRightSwipe];
 }
+
+class UndoSwipeEvent extends HomeEvent {}

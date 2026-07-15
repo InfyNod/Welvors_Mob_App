@@ -53,21 +53,27 @@ class ProfileModel extends Equatable {
 }
 
 abstract class HomeState extends Equatable {
-  const HomeState();
+  final int remainingSwipes;
+  const HomeState({this.remainingSwipes = 25});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [remainingSwipes];
 }
 
-class HomeInitial extends HomeState {}
+class HomeInitial extends HomeState {
+  const HomeInitial() : super(remainingSwipes: 25);
+}
 
 class HomeLoaded extends HomeState {
   final List<ProfileModel> profiles;
 
-  const HomeLoaded({required this.profiles});
+  const HomeLoaded({required this.profiles, int remainingSwipes = 25})
+      : super(remainingSwipes: remainingSwipes);
 
   @override
-  List<Object?> get props => [profiles];
+  List<Object?> get props => [profiles, remainingSwipes];
 }
 
-class HomeEmpty extends HomeState {}
+class HomeEmpty extends HomeState {
+  const HomeEmpty({int remainingSwipes = 25}) : super(remainingSwipes: remainingSwipes);
+}

@@ -1316,13 +1316,29 @@ class _ProfileCardUI extends StatelessWidget {
           Positioned(
             top: 16,
             left: 16,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
-                shape: BoxShape.circle,
+            child: GestureDetector(
+              onTap: () {
+                context.read<HomeBloc>().add(UndoSwipeEvent());
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.95),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.replay_rounded,
+                  size: 22,
+                  color: Colors.orange.shade500,
+                ),
               ),
-              child: const Icon(Icons.refresh, size: 20, color: Colors.black87),
             ),
           ),
           // Top-right diamond icon
