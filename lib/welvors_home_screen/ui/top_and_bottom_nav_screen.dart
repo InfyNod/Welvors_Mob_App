@@ -155,21 +155,9 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                               width: 3,
                             ),
                             boxShadow: [
-                              // Premium Glow Effect
                               BoxShadow(
-                                color: Colors.redAccent.withOpacity(
-                                  _isRoseVisible ? 0.5 : 0.0,
-                                ), // Remove glow when docked
-                                blurRadius: 20,
-                                spreadRadius: 4,
-                                offset: const Offset(0, 8),
-                              ),
-                              BoxShadow(
-                                color: Colors.pinkAccent.withOpacity(
-                                  _isRoseVisible ? 0.3 : 0.0,
-                                ),
+                                color: Colors.black.withOpacity(0.15),
                                 blurRadius: 10,
-                                spreadRadius: 1,
                                 offset: const Offset(0, 4),
                               ),
                             ],
