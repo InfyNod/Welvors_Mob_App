@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class MarriageScreen extends StatefulWidget {
   final VoidCallback? onNavigateToDating;
-  
+
   const MarriageScreen({Key? key, this.onNavigateToDating}) : super(key: key);
 
   @override
@@ -16,62 +17,26 @@ class _MarriageScreenState extends State<MarriageScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Icon with Glow
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                // Glow Effect
-                Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFE91E63).withOpacity(0.15),
-                        blurRadius: 50,
-                        spreadRadius: 15,
-                      ),
-                    ],
-                  ),
-                ),
-                // Gradient Icon Background
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFFFF9800), // Orange
-                        Color(0xFFE85A7A), // Pink
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.all_inclusive, // Closest approximation to the rings
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  ),
-                ),
-              ],
+            Lottie.asset(
+              'assets/couple.json',
+              width: 280,
+              height: 280,
+              fit: BoxFit.contain,
             ),
-            const SizedBox(height: 32),
-            
+            const SizedBox(height: 0),
+
             // Coming Soon Badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF8E1), // Light yellowish/orange background
+                color: const Color(
+                  0xFFFFF8E1,
+                ), // Light yellowish/orange background
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: const Color(0xFFFFCC80), width: 1.5),
               ),
@@ -85,9 +50,9 @@ class _MarriageScreenState extends State<MarriageScreen> {
                 ),
               ),
             ),
-            
-            const SizedBox(height: 24),
-            
+
+            const SizedBox(height: 15),
+
             // Title
             const Text(
               'Marriage Mode',
@@ -98,9 +63,9 @@ class _MarriageScreenState extends State<MarriageScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Description
             Text(
               'A dedicated space for serious, marriage-\nminded matches — with family-friendly\nprofiles, intent verification and curated\nintroductions. We’re building it right now.',
@@ -112,9 +77,9 @@ class _MarriageScreenState extends State<MarriageScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 40),
-            
+
             // Notify me Button
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
@@ -141,7 +106,7 @@ class _MarriageScreenState extends State<MarriageScreen> {
                           color: const Color(0xFFE85A7A).withOpacity(0.5),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
-                        )
+                        ),
                       ]
                     : [],
               ),
@@ -158,21 +123,26 @@ class _MarriageScreenState extends State<MarriageScreen> {
                     });
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.white,
-                  shadowColor: Colors.transparent,
-                  surfaceTintColor: Colors.transparent,
-                  splashFactory: NoSplash.splashFactory,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ).copyWith(
-                  overlayColor: MaterialStateProperty.all(Colors.transparent),
-                ),
+                style:
+                    ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      shadowColor: Colors.transparent,
+                      surfaceTintColor: Colors.transparent,
+                      splashFactory: NoSplash.splashFactory,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ).copyWith(
+                      overlayColor: MaterialStateProperty.all(
+                        Colors.transparent,
+                      ),
+                    ),
                 icon: Icon(
-                  _isNotified ? Icons.notifications_active : Icons.notifications_none,
+                  _isNotified
+                      ? Icons.notifications_active
+                      : Icons.notifications_none,
                   size: 24,
                 ),
                 label: Text(

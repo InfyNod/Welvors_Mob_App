@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class MatureDatingScreen extends StatefulWidget {
   final VoidCallback? onNavigateToDating;
@@ -16,56 +17,19 @@ class _MatureDatingScreenState extends State<MatureDatingScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Icon with Glow
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                // Glow Effect
-                Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF673AB7).withOpacity(0.15),
-                        blurRadius: 50,
-                        spreadRadius: 15,
-                      ),
-                    ],
-                  ),
-                ),
-                // Gradient Icon Background
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF3F51B5), // Indigo
-                        Color(0xFF9C27B0), // Purple
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.workspace_premium, // Elegant icon for Mature Dating
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  ),
-                ),
-              ],
+            Lottie.asset(
+              'assets/old.json',
+              width: 280,
+              height: 280,
+              fit: BoxFit.contain,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 0),
             
             // Coming Soon Badge
             Container(
@@ -86,7 +50,7 @@ class _MatureDatingScreenState extends State<MatureDatingScreen> {
               ),
             ),
             
-            const SizedBox(height: 24),
+            const SizedBox(height: 15),
             
             // Title
             const Text(
