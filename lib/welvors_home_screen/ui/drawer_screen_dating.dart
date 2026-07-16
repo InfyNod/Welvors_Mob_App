@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'marriage_screen.dart';
-import 'mature_dating_screen.dart';
+import 'drawer_marriage_screen.dart';
+import 'drawer_mature_dating_screen.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({Key? key}) : super(key: key);

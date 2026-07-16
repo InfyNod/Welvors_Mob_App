@@ -9,7 +9,7 @@ import 'date_now_screen.dart';
 import 'admirers_screen.dart';
 import 'chat_screen.dart';
 import 'events_screen.dart';
-import 'drawer_screen.dart';
+import 'drawer_screen_dating.dart';
 
 class TopAndBottomNavScreen extends StatelessWidget {
   const TopAndBottomNavScreen({super.key});
