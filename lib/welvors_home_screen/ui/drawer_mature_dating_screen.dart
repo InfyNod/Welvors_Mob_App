@@ -114,9 +114,33 @@ class _MatureDatingScreenState extends State<MatureDatingScreen> {
             const SizedBox(height: 40),
             
             // Notify me Button
-            SizedBox(
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
               width: double.infinity,
               height: 56,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: _isNotified ? null : const Color(0xFF1E1E1E),
+                gradient: _isNotified
+                    ? const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF3F51B5), // Indigo
+                          Color(0xFF9C27B0), // Purple
+                        ],
+                      )
+                    : null,
+                boxShadow: _isNotified
+                    ? [
+                        BoxShadow(
+                          color: const Color(0xFF9C27B0).withOpacity(0.5),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        )
+                      ]
+                    : [],
+              ),
               child: ElevatedButton.icon(
                 onPressed: () {
                   setState(() {
@@ -124,13 +148,13 @@ class _MatureDatingScreenState extends State<MatureDatingScreen> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isNotified ? const Color(0xFF673AB7) : const Color(0xFF1E1E1E), // Deep purple when notified
+                  backgroundColor: Colors.transparent,
                   foregroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  elevation: _isNotified ? 8 : 0,
-                  shadowColor: const Color(0xFF673AB7).withOpacity(0.5),
+                  elevation: 0,
                 ),
                 icon: Icon(
                   _isNotified ? Icons.notifications_active : Icons.notifications_none,
