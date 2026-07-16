@@ -133,10 +133,7 @@ class HomeScreen extends StatelessWidget {
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.pink,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 32,
-                vertical: 14,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -355,9 +352,9 @@ class _ProfileDetailsView extends StatelessWidget {
           // Prompt Card
           Container(
             padding: const EdgeInsets.only(
-              left: 20,
+              left: 16,
               top: 16,
-              right: 20,
+              right: 16,
               bottom: 8,
             ),
             width: double.infinity,
@@ -389,10 +386,10 @@ class _ProfileDetailsView extends StatelessWidget {
                 const Text(
                   'A good book rec and a strong chai opinion.',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                     color: Colors.black87,
-                    height: 1.3,
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -516,9 +513,9 @@ class _ProfileDetailsView extends StatelessWidget {
           // Second Prompt Card
           Container(
             padding: const EdgeInsets.only(
-              left: 20,
+              left: 16,
               top: 16,
-              right: 20,
+              right: 16,
               bottom: 8,
             ),
             width: double.infinity,
@@ -550,10 +547,10 @@ class _ProfileDetailsView extends StatelessWidget {
                 const Text(
                   'Roadside chai after a long trek, no signal, good company.',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                     color: Colors.black87,
-                    height: 1.3,
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -592,7 +589,7 @@ class _ProfileDetailsView extends StatelessWidget {
 
           // INTERESTS & HOBBIES Section
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -610,23 +607,46 @@ class _ProfileDetailsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: 4,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Colors.pinkAccent,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: Colors.pinkAccent,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'INTERESTS & HOBBIES',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.pinkAccent,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'INTERESTS & HOBBIES',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.pinkAccent,
-                        letterSpacing: 1.5,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.pink.shade300,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '4 in common',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
@@ -636,12 +656,14 @@ class _ProfileDetailsView extends StatelessWidget {
                   spacing: 10,
                   runSpacing: 12,
                   children: [
-                    _buildInterestPill('✈️', 'Travel'),
-                    _buildInterestPill('☕️', 'Coffee'),
-                    _buildInterestPill('⛰️', 'Trekking'),
-                    _buildInterestPill('📸', 'Photography'),
-                    _buildInterestPill('🎵', 'Music'),
-                    _buildInterestPill('🥘', 'Cooking'),
+                    _buildInterestPill('✈️', 'Travel', isMatch: true),
+                    _buildInterestPill('☕️', 'Coffee', isMatch: true),
+                    _buildInterestPill('⛰️', 'Trekking', isMatch: true),
+                    _buildInterestPill('📖', 'Books', isMatch: false),
+                    _buildInterestPill('🧘‍♀️', 'Yoga', isMatch: false),
+                    _buildInterestPill('🎵', 'Indie music', isMatch: true),
+                    _buildInterestPill('🥘', 'Cooking', isMatch: false),
+                    _buildInterestPill('📸', 'Photography', isMatch: false),
                   ],
                 ),
               ],
@@ -822,11 +844,12 @@ class _ProfileDetailsView extends StatelessWidget {
                   '₹25–40 L / year',
                   subValue: 'Household, approx',
                 ),
+                const Divider(height: 18, color: Colors.black12),
                 const SizedBox(height: 16),
                 const Text(
-                  'Grew up in a close, easy-going Marathi family that values ambition as much as togetherness. My parents married for love and never made it about timelines — they\'d want the same warmth for me.',
+                  'Grew up in a close, easy-going Marathi family that values ambition as much togetherness. My parents married for love and never made it about timelines — they\'d want the same warmth for me.',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 15,
                     color: Colors.black87,
                     height: 1.5,
                   ),
@@ -845,9 +868,9 @@ class _ProfileDetailsView extends StatelessWidget {
           // Third Prompt Card
           Container(
             padding: const EdgeInsets.only(
-              left: 20,
+              left: 16,
               top: 16,
-              right: 20,
+              right: 16,
               bottom: 8,
             ),
             width: double.infinity,
@@ -879,10 +902,10 @@ class _ProfileDetailsView extends StatelessWidget {
                 const Text(
                   'You can debate me for an hour and still want dessert after.',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                     color: Colors.black87,
-                    height: 1.3,
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -986,19 +1009,23 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildInterestPill(String emoji, String text) {
+  Widget _buildInterestPill(String emoji, String text, {bool isMatch = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isMatch ? Colors.pink.shade50 : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.pink.shade100, width: 1.2),
+        border: Border.all(
+          color: isMatch ? Colors.transparent : Colors.pink.shade100,
+          width: 1.2,
+        ),
         boxShadow: [
-          BoxShadow(
-            color: Colors.pink.shade50,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
+          if (!isMatch)
+            BoxShadow(
+              color: Colors.pink.shade50,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
         ],
       ),
       child: Row(
@@ -1008,10 +1035,10 @@ class _ProfileDetailsView extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: Colors.black87,
+              color: isMatch ? AppColors.pinkDeep : Colors.black87,
             ),
           ),
         ],
@@ -1047,35 +1074,37 @@ class _ProfileDetailsView extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black54,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              value,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: Colors.black87,
-              ),
-            ),
-            if (subValue != null) ...[
-              const SizedBox(height: 4),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
               Text(
-                subValue,
+                value,
+                textAlign: TextAlign.right,
                 style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black45,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
+              if (subValue != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subValue,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.black45,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ],
     );
@@ -1136,7 +1165,7 @@ class _ProfileDetailsView extends StatelessWidget {
 
   Widget _buildDetailCard({required String title, required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -1170,7 +1199,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w900,
                       color: Colors.pinkAccent,
                       letterSpacing: 1.5,
@@ -1208,7 +1237,7 @@ class _ProfileDetailsView extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             color: Colors.black54,
             fontWeight: FontWeight.w600,
           ),
@@ -1222,7 +1251,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 value,
                 textAlign: TextAlign.right,
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   color: Colors.black87,
                   fontWeight: FontWeight.bold,
                 ),
