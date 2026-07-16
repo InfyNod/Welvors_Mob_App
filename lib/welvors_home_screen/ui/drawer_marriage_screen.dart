@@ -1,44 +1,148 @@
 import 'package:flutter/material.dart';
 
-class MarriageScreen extends StatelessWidget {
+class MarriageScreen extends StatefulWidget {
   const MarriageScreen({Key? key}) : super(key: key);
 
   @override
+  State<MarriageScreen> createState() => _MarriageScreenState();
+}
+
+class _MarriageScreenState extends State<MarriageScreen> {
+  bool _isNotified = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(top: 80.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Icon with Glow
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                // Glow Effect
+                Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFE91E63).withOpacity(0.15),
+                        blurRadius: 50,
+                        spreadRadius: 15,
+                      ),
+                    ],
+                  ),
+                ),
+                // Gradient Icon Background
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFFF9800), // Orange
+                        Color(0xFFE85A7A), // Pink
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.all_inclusive, // Closest approximation to the rings
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+            
+            // Coming Soon Badge
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.pink.shade50,
-                shape: BoxShape.circle,
+                color: const Color(0xFFFFF8E1), // Light yellowish/orange background
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFFFCC80), width: 1.5),
               ),
-              child: Icon(
-                Icons.favorite_outline,
-                size: 60,
-                color: Colors.pink.shade200,
+              child: const Text(
+                'COMING SOON',
+                style: TextStyle(
+                  color: Color(0xFFF57C00), // Orange text
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
+                ),
               ),
             ),
+            
             const SizedBox(height: 24),
+            
+            // Title
             const Text(
-              'Marriage',
+              'Marriage Mode',
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 28,
                 fontWeight: FontWeight.w900,
                 color: Colors.black87,
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            
+            const SizedBox(height: 16),
+            
+            // Description
             Text(
-              'Coming Soon!',
+              'A dedicated space for serious, marriage-\nminded matches — with family-friendly\nprofiles, intent verification and curated\nintroductions. We’re building it right now.',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontSize: 15,
+                height: 1.6,
                 color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            
+            const SizedBox(height: 40),
+            
+            // Notify me Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _isNotified = !_isNotified;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _isNotified ? const Color(0xFFE85A7A) : const Color(0xFF1E1E1E), // Pink when notified
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: _isNotified ? 8 : 0,
+                  shadowColor: const Color(0xFFE85A7A).withOpacity(0.5),
+                ),
+                icon: Icon(
+                  _isNotified ? Icons.notifications_active : Icons.notifications_none,
+                  size: 24,
+                ),
+                label: Text(
+                  _isNotified ? 'Notified!' : 'Notify me at launch',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],

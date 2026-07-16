@@ -25,11 +25,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
           children: [
             _buildTopTabs(context),
             Expanded(
-              child: _selectedTabIndex == 1
-                  ? _buildDatingContent()
-                  : (_selectedTabIndex == 0
-                        ? const MarriageScreen()
-                        : const MatureDatingScreen()),
+              child: IndexedStack(
+                index: _selectedTabIndex,
+                children: [
+                  const MarriageScreen(),       // Index 0
+                  _buildDatingContent(),        // Index 1
+                  const MatureDatingScreen(),   // Index 2
+                ],
+              ),
             ),
           ],
         ),
@@ -207,7 +210,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 const PrivacySafetyAndMembership(),
                 const SizedBox(height: 24),
                 const EcosystemHistorySupport(),
-                const SizedBox(height: 40),
+                const SizedBox(height: 16),
               ],
             ),
           ),

@@ -27,13 +27,16 @@ class EcosystemHistorySupport extends StatelessWidget {
                 subtitleRich: TextSpan(
                   children: [
                     TextSpan(
-                        text: '3-year journey tracking · ',
-                        style: TextStyle(color: Colors.grey.shade500)),
+                      text: '3-year journey tracking · ',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
                     const TextSpan(
-                        text: '5 Lakh Status',
-                        style: TextStyle(
-                            color: Color(0xFFE85A7A), // Deep pink
-                            fontWeight: FontWeight.bold)),
+                      text: '5 Lakh Status',
+                      style: TextStyle(
+                        color: Color(0xFFE85A7A), // Deep pink
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -45,16 +48,20 @@ class EcosystemHistorySupport extends StatelessWidget {
                 subtitleRich: TextSpan(
                   children: [
                     TextSpan(
-                        text: 'Your exclusive status · ',
-                        style: TextStyle(color: Colors.grey.shade500)),
+                      text: 'Your exclusive status · ',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
                     const TextSpan(
-                        text: 'Priya',
-                        style: TextStyle(
-                            color: Color(0xFFE85A7A), // Deep pink
-                            fontWeight: FontWeight.bold)),
+                      text: 'Priya',
+                      style: TextStyle(
+                        color: Color(0xFFE85A7A), // Deep pink
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     TextSpan(
-                        text: ' · requests',
-                        style: TextStyle(color: Colors.grey.shade500)),
+                      text: ' · requests',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
                   ],
                 ),
               ),
@@ -66,16 +73,20 @@ class EcosystemHistorySupport extends StatelessWidget {
                 subtitleRich: TextSpan(
                   children: [
                     TextSpan(
-                        text: 'Trust Score ',
-                        style: TextStyle(color: Colors.grey.shade500)),
+                      text: 'Trust Score ',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
                     const TextSpan(
-                        text: '20/100',
-                        style: TextStyle(
-                            color: Color(0xFFE85A7A), // Deep pink
-                            fontWeight: FontWeight.bold)),
+                      text: '20/100',
+                      style: TextStyle(
+                        color: Color(0xFFE85A7A), // Deep pink
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     TextSpan(
-                        text: ' · Verify to boost & get more matches',
-                        style: TextStyle(color: Colors.grey.shade500)),
+                      text: ' · Verify to boost & get more matches',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
                   ],
                 ),
               ),
@@ -93,7 +104,7 @@ class EcosystemHistorySupport extends StatelessWidget {
             Expanded(
               child: _buildActivityCard(
                 icon: '📅',
-                iconBgColor: const Color(0xFFFBE4E7), // Light red
+                iconBgColor: const Color(0xFFF5F5F5),
                 title: 'My Bookings',
                 subtitle: '2 UPCOMING EVENTS',
               ),
@@ -102,7 +113,7 @@ class EcosystemHistorySupport extends StatelessWidget {
             Expanded(
               child: _buildActivityCard(
                 icon: '⏱️',
-                iconBgColor: const Color(0xFFF5F5F5), // Light grey
+                iconBgColor: const Color(0xFFF5F5F5),
                 title: 'My Dates',
                 subtitle: '8 PAST DATES',
               ),
@@ -156,12 +167,13 @@ class EcosystemHistorySupport extends StatelessWidget {
                 iconBgColor: const Color(0xFFFFF3E0), // Light orange
                 title: 'Logout',
                 subtitle: 'Sign out of your account',
+                titleColor: Colors.red.shade400,
               ),
             ],
           ),
         ),
-        
-        const SizedBox(height: 32),
+
+        const SizedBox(height: 19),
         Center(
           child: Text(
             'WELVORS V2.4.0',
@@ -194,6 +206,7 @@ class EcosystemHistorySupport extends StatelessWidget {
     required Color iconBgColor,
     required String title,
     required InlineSpan subtitleRich,
+    Color titleColor = Colors.black87,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -216,10 +229,10 @@ class EcosystemHistorySupport extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black87,
+                    color: titleColor,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -243,11 +256,13 @@ class EcosystemHistorySupport extends StatelessWidget {
     required Color iconBgColor,
     required String title,
     required String subtitle,
+    Color titleColor = Colors.black87,
   }) {
     return _buildEcosystemTile(
       icon: icon,
       iconBgColor: iconBgColor,
       title: title,
+      titleColor: titleColor,
       subtitleRich: TextSpan(
         text: subtitle,
         style: TextStyle(color: Colors.grey.shade500),
@@ -266,20 +281,27 @@ class EcosystemHistorySupport extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
         boxShadow: AppColors.shadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: iconBgColor,
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(14),
             ),
             alignment: Alignment.center,
-            child: Text(icon, style: const TextStyle(fontSize: 18)),
+            child: Text(
+              icon,
+              style: const TextStyle(
+                fontSize: 26,
+                height: 1.1, // Adjust line height to center emojis properly
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           Text(
