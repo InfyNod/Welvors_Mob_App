@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MarriageScreen extends StatefulWidget {
-  const MarriageScreen({Key? key}) : super(key: key);
+  final VoidCallback? onNavigateToDating;
+  
+  const MarriageScreen({Key? key, this.onNavigateToDating}) : super(key: key);
 
   @override
   State<MarriageScreen> createState() => _MarriageScreenState();
@@ -120,17 +122,19 @@ class _MarriageScreenState extends State<MarriageScreen> {
               height: 56,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: _isNotified ? null : const Color(0xFF1E1E1E),
-                gradient: _isNotified
-                    ? const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFFFF9800), // Orange
-                          Color(0xFFE85A7A), // Pink
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: _isNotified
+                      ? [
+                          const Color(0xFFFF9800), // Orange
+                          const Color(0xFFE85A7A), // Pink
+                        ]
+                      : [
+                          const Color(0xFF1E1E1E), // Dark near black
+                          const Color(0xFF1E1E1E),
                         ],
-                      )
-                    : null,
+                ),
                 boxShadow: _isNotified
                     ? [
                         BoxShadow(
@@ -146,15 +150,26 @@ class _MarriageScreenState extends State<MarriageScreen> {
                   setState(() {
                     _isNotified = !_isNotified;
                   });
+                  if (_isNotified && widget.onNavigateToDating != null) {
+                    Future.delayed(const Duration(seconds: 1), () {
+                      if (mounted) {
+                        widget.onNavigateToDating!();
+                      }
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   foregroundColor: Colors.white,
                   shadowColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  splashFactory: NoSplash.splashFactory,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
+                ).copyWith(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
                 ),
                 icon: Icon(
                   _isNotified ? Icons.notifications_active : Icons.notifications_none,

@@ -18,7 +18,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFFBF7F3),
+      color: Colors.white,
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -28,9 +28,21 @@ class _DrawerScreenState extends State<DrawerScreen> {
               child: IndexedStack(
                 index: _selectedTabIndex,
                 children: [
-                  const MarriageScreen(),       // Index 0
+                  MarriageScreen(
+                    onNavigateToDating: () {
+                      setState(() {
+                        _selectedTabIndex = 1;
+                      });
+                    },
+                  ),       // Index 0
                   _buildDatingContent(),        // Index 1
-                  const MatureDatingScreen(),   // Index 2
+                  MatureDatingScreen(
+                    onNavigateToDating: () {
+                      setState(() {
+                        _selectedTabIndex = 1;
+                      });
+                    },
+                  ),   // Index 2
                 ],
               ),
             ),
@@ -608,10 +620,11 @@ class _DrawerScreenState extends State<DrawerScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20), // More rounded corners
+        border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04), // Soft shadow, no border
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.05), // Soft elegant shadow
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
@@ -672,12 +685,18 @@ class _DrawerScreenState extends State<DrawerScreen> {
 
   Widget _buildDatePlansCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Reduced vertical padding
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.line, width: 1.5),
-        boxShadow: AppColors.shadow,
+        border: Border.all(color: const Color(0xFFF0F0F0), width: 1), 
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
