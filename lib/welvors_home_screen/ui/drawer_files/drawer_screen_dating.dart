@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../onbording_allpage/theme/app_colors.dart';
-import 'drawer_marriage_screen.dart';
-import 'drawer_mature_dating_screen.dart';
+import '../../../onbording_allpage/theme/app_colors.dart';
+import '../drawer_marriage_screen.dart';
+import '../drawer_mature_dating_screen.dart';
+import 'ecosytem_history_support.dart';
+import 'privacy_safety_and_membership_plan.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({Key? key}) : super(key: key);
@@ -202,7 +204,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 const SizedBox(height: 24),
                 _buildDatePlansCard(),
                 const SizedBox(height: 24),
-                _buildSectionTitle('PRIVACY & SAFETY'),
+                const PrivacySafetyAndMembership(),
+                const SizedBox(height: 24),
+                const EcosystemHistorySupport(),
                 const SizedBox(height: 40),
               ],
             ),
