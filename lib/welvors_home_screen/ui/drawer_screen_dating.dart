@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../onbording_allpage/theme/app_colors.dart';
 import 'drawer_marriage_screen.dart';
 import 'drawer_mature_dating_screen.dart';
 
@@ -15,7 +16,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFFCF9F5),
+      color: const Color(0xFFFBF7F3),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -41,9 +42,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
     double indicatorLeft;
     double indicatorWidth;
     if (_selectedTabIndex == 0) {
-      indicatorWidth = 65.0; // Width of 'Marriage'
-      indicatorLeft =
-          35.0 - (indicatorWidth / 2); // Centered at ~35px from left
+      indicatorWidth = 65.0;
+      indicatorLeft = 35.0 - (indicatorWidth / 2);
     } else if (_selectedTabIndex == 1) {
       indicatorWidth = 50.0; // Width of 'Dating'
       indicatorLeft =
@@ -147,23 +147,66 @@ class _DrawerScreenState extends State<DrawerScreen> {
 
   Widget _buildDatingContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      physics:
+          const ClampingScrollPhysics(), // Re-locking the scroll as requested
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 10), // Reduced top spacing as requested
-          _buildProfileSection(),
-          const SizedBox(height: 24),
-          _buildProfileCompletionCard(),
-          const SizedBox(height: 24),
-          _buildSectionTitle('MY BALANCES'),
-          const SizedBox(height: 12),
-          _buildBalancesSection(),
-          const SizedBox(height: 24),
-          _buildDatePlansCard(),
-          const SizedBox(height: 24),
-          _buildSectionTitle('PRIVACY & SAFETY'),
-          const SizedBox(height: 40),
+          // Premium Top Section (Gradient + White Background)
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFFFF5EC), Colors.white],
+                stops: [0.0, 0.6], // Fades from peach to white
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x0A000000), // Very subtle shadow for separation
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.only(
+              top: 36,
+              bottom: 24,
+              left: 20,
+              right: 20,
+            ),
+            child: Column(
+              children: [
+                _buildProfileSection(),
+                const SizedBox(height: 24),
+                _buildProfileCompletionCard(),
+              ],
+            ),
+          ),
+
+          // Bottom Section (Grey Background)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                _buildSectionTitle('MY BALANCES'),
+                const SizedBox(height: 12),
+                _buildBalancesSection(),
+                const SizedBox(height: 24),
+                _buildDatePlansCard(),
+                const SizedBox(height: 24),
+                _buildSectionTitle('PRIVACY & SAFETY'),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -173,7 +216,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Glow effect
+        // Glow effect behind avatar (pink type flow)
         Container(
           width: 250,
           height: 250,
@@ -181,22 +224,36 @@ class _DrawerScreenState extends State<DrawerScreen> {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                Colors.pink.shade100.withOpacity(0.5),
-                Colors.transparent,
+                AppColors.pinkSoft.withOpacity(1.0), // Stronger pink glow
+                AppColors.pinkSoft.withOpacity(0.0),
               ],
+              stops: const [0.3, 1.0],
             ),
           ),
         ),
         Column(
           children: [
-            // Avatar with % pill
+            // Avatar with % pill and progress ring
             Stack(
               alignment: Alignment.bottomCenter,
               clipBehavior: Clip.none,
               children: [
+                // Circular progress ring
+                SizedBox(
+                  width: 106,
+                  height: 106,
+                  child: CircularProgressIndicator(
+                    value: 0.62,
+                    strokeWidth: 5, // Made thicker as requested
+                    color: AppColors.pink, // Lighter pink
+                    backgroundColor: Colors.white, // Remaining circle is white
+                  ),
+                ),
+                // Inner Avatar Image
                 Container(
-                  width: 100,
-                  height: 100,
+                  width: 92, // Leave space for gap and stroke
+                  height: 92,
+                  margin: const EdgeInsets.all(7), // Center it inside the ring
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
@@ -204,7 +261,6 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    border: Border.all(color: Colors.pinkAccent, width: 2),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -213,25 +269,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       ),
                     ],
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Color(0xFFE5A88B), Color(0xFFC7846B)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
+                // Percentage Pill
                 Positioned(
                   bottom: -10,
                   child: Container(
@@ -240,8 +279,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.pinkAccent,
+                      color: AppColors.pink, // Lighter pink
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
+                      ), // White border like screenshot
                     ),
                     child: const Text(
                       '62%',
@@ -263,7 +306,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 const Text(
                   'Tanishka',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 24, // slightly larger
                     fontWeight: FontWeight.w900,
                     color: Colors.black87,
                   ),
@@ -272,8 +315,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 const Text(
                   '26',
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 24, // slightly larger
+                    fontWeight: FontWeight.bold, // made bolder
                     color: Colors.grey,
                   ),
                 ),
@@ -302,8 +345,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   'Mumbai, India',
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.bold, // bolded
                   ),
                 ),
               ],
@@ -315,25 +358,39 @@ class _DrawerScreenState extends State<DrawerScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+                    horizontal: 14, // increased width
+                    vertical: 10, // increased height
                   ),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFFFA7E6D), Color(0xFFEB5076)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFEB5076).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.star, size: 12, color: Colors.white),
-                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.auto_awesome,
+                        size: 14,
+                        color: Colors.white,
+                      ), // Sparkle icon like ✦
+                      const SizedBox(width: 6),
                       const Text(
                         'PLATINUM MEMBER',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          letterSpacing: 0.5,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ],
@@ -342,18 +399,22 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+                    horizontal: 14,
+                    vertical: 10,
                   ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE4F8EA),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: const Color(0xFF1EAD5D).withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 6,
-                        height: 6,
+                        width: 8,
+                        height: 8,
                         decoration: const BoxDecoration(
                           color: Color(0xFF1EAD5D),
                           shape: BoxShape.circle,
@@ -364,8 +425,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         '98% Trust Score',
                         style: TextStyle(
                           color: Color(0xFF1EAD5D),
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -385,13 +446,11 @@ class _DrawerScreenState extends State<DrawerScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        border: Border.all(
+          color: AppColors.line,
+          width: 1.5,
+        ), // nice grey border
+        boxShadow: AppColors.shadow, // use theme shadow
       ),
       child: Column(
         children: [
@@ -409,9 +468,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
               const Text(
                 '75%',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18, // slightly larger
                   fontWeight: FontWeight.w900,
-                  color: Colors.pinkAccent,
+                  color: AppColors.pink, // lighter pink
                 ),
               ),
             ],
@@ -486,54 +545,65 @@ class _DrawerScreenState extends State<DrawerScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildBalanceCard(
-          icon: Icons.star,
-          iconColor: Colors.amber.shade300,
-          value: '3',
-          label: 'Roses',
-          hasDot: true,
+        Expanded(
+          child: _buildBalanceCard(
+            emoji: '⭐️',
+            bgColor: const Color(0xFFFFF4E0),
+            value: '3',
+            label: 'Roses',
+            hasDot: true,
+          ),
         ),
-        _buildBalanceCard(
-          icon: Icons.favorite,
-          iconColor: Colors.pinkAccent.shade100,
-          value: '5',
-          label: 'Compliments',
-          hasDot: true,
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildBalanceCard(
+            emoji: '💌',
+            bgColor: const Color(0xFFFBE4E7),
+            value: '5',
+            label: 'Compliments',
+            hasDot: true,
+          ),
         ),
-        _buildBalanceCard(
-          icon: Icons.rocket_launch,
-          iconColor: Colors.blueAccent.shade100,
-          value: '1',
-          label: 'My Boosts',
-          hasDot: true,
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildBalanceCard(
+            emoji: '🚀',
+            bgColor: const Color(0xFFE5F1FB),
+            value: '1',
+            label: 'My Boosts',
+            hasDot: true,
+          ),
         ),
-        _buildBalanceCard(
-          icon: Icons.account_balance_wallet,
-          iconColor: Colors.pink.shade200,
-          value: '₹3,240',
-          label: 'My Wallet',
-          hasDot: false,
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildBalanceCard(
+            emoji: '👛',
+            bgColor: const Color(0xFFFBE4E7),
+            value: '₹3,240',
+            label: 'My Wallet',
+            hasDot: false,
+          ),
         ),
       ],
     );
   }
 
   Widget _buildBalanceCard({
-    required IconData icon,
-    required Color iconColor,
+    required String emoji,
+    required Color bgColor,
     required String value,
     required String label,
     required bool hasDot,
   }) {
     return Container(
-      width: 75,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20), // More rounded corners
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity(0.04), // Soft shadow, no border
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -545,45 +615,47 @@ class _DrawerScreenState extends State<DrawerScreen> {
             clipBehavior: Clip.none,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.15),
+                  color: bgColor,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: iconColor, size: 20),
+                child: Text(emoji, style: const TextStyle(fontSize: 22)),
               ),
               if (hasDot)
                 Positioned(
-                  right: -2,
-                  top: -2,
+                  right: -4,
+                  top: -4,
                   child: Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: Colors.pinkAccent,
+                      color: AppColors.pink, // The pink color from the image
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
+                      border: Border.all(color: Colors.white, width: 2),
                     ),
-                    child: const Icon(Icons.add, color: Colors.white, size: 6),
+                    child: const Icon(Icons.add, color: Colors.white, size: 10),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4), // Reduced spacing from image
           Text(
             value,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 0), // Reduced spacing
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 10,
+            style: TextStyle(
+              fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Colors.grey,
+              color: Colors.grey.shade600,
             ),
           ),
         ],
@@ -597,23 +669,20 @@ class _DrawerScreenState extends State<DrawerScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        border: Border.all(color: AppColors.line, width: 1.5),
+        boxShadow: AppColors.shadow,
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.orange.shade50,
-              borderRadius: BorderRadius.circular(12),
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFF4E0), // Soft cream/orange background
+              shape: BoxShape.circle,
             ),
-            child: Icon(Icons.paste, color: Colors.brown.shade300),
+            child: const Text('📋', style: TextStyle(fontSize: 22)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -623,8 +692,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 const Text(
                   'Date Plans',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16, // larger
+                    fontWeight: FontWeight.w900,
                     color: Colors.black87,
                   ),
                 ),
@@ -641,19 +710,28 @@ class _DrawerScreenState extends State<DrawerScreen> {
             children: [
               Text(
                 '3',
-                style: TextStyle(
-                  fontSize: 18,
+                style: const TextStyle(
+                  fontSize: 22, // larger
                   fontWeight: FontWeight.w900,
-                  color: Colors.orange.shade400,
+                  color: AppColors.gold, // premium gold
                 ),
               ),
-              Text(
-                'left ›',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  Text(
+                    'left',
+                    style: TextStyle(
+                      fontSize: 12, // larger
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                ],
               ),
             ],
           ),
