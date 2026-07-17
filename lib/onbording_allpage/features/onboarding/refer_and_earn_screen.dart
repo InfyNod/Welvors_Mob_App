@@ -67,7 +67,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
           if (_shareLink.isNotEmpty && !_shareLink.startsWith('http')) {
             _shareLink = 'https://$_shareLink';
           }
-          
+
           _totalEarned = stats['totalEarned'] ?? 0;
           _joinedCount = stats['joined'] ?? 0;
           _rewardedCount = stats['rewarded'] ?? 0;
@@ -78,7 +78,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
             final String statusStr = item['status'] ?? '';
             final int totalReward = item['totalReward'] ?? 0;
             final bool isRewarded = totalReward > 0 || statusStr == 'REWARDED';
-            
+
             String initials = '';
             if (name.isNotEmpty) {
               final parts = name.split(' ');
@@ -106,8 +106,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
         if (infoData != null) {
           _signupReward = infoData['signupReward']?.toString() ?? '100';
           _packageReward = infoData['packageReward']?.toString() ?? '500';
-          _rewardsTitle = infoData['title']?.toString().toUpperCase() ?? 'HOW REWARDS WORK';
-          
+          _rewardsTitle =
+              infoData['title']?.toString().toUpperCase() ?? 'HOW REWARDS WORK';
+
           if (infoData['descriptions'] != null) {
             final List descriptions = infoData['descriptions'];
             _rewardsDescriptions = descriptions
@@ -130,13 +131,17 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
     FocusScope.of(context).unfocus();
 
     final result = await ApiService.applyReferralCode(code);
-    
+
     if (mounted) {
       setState(() => _isApplyingCode = false);
-      
+
       final bool success = result?['success'] == true;
-      final String message = result?['message'] ?? (success ? 'Referral code applied successfully!' : 'Failed to apply code.');
-      
+      final String message =
+          result?['message'] ??
+          (success
+              ? 'Referral code applied successfully!'
+              : 'Failed to apply code.');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
@@ -197,9 +202,11 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.canvas,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         centerTitle: true,
         leading: Padding(
@@ -234,587 +241,621 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.pinkDeep))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.pinkDeep),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Animated Gradient Banner
-            AnimatedBuilder(
-              animation: _gradientController,
-              builder: (context, child) {
-                return Container(
-                  width: double.infinity,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: LinearGradient(
-                      colors: [
-                        _color1.value ?? const Color(0xFFE94086),
-                        _color2.value ?? const Color(0xFFC2185B),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: (_color1.value ?? const Color(0xFFE94086))
-                            .withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: child,
-                );
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Center graphics (gift lottie)
-                  Positioned(
-                    top: 0,
-                    child: Lottie.asset(
-                      'assets/giftref.json',
-                      width: 170,
-                      height: 170,
-                      fit: BoxFit.contain,
-                      repeat: false,
-                    ),
-                  ),
-                  // Title text
-                  Positioned(
-                    bottom: 12,
-                    child: Text(
-                      'Refer & Earn',
-                      style: AppText.h2.copyWith(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // How it works Title
-            Text(
-              'How it works',
-              style: AppText.eyebrow.copyWith(
-                color: Colors.black87,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Timeline items
-            _buildTimelineItem(
-              icon: Icons.share,
-              title: 'Share your code',
-              description:
-                  'Send your invite link via WhatsApp, Instagram or anywhere.',
-              isFirst: true,
-            ),
-            _buildTimelineSpacing(),
-            _buildTimelineItem(
-              icon: Icons.login,
-              title: 'Friend joins Welvors',
-              description: 'They sign up & log in using your code.',
-              rewardText: '+₹$_signupReward',
-            ),
-            _buildTimelineSpacing(),
-            _buildTimelineItem(
-              icon: Icons.diamond_outlined,
-              title: 'They buy any plan',
-              description: 'Premium+, VIP or Elite — any package counts.',
-              rewardText: '+₹$_packageReward',
-              isLast: true,
-            ),
-
-            const SizedBox(height: 32),
-
-            // Your invite code Title
-            Text(
-              'Your invite code',
-              style: AppText.eyebrow.copyWith(
-                color: Colors.black87,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Invite Code Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.pinkDeep.withOpacity(0.3),
-                  width: 1,
-                  style: BorderStyle.solid,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'TAP TO COPY',
-                    style: AppText.eyebrow.copyWith(
-                      color: AppColors.muted,
-                      fontSize: 10,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => _copyToClipboard(_referralCode),
-                    child: Text(
-                      _referralCode.isEmpty ? '...' : _referralCode,
-                      style: AppText.display.copyWith(
-                        color: AppColors.pinkDeep,
-                        fontSize: 28,
-                        letterSpacing: 4,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () => _copyToClipboard(_referralCode),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _isCopied
-                            ? Colors.green.withOpacity(0.1)
-                            : AppColors.pinkSoft,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            _isCopied ? Icons.check : Icons.copy,
-                            size: 16,
-                            color: _isCopied
-                                ? Colors.green
-                                : AppColors.pinkDeep,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            _isCopied ? 'Copied!' : 'Copy code',
-                            style: AppText.button.copyWith(
-                              color: _isCopied
-                                  ? Colors.green
-                                  : AppColors.pinkDeep,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Social Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildSocialButton(
-                  'WhatsApp',
-                  lottiePath: 'assets/WhatsApp.json',
-                  scale: 1.5,
-                ),
-                _buildSocialButton(
-                  'Instagram',
-                  lottiePath: 'assets/Instagram1.json',
-                  scale: 1.3,
-                ),
-                _buildSocialButton(
-                  'Copy link',
-                  lottiePath: 'assets/urllink.json',
-                  scale: 1.9,
-                ),
-                Builder(
-                  builder: (context) => _buildSocialButton(
-                    'More',
-                    icon: Icons.more_horiz,
-                    onTap: () {
-                      final box = context.findRenderObject() as RenderBox?;
-                      Share.share(
-                        'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
-                        sharePositionOrigin: box != null
-                            ? box.localToGlobal(Offset.zero) & box.size
-                            : null,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Invite friends & earn button
-            Builder(
-              builder: (context) => GestureDetector(
-                onTap: () {
-                  final box = context.findRenderObject() as RenderBox?;
-                  Share.share(
-                    'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
-                    sharePositionOrigin: box != null
-                        ? box.localToGlobal(Offset.zero) & box.size
-                        : null,
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.pinkDeep,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.pinkDeep.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.share, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'Invite friends & earn',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Have a friend's code?
-            Text(
-              "Have a friend's code?",
-              style: AppText.h2.copyWith(fontSize: 14, color: Colors.black87),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFCE4EC),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          alignment: Alignment.center,
-                          child: TextField(
-                            controller: _inviteCodeController,
-                            maxLength: 8,
-                            textCapitalization: TextCapitalization.characters,
-                            style: const TextStyle(
-                              color: AppColors.pinkDeep,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2,
-                            ),
-                            decoration: const InputDecoration(
-                              hintText: 'Enter invite code',
-                              hintStyle: TextStyle(
-                                color: Colors.black38,
-                                fontSize: 14,
-                                letterSpacing: 0,
-                                fontWeight: FontWeight.normal,
-                              ),
-                              border: InputBorder.none,
-                              counterText: '',
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 13,
-                              ),
-                              isDense: true,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      GestureDetector(
-                        onTap: (_isInviteCodeValid && !_isApplyingCode)
-                            ? _applyReferralCode
-                            : null,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height: 48,
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: _isInviteCodeValid
-                                ? AppColors.pinkDeep
-                                : AppColors.pinkDeep.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: _isApplyingCode 
-                              ? const SizedBox(
-                                  width: 20, 
-                                  height: 20, 
-                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
-                                )
-                              : Text(
-                                  'Apply',
-                                  style: AppText.button.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "Enter a friend's code to give them credit when you join — you can add it once.",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 12,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Total Earned Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFE94086), Color(0xFFC2185B)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.pinkDeep.withOpacity(0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Total earned',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '₹$_totalEarned',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Withdraw to UPI anytime',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Lottie.asset(
-                    'assets/moneybag.json',
-                    width: 95,
-                    height: 95,
-                    repeat: true,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Your Referrals
-            Text(
-              'Your referrals',
-              style: AppText.h2.copyWith(fontSize: 14, color: Colors.black87),
-            ),
-            const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildReferralTab('Joined', '$_joinedCount', _selectedTab == 'Joined'),
-                  const SizedBox(width: 8),
-                  _buildReferralTab('Rewarded', '$_rewardedCount', _selectedTab == 'Rewarded'),
-                  const SizedBox(width: 8),
-                  _buildReferralTab('Pending', '$_pendingCount', _selectedTab == 'Pending'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Referral Item
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.black.withOpacity(0.03),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 20,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: _filteredReferrals.isEmpty
-                    ? [
-                        const Padding(
-                          padding: EdgeInsets.all(24.0),
-                          child: Center(
-                            child: Text(
-                              'No referrals yet',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        )
-                      ]
-                    : _filteredReferrals.asMap().entries.map((entry) {
-                        final int index = entry.key;
-                        final Map<String, dynamic> r = entry.value;
-                        return Column(
-                          children: [
-                            if (index > 0)
-                              Divider(height: 1, color: Colors.grey.shade200),
-                            _buildReferralItem(
-                              name: r['name'],
-                              status: r['status'],
-                              amount: r['amount'],
-                              amountSub: r['amountSub'],
-                              initials: r['initials'],
-                              amountColor:
-                                  r['amountColor'] ?? const Color(0xFF2E7D32),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // HOW REWARDS WORK
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.pinkSoft.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.pinkDeep.withOpacity(0.15),
-                  width: 1,
-                ),
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 16,
-                        color: AppColors.pinkDeep,
+                  // Animated Gradient Banner
+                  AnimatedBuilder(
+                    animation: _gradientController,
+                    builder: (context, child) {
+                      return Container(
+                        width: double.infinity,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            colors: [
+                              _color1.value ?? const Color(0xFFE94086),
+                              _color2.value ?? const Color(0xFFC2185B),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (_color1.value ?? const Color(0xFFE94086))
+                                  .withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: child,
+                      );
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Center graphics (gift lottie)
+                        Positioned(
+                          top: 0,
+                          child: Lottie.asset(
+                            'assets/giftref.json',
+                            width: 170,
+                            height: 170,
+                            fit: BoxFit.contain,
+                            repeat: false,
+                          ),
+                        ),
+                        // Title text
+                        Positioned(
+                          bottom: 12,
+                          child: Text(
+                            'Refer & Earn',
+                            style: AppText.h2.copyWith(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // How it works Title
+                  Text(
+                    'How it works',
+                    style: AppText.eyebrow.copyWith(
+                      color: Colors.black87,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Timeline items
+                  _buildTimelineItem(
+                    icon: Icons.share,
+                    title: 'Share your code',
+                    description:
+                        'Send your invite link via WhatsApp, Instagram or anywhere.',
+                    isFirst: true,
+                  ),
+                  _buildTimelineSpacing(),
+                  _buildTimelineItem(
+                    icon: Icons.login,
+                    title: 'Friend joins Welvors',
+                    description: 'They sign up & log in using your code.',
+                    rewardText: '+₹$_signupReward',
+                  ),
+                  _buildTimelineSpacing(),
+                  _buildTimelineItem(
+                    icon: Icons.diamond_outlined,
+                    title: 'They buy any plan',
+                    description: 'Premium+, VIP or Elite — any package counts.',
+                    rewardText: '+₹$_packageReward',
+                    isLast: true,
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Your invite code Title
+                  Text(
+                    'Your invite code',
+                    style: AppText.eyebrow.copyWith(
+                      color: Colors.black87,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Invite Code Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFFF0F0F0),
+                        width: 1,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _rewardsTitle,
-                        style: TextStyle(
-                          color: AppColors.pinkDeep,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11,
-                          letterSpacing: 1.2,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'TAP TO COPY',
+                          style: AppText.eyebrow.copyWith(
+                            color: AppColors.muted,
+                            fontSize: 10,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () => _copyToClipboard(_referralCode),
+                          child: Text(
+                            _referralCode.isEmpty ? '...' : _referralCode,
+                            style: AppText.display.copyWith(
+                              color: AppColors.pinkDeep,
+                              fontSize: 28,
+                              letterSpacing: 4,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: () => _copyToClipboard(_referralCode),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _isCopied
+                                  ? Colors.green.withOpacity(0.1)
+                                  : AppColors.pinkSoft,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  _isCopied ? Icons.check : Icons.copy,
+                                  size: 16,
+                                  color: _isCopied
+                                      ? Colors.green
+                                      : AppColors.pinkDeep,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _isCopied ? 'Copied!' : 'Copy code',
+                                  style: AppText.button.copyWith(
+                                    color: _isCopied
+                                        ? Colors.green
+                                        : AppColors.pinkDeep,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Social Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildSocialButton(
+                        'WhatsApp',
+                        lottiePath: 'assets/WhatsApp.json',
+                        scale: 1.5,
+                      ),
+                      _buildSocialButton(
+                        'Instagram',
+                        lottiePath: 'assets/Instagram1.json',
+                        scale: 1.3,
+                      ),
+                      _buildSocialButton(
+                        'Copy link',
+                        lottiePath: 'assets/urllink.json',
+                        scale: 1.9,
+                      ),
+                      Builder(
+                        builder: (context) => _buildSocialButton(
+                          'More',
+                          icon: Icons.more_horiz,
+                          onTap: () {
+                            final box =
+                                context.findRenderObject() as RenderBox?;
+                            Share.share(
+                              'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
+                              sharePositionOrigin: box != null
+                                  ? box.localToGlobal(Offset.zero) & box.size
+                                  : null,
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  ..._rewardsDescriptions.asMap().entries.map((entry) {
-                    final int index = entry.key;
-                    final String desc = entry.value;
-                    return Column(
-                      children: [
-                        _buildRewardRule(desc),
-                        if (index < _rewardsDescriptions.length - 1)
-                          const SizedBox(height: 12),
+                  const SizedBox(height: 20),
+
+                  // Invite friends & earn button
+                  Builder(
+                    builder: (context) => GestureDetector(
+                      onTap: () {
+                        final box = context.findRenderObject() as RenderBox?;
+                        Share.share(
+                          'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
+                          sharePositionOrigin: box != null
+                              ? box.localToGlobal(Offset.zero) & box.size
+                              : null,
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.pinkDeep,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.pinkDeep.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.share, color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              'Invite friends & earn',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Have a friend's code?
+                  Text(
+                    "Have a friend's code?",
+                    style: AppText.h2.copyWith(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFFF0F0F0),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
                       ],
-                    );
-                  }),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFCE4EC),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                alignment: Alignment.center,
+                                child: TextField(
+                                  controller: _inviteCodeController,
+                                  maxLength: 8,
+                                  textCapitalization:
+                                      TextCapitalization.characters,
+                                  style: const TextStyle(
+                                    color: AppColors.pinkDeep,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Enter invite code',
+                                    hintStyle: TextStyle(
+                                      color: Colors.black38,
+                                      fontSize: 14,
+                                      letterSpacing: 0,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                    border: InputBorder.none,
+                                    counterText: '',
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 13,
+                                    ),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            GestureDetector(
+                              onTap: (_isInviteCodeValid && !_isApplyingCode)
+                                  ? _applyReferralCode
+                                  : null,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                height: 48,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: _isInviteCodeValid
+                                      ? AppColors.pinkDeep
+                                      : AppColors.pinkDeep.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: _isApplyingCode
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Apply',
+                                        style: AppText.button.copyWith(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          "Enter a friend's code to give them credit when you join — you can add it once.",
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 12,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Total Earned Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFE94086), Color(0xFFC2185B)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.pinkDeep.withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Total earned',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '₹$_totalEarned',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Withdraw to UPI anytime',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Lottie.asset(
+                          'assets/moneybag.json',
+                          width: 95,
+                          height: 95,
+                          repeat: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Your Referrals
+                  Text(
+                    'Your referrals',
+                    style: AppText.h2.copyWith(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildReferralTab(
+                          'Joined',
+                          '$_joinedCount',
+                          _selectedTab == 'Joined',
+                        ),
+                        const SizedBox(width: 8),
+                        _buildReferralTab(
+                          'Rewarded',
+                          '$_rewardedCount',
+                          _selectedTab == 'Rewarded',
+                        ),
+                        const SizedBox(width: 8),
+                        _buildReferralTab(
+                          'Pending',
+                          '$_pendingCount',
+                          _selectedTab == 'Pending',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Referral Item
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: const Color(0xFFF0F0F0),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: _filteredReferrals.isEmpty
+                          ? [
+                              const Padding(
+                                padding: EdgeInsets.all(24.0),
+                                child: Center(
+                                  child: Text(
+                                    'No referrals yet',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            ]
+                          : _filteredReferrals.asMap().entries.map((entry) {
+                              final int index = entry.key;
+                              final Map<String, dynamic> r = entry.value;
+                              return Column(
+                                children: [
+                                  if (index > 0)
+                                    Divider(
+                                      height: 1,
+                                      color: Colors.grey.shade200,
+                                    ),
+                                  _buildReferralItem(
+                                    name: r['name'],
+                                    status: r['status'],
+                                    amount: r['amount'],
+                                    amountSub: r['amountSub'],
+                                    initials: r['initials'],
+                                    amountColor:
+                                        r['amountColor'] ??
+                                        const Color(0xFF2E7D32),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // HOW REWARDS WORK
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.pinkSoft.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.pinkDeep.withOpacity(0.15),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 16,
+                              color: AppColors.pinkDeep,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _rewardsTitle,
+                              style: TextStyle(
+                                color: AppColors.pinkDeep,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        ..._rewardsDescriptions.asMap().entries.map((entry) {
+                          final int index = entry.key;
+                          final String desc = entry.value;
+                          return Column(
+                            children: [
+                              _buildRewardRule(desc),
+                              if (index < _rewardsDescriptions.length - 1)
+                                const SizedBox(height: 12),
+                            ],
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
     );
   }
 
@@ -833,11 +874,12 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -881,7 +923,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.pinkSoft.withOpacity(0.3) : Colors.white,
+          color: isSelected
+              ? AppColors.pinkSoft.withOpacity(0.3)
+              : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isSelected ? AppColors.pinkDeep : Colors.grey.shade200,
@@ -991,21 +1035,14 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.white, Color(0xFFFFF5F8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.pinkSoft.withOpacity(0.3),
-                  width: 1.5,
-                ),
+                border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.pinkDeep.withOpacity(0.08),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -1110,7 +1147,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
             backgroundImage: profileImage != null && profileImage.isNotEmpty
                 ? NetworkImage(profileImage)
                 : null,
-            child: (profileImage == null || profileImage.isEmpty) && initials.isNotEmpty
+            child:
+                (profileImage == null || profileImage.isEmpty) &&
+                    initials.isNotEmpty
                 ? Text(
                     initials,
                     style: const TextStyle(
@@ -1120,8 +1159,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                     ),
                   )
                 : (profileImage == null || profileImage.isEmpty)
-                    ? const Icon(Icons.person, color: AppColors.pinkDeep)
-                    : null,
+                ? const Icon(Icons.person, color: AppColors.pinkDeep)
+                : null,
           ),
           const SizedBox(width: 14),
           Expanded(

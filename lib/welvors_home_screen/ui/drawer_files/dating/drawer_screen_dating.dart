@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../onbording_allpage/theme/app_colors.dart';
-import '../drawer_marriage_screen.dart';
-import '../drawer_mature_dating_screen.dart';
+import '../../../../onbording_allpage/theme/app_colors.dart';
+import '../marriage/drawer_marriage_screen.dart';
+import '../mature_dating/drawer_mature_dating_screen.dart';
 import 'ecosytem_history_support.dart';
 import 'privacy_safety_and_membership_plan.dart';
+import 'my_wallet/my_wallet_screen.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({Key? key}) : super(key: key);
@@ -601,6 +602,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
             value: '₹3,240',
             label: 'My Wallet',
             hasDot: false,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MyWalletScreen(),
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -613,9 +622,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
     required String value,
     required String label,
     required bool hasDot,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      width: double.infinity,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -679,6 +691,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

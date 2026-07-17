@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
+import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 
 class EcosystemHistorySupport extends StatelessWidget {
   const EcosystemHistorySupport({super.key});
@@ -139,6 +140,14 @@ class EcosystemHistorySupport extends StatelessWidget {
                 iconBgColor: const Color(0xFFE8F5E9), // Light green
                 title: 'Refer & Earn',
                 subtitle: 'Get ₹100 + ₹500 per friend',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReferAndEarnScreen(),
+                    ),
+                  );
+                },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
               _buildSimpleTile(
@@ -207,10 +216,13 @@ class EcosystemHistorySupport extends StatelessWidget {
     required String title,
     required InlineSpan subtitleRich,
     Color titleColor = Colors.black87,
+    VoidCallback? onTap,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
         children: [
           Container(
             width: 40,
@@ -248,6 +260,7 @@ class EcosystemHistorySupport extends StatelessWidget {
           Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20),
         ],
       ),
+    ),
     );
   }
 
@@ -257,6 +270,7 @@ class EcosystemHistorySupport extends StatelessWidget {
     required String title,
     required String subtitle,
     Color titleColor = Colors.black87,
+    VoidCallback? onTap,
   }) {
     return _buildEcosystemTile(
       icon: icon,
@@ -267,6 +281,7 @@ class EcosystemHistorySupport extends StatelessWidget {
         text: subtitle,
         style: TextStyle(color: Colors.grey.shade500),
       ),
+      onTap: onTap,
     );
   }
 
