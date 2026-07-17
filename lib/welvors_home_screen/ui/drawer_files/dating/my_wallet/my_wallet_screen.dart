@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 // import 'package:velvors/onbording_allpage/theme/app_text.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/benefits.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add_money_and_withraw.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/benefits_drawer.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add_money_and_withraw_drawer.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/transactions_drawer.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({super.key});
@@ -592,12 +593,8 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                 return Column(
                   children: [
                     _buildTransactionItem(
-                      icon: tx['icon'],
-                      iconBg: tx['iconBg'],
-                      title: tx['title'],
-                      time: tx['time'],
-                      amount: tx['amount'],
-                      isPositive: tx['isPositive'],
+                      context: context,
+                      tx: tx,
                       isLast: isLast,
                     ),
                     if (!isLast)
@@ -615,17 +612,23 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   }
 
   Widget _buildTransactionItem({
-    required String icon,
-    required Color iconBg,
-    required String title,
-    required String time,
-    required String amount,
-    required bool isPositive,
+    required BuildContext context,
+    required Map<String, dynamic> tx,
     bool isLast = false,
   }) {
-    return Padding(
-      // Reduced vertical padding from 14 to 11 for less up/down gap
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+    final String icon = tx['icon'];
+    final Color iconBg = tx['iconBg'];
+    final String title = tx['title'];
+    final String time = tx['time'];
+    final String amount = tx['amount'];
+    final bool isPositive = tx['isPositive'];
+
+    return GestureDetector(
+      onTap: () => TransactionDetailsBottomSheet.show(context, tx),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        // Reduced vertical padding from 14 to 11 for less up/down gap
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
       child: Row(
         children: [
           Container(
@@ -679,6 +682,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }
