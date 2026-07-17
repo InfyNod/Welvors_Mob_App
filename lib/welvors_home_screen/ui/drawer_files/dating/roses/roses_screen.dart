@@ -570,7 +570,7 @@ class _RosesScreenState extends State<RosesScreen> {
 
   Widget _buildProTipBanner() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -587,7 +587,7 @@ class _RosesScreenState extends State<RosesScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: const Color(0xFFF6B042),
               borderRadius: BorderRadius.circular(12),
@@ -864,7 +864,7 @@ class _RosesScreenState extends State<RosesScreen> {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2383F6),
+                backgroundColor: const Color.fromRGBO(61, 169, 255, 1.0),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
