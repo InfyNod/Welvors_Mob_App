@@ -24,11 +24,32 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
               .black87; // Usually negative is black or red, let's keep black like UI standard or red if deduction.
     // Actually, in screenshot, positive is green.
     final String amountText = transaction['amount'] ?? '';
+    final String txnId = 'TXN-982${(transaction['title']?.hashCode ?? 0).abs() % 1000 + 100}';
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.9,
-      ),
+    String? toastMessage;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        void showToast(String message) {
+          setState(() {
+            toastMessage = message;
+          });
+          Future.delayed(const Duration(seconds: 3), () {
+            if (context.mounted) {
+              setState(() {
+                if (toastMessage == message) toastMessage = null;
+              });
+            }
+          });
+        }
+
+        return Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.9,
+              ),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -112,7 +133,7 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
                         const SizedBox(height: 8),
                         _buildDetailRow(
                           'Transaction ID',
-                          'TXN-982${DateTime.now().millisecond}',
+                          txnId,
                         ),
                         const SizedBox(height: 8),
                         _buildDetailRow(
@@ -128,9 +149,13 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
                   _buildMemo(transaction['title']?.toString(), isPositive),
 
                   // Action Buttons
-                  _buildActionButton('Download receipt'),
+                  _buildActionButton('Download receipt', () {
+                    showToast('Receipt downloaded');
+                  }),
                   const SizedBox(height: 12),
-                  _buildActionButton('Report an issue'),
+                  _buildActionButton('Report an issue', () {
+                    showToast('Reported - Our team will check');
+                  }),
 
                   // Bottom safe area spacing
                   SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
@@ -140,8 +165,47 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+    if (toastMessage != null)
+      Positioned(
+        bottom: 32 + MediaQuery.of(context).padding.bottom,
+        child: TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 300),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 10 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 14,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFF222222),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Text(
+              toastMessage!,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+},
+);
+}
 
   Widget _buildDragHandle() {
     return Center(
@@ -277,7 +341,7 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(String label) {
+  Widget _buildActionButton(String label, VoidCallback onTap) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -294,7 +358,7 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: onTap,
           borderRadius: BorderRadius.circular(14),
           child: Container(
             width: double.infinity,
