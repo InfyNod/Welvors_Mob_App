@@ -366,8 +366,9 @@ class WithdrawBottomSheet extends StatefulWidget {
 
 class _WithdrawBottomSheetState extends State<WithdrawBottomSheet> {
   final TextEditingController _amountController = TextEditingController(
-    text: '1000',
+    text: '3240',
   );
+  final int _walletBalance = 3240;
   String _selectedAccount = 'HDFC';
 
   @override
@@ -425,7 +426,16 @@ class _WithdrawBottomSheetState extends State<WithdrawBottomSheet> {
                     'Move wallet balance to your bank or UPI.',
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 5),
+                  const Text(
+                    'Available balance: ₹3,240',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2CAF6B),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
 
                   // Custom amount input
                   Container(
@@ -465,6 +475,17 @@ class _WithdrawBottomSheetState extends State<WithdrawBottomSheet> {
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
+                              TextInputFormatter.withFunction((
+                                oldValue,
+                                newValue,
+                              ) {
+                                if (newValue.text.isEmpty) return newValue;
+                                final int? value = int.tryParse(newValue.text);
+                                if (value != null && value > 3240) {
+                                  return oldValue;
+                                }
+                                return newValue;
+                              }),
                             ],
                             style: const TextStyle(
                               fontSize: 18,
@@ -530,7 +551,10 @@ class _WithdrawBottomSheetState extends State<WithdrawBottomSheet> {
 
                   // Breakdown section
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color.fromRGBO(239, 234, 226, 1),
                       borderRadius: BorderRadius.circular(12),
@@ -566,6 +590,61 @@ class _WithdrawBottomSheetState extends State<WithdrawBottomSheet> {
                   _buildAccountItem('HDFC', '🏦', 'HDFC •••• 1234'),
                   const SizedBox(height: 8),
                   _buildAccountItem('UPI', '📱', 'tanishka@oksbi'),
+                  const SizedBox(height: 12),
+                  // Add Account Button
+                  GestureDetector(
+                    onTap: () {
+                      // Logic to add a new account
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.add_rounded,
+                              color: Colors.black87,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Add new account',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            color: Colors.grey.shade400,
+                            size: 22,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                 ],
               ),

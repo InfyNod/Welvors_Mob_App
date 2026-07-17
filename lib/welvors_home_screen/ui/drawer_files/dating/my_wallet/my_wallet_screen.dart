@@ -4,6 +4,7 @@ import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/benefits_drawer.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add_money_and_withraw_drawer.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/transactions_drawer.dart';
+import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({super.key});
@@ -379,8 +380,15 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   }
 
   Widget _buildTopUpCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ReferAndEarnScreen()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -459,6 +467,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
           Icon(Icons.chevron_right, color: Colors.green.shade700, size: 24),
         ],
       ),
+    ),
     );
   }
 
@@ -538,16 +547,86 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
 
   Widget _buildTransactionsList() {
     final List<Map<String, dynamic>> allTransactions = [
-      {'icon': '🎁', 'iconBg': const Color(0xFFFBE4E7), 'title': 'Gift received from Aanya', 'time': 'Today · 2:14 PM', 'amount': '+₹500', 'isPositive': true},
-      {'icon': '📋', 'iconBg': const Color(0xFFFFF3E0), 'title': 'Date Plans topped up · 3 plans', 'time': 'Today · 3:20 PM', 'amount': '-₹270', 'isPositive': false},
-      {'icon': '⭐', 'iconBg': const Color(0xFFFFF9C4), 'title': 'Rose sent', 'time': 'Today · 11:02 AM', 'amount': '-₹50', 'isPositive': false},
-      {'icon': '🎁', 'iconBg': const Color(0xFFE8F5E9), 'title': 'Refer & Earn — Rahul joined', 'time': 'Yesterday · 6:40 PM', 'amount': '+₹100', 'isPositive': true},
-      {'icon': '🌹', 'iconBg': const Color(0xFFFBE4E7), 'title': 'Premium Rose sent to Aanya', 'time': 'Yesterday · 9:18 PM', 'amount': '-₹500', 'isPositive': false},
-      {'icon': '➕', 'iconBg': const Color(0xFFE3F2FD), 'title': 'Money added · UPI', 'time': '2 days ago · 1:05 PM', 'amount': '+₹2,000', 'isPositive': true},
-      {'icon': '🚀', 'iconBg': const Color(0xFFF3E5F5), 'title': 'Boost activated', 'time': '3 days ago', 'amount': '-₹300', 'isPositive': false},
-      {'icon': '🎁', 'iconBg': const Color(0xFFE8F5E9), 'title': 'Refer & Earn — Sneha bought VIP', 'time': '4 days ago', 'amount': '+₹500', 'isPositive': true},
-      {'icon': '💌', 'iconBg': const Color(0xFFFBE4E7), 'title': 'Compliment sent', 'time': '5 days ago', 'amount': '-₹80', 'isPositive': false},
-      {'icon': '⬇️', 'iconBg': const Color(0xFFECEFF1), 'title': 'Withdrawal to bank', 'time': '1 week ago', 'amount': '-₹1,500', 'isPositive': false},
+      {
+        'icon': '🎁',
+        'iconBg': const Color(0xFFFBE4E7),
+        'title': 'Gift received from Aanya',
+        'time': 'Today · 2:14 PM',
+        'amount': '+₹500',
+        'isPositive': true,
+      },
+      {
+        'icon': '📋',
+        'iconBg': const Color(0xFFFFF3E0),
+        'title': 'Date Plans topped up · 3 plans',
+        'time': 'Today · 3:20 PM',
+        'amount': '-₹270',
+        'isPositive': false,
+      },
+      {
+        'icon': '⭐',
+        'iconBg': const Color(0xFFFFF9C4),
+        'title': 'Rose sent',
+        'time': 'Today · 11:02 AM',
+        'amount': '-₹50',
+        'isPositive': false,
+      },
+      {
+        'icon': '🎁',
+        'iconBg': const Color(0xFFE8F5E9),
+        'title': 'Refer & Earn — Rahul joined',
+        'time': 'Yesterday · 6:40 PM',
+        'amount': '+₹100',
+        'isPositive': true,
+      },
+      {
+        'icon': '🌹',
+        'iconBg': const Color(0xFFFBE4E7),
+        'title': 'Premium Rose sent to Aanya',
+        'time': 'Yesterday · 9:18 PM',
+        'amount': '-₹500',
+        'isPositive': false,
+      },
+      {
+        'icon': '➕',
+        'iconBg': const Color(0xFFE3F2FD),
+        'title': 'Money added · UPI',
+        'time': '2 days ago · 1:05 PM',
+        'amount': '+₹2,000',
+        'isPositive': true,
+      },
+      {
+        'icon': '🚀',
+        'iconBg': const Color(0xFFF3E5F5),
+        'title': 'Boost activated',
+        'time': '3 days ago',
+        'amount': '-₹300',
+        'isPositive': false,
+      },
+      {
+        'icon': '🎁',
+        'iconBg': const Color(0xFFE8F5E9),
+        'title': 'Refer & Earn — Sneha bought VIP',
+        'time': '4 days ago',
+        'amount': '+₹500',
+        'isPositive': true,
+      },
+      {
+        'icon': '💌',
+        'iconBg': const Color(0xFFFBE4E7),
+        'title': 'Compliment sent',
+        'time': '5 days ago',
+        'amount': '-₹80',
+        'isPositive': false,
+      },
+      {
+        'icon': '⬇️',
+        'iconBg': const Color(0xFFECEFF1),
+        'title': 'Withdrawal to bank',
+        'time': '1 week ago',
+        'amount': '-₹1,500',
+        'isPositive': false,
+      },
     ];
 
     final filteredTransactions = allTransactions.where((tx) {
@@ -629,60 +708,61 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
       child: Padding(
         // Reduced vertical padding from 14 to 11 for less up/down gap
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 3.0),
-              child: Text(
-                icon,
-                style: const TextStyle(fontSize: 18, height: 1.1),
-                textAlign: TextAlign.center,
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 1.6),
+                child: Text(
+                  icon,
+                  style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700, // Slightly more premium weight
-                    letterSpacing: -0.2, // Tighter premium letter spacing
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 13,
+                      fontWeight:
+                          FontWeight.w700, // Slightly more premium weight
+                      letterSpacing: -0.2, // Tighter premium letter spacing
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  time,
-                  style: TextStyle(
-                    color: Colors.grey.shade500, 
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 3),
+                  Text(
+                    time,
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Text(
-            amount,
-            style: TextStyle(
-              color: isPositive ? const Color(0xFF2CAF6B) : Colors.black87,
-              fontSize: 14,
-              fontWeight: FontWeight.w800, // Bolder numbers
-              letterSpacing: -0.3,
+            Text(
+              amount,
+              style: TextStyle(
+                color: isPositive ? const Color(0xFF2CAF6B) : Colors.black87,
+                fontSize: 14,
+                fontWeight: FontWeight.w800, // Bolder numbers
+                letterSpacing: -0.3,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }
