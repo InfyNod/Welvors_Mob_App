@@ -187,7 +187,7 @@ class _RosesScreenState extends State<RosesScreen> {
             _buildWhyRosesWorkSection(),
             const SizedBox(height: 16),
             _buildProTipBanner(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 2),
           ],
         ),
       ),
@@ -439,7 +439,8 @@ class _RosesScreenState extends State<RosesScreen> {
             iconColor: const Color(0xFF2383F6),
             iconBgColor: const Color(0xFFE3F0FF),
             title: 'They see you first',
-            subtitle: 'Your profile jumps to the top of their deck with a blue star.',
+            subtitle:
+                'Your profile jumps to the top of their deck with a blue star.',
             tag: 'PRIORITY',
             tagColor: const Color(0xFF2383F6),
             tagBgColor: const Color(0xFFE3F0FF),
@@ -520,7 +521,10 @@ class _RosesScreenState extends State<RosesScreen> {
                         if (tag != null) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: tagBgColor,
                               borderRadius: BorderRadius.circular(4),
@@ -535,7 +539,7 @@ class _RosesScreenState extends State<RosesScreen> {
                               ),
                             ),
                           ),
-                        ]
+                        ],
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -543,7 +547,7 @@ class _RosesScreenState extends State<RosesScreen> {
                       subtitle,
                       style: const TextStyle(
                         color: Colors.black54,
-                        fontSize: 12,
+                        fontSize: 11,
                         height: 1.4,
                       ),
                     ),
@@ -569,7 +573,11 @@ class _RosesScreenState extends State<RosesScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFFFF0F5), Color(0xFFFFE4E1)],
+          colors: [
+            Color.fromARGB(255, 255, 245, 225),
+            Color(0xFFFFF0F5),
+            Color.fromARGB(255, 251, 226, 234),
+          ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
