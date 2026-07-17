@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
-import 'package:velvors/onbording_allpage/theme/app_text.dart';
+// import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/benefits.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add_money_and_withraw.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({super.key});
@@ -236,7 +237,9 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                     children: [
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            AddMoneyBottomSheet.show(context);
+                          },
                           icon: const Icon(
                             Icons.add,
                             color: AppColors.pinkDeep,
@@ -264,7 +267,9 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            WithdrawBottomSheet.show(context);
+                          },
                           icon: const Icon(
                             Icons.arrow_downward,
                             color: Colors.white,
