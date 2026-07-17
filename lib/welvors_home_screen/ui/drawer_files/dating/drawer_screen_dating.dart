@@ -5,6 +5,7 @@ import '../mature_dating/drawer_mature_dating_screen.dart';
 import 'ecosytem_history_support.dart';
 import 'privacy_safety_and_membership_plan.dart';
 import 'my_wallet/my_wallet_screen.dart';
+import 'roses/roses_screen.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({Key? key}) : super(key: key);
@@ -572,6 +573,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
             value: '3',
             label: 'Roses',
             hasDot: true,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RosesScreen(),
+                ),
+              );
+            },
           ),
         ),
         const SizedBox(width: 8),

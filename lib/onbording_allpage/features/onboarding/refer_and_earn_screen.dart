@@ -245,10 +245,15 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
               child: CircularProgressIndicator(color: AppColors.pinkDeep),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                   // Animated Gradient Banner
                   AnimatedBuilder(
                     animation: _gradientController,
@@ -719,8 +724,12 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                     ),
                   ),
                   const SizedBox(height: 12),
+                      ],
+                    ),
+                  ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
                         _buildReferralTab(
@@ -744,9 +753,13 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Referral Item
-                  Container(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Referral Item
+                        Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -853,6 +866,9 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                     ),
                   ),
                   const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -970,7 +986,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
       children: [
         SizedBox(
           width: 40,
-          height: 16,
+          height: 8,
           child: CustomPaint(
             painter: DashedLinePainter(
               color: AppColors.pinkDeep.withOpacity(0.4),
@@ -1033,7 +1049,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
           // Card content (right side)
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -1059,7 +1075,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           description,
                           style: AppText.body.copyWith(
