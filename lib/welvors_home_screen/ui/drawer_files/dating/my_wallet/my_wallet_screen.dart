@@ -501,10 +501,6 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
         decoration: BoxDecoration(
           color: isSelected ? AppColors.pinkDeep : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? AppColors.pinkDeep : Colors.grey.shade300,
-            width: 1,
-          ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
@@ -515,9 +511,14 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
                     blurRadius: 4,
-                    offset: const Offset(0, 1),
+                    offset: const Offset(0, 2),
                   ),
                 ],
         ),
@@ -559,12 +560,16 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.08), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.015),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 12,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
