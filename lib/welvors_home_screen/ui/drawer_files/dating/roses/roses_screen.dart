@@ -8,7 +8,7 @@ class RosesScreen extends StatefulWidget {
 }
 
 class _RosesScreenState extends State<RosesScreen> {
-  int _selectedPackageIndex = 0;
+  int _selectedPackageIndex = 1;
 
   final List<Map<String, dynamic>> _packages = [
     {
