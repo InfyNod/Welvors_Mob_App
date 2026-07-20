@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'send_request_drawer.dart';
+
 
 class DateNowScreen extends StatefulWidget {
   const DateNowScreen({super.key});
@@ -309,7 +311,8 @@ class _DateNowScreenState extends State<DateNowScreen> {
                         setState(() {
                           if (_selectedTabIndex != index) {
                             _selectedTabIndex = index;
-                            _currentPlanIndex = 0; // Reset index when changing tab
+                            _currentPlanIndex =
+                                0; // Reset index when changing tab
                           }
                         });
                       },
@@ -409,10 +412,12 @@ class _DateNowScreenState extends State<DateNowScreen> {
     } else {
       currentList = _weekendPlans;
     }
-    
+
     String selectedFilter = _filters[_selectedFilterIndex];
     if (selectedFilter != 'All plans') {
-      currentList = currentList.where((plan) => plan['type'] == selectedFilter).toList();
+      currentList = currentList
+          .where((plan) => plan['type'] == selectedFilter)
+          .toList();
     }
 
     if (currentList.isEmpty) {
@@ -614,7 +619,10 @@ class _DateNowScreenState extends State<DateNowScreen> {
 
           // Details Section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -672,7 +680,10 @@ class _DateNowScreenState extends State<DateNowScreen> {
 
                 // Profile Bar
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -776,12 +787,17 @@ class _DateNowScreenState extends State<DateNowScreen> {
                             } else {
                               currentList = _weekendPlans;
                             }
-                            
-                            String selectedFilter = _filters[_selectedFilterIndex];
+
+                            String selectedFilter =
+                                _filters[_selectedFilterIndex];
                             if (selectedFilter != 'All plans') {
-                              currentList = currentList.where((plan) => plan['type'] == selectedFilter).toList();
+                              currentList = currentList
+                                  .where(
+                                    (plan) => plan['type'] == selectedFilter,
+                                  )
+                                  .toList();
                             }
-                            
+
                             if (currentList.isNotEmpty) {
                               _currentPlanIndex =
                                   (_currentPlanIndex + 1) % currentList.length;
@@ -807,7 +823,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
-                              _showRequestDateBottomSheet(context, plan);
+                              showRequestDateBottomSheet(context, plan);
                             },
                             child: const Center(
                               child: Row(
@@ -883,331 +899,5 @@ class _DateNowScreenState extends State<DateNowScreen> {
     );
   }
 
-  void _showRequestDateBottomSheet(BuildContext context, Map<String, dynamic> plan) {
-    final TextEditingController messageController = TextEditingController();
-    int selectedBillIndex = 0;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            String firstName = plan['name'].split(',')[0];
-        String planDate = plan['date'].replaceAll('📅 ', '');
-        String planTime = plan['time']
-            .replaceAll('🕔 ', '')
-            .replaceAll('🕗 ', '')
-            .replaceAll('🕙 ', '')
-            .replaceAll('🕐 ', '')
-            .replaceAll('🕘 ', '')
-            .replaceAll('🕕 ', '');
-
-        return ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.85,
-          ),
-          child: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              top: 12,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Drag Handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Flexible(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Title
-                Text(
-                  'Request a date with $firstName',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Subtitle
-                Text(
-                  'Ask to join ${plan['title']} · $planDate · $planTime. If they accept, you can meet right away.',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Profile Row
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF6F4EF), // Beige
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(plan['avatarUrl']),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              plan['name'],
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              plan['location'].replaceAll('Live · ', ''),
-                              style: const TextStyle(color: Colors.black54, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Safety Banner
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9), // Light green
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.shield, color: Color(0xFF2E7D32), size: 16),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Meet in the public venue. Your exact location stays private until they accept.',
-                          style: TextStyle(color: Color(0xFF2E7D32), fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Bill suggestion
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Bill suggestion · boosts your chance 💫',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildSelectionChip('🙋‍♂️', 'I\'ll pay the bill', selectedBillIndex == 0, () {
-                      setModalState(() { selectedBillIndex = 0; });
-                    }),
-                    _buildSelectionChip('🤝', 'Let\'s do TTMM', selectedBillIndex == 1, () {
-                      setModalState(() { selectedBillIndex = 1; });
-                    }),
-                    _buildSelectionChip('☕', 'I\'ve got the coffee', selectedBillIndex == 2, () {
-                      setModalState(() { selectedBillIndex = 2; });
-                    }),
-                    _buildSelectionChip('🤷‍♂️', 'Decide there', selectedBillIndex == 3, () {
-                      setModalState(() { selectedBillIndex = 3; });
-                    }),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                // Add a message
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Add a message',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: messageController,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    hintText: 'Hey $firstName! I\'d love to join you for walk...',
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE43A6A)),
-                    ),
-                    contentPadding: const EdgeInsets.all(16),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  alignment: WrapAlignment.start,
-                  children: [
-                    _buildQuickMessageChip('Hey! I\'m free, let\'s meet ✨', () {
-                      messageController.text = 'Hey! I\'m free, let\'s meet ✨';
-                    }),
-                    _buildQuickMessageChip('Love this plan, count me in!', () {
-                      messageController.text = 'Love this plan, count me in!';
-                    }),
-                    _buildQuickMessageChip('I\'m nearby — see you soon?', () {
-                      messageController.text = 'I\'m nearby — see you soon?';
-                    }),
-                  ],
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        ),
-        // Buttons (Fixed at bottom)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Center(
-                      child: Text(
-                        'Send date request 📅',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Center(
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-          ),
-        );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildSelectionChip(String emoji, String text, bool isSelected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFFF0F5) : Colors.white,
-          border: Border.all(color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 16)),
-            const SizedBox(width: 8),
-            Text(
-              text,
-              style: TextStyle(
-                color: isSelected ? const Color(0xFFE43A6A) : Colors.black87,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickMessageChip(String text, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.black87,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
 }
