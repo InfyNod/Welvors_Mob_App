@@ -22,7 +22,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
   ];
   int _currentPlanIndex = 0;
 
-  final List<Map<String, dynamic>> _datePlans = [
+  final List<Map<String, dynamic>> _todayPlans = [
     {
       'imageUrl':
           'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
@@ -44,7 +44,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
     },
     {
       'imageUrl':
-          'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'location': 'Live · Olive Bar, Mahalaxmi',
       'distance': '3.4 km away',
       'match': '88% match',
@@ -60,6 +60,88 @@ class _DateNowScreenState extends State<DateNowScreen> {
       'nameSubtitle': 'she/her · Foodie',
       'avatarUrl':
           'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+    },
+  ];
+
+  final List<Map<String, dynamic>> _tomorrowPlans = [
+    {
+      'imageUrl':
+          'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Coffee image
+      'location': 'Live · Blue Tokai, Bandra',
+      'distance': '1.2 km away',
+      'match': '92% match',
+      'date': '📅 TOMORROW',
+      'time': '🕙 10:00 AM',
+      'type': '☕ Coffee',
+      'title': 'Morning Brew & Books',
+      'subtitle': 'Let\'s talk about our favorite books! 📚',
+      'people': '👥 Just 1',
+      'pay': '🤝 You pay',
+      'name': 'Rahul, 28',
+      'verified': true,
+      'nameSubtitle': 'he/him · Bookworm',
+      'avatarUrl':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+    },
+    {
+      'imageUrl':
+          'https://images.unsplash.com/photo-1543807535-eceef0bc6599?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Brunch image
+      'location': 'Live · The Nutcracker',
+      'distance': '5.0 km away',
+      'match': '75% match',
+      'date': '📅 TOMORROW',
+      'time': '🕐 1:00 PM',
+      'type': '🥞 Brunch',
+      'title': 'Sunday Brunching',
+      'subtitle': 'Craving some pancakes 🥞',
+      'people': '👥 3 people',
+      'pay': '🤝 Split (TTMM)',
+      'name': 'Sneha, 24',
+      'verified': false,
+      'nameSubtitle': 'she/her · Social Butterfly',
+      'avatarUrl':
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+    },
+  ];
+
+  final List<Map<String, dynamic>> _weekendPlans = [
+    {
+      'imageUrl':
+          'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Bar/Drinks image
+      'location': 'Live · Toit, Lower Parel',
+      'distance': '8.5 km away',
+      'match': '95% match',
+      'date': '📅 SATURDAY',
+      'time': '🕘 9:00 PM',
+      'type': '🍸 Drinks',
+      'title': 'Craft Beer & Chill',
+      'subtitle': 'Who loves good beer? 🍻',
+      'people': '👥 4 people',
+      'pay': '🤝 Split (TTMM)',
+      'name': 'Vikram, 30',
+      'verified': true,
+      'nameSubtitle': 'he/him · Extrovert',
+      'avatarUrl':
+          'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+    },
+    {
+      'imageUrl':
+          'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Hiking/Trekking image
+      'location': 'Live · Sanjay Gandhi NP',
+      'distance': '12.0 km away',
+      'match': '89% match',
+      'date': '📅 SUNDAY',
+      'time': '🕕 6:00 AM',
+      'type': '⛰️ Trek',
+      'title': 'Early Morning Trek',
+      'subtitle': 'Nature lovers assemble! 🌿',
+      'people': '👥 5+ people',
+      'pay': '🤝 Split (TTMM)',
+      'name': 'Riya, 26',
+      'verified': true,
+      'nameSubtitle': 'she/her · Fitness Freak',
+      'avatarUrl':
+          'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
     },
   ];
 
@@ -225,7 +307,10 @@ class _DateNowScreenState extends State<DateNowScreen> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          _selectedTabIndex = index;
+                          if (_selectedTabIndex != index) {
+                            _selectedTabIndex = index;
+                            _currentPlanIndex = 0; // Reset index when changing tab
+                          }
                         });
                       },
                       behavior: HitTestBehavior.opaque,
@@ -316,10 +401,49 @@ class _DateNowScreenState extends State<DateNowScreen> {
   }
 
   Widget _buildDateCard() {
-    final plan = _datePlans[_currentPlanIndex];
+    List<Map<String, dynamic>> currentList;
+    if (_selectedTabIndex == 0) {
+      currentList = _todayPlans;
+    } else if (_selectedTabIndex == 1) {
+      currentList = _tomorrowPlans;
+    } else {
+      currentList = _weekendPlans;
+    }
+    
+    String selectedFilter = _filters[_selectedFilterIndex];
+    if (selectedFilter != 'All plans') {
+      currentList = currentList.where((plan) => plan['type'] == selectedFilter).toList();
+    }
+
+    if (currentList.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            Text(
+              'No plans found',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try selecting a different filter.',
+              style: TextStyle(color: Colors.grey.shade500),
+            ),
+          ],
+        ),
+      );
+    }
+
+    int displayIndex = _currentPlanIndex % currentList.length;
+    final plan = currentList[displayIndex];
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -644,8 +768,24 @@ class _DateNowScreenState extends State<DateNowScreen> {
                         icon: const Icon(Icons.close, color: Color(0xFFE43A6A)),
                         onPressed: () {
                           setState(() {
-                            _currentPlanIndex =
-                                (_currentPlanIndex + 1) % _datePlans.length;
+                            List<Map<String, dynamic>> currentList;
+                            if (_selectedTabIndex == 0) {
+                              currentList = _todayPlans;
+                            } else if (_selectedTabIndex == 1) {
+                              currentList = _tomorrowPlans;
+                            } else {
+                              currentList = _weekendPlans;
+                            }
+                            
+                            String selectedFilter = _filters[_selectedFilterIndex];
+                            if (selectedFilter != 'All plans') {
+                              currentList = currentList.where((plan) => plan['type'] == selectedFilter).toList();
+                            }
+                            
+                            if (currentList.isNotEmpty) {
+                              _currentPlanIndex =
+                                  (_currentPlanIndex + 1) % currentList.length;
+                            }
                           });
                         },
                       ),
@@ -666,7 +806,9 @@ class _DateNowScreenState extends State<DateNowScreen> {
                           color: Colors.transparent,
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
-                            onTap: () {},
+                            onTap: () {
+                              _showRequestDateBottomSheet(context, plan);
+                            },
                             child: const Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -736,6 +878,334 @@ class _DateNowScreenState extends State<DateNowScreen> {
           color: Colors.black87,
           fontSize: 11,
           fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  void _showRequestDateBottomSheet(BuildContext context, Map<String, dynamic> plan) {
+    final TextEditingController messageController = TextEditingController();
+    int selectedBillIndex = 0;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            String firstName = plan['name'].split(',')[0];
+        String planDate = plan['date'].replaceAll('📅 ', '');
+        String planTime = plan['time']
+            .replaceAll('🕔 ', '')
+            .replaceAll('🕗 ', '')
+            .replaceAll('🕙 ', '')
+            .replaceAll('🕐 ', '')
+            .replaceAll('🕘 ', '')
+            .replaceAll('🕕 ', '');
+
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 12,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Drag Handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Title
+                Text(
+                  'Request a date with $firstName',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Subtitle
+                Text(
+                  'Ask to join ${plan['title']} · $planDate · $planTime. If they accept, you can meet right away.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Profile Row
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF6F4EF), // Beige
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: NetworkImage(plan['avatarUrl']),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              plan['name'],
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              plan['location'].replaceAll('Live · ', ''),
+                              style: const TextStyle(color: Colors.black54, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Safety Banner
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9), // Light green
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.shield, color: Color(0xFF2E7D32), size: 16),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Meet in the public venue. Your exact location stays private until they accept.',
+                          style: TextStyle(color: Color(0xFF2E7D32), fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Bill suggestion
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Bill suggestion · boosts your chance 💫',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildSelectionChip('🙋‍♂️', 'I\'ll pay the bill', selectedBillIndex == 0, () {
+                      setModalState(() { selectedBillIndex = 0; });
+                    }),
+                    _buildSelectionChip('🤝', 'Let\'s do TTMM', selectedBillIndex == 1, () {
+                      setModalState(() { selectedBillIndex = 1; });
+                    }),
+                    _buildSelectionChip('☕', 'I\'ve got the coffee', selectedBillIndex == 2, () {
+                      setModalState(() { selectedBillIndex = 2; });
+                    }),
+                    _buildSelectionChip('🤷‍♂️', 'Decide there', selectedBillIndex == 3, () {
+                      setModalState(() { selectedBillIndex = 3; });
+                    }),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Add a message
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Add a message',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: messageController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Hey $firstName! I\'d love to join you for walk...',
+                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: const BorderSide(color: Color(0xFFE43A6A)),
+                    ),
+                    contentPadding: const EdgeInsets.all(16),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.start,
+                  children: [
+                    _buildQuickMessageChip('Hey! I\'m free, let\'s meet ✨', () {
+                      messageController.text = 'Hey! I\'m free, let\'s meet ✨';
+                    }),
+                    _buildQuickMessageChip('Love this plan, count me in!', () {
+                      messageController.text = 'Love this plan, count me in!';
+                    }),
+                    _buildQuickMessageChip('I\'m nearby — see you soon?', () {
+                      messageController.text = 'I\'m nearby — see you soon?';
+                    }),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        ),
+        // Buttons (Fixed at bottom)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Center(
+                      child: Text(
+                        'Send date request 📅',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Center(
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+          ),
+        );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSelectionChip(String emoji, String text, bool isSelected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFFF0F5) : Colors.white,
+          border: Border.all(color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 16)),
+            const SizedBox(width: 8),
+            Text(
+              text,
+              style: TextStyle(
+                color: isSelected ? const Color(0xFFE43A6A) : Colors.black87,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickMessageChip(String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

@@ -55,7 +55,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: (_isDrawerOpen || _selectedIndex != 0)
-            ? null 
+            ? null
             : PreferredSize(
                 preferredSize: const Size.fromHeight(52),
                 child: SafeArea(bottom: false, child: _buildTopBar()),
@@ -138,8 +138,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                           }
                         },
                         onPanUpdate: (details) {
-                          if (!_isRoseVisible)
-                            return; 
+                          if (!_isRoseVisible) return;
                           final currentRosePos =
                               _rosePositionNotifier.value ??
                               Offset(maxWidth - 82, maxHeight - 95);
@@ -212,7 +211,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
     }
     switch (_selectedIndex) {
       case 0:
-        return const HomeScreen(); 
+        return const HomeScreen();
       case 1:
         return const DateNowScreen();
       case 2:
@@ -303,9 +302,17 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildTopIcon(Icons.bolt, color: Colors.amber.shade700, iconSize: 24),
+                      _buildTopIcon(
+                        Icons.bolt,
+                        color: Colors.amber.shade700,
+                        iconSize: 24,
+                      ),
                       const SizedBox(width: 8),
-                      _buildTopIcon(Icons.tune, color: Colors.black54, iconSize: 24),
+                      _buildTopIcon(
+                        Icons.tune,
+                        color: Colors.black54,
+                        iconSize: 24,
+                      ),
                       const SizedBox(width: 8),
                       _buildNotificationIcon(),
                     ],
@@ -319,7 +326,12 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
     );
   }
 
-  Widget _buildTopIcon(IconData icon, {Color? color, double iconSize = 22, double circleSize = 40}) {
+  Widget _buildTopIcon(
+    IconData icon, {
+    Color? color,
+    double iconSize = 22,
+    double circleSize = 40,
+  }) {
     return Container(
       width: circleSize,
       height: circleSize,
@@ -334,7 +346,9 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
           ),
         ],
       ),
-      child: Center(child: Icon(icon, size: iconSize, color: color)),
+      child: Center(
+        child: Icon(icon, size: iconSize, color: color),
+      ),
     );
   }
 
@@ -394,7 +408,9 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
             final screenWidth = constraints.maxWidth;
             // Active tab gets 32% of width, rest is divided among 4 inactive tabs
             final activeWidth = screenWidth * 0.32;
-            final inactiveWidth = _isDrawerOpen ? screenWidth / 5 : (screenWidth - activeWidth) / 4;
+            final inactiveWidth = _isDrawerOpen
+                ? screenWidth / 5
+                : (screenWidth - activeWidth) / 4;
 
             double getLeftOffset(int index) {
               double left = 0;
@@ -441,31 +457,41 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                         Icons.home_filled,
                         'Home',
                         0,
-                        (!_isDrawerOpen && 0 == _selectedIndex) ? activeWidth : inactiveWidth,
+                        (!_isDrawerOpen && 0 == _selectedIndex)
+                            ? activeWidth
+                            : inactiveWidth,
                       ),
                       _buildNavItem(
                         Icons.play_circle_outline,
                         'Date Now',
                         1,
-                        (!_isDrawerOpen && 1 == _selectedIndex) ? activeWidth : inactiveWidth,
+                        (!_isDrawerOpen && 1 == _selectedIndex)
+                            ? activeWidth
+                            : inactiveWidth,
                       ),
                       _buildNavItem(
                         Icons.favorite_border,
                         'Admirers',
                         2,
-                        (!_isDrawerOpen && 2 == _selectedIndex) ? activeWidth : inactiveWidth,
+                        (!_isDrawerOpen && 2 == _selectedIndex)
+                            ? activeWidth
+                            : inactiveWidth,
                       ),
                       _buildNavItem(
                         Icons.chat_bubble_outline,
                         'Chat',
                         3,
-                        (!_isDrawerOpen && 3 == _selectedIndex) ? activeWidth : inactiveWidth,
+                        (!_isDrawerOpen && 3 == _selectedIndex)
+                            ? activeWidth
+                            : inactiveWidth,
                       ),
                       _buildNavItem(
                         Icons.calendar_today_outlined,
                         'Events',
                         4,
-                        (!_isDrawerOpen && 4 == _selectedIndex) ? activeWidth : inactiveWidth,
+                        (!_isDrawerOpen && 4 == _selectedIndex)
+                            ? activeWidth
+                            : inactiveWidth,
                       ),
                     ],
                   ),
@@ -500,7 +526,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
               children: [
                 Icon(
                   icon,
-                  color: isActive ? Colors.white : Colors.grey.shade400,
+                  color: isActive ? Colors.white : Colors.grey.shade700,
                   size: isActive ? 20 : 26,
                 ),
                 if (isActive) ...[
