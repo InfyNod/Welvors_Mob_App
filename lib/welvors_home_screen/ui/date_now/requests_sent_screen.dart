@@ -939,16 +939,11 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     color: const Color(0xFFFA6A85).withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF5A738E), // grayish blue
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.keyboard_return,
-                      color: Colors.white,
-                      size: 20,
+                  child: const Text(
+                    '↩️',
+                    style: TextStyle(
+                      fontSize: 28,
+                      height: 1.2,
                     ),
                   ),
                 ),
@@ -1112,7 +1107,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
                 child: Container(
-                  height: 180,
+                  height: 260,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
