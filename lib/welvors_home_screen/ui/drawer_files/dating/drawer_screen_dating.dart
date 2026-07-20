@@ -4,6 +4,7 @@ import '../marriage/drawer_marriage_screen.dart';
 import '../mature_dating/drawer_mature_dating_screen.dart';
 import 'ecosytem_history_support.dart';
 import 'privacy_safety_and_membership_plan.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/compliments/compliments_screen.dart';
 import 'my_wallet/my_wallet_screen.dart';
 import 'roses/roses_screen.dart';
 
@@ -591,6 +592,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
             value: '5',
             label: 'Compliments',
             hasDot: true,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ComplimentsScreen(),
+                ),
+              );
+            },
           ),
         ),
         const SizedBox(width: 8),
