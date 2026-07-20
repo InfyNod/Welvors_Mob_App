@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'my_plan_screen.dart';
-
+import 'requests_sent_screen.dart';
 
 void showRequestDateBottomSheet(
   BuildContext context,
@@ -311,70 +310,70 @@ void showRequestDateBottomSheet(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
                       child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                              ),
                               borderRadius: BorderRadius.circular(16),
-                              onTap: () {
-                                Navigator.pop(context);
-                                showRequestSentBottomSheet(context, plan);
-                              },
-                              child: const Center(
-                                child: Text(
-                                  'Send date request',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  showRequestSentBottomSheet(context, plan);
+                                },
+                                child: const Center(
+                                  child: Text(
+                                    'Send date request',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey.shade300),
                               borderRadius: BorderRadius.circular(16),
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Center(
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Center(
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 ],
               ),
             ),
@@ -409,14 +408,14 @@ Widget _buildSelectionChip(
                   color: const Color(0xFFE43A6A).withOpacity(0.15),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
-                )
+                ),
               ]
             : [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.08),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
-                )
+                ),
               ],
       ),
       child: Row(
@@ -467,7 +466,10 @@ Widget _buildQuickMessageChip(String text, VoidCallback onTap) {
   );
 }
 
-void showRequestSentBottomSheet(BuildContext context, Map<String, dynamic> plan) {
+void showRequestSentBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+) {
   String firstName = plan['name'].split(',')[0];
   String planTitle = plan['title'];
 
@@ -491,207 +493,202 @@ void showRequestSentBottomSheet(BuildContext context, Map<String, dynamic> plan)
                 : 16,
           ),
           child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Drag Handle
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Checkmark Icon Container
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF4CAF50).withOpacity(0.15),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.check,
-                color: Colors.black87,
-                size: 32,
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Title
-            const Text(
-              'Request sent!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Subtitle
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 13,
-                  height: 1.5,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Drag Handle
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                children: [
-                  TextSpan(text: '$firstName will get your request to join '),
-                  TextSpan(
-                    text: planTitle,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+              ),
+              const SizedBox(height: 20),
+              // Checkmark Icon Container
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF4CAF50).withOpacity(0.15),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const TextSpan(
-                      text:
-                          '. You\'ll be notified the moment they accept — then head over to meet.'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Profile Row
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF6F4EF), // Beige
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundImage: NetworkImage(
-                      plan['avatarUrl'],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          plan['name'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.hourglass_bottom,
-                              size: 14,
-                              color: Colors.black54,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              'Waiting for response...',
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            // Buttons
-            Container(
-              width: double.infinity,
-              height: 50,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                  ],
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFDE2957).withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  )
-                ],
+                child: const Icon(Icons.check, color: Colors.black87, size: 32),
               ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Center(
-                    child: Text(
-                      'See more plans',
-                      style: TextStyle(
-                        color: Colors.white,
+              const SizedBox(height: 16),
+              // Title
+              const Text(
+                'Request sent!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Subtitle
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 13,
+                    height: 1.5,
+                  ),
+                  children: [
+                    TextSpan(text: '$firstName will get your request to join '),
+                    TextSpan(
+                      text: planTitle,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey.shade200, width: 1.5),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () {
-                    Navigator.pop(context); // Close the bottom sheet
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MyPlanScreen(),
-                      ),
-                    );
-                  },
-                  child: const Center(
-                    child: Text(
-                      'Track my requests',
-                      style: TextStyle(
                         color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                      ),
+                    ),
+                    const TextSpan(
+                      text:
+                          '. You\'ll be notified the moment they accept — then head over to meet.',
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Profile Row
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF6F4EF), // Beige
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(plan['avatarUrl']),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            plan['name'],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Row(
+                            children: [
+                              Icon(
+                                Icons.hourglass_bottom,
+                                size: 14,
+                                color: Colors.black54,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Waiting for response...',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Buttons
+              Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFDE2957).withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Center(
+                      child: Text(
+                        'See more plans',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey.shade200, width: 1.5),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      Navigator.pop(context); // Close the bottom sheet
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RequestsSentScreen(),
+                        ),
+                      );
+                    },
+                    child: const Center(
+                      child: Text(
+                        'Track my requests',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  },
+      );
+    },
   );
 }
