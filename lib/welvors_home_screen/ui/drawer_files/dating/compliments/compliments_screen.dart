@@ -196,13 +196,13 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
         children: [
           // Background graphic (Gift/Heart emoji)
           Positioned(
-            right: -10,
+            right: -20,
             top: -20,
             child: Transform.rotate(
-              angle: 0.4,
+              angle: 5.9,
               child: Opacity(
                 opacity: 0.2,
-                child: const Text('💝', style: TextStyle(fontSize: 140)),
+                child: const Text('💝', style: TextStyle(fontSize: 120)),
               ),
             ),
           ),
@@ -405,7 +405,8 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
             iconColor: const Color(0xFFF6B042),
             iconBgColor: const Color(0xFFFFF3E0),
             title: 'Up to 140 chars',
-            subtitle: 'Just enough to be witty, not enough to overshare.\nSweet spot for first impressions.',
+            subtitle:
+                'Just enough to be witty, not enough to overshare.\nSweet spot for first impressions.',
             tag: 'NEW',
             tagColor: const Color(0xFFF6B042),
             tagBgColor: const Color(0xFFFFF3E0),
@@ -415,21 +416,24 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
             iconColor: const Color(0xFF2383F6),
             iconBgColor: const Color(0xFFE3F0FF),
             title: 'Attached to a specific photo or prompt',
-            subtitle: 'Anchor your note to what caught your eye — much\nmore personal.',
+            subtitle:
+                'Anchor your note to what caught your eye — much\nmore personal.',
           ),
           _buildWhyComplimentsWorkItem(
             icon: Icons.check_circle_outline,
             iconColor: const Color(0xFF34A853),
             iconBgColor: const Color(0xFFE6F4EA),
             title: 'Goes to their top notifications',
-            subtitle: 'Compliments skip the regular queue — your\nmessage lands at the top.',
+            subtitle:
+                'Compliments skip the regular queue — your\nmessage lands at the top.',
           ),
           _buildWhyComplimentsWorkItem(
             icon: Icons.access_time,
             iconColor: const Color(0xFFE94086),
             iconBgColor: const Color(0xFFFCE4EC),
             title: 'Compliments never expire',
-            subtitle: 'Buy now, use anytime. Save them for the right\nperson — no rush.',
+            subtitle:
+                'Buy now, use anytime. Save them for the right\nperson — no rush.',
             isLast: true,
           ),
         ],
