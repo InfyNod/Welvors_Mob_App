@@ -5,8 +5,8 @@ import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import '../bloc/home_bloc.dart';
-import '../../onbording_allpage/theme/app_colors.dart';
+import '../../bloc/home_bloc.dart';
+import '../../../onbording_allpage/theme/app_colors.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

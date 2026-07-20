@@ -4,11 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/home_bloc.dart';
-import 'home_screen.dart';
-import 'date_now_screen.dart';
-import 'admirers_screen.dart';
-import 'chat_screen.dart';
-import 'events_screen.dart';
+import 'home/home_screen.dart';
+import 'date_now/date_now_screen.dart';
+import 'admirers/admirers_screen.dart';
+import 'chat/chat_screen.dart';
+import 'event/events_screen.dart';
 import 'drawer_files/dating/drawer_screen_dating.dart';
 
 class TopAndBottomNavScreen extends StatelessWidget {
@@ -54,7 +54,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
       ),
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: _isDrawerOpen 
+        appBar: (_isDrawerOpen || _selectedIndex != 0)
             ? null 
             : PreferredSize(
                 preferredSize: const Size.fromHeight(52),
