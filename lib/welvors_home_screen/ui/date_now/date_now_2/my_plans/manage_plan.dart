@@ -1,6 +1,41 @@
 import 'package:flutter/material.dart';
 
-void showManageBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+void _showFeedbackSavedSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.only(bottom: 24),
+      duration: const Duration(seconds: 3),
+      content: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1E24),
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void showManageBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  VoidCallback onPlanClosed,
+) {
   String rawTitle = plan['title'] ?? '';
   String emoji = "☕";
   String cleanTitle = rawTitle;
@@ -99,10 +134,12 @@ void showManageBottomSheet(BuildContext context, Map<String, dynamic> plan, Void
                 icon: '🚫',
                 title: 'Cancel plan',
                 titleColor: const Color(0xFFDE2957),
-                subtitle: '3 people will be notified',
+                subtitle:
+                    '${(plan['requests'] as List?)?.length ?? 3} people will be notified',
                 backgroundColor: const Color(0xFFFA6A85).withOpacity(0.08),
                 onTap: () {
-                  // Action for cancel
+                  Navigator.pop(context);
+                  showCancelPlanBottomSheet(context, plan, onPlanClosed);
                 },
               ),
               const SizedBox(height: 24),
@@ -183,7 +220,11 @@ Widget buildManageOptionRow({
   );
 }
 
-void showReviewBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+void showReviewBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  VoidCallback onPlanClosed,
+) {
   String rawTitle = plan['title'] ?? '';
   String emoji = "☕";
   String cleanTitle = rawTitle;
@@ -296,19 +337,31 @@ void showReviewBottomSheet(BuildContext context, Map<String, dynamic> plan, Void
                           onTap: () => setState(() => selectedOption = 'yes'),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                              vertical: 20,
+                              vertical: 16,
                               horizontal: 8,
                             ),
                             decoration: BoxDecoration(
                               color: selectedOption == 'yes'
-                                  ? const Color(0xFFFA6A85).withOpacity(0.1)
+                                  ? const Color(0xFFFA6A85).withOpacity(0.08)
                                   : Colors.white,
-                              border: Border.all(
-                                color: selectedOption == 'yes'
-                                    ? const Color(0xFFFA6A85)
-                                    : Colors.grey.shade300,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(20),
+                              border: selectedOption == 'yes'
+                                  ? Border.all(
+                                      color: const Color(0xFFFA6A85),
+                                      width: 1.5,
+                                    )
+                                  : Border.all(
+                                      color: Colors.transparent,
+                                      width: 1.5,
+                                    ),
+                              boxShadow: [
+                                if (selectedOption != 'yes')
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.13),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                              ],
                             ),
                             child: Column(
                               children: [
@@ -344,19 +397,31 @@ void showReviewBottomSheet(BuildContext context, Map<String, dynamic> plan, Void
                           onTap: () => setState(() => selectedOption = 'no'),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                              vertical: 20,
+                              vertical: 16,
                               horizontal: 8,
                             ),
                             decoration: BoxDecoration(
                               color: selectedOption == 'no'
-                                  ? const Color(0xFFFA6A85).withOpacity(0.1)
+                                  ? const Color(0xFFFA6A85).withOpacity(0.08)
                                   : Colors.white,
-                              border: Border.all(
-                                color: selectedOption == 'no'
-                                    ? const Color(0xFFFA6A85)
-                                    : Colors.grey.shade300,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(20),
+                              border: selectedOption == 'no'
+                                  ? Border.all(
+                                      color: const Color(0xFFFA6A85),
+                                      width: 1.5,
+                                    )
+                                  : Border.all(
+                                      color: Colors.transparent,
+                                      width: 1.5,
+                                    ),
+                              boxShadow: [
+                                if (selectedOption != 'no')
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.13),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                              ],
                             ),
                             child: Column(
                               children: [
@@ -404,9 +469,14 @@ void showReviewBottomSheet(BuildContext context, Map<String, dynamic> plan, Void
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                        ),
+                        color: selectedOption != null
+                            ? null
+                            : const Color(0xFFF1B4C3),
+                        gradient: selectedOption != null
+                            ? const LinearGradient(
+                                colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                              )
+                            : null,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Center(
@@ -455,7 +525,11 @@ void showReviewBottomSheet(BuildContext context, Map<String, dynamic> plan, Void
   );
 }
 
-void showWhoCameBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+void showWhoCameBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  VoidCallback onPlanClosed,
+) {
   String rawTitle = plan['title'] ?? '';
   String cleanTitle = rawTitle;
   int firstSpaceIndex = rawTitle.indexOf(' ');
@@ -532,14 +606,20 @@ void showWhoCameBottomSheet(BuildContext context, Map<String, dynamic> plan, Voi
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFFFA6A85).withOpacity(0.1)
+                              ? const Color(0xFFFA6A85).withOpacity(0.08)
                               : Colors.white,
-                          border: Border.all(
-                            color: isSelected
-                                ? const Color(0xFFFA6A85)
-                                : Colors.grey.shade300,
-                          ),
                           borderRadius: BorderRadius.circular(16),
+                          border: isSelected
+                              ? Border.all(color: const Color(0xFFFA6A85), width: 1.5)
+                              : Border.all(color: Colors.transparent, width: 1.5),
+                          boxShadow: [
+                            if (!isSelected)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                          ],
                         ),
                         child: Row(
                           children: [
@@ -628,9 +708,12 @@ void showWhoCameBottomSheet(BuildContext context, Map<String, dynamic> plan, Voi
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                        ),
+                        color: selectedIndex != null ? null : const Color(0xFFF1B4C3),
+                        gradient: selectedIndex != null
+                            ? const LinearGradient(
+                                colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                              )
+                            : null,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Center(
@@ -904,7 +987,9 @@ void showFeedbackBottomSheet(
                                     ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? const Color(0xFFFA6A85).withOpacity(0.1)
+                                          ? const Color(
+                                              0xFFFA6A85,
+                                            ).withOpacity(0.1)
                                           : Colors.white,
                                       border: Border.all(
                                         color: isSelected
@@ -979,7 +1064,14 @@ void showFeedbackBottomSheet(
                             onTap: () {
                               if (overallExperience > 0 && ratePerson > 0) {
                                 Navigator.pop(context);
-                                showThanksBottomSheet(context, plan, attendee, overallExperience, ratePerson, onPlanClosed);
+                                showThanksBottomSheet(
+                                  context,
+                                  plan,
+                                  attendee,
+                                  overallExperience,
+                                  ratePerson,
+                                  onPlanClosed,
+                                );
                               }
                             },
                             child: Container(
@@ -1008,7 +1100,11 @@ void showFeedbackBottomSheet(
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              showWhoCameBottomSheet(context, plan, onPlanClosed);
+                              showWhoCameBottomSheet(
+                                context,
+                                plan,
+                                onPlanClosed,
+                              );
                             },
                             child: Container(
                               width: double.infinity,
@@ -1044,7 +1140,14 @@ void showFeedbackBottomSheet(
   );
 }
 
-void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<String, dynamic> attendee, int overallExperience, int ratePerson, VoidCallback onPlanClosed) {
+void showThanksBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  Map<String, dynamic> attendee,
+  int overallExperience,
+  int ratePerson,
+  VoidCallback onPlanClosed,
+) {
   String attendeeName = attendee['name'].toString().split(',').first.trim();
 
   Widget buildSmallStarRating(int rating) {
@@ -1053,7 +1156,9 @@ void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<
       children: List.generate(5, (index) {
         return Icon(
           Icons.star_rounded,
-          color: index < rating ? const Color(0xFFFFB800) : const Color(0xFFFA6A85).withOpacity(0.05),
+          color: index < rating
+              ? const Color(0xFFFFB800)
+              : const Color(0xFFFA6A85).withOpacity(0.05),
           size: 20,
         );
       }),
@@ -1066,7 +1171,9 @@ void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<
     backgroundColor: Colors.transparent,
     builder: (BuildContext context) {
       return Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: Container(
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -1082,13 +1189,20 @@ void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<
                     child: Container(
                       width: 40,
                       height: 4,
-                      decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
                 ),
                 Flexible(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                    padding: const EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      bottom: 16,
+                    ),
                     child: Column(
                       children: [
                         Container(
@@ -1099,7 +1213,11 @@ void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<
                             shape: BoxShape.circle,
                           ),
                           child: const Center(
-                            child: Icon(Icons.check, color: Colors.black, size: 32),
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.black,
+                              size: 32,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -1165,28 +1283,48 @@ void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 24),
+                  padding: const EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    top: 16,
+                    bottom: 24,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
-                          showReportIssueBottomSheet(context, plan, attendee, onPlanClosed, overallExperience, ratePerson);
+                          showReportIssueBottomSheet(
+                            context,
+                            plan,
+                            attendee,
+                            onPlanClosed,
+                            overallExperience,
+                            ratePerson,
+                          );
                         },
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border: Border.all(color: const Color(0xFFFA6A85).withOpacity(0.3)),
+                            border: Border.all(
+                              color: const Color(0xFFFA6A85).withOpacity(0.3),
+                            ),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: const Center(
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('⚠', style: TextStyle(color: Color(0xFFDE2957), fontSize: 14)),
+                                Text(
+                                  '⚠',
+                                  style: TextStyle(
+                                    color: Color(0xFFDE2957),
+                                    fontSize: 14,
+                                  ),
+                                ),
                                 SizedBox(width: 6),
                                 Text(
                                   'Report an issue',
@@ -1205,6 +1343,7 @@ void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
+                          _showFeedbackSavedSnackBar(context, 'Plan closed · feedback saved');
                           onPlanClosed();
                         },
                         child: Container(
@@ -1240,8 +1379,16 @@ void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<
   );
 }
 
-void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<String, dynamic> attendee, VoidCallback onPlanClosed, [int overallExperience = 0, int ratePerson = 0]) {
+void showReportIssueBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  Map<String, dynamic> attendee,
+  VoidCallback onPlanClosed, [
+  int overallExperience = 0,
+  int ratePerson = 0,
+]) {
   Set<String> selectedTags = {};
+  String issueDescription = '';
   final List<String> tags = [
     'Didn\'t show as described',
     'Made me uncomfortable',
@@ -1258,7 +1405,9 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
       return StatefulBuilder(
         builder: (context, setState) {
           return Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -1274,13 +1423,20 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                         child: Container(
                           width: 40,
                           height: 4,
-                          decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
                       ),
                     ),
                     Flexible(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                        padding: const EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                          bottom: 16,
+                        ),
                         child: Column(
                           children: [
                             Container(
@@ -1291,7 +1447,11 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
-                                child: Text('⚠', style: TextStyle(fontSize: 24, color: Colors.black)),
+                                child: Icon(
+                                  Icons.warning_rounded,
+                                  size: 32,
+                                  color: Color(0xFFDE2957),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -1331,11 +1491,20 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                                     });
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: isSelected ? const Color(0xFFFA6A85).withOpacity(0.1) : Colors.white,
+                                      color: isSelected
+                                          ? const Color(
+                                              0xFFFA6A85,
+                                            ).withOpacity(0.1)
+                                          : Colors.white,
                                       border: Border.all(
-                                        color: isSelected ? const Color(0xFFFA6A85) : Colors.grey.shade300,
+                                        color: isSelected
+                                            ? const Color(0xFFFA6A85)
+                                            : Colors.grey.shade300,
                                       ),
                                       borderRadius: BorderRadius.circular(24),
                                     ),
@@ -1344,7 +1513,9 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.bold,
-                                        color: isSelected ? const Color(0xFFFA6A85) : Colors.grey.shade700,
+                                        color: isSelected
+                                            ? const Color(0xFFFA6A85)
+                                            : Colors.grey.shade700,
                                       ),
                                     ),
                                   ),
@@ -1354,6 +1525,7 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                             const SizedBox(height: 24),
                             TextField(
                               maxLines: 4,
+                              onChanged: (val) => setState(() => issueDescription = val),
                               decoration: InputDecoration(
                                 hintText: 'Describe what happened...',
                                 hintStyle: TextStyle(
@@ -1362,15 +1534,21 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFFA6A85)),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFFA6A85),
+                                  ),
                                 ),
                                 contentPadding: const EdgeInsets.all(16),
                               ),
@@ -1380,22 +1558,36 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 24),
+                      padding: const EdgeInsets.only(
+                        left: 24,
+                        right: 24,
+                        top: 16,
+                        bottom: 24,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
-                              onPlanClosed();
+                              if (issueDescription.trim().isNotEmpty) {
+                                Navigator.pop(context);
+                                _showFeedbackSavedSnackBar(context, 'Report submitted');
+                                onPlanClosed();
+                              }
                             },
                             child: Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                                ),
+                                color: issueDescription.trim().isNotEmpty ? null : const Color(0xFFF1B4C3),
+                                gradient: issueDescription.trim().isNotEmpty
+                                    ? const LinearGradient(
+                                        colors: [
+                                          Color(0xFFFA6A85),
+                                          Color(0xFFDE2957),
+                                        ],
+                                      )
+                                    : null,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: const Center(
@@ -1414,7 +1606,14 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              showThanksBottomSheet(context, plan, attendee, overallExperience, ratePerson, onPlanClosed);
+                              showThanksBottomSheet(
+                                context,
+                                plan,
+                                attendee,
+                                overallExperience,
+                                ratePerson,
+                                onPlanClosed,
+                              );
                             },
                             child: Container(
                               width: double.infinity,
@@ -1450,7 +1649,11 @@ void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan,
   );
 }
 
-void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+void showNoOneCameBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  VoidCallback onPlanClosed,
+) {
   int planQuality = 0;
   Set<String> selectedTags = {};
   final List<String> tags = [
@@ -1471,7 +1674,9 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: Icon(
               Icons.star_rounded,
-              color: index < rating ? const Color(0xFFFFB800) : const Color(0xFFFA6A85).withOpacity(0.1),
+              color: index < rating
+                  ? const Color(0xFFFFB800)
+                  : const Color(0xFFFA6A85).withOpacity(0.1),
               size: 36,
             ),
           ),
@@ -1489,7 +1694,9 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
         builder: (context, setState) {
           bool isFormValid = planQuality > 0;
           return Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -1505,13 +1712,20 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                         child: Container(
                           width: 40,
                           height: 4,
-                          decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                         ),
                       ),
                     ),
                     Flexible(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          right: 20,
+                          bottom: 16,
+                        ),
                         child: Column(
                           children: [
                             Container(
@@ -1522,7 +1736,10 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
-                                child: Text('😞', style: TextStyle(fontSize: 28)),
+                                child: Text(
+                                  '😞',
+                                  style: TextStyle(fontSize: 28),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -1558,7 +1775,10 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                               ),
                             ),
                             const SizedBox(height: 12),
-                            buildStarRating(planQuality, (r) => setState(() => planQuality = r)),
+                            buildStarRating(
+                              planQuality,
+                              (r) => setState(() => planQuality = r),
+                            ),
                             const SizedBox(height: 24),
                             // What happened tags
                             Align(
@@ -1604,11 +1824,20 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                                       });
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: isSelected ? const Color(0xFFFA6A85).withOpacity(0.1) : Colors.white,
+                                        color: isSelected
+                                            ? const Color(
+                                                0xFFFA6A85,
+                                              ).withOpacity(0.1)
+                                            : Colors.white,
                                         border: Border.all(
-                                          color: isSelected ? const Color(0xFFFA6A85) : Colors.grey.shade300,
+                                          color: isSelected
+                                              ? const Color(0xFFFA6A85)
+                                              : Colors.grey.shade300,
                                         ),
                                         borderRadius: BorderRadius.circular(24),
                                       ),
@@ -1617,7 +1846,9 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                                         style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.bold,
-                                          color: isSelected ? const Color(0xFFFA6A85) : Colors.black87,
+                                          color: isSelected
+                                              ? const Color(0xFFFA6A85)
+                                              : Colors.black87,
                                         ),
                                       ),
                                     ),
@@ -1630,7 +1861,12 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 20),
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 8,
+                        bottom: 20,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -1639,6 +1875,7 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                             onTap: () {
                               if (isFormValid) {
                                 Navigator.pop(context);
+                                _showFeedbackSavedSnackBar(context, 'Plan closed · feedback saved');
                                 onPlanClosed();
                               }
                             },
@@ -1646,7 +1883,9 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               decoration: BoxDecoration(
-                                color: isFormValid ? const Color(0xFFE43A6A) : const Color(0xFFF1B4C3),
+                                color: isFormValid
+                                    ? const Color(0xFFE43A6A)
+                                    : const Color(0xFFF1B4C3),
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: const Center(
@@ -1666,7 +1905,11 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              showReviewBottomSheet(context, plan, onPlanClosed);
+                              showReviewBottomSheet(
+                                context,
+                                plan,
+                                onPlanClosed,
+                              );
                             },
                             child: Container(
                               width: double.infinity,
@@ -1697,6 +1940,176 @@ void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, V
             ),
           );
         },
+      );
+    },
+  );
+}
+
+void showCancelPlanBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  VoidCallback onPlanClosed,
+) {
+  String rawTitle = plan['title'] ?? '';
+  String cleanTitle = rawTitle;
+  int firstSpaceIndex = rawTitle.indexOf(' ');
+  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
+    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
+  }
+  int numRequests = (plan['requests'] as List?)?.length ?? 3;
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 24),
+                  child: Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFA6A85).withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Center(
+                          child: Text('🚫', style: TextStyle(fontSize: 28)),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Cancel this plan?',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade700,
+                            height: 1.4,
+                          ),
+                          children: [
+                            const TextSpan(text: 'Your plan '),
+                            TextSpan(
+                              text: cleanTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const TextSpan(text: ' will be taken down. '),
+                            TextSpan(
+                              text: '$numRequests',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const TextSpan(
+                              text:
+                                  ' people who requested will be notified it\'s cancelled.',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      // Cancel plan button
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showFeedbackSavedSnackBar(context, 'Plan cancelled');
+                          onPlanClosed();
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFDC4D4D), Color(0xFFC63333)],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Cancel plan',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Back button
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          showManageBottomSheet(context, plan, onPlanClosed);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Back',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       );
     },
   );
