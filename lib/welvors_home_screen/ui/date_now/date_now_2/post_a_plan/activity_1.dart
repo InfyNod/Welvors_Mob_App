@@ -13,51 +13,63 @@ class _Activity1ScreenState extends State<Activity1Screen> {
   final List<Map<String, String>> _activities = [
     {
       'name': 'Coffee',
-      'image': 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Dinner',
-      'image': 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Drinks',
-      'image': 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Walk',
-      'image': 'https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Brunch',
-      'image': 'https://images.unsplash.com/photo-1525648199074-cee30ba79a4a?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1525648199074-cee30ba79a4a?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Movie',
-      'image': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Dessert',
-      'image': 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Gallery',
-      'image': 'https://images.unsplash.com/photo-1518998053401-878c730c5e69?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://media.admiddleeast.com/photos/6537b9c8a4590cb2ed15ae22/16:9/w_2560%2Cc_limit/derick-mckinney-oARTWhz1ACc-unsplash.jpg',
     },
     {
       'name': 'Live music',
-      'image': 'https://images.unsplash.com/photo-1540039155732-6808545b5e71?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://media.istockphoto.com/id/502088147/photo/nothing-beats-live-music.jpg?s=612x612&w=0&k=20&c=N0RrfR0z1P1Q0DUCJIcEBFV8yxT6xF-wQilMv00O7kA=',
     },
     {
       'name': 'Beach',
-      'image': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Shopping',
-      'image': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=400&q=80',
     },
     {
       'name': 'Games',
-      'image': 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&q=80',
+      'image':
+          'https://www.brides.com/thmb/Y7jcQlE8uWdS4KqPSMux7MAdJJk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/couple-games-board-game-recirc-getty-images-776376da45cb4679b0c6deda879dc8ac.jpg',
     },
   ];
 
@@ -110,8 +122,6 @@ class _Activity1ScreenState extends State<Activity1Screen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-
             // Stepper
             _buildStepper(),
 
@@ -273,8 +283,12 @@ class _Activity1ScreenState extends State<Activity1Screen> {
                               Expanded(
                                 child: ClipRRect(
                                   borderRadius: isSelected
-                                      ? const BorderRadius.vertical(top: Radius.circular(13))
-                                      : const BorderRadius.vertical(top: Radius.circular(16)),
+                                      ? const BorderRadius.vertical(
+                                          top: Radius.circular(13),
+                                        )
+                                      : const BorderRadius.vertical(
+                                          top: Radius.circular(16),
+                                        ),
                                   child: Image.network(
                                     act['image']!,
                                     fit: BoxFit.cover,
@@ -311,7 +325,12 @@ class _Activity1ScreenState extends State<Activity1Screen> {
 
             // Bottom Continue Button
             Container(
-              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 12),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                bottom: 20,
+                top: 12,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
