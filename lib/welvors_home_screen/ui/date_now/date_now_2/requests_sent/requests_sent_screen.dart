@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../post_a_plan/activity_1.dart';
 import 'package:dotted_border/dotted_border.dart';
 import '../my_plans/my_plan_screen.dart';
 
@@ -147,30 +148,40 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.add, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
-                    Text(
-                      'Post a plan',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Activity1Screen(),
                     ),
-                  ],
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.add, color: Colors.white, size: 16),
+                      SizedBox(width: 4),
+                      Text(
+                        'Post a plan',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

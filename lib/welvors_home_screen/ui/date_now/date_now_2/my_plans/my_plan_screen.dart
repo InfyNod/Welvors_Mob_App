@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../post_a_plan/activity_1.dart';
 import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'manage_plan.dart';
@@ -158,7 +159,12 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           const SizedBox(height: 32),
           GestureDetector(
             onTap: () {
-              // Post a plan logic
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Activity1Screen(),
+                ),
+              );
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),

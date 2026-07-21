@@ -1097,10 +1097,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 Text(
                   subValue,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black45,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.black45),
                 ),
               ],
             ],
