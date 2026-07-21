@@ -29,8 +29,6 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
             children: [
               _buildWalletCard(),
               const SizedBox(height: 16),
-              _buildDatePlansCard(),
-              const SizedBox(height: 16),
               _buildTopUpCard(),
               const SizedBox(height: 32),
               _buildTransactionsHeader(),
@@ -305,76 +303,6 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDatePlansCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF4E0),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text('📋', style: TextStyle(fontSize: 22)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Date Plans',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'For posting dates on Date Now · any type',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              const Text(
-                '3',
-                style: TextStyle(
-                  color: AppColors.gold,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                'left ›',
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
