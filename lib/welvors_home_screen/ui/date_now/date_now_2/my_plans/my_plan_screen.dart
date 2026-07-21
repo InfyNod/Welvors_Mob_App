@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'manage_plan.dart';
 
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
@@ -51,7 +52,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           'message': '"Count me in, I\'m nearby!"',
           'status': 'pending',
         },
-      ]
+      ],
     },
     {
       'day': 'Tomorrow',
@@ -71,9 +72,9 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           'match': '88%',
           'message': '"This sounds perfect, I\'m in!"',
           'status': 'new',
-        }
-      ]
-    }
+        },
+      ],
+    },
   ];
 
   @override
@@ -126,10 +127,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            '📅',
-            style: TextStyle(fontSize: 64),
-          ),
+          const Text('📅', style: TextStyle(fontSize: 64)),
           const SizedBox(height: 16),
           const Text(
             'No plans here',
@@ -143,11 +141,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           const Text(
             'No active plans match this filter. Try another day or category — or post a new one.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black54,
-              height: 1.4,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.black54, height: 1.4),
           ),
           const SizedBox(height: 32),
           GestureDetector(
@@ -184,7 +178,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
 
   Widget _buildContent(Map<String, dynamic> plan) {
     List<Map<String, dynamic>> requests = plan['requests'] ?? [];
-    
+
     return SingleChildScrollView(
       child: Container(
         margin: EdgeInsets.only(
@@ -311,7 +305,6 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image Header
           Stack(
             children: [
               ClipRRect(
@@ -373,21 +366,28 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
               Positioned(
                 top: 12,
                 right: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    '••• Manage',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
+                child: GestureDetector(
+                  onTap: () => showManageBottomSheet(context, plan, () {
+                    setState(() {
+                      _myHostedPlans.remove(plan);
+                    });
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      '••• Manage',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -421,7 +421,6 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // Tags
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -506,7 +505,10 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
     );
   }
 
-  Widget _buildRequestCard(Map<String, dynamic> request, List<Map<String, dynamic>> planRequests) {
+  Widget _buildRequestCard(
+    Map<String, dynamic> request,
+    List<Map<String, dynamic>> planRequests,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(10),

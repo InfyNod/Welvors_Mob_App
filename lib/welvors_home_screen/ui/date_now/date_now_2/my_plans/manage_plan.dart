@@ -1,0 +1,1703 @@
+import 'package:flutter/material.dart';
+
+void showManageBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+  String rawTitle = plan['title'] ?? '';
+  String emoji = "☕";
+  String cleanTitle = rawTitle;
+
+  int firstSpaceIndex = rawTitle.indexOf(' ');
+  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
+    emoji = rawTitle.substring(0, firstSpaceIndex).trim();
+    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
+  }
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        padding: const EdgeInsets.only(
+          top: 16,
+          left: 24,
+          right: 24,
+          bottom: 16,
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Drag handle
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 24),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Emoji Icon
+              Container(
+                width: 64,
+                height: 64,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFA6A85).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(emoji, style: const TextStyle(fontSize: 32)),
+              ),
+              const SizedBox(height: 16),
+              // Title
+              Text(
+                cleanTitle,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Subtitle
+              Text(
+                plan['subtitle'] ?? 'Today · 6:00 PM · Blue Tokai',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 24),
+              // Option 1: Edit plan details
+              buildManageOptionRow(
+                icon: '✏️',
+                title: 'Edit plan details',
+                subtitle: 'Change time, venue or bill',
+                onTap: () {
+                  // Action for edit
+                },
+              ),
+              const SizedBox(height: 12),
+              // Option 2: End & review
+              buildManageOptionRow(
+                icon: '✔️',
+                title: 'End & review',
+                subtitle: 'After you\'ve met — leave feedback',
+                onTap: () {
+                  Navigator.pop(context); // Close manage bottom sheet
+                  showReviewBottomSheet(
+                    context,
+                    plan,
+                    onPlanClosed,
+                  ); // Show review bottom sheet
+                },
+              ),
+              const SizedBox(height: 12),
+              // Option 3: Cancel plan
+              buildManageOptionRow(
+                icon: '🚫',
+                title: 'Cancel plan',
+                titleColor: const Color(0xFFDE2957),
+                subtitle: '3 people will be notified',
+                backgroundColor: const Color(0xFFFA6A85).withOpacity(0.08),
+                onTap: () {
+                  // Action for cancel
+                },
+              ),
+              const SizedBox(height: 24),
+              // Close button
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Close',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget buildManageOptionRow({
+  required String icon,
+  required String title,
+  required String subtitle,
+  Color? titleColor,
+  Color? backgroundColor,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? const Color(0xFFF6F4EF),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 20)),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: titleColor ?? Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+void showReviewBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+  String rawTitle = plan['title'] ?? '';
+  String emoji = "☕";
+  String cleanTitle = rawTitle;
+
+  int firstSpaceIndex = rawTitle.indexOf(' ');
+  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
+    emoji = rawTitle.substring(0, firstSpaceIndex).trim();
+    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
+  }
+
+  String? selectedOption; // To track selection: 'yes' or 'no'
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            padding: const EdgeInsets.only(
+              top: 16,
+              left: 24,
+              right: 24,
+              bottom: 24,
+            ),
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag handle
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  // Emoji Icon
+                  Container(
+                    width: 64,
+                    height: 64,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFA6A85).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(emoji, style: const TextStyle(fontSize: 32)),
+                  ),
+                  const SizedBox(height: 24),
+                  // Title
+                  const Text(
+                    'How did your plan go?',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Subtitle
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                        height: 1.5,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: cleanTitle,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' · ${plan['subtitle'] ?? 'Today · 6:00 PM · Blue Tokai'} just wrapped. A quick recap helps us keep dates safe & real.',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Question
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Did anyone come to meet you?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Options
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => selectedOption = 'yes'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: selectedOption == 'yes'
+                                  ? const Color(0xFFFA6A85).withOpacity(0.1)
+                                  : Colors.white,
+                              border: Border.all(
+                                color: selectedOption == 'yes'
+                                    ? const Color(0xFFFA6A85)
+                                    : Colors.grey.shade300,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  '🙌',
+                                  style: TextStyle(fontSize: 28),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Yes, we met',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Someone showed up',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => selectedOption = 'no'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: selectedOption == 'no'
+                                  ? const Color(0xFFFA6A85).withOpacity(0.1)
+                                  : Colors.white,
+                              border: Border.all(
+                                color: selectedOption == 'no'
+                                    ? const Color(0xFFFA6A85)
+                                    : Colors.grey.shade300,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  '😕',
+                                  style: TextStyle(fontSize: 28),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'No one came',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Nobody showed up',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  // Continue button
+                  GestureDetector(
+                    onTap: () {
+                      if (selectedOption == 'yes') {
+                        Navigator.pop(context);
+                        showWhoCameBottomSheet(context, plan, onPlanClosed);
+                      } else if (selectedOption == 'no') {
+                        Navigator.pop(context);
+                        showNoOneCameBottomSheet(context, plan, onPlanClosed);
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Continue',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Skip for now button
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Skip for now',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void showWhoCameBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+  String rawTitle = plan['title'] ?? '';
+  String cleanTitle = rawTitle;
+  int firstSpaceIndex = rawTitle.indexOf(' ');
+  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
+    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
+  }
+
+  final List<dynamic> rawRequests = plan['requests'] ?? [];
+  final List<Map<String, dynamic>> attendees = rawRequests.map((req) {
+    return {
+      'name': '${req['name'] ?? ''}, ${req['age'] ?? ''}'.trim(),
+      'match': req['match'] != null ? '${req['match']} match' : '',
+      'avatar': req['avatar'] ?? '',
+    };
+  }).toList();
+
+  int? selectedIndex;
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            padding: const EdgeInsets.only(
+              top: 16,
+              left: 24,
+              right: 24,
+              bottom: 24,
+            ),
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag handle
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const Text(
+                    'Who came to meet you?',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Pick the person you met from $cleanTitle.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 24),
+                  // List of attendees
+                  ...List.generate(attendees.length, (index) {
+                    final isSelected = selectedIndex == index;
+                    final attendee = attendees[index];
+                    return GestureDetector(
+                      onTap: () => setState(() => selectedIndex = index),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFFFA6A85).withOpacity(0.1)
+                              : Colors.white,
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFFFA6A85)
+                                : Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundImage: NetworkImage(attendee['avatar']),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        attendee['name'],
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      const Icon(
+                                        Icons.verified,
+                                        color: Colors.blue,
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    attendee['match'],
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Checkmark circle
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isSelected
+                                    ? const Color(0xFFFA6A85)
+                                    : Colors.transparent,
+                                border: Border.all(
+                                  color: isSelected
+                                      ? const Color(0xFFFA6A85)
+                                      : Colors.grey.shade300,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: isSelected
+                                  ? const Icon(
+                                      Icons.check,
+                                      size: 16,
+                                      color: Colors.white,
+                                    )
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 24),
+                  // Next button
+                  GestureDetector(
+                    onTap: () {
+                      if (selectedIndex != null) {
+                        Navigator.pop(context);
+                        showFeedbackBottomSheet(
+                          context,
+                          plan,
+                          attendees[selectedIndex!],
+                          onPlanClosed,
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Back button
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      showReviewBottomSheet(context, plan, onPlanClosed);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Back',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void showFeedbackBottomSheet(
+  BuildContext context,
+  Map<String, dynamic> plan,
+  Map<String, dynamic> attendee,
+  VoidCallback onPlanClosed,
+) {
+  String rawTitle = plan['title'] ?? '';
+  String emoji = "☕";
+  String cleanTitle = rawTitle;
+
+  int firstSpaceIndex = rawTitle.indexOf(' ');
+  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
+    emoji = rawTitle.substring(0, firstSpaceIndex).trim();
+    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
+  }
+
+  // Extract name (before comma)
+  String attendeeName = attendee['name'].toString().split(',').first.trim();
+
+  int overallExperience = 5;
+  int ratePerson = 5;
+  Set<String> selectedTags = {};
+
+  final List<String> tags = [
+    'Respectful',
+    'Great conversation',
+    'On time',
+    'Genuine',
+    'Fun',
+    'Would meet again',
+  ];
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          Widget buildStarRating(int rating, Function(int) onRatingChanged) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: List.generate(5, (index) {
+                return GestureDetector(
+                  onTap: () => onRatingChanged(index + 1),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Icon(
+                      Icons.star_rounded,
+                      color: index < rating
+                          ? const Color(0xFFFFB800)
+                          : Colors.grey.shade300,
+                      size: 32,
+                    ),
+                  ),
+                );
+              }),
+            );
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Container(
+              constraints: BoxConstraints(
+                maxHeight:
+                    MediaQuery.of(context).size.height *
+                    0.9, // Avoid full screen
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Drag handle (fixed at top)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Scrollable content
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          right: 20,
+                          top: 0,
+                          bottom: 16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Top profile card
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF6F4EF),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(
+                                      attendee['avatar'] ?? '',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          attendeeName,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '$emoji $cleanTitle',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // Overall Experience
+                            const Text(
+                              'How was your overall experience?',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildStarRating(
+                              overallExperience,
+                              (r) => setState(() => overallExperience = r),
+                            ),
+                            const SizedBox(height: 16),
+                            // Rate Person
+                            Text(
+                              'Rate $attendeeName',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            buildStarRating(
+                              ratePerson,
+                              (r) => setState(() => ratePerson = r),
+                            ),
+                            const SizedBox(height: 16),
+                            // What stood out
+                            RichText(
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                                children: [
+                                  const TextSpan(text: 'What stood out? '),
+                                  TextSpan(
+                                    text: '· optional',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Tags wrap
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 10,
+                              children: tags.map((tag) {
+                                final isSelected = selectedTags.contains(tag);
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      if (isSelected) {
+                                        selectedTags.remove(tag);
+                                      } else {
+                                        selectedTags.add(tag);
+                                      }
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? const Color(0xFFFA6A85).withOpacity(0.1)
+                                          : Colors.white,
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? const Color(0xFFFA6A85)
+                                            : Colors.grey.shade300,
+                                      ),
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                    child: Text(
+                                      tag,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: isSelected
+                                            ? const Color(0xFFFA6A85)
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 16),
+                            // Text area
+                            TextField(
+                              maxLines: 3,
+                              decoration: InputDecoration(
+                                hintText:
+                                    'Anything else about the date? (private)',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFFA6A85),
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.all(16),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Fixed Bottom Buttons
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 8,
+                        bottom: 20,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Submit button
+                          GestureDetector(
+                            onTap: () {
+                              if (overallExperience > 0 && ratePerson > 0) {
+                                Navigator.pop(context);
+                                showThanksBottomSheet(context, plan, attendee, overallExperience, ratePerson, onPlanClosed);
+                              }
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: (overallExperience > 0 && ratePerson > 0)
+                                    ? const Color(0xFFE43A6A)
+                                    : const Color(0xFFF1B4C3),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Submit feedback',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // Back button
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showWhoCameBottomSheet(context, plan, onPlanClosed);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Back',
+                                  style: TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void showThanksBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<String, dynamic> attendee, int overallExperience, int ratePerson, VoidCallback onPlanClosed) {
+  String attendeeName = attendee['name'].toString().split(',').first.trim();
+
+  Widget buildSmallStarRating(int rating) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return Icon(
+          Icons.star_rounded,
+          color: index < rating ? const Color(0xFFFFB800) : const Color(0xFFFA6A85).withOpacity(0.05),
+          size: 20,
+        );
+      }),
+    );
+  }
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 24),
+                  child: Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE8F5E9),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.check, color: Colors.black, size: 32),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Thanks for sharing 💜',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Your feedback on the date with $attendeeName is saved. It helps us protect everyone and surface genuine people.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF6F4EF),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Experience',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  buildSmallStarRating(overallExperience),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Text(
+                                    attendeeName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  buildSmallStarRating(ratePerson),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          showReportIssueBottomSheet(context, plan, attendee, onPlanClosed, overallExperience, ratePerson);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: const Color(0xFFFA6A85).withOpacity(0.3)),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('⚠', style: TextStyle(color: Color(0xFFDE2957), fontSize: 14)),
+                                SizedBox(width: 6),
+                                Text(
+                                  'Report an issue',
+                                  style: TextStyle(
+                                    color: Color(0xFFDE2957),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          onPlanClosed();
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Done',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void showReportIssueBottomSheet(BuildContext context, Map<String, dynamic> plan, Map<String, dynamic> attendee, VoidCallback onPlanClosed, [int overallExperience = 0, int ratePerson = 0]) {
+  Set<String> selectedTags = {};
+  final List<String> tags = [
+    'Didn\'t show as described',
+    'Made me uncomfortable',
+    'Inappropriate behaviour',
+    'Fake profile',
+    'Safety concern',
+  ];
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 24),
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 64,
+                              height: 64,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFA6A85).withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Text('⚠', style: TextStyle(fontSize: 24, color: Colors.black)),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Report an issue',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Your safety matters. Tell us what went wrong — this is confidential and reviewed by our team.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade600,
+                                height: 1.4,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 12,
+                              alignment: WrapAlignment.center,
+                              children: tags.map((tag) {
+                                final isSelected = selectedTags.contains(tag);
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      if (isSelected) {
+                                        selectedTags.remove(tag);
+                                      } else {
+                                        selectedTags.add(tag);
+                                      }
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: isSelected ? const Color(0xFFFA6A85).withOpacity(0.1) : Colors.white,
+                                      border: Border.all(
+                                        color: isSelected ? const Color(0xFFFA6A85) : Colors.grey.shade300,
+                                      ),
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                    child: Text(
+                                      tag,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: isSelected ? const Color(0xFFFA6A85) : Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 24),
+                            TextField(
+                              maxLines: 4,
+                              decoration: InputDecoration(
+                                hintText: 'Describe what happened...',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFFFA6A85)),
+                                ),
+                                contentPadding: const EdgeInsets.all(16),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              onPlanClosed();
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Submit report',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showThanksBottomSheet(context, plan, attendee, overallExperience, ratePerson, onPlanClosed);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Back',
+                                  style: TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void showNoOneCameBottomSheet(BuildContext context, Map<String, dynamic> plan, VoidCallback onPlanClosed) {
+  int planQuality = 0;
+  Set<String> selectedTags = {};
+  final List<String> tags = [
+    'Timing was off',
+    'Venue too far',
+    'Short notice',
+    'Approved too late',
+    'Not sure',
+  ];
+
+  Widget buildStarRating(int rating, Function(int) onRatingChanged) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        return GestureDetector(
+          onTap: () => onRatingChanged(index + 1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Icon(
+              Icons.star_rounded,
+              color: index < rating ? const Color(0xFFFFB800) : const Color(0xFFFA6A85).withOpacity(0.1),
+              size: 36,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          bool isFormValid = planQuality > 0;
+          return Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 24),
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 64,
+                              height: 64,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFF0E6),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Text('😞', style: TextStyle(fontSize: 28)),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Sorry no one showed up',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'It happens. Your honest take helps us improve who sees your plans next time.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade600,
+                                height: 1.4,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            // Plan quality
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: const Text(
+                                'Was your plan itself good?',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            buildStarRating(planQuality, (r) => setState(() => planQuality = r)),
+                            const SizedBox(height: 24),
+                            // What happened tags
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                      text: 'What do you think happened? ',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '· optional',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 10,
+                                children: tags.map((tag) {
+                                  final isSelected = selectedTags.contains(tag);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        if (isSelected) {
+                                          selectedTags.remove(tag);
+                                        } else {
+                                          selectedTags.add(tag);
+                                        }
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: isSelected ? const Color(0xFFFA6A85).withOpacity(0.1) : Colors.white,
+                                        border: Border.all(
+                                          color: isSelected ? const Color(0xFFFA6A85) : Colors.grey.shade300,
+                                        ),
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      child: Text(
+                                        tag,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSelected ? const Color(0xFFFA6A85) : Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Submit button
+                          GestureDetector(
+                            onTap: () {
+                              if (isFormValid) {
+                                Navigator.pop(context);
+                                onPlanClosed();
+                              }
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: isFormValid ? const Color(0xFFE43A6A) : const Color(0xFFF1B4C3),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Submit & close plan',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // Back button
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showReviewBottomSheet(context, plan, onPlanClosed);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Back',
+                                  style: TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}

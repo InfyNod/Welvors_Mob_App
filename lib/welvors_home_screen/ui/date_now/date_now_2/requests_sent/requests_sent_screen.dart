@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'my_plan_screen.dart';
+import '../my_plans/my_plan_screen.dart';
 
 class RequestsSentScreen extends StatefulWidget {
   const RequestsSentScreen({super.key});
