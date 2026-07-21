@@ -123,11 +123,22 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
   Widget _buildEmptyState() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(top: 60, bottom: 40, left: 32, right: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('📅', style: TextStyle(fontSize: 64)),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFA6A85).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.search_rounded,
+              size: 40,
+              color: Color(0xFFFA6A85),
+            ),
+          ),
           const SizedBox(height: 16),
           const Text(
             'No plans here',

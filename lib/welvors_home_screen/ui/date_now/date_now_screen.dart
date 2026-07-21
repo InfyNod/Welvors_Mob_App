@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'send_request_drawer.dart';
+import 'date_now_2/requests_sent/requests_sent_screen.dart';
 
 
 class DateNowScreen extends StatefulWidget {
@@ -225,7 +226,14 @@ class _DateNowScreenState extends State<DateNowScreen> {
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(24),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RequestsSentScreen(),
+                    ),
+                  );
+                },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
