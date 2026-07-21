@@ -538,7 +538,9 @@ void showWhoCameBottomSheet(
   }
 
   final List<dynamic> rawRequests = plan['requests'] ?? [];
-  final List<Map<String, dynamic>> attendees = rawRequests.map((req) {
+  final List<Map<String, dynamic>> attendees = rawRequests
+      .where((req) => req['status'] == 'approved')
+      .map((req) {
     return {
       'name': '${req['name'] ?? ''}, ${req['age'] ?? ''}'.trim(),
       'match': req['match'] != null ? '${req['match']} match' : '',

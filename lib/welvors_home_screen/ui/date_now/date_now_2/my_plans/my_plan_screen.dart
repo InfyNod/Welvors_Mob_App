@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'manage_plan.dart';
 
@@ -383,21 +384,43 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                       _myHostedPlans.remove(plan);
                     });
                   }),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Text(
-                      '••• Manage',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.5),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.more_horiz,
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              'Manage',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -531,7 +554,10 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
         children: [
           GestureDetector(
             onTap: () async {
-              final result = await _showRequesterProfileBottomSheet(context, request);
+              final result = await _showRequesterProfileBottomSheet(
+                context,
+                request,
+              );
               if (result == 'decline') {
                 setState(() => planRequests.remove(request));
               } else {
@@ -567,7 +593,10 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                           ),
                           const Spacer(),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFFA6A85).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
@@ -709,259 +738,312 @@ Future<String?> _showRequesterProfileBottomSheet(
       return StatefulBuilder(
         builder: (context, setModalState) {
           return Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Image section with Name
-            Stack(
-              children: [
-                Container(
-                  height: 340,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(request['avatar'].toString().replaceAll('w=200', 'w=800')),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                // Gradient overlay for text readability
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: const [0.6, 1.0],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 20,
-                  left: 24,
-                  child: Row(
-                    children: [
-                      Text(
-                        '${request['name']}, ${request['age']}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.verified, color: Colors.blue, size: 20),
-                    ],
-                  ),
-                ),
-              ],
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
             ),
-            // Profile details
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue.shade200),
-                          borderRadius: BorderRadius.circular(12),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Image section with Name
+                Stack(
+                  children: [
+                    Container(
+                      height: 340,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(
+                            request['avatar'].toString().replaceAll(
+                              'w=200',
+                              'w=800',
+                            ),
+                          ),
+                          fit: BoxFit.cover,
                         ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.check, color: Colors.blue, size: 14),
-                            SizedBox(width: 4),
-                            Text(
-                              'Verified',
-                              style: TextStyle(
-                                color: Colors.blue,
+                      ),
+                    ),
+                    // Gradient overlay for text readability
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.8),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: const [0.6, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      left: 24,
+                      child: Row(
+                        children: [
+                          Text(
+                            '${request['name']}, ${request['age']}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Icon(
+                            Icons.verified,
+                            color: Colors.blue,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                // Profile details
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.blue.shade200),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.check, color: Colors.blue, size: 14),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Verified',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFA6A85).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${request['match'] ?? '92%'} match',
+                              style: const TextStyle(
+                                color: Color(0xFFDE2957),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(height: 16),
+                      const Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            color: Colors.black54,
+                            size: 20,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Nearby',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFA6A85).withOpacity(0.1),
+                          color: const Color(0xFFF6F4EF),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          '${request['match'] ?? '92%'} match',
+                          '“${request['message']}”',
                           style: const TextStyle(
-                            color: Color(0xFFDE2957),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 15,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black87,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, color: Colors.black54, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'Nearby',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF6F4EF),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '“${request['message']}”',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      'Coffee lover',
-                      'Deep talker',
-                      'Bookworm',
-                    ].map((tag) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        tag,
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    )).toList(),
-                  ),
-                  const SizedBox(height: 32),
-                  SafeArea(
-                    child: request['status'] == 'approved'
-                        ? GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: ['Coffee lover', 'Deep talker', 'Bookworm']
+                            .map(
+                              (tag) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
                                 ),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Message ${request['name']}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
                                   ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () => Navigator.pop(context, 'decline'),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(color: Colors.grey.shade300),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: const Center(
-                                      child: Text(
-                                        'Decline',
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  tag,
+                                  style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setModalState(() {
-                                      request['status'] = 'approved';
-                                    });
-                                    _showFeedbackSavedSnackBar(context, '${request['name']} approved. Date details sent to chat');
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                                      ),
-                                      borderRadius: BorderRadius.circular(16),
+                            )
+                            .toList(),
+                      ),
+                      const SizedBox(height: 32),
+                      SafeArea(
+                        child: request['status'] == 'approved'
+                            ? GestureDetector(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFFA6A85),
+                                        Color(0xFFDE2957),
+                                      ],
                                     ),
-                                    child: const Center(
-                                      child: Text(
-                                        'Approve to chat',
-                                        style: TextStyle(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.chat_bubble_outline,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Message ${request['name']}',
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
+                              )
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          Navigator.pop(context, 'decline'),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                            color: Colors.grey.shade300,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            'Decline',
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setModalState(() {
+                                          request['status'] = 'approved';
+                                        });
+                                        _showFeedbackSavedSnackBar(
+                                          context,
+                                          '${request['name']} approved. Date details sent to chat',
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color(0xFFFA6A85),
+                                              Color(0xFFDE2957),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            'Approve to chat',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
+          );
         },
       );
     },
@@ -971,7 +1053,7 @@ Future<String?> _showRequesterProfileBottomSheet(
 void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   final overlay = Overlay.of(context);
   late OverlayEntry entry;
-  
+
   entry = OverlayEntry(
     builder: (context) => Positioned(
       top: 60, // Top of the screen
@@ -1018,7 +1100,7 @@ void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   );
 
   overlay.insert(entry);
-  
+
   Future.delayed(const Duration(seconds: 3), () {
     if (entry.mounted) {
       entry.remove();
