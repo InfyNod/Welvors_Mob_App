@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'get_roses_drawer.dart';
 
 class RosesScreen extends StatefulWidget {
+  static int availableRoses = 3;
+
   const RosesScreen({super.key});
 
   @override
@@ -311,9 +314,9 @@ class _RosesScreenState extends State<RosesScreen> {
                     children: [
                       Row(
                         children: [
-                          const Text(
-                            '3',
-                            style: TextStyle(
+                          Text(
+                            '${RosesScreen.availableRoses}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -862,7 +865,11 @@ class _RosesScreenState extends State<RosesScreen> {
             width: double.infinity,
             height: 54,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                GetRosesDrawer.show(context, selectedPkg, () {
+                  setState(() {});
+                });
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(61, 169, 255, 1.0),
                 foregroundColor: Colors.white,

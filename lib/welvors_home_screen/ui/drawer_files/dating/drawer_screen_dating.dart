@@ -572,16 +572,17 @@ class _DrawerScreenState extends State<DrawerScreen> {
           child: _buildBalanceCard(
             emoji: '⭐️',
             bgColor: const Color(0xFFFFF4E0),
-            value: '3',
+            value: '${RosesScreen.availableRoses}',
             label: 'Roses',
             hasDot: true,
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const RosesScreen(),
                 ),
               );
+              setState(() {});
             },
           ),
         ),
