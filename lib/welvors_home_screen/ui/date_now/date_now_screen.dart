@@ -268,7 +268,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: Text(
-                          '${3 + MyPlanScreen.myHostedPlans.length}',
+                          '${RequestsSentScreen.mySentRequests.length + MyPlanScreen.myHostedPlans.length}',
                           style: const TextStyle(
                             color: Color(0xFFDE2957),
                             fontWeight: FontWeight.bold,
@@ -792,29 +792,9 @@ class _DateNowScreenState extends State<DateNowScreen> {
                         icon: const Icon(Icons.close, color: Color(0xFFE43A6A)),
                         onPressed: () {
                           setState(() {
-                            List<Map<String, dynamic>> currentList;
-                            if (_selectedTabIndex == 0) {
-                              currentList = _todayPlans;
-                            } else if (_selectedTabIndex == 1) {
-                              currentList = _tomorrowPlans;
-                            } else {
-                              currentList = _weekendPlans;
-                            }
-
-                            String selectedFilter =
-                                _filters[_selectedFilterIndex];
-                            if (selectedFilter != 'All plans') {
-                              currentList = currentList
-                                  .where(
-                                    (plan) => plan['type'] == selectedFilter,
-                                  )
-                                  .toList();
-                            }
-
-                            if (currentList.isNotEmpty) {
-                              _currentPlanIndex =
-                                  (_currentPlanIndex + 1) % currentList.length;
-                            }
+                            _todayPlans.remove(plan);
+                            _tomorrowPlans.remove(plan);
+                            _weekendPlans.remove(plan);
                           });
                         },
                       ),
@@ -835,8 +815,15 @@ class _DateNowScreenState extends State<DateNowScreen> {
                           color: Colors.transparent,
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
-                            onTap: () {
-                              showRequestDateBottomSheet(context, plan);
+                            onTap: () async {
+                              await showRequestDateBottomSheet(context, plan);
+                              if (mounted) {
+                                setState(() {
+                                  _todayPlans.remove(plan);
+                                  _tomorrowPlans.remove(plan);
+                                  _weekendPlans.remove(plan);
+                                });
+                              }
                             },
                             child: const Center(
                               child: Row(

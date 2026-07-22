@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
 
-void showRequestDateBottomSheet(
+Future<void> showRequestDateBottomSheet(
   BuildContext context,
   Map<String, dynamic> plan,
 ) {
   final TextEditingController messageController = TextEditingController();
   int selectedBillIndex = 0;
 
-  showModalBottomSheet(
+  return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.white,
@@ -326,6 +326,24 @@ void showRequestDateBottomSheet(
                                 borderRadius: BorderRadius.circular(16),
                                 onTap: () {
                                   Navigator.pop(context);
+                                  
+                                  // Construct sent request map
+                                  final newSentRequest = {
+                                    'imageUrl': plan['imageUrl'] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                                    'title': plan['title'] ?? 'Activity',
+                                    'subtitle': '${(plan['date'] as String?)?.replaceAll('📅 ', '') ?? 'Today'} · ${(plan['time'] as String?)?.replaceAll('🕔 ', '').replaceAll('🕗 ', '').replaceAll('🕙 ', '').replaceAll('🕐 ', '').replaceAll('🕘 ', '').replaceAll('🕕 ', '') ?? 'Now'} · ${plan['location'] ?? ''}',
+                                    'hostName': plan['name'] ?? 'User',
+                                    'hostAvatar': plan['avatarUrl'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+                                    'pay': plan['whoPays'] != null ? '🤝 ${plan['whoPays']}' : '🤝 Split (TTMM)',
+                                    'match': plan['match'] ?? '90%',
+                                    'message': 'You: "${messageController.text.isNotEmpty ? messageController.text : 'I would love to join!'}"',
+                                    'status': 'Pending',
+                                    'statusMessage': 'Waiting for ${(plan['name'] as String?)?.split(',')[0] ?? 'host'} to approve. You can withdraw anytime before they do.',
+                                    'isLive': true,
+                                  };
+                                  
+                                  RequestsSentScreen.mySentRequests.insert(0, newSentRequest);
+
                                   showRequestSentBottomSheet(context, plan);
                                 },
                                 child: const Center(

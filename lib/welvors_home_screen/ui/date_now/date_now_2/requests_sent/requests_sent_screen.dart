@@ -7,47 +7,8 @@ class RequestsSentScreen extends StatefulWidget {
   final int initialTabIndex;
   const RequestsSentScreen({super.key, this.initialTabIndex = 0});
 
-  @override
-  State<RequestsSentScreen> createState() => _RequestsSentScreenState();
-}
-
-class _RequestsSentScreenState extends State<RequestsSentScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int _selectedTabIndex = 0;
-  int _selectedFilterIndex = -1;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedTabIndex = widget.initialTabIndex;
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-      initialIndex: widget.initialTabIndex,
-    );
-    _tabController.addListener(() {
-      setState(() {
-        _selectedTabIndex = _tabController.index;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  final List<String> _filters = [
-    '☕ Coffee',
-    '🍽️ Dinner',
-    '🍸 Drinks',
-    '🚶 Walk',
-  ];
-
-  // Dummy data for plans
-  final List<Map<String, dynamic>> _plans = [
+  // Global static data for sent requests
+  static List<Map<String, dynamic>> mySentRequests = [
     {
       'imageUrl':
           'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
@@ -99,8 +60,49 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   ];
 
   @override
+  State<RequestsSentScreen> createState() => _RequestsSentScreenState();
+}
+
+class _RequestsSentScreenState extends State<RequestsSentScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _selectedTabIndex = 0;
+  int _selectedFilterIndex = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTabIndex = widget.initialTabIndex;
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
+    _tabController.addListener(() {
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  final List<String> _filters = [
+    '☕ Coffee',
+    '🍽️ Dinner',
+    '🍸 Drinks',
+    '🚶 Walk',
+  ];
+
+
+
+  @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredPlans = _plans.where((plan) {
+    List<Map<String, dynamic>> filteredPlans = RequestsSentScreen.mySentRequests.where((plan) {
       if (_selectedFilterIndex == -1) return true;
       String filter = _filters[_selectedFilterIndex].toLowerCase();
       String title = plan['title'].toString().toLowerCase();
@@ -211,7 +213,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 .splashFactory, // Removes ripple effect for smoother look
             overlayColor: WidgetStateProperty.all(Colors.transparent),
             tabs: [
-              _buildTab('Requests sent', _plans.length, 0),
+              _buildTab('Requests sent', RequestsSentScreen.mySentRequests.length, 0),
               _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
             ],
           ),
@@ -867,7 +869,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
-                    _plans.remove(plan);
+                    RequestsSentScreen.mySentRequests.remove(plan);
                   });
                 },
                 child: Container(
@@ -1052,7 +1054,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   onTap: () {
                     Navigator.pop(context);
                     setState(() {
-                      _plans.remove(plan);
+                      RequestsSentScreen.mySentRequests.remove(plan);
                     });
                   },
                   child: Container(
