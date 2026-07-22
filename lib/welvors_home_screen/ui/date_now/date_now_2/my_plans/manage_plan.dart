@@ -1,4 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../post_a_plan/activity_1.dart';
+import '../post_a_plan/bloc/post_plan_state.dart';
 
 void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -110,7 +113,18 @@ void showManageBottomSheet(
                 title: 'Edit plan details',
                 subtitle: 'Change time, venue or bill',
                 onTap: () {
-                  // Action for edit
+                  Navigator.pop(context);
+                  if (plan.containsKey('originalState')) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Activity1Screen(
+                          initialState: plan['originalState'] as PostPlanState,
+                          initialStep: 4, // Step 4 is Review4View
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
               const SizedBox(height: 12),

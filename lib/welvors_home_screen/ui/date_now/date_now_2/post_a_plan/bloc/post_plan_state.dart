@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class PostPlanState {
   final int currentStep;
+  final String? planId;
 
   // Step 1: Activity
   final String? selectedActivityName;
@@ -31,6 +32,7 @@ class PostPlanState {
 
   const PostPlanState({
     this.currentStep = 1,
+    this.planId,
     this.selectedActivityName,
     this.selectedActivityImage,
     this.title = '',
@@ -53,6 +55,7 @@ class PostPlanState {
 
   PostPlanState copyWith({
     int? currentStep,
+    String? planId,
     String? selectedActivityName,
     String? selectedActivityImage,
     String? title,
@@ -74,6 +77,7 @@ class PostPlanState {
   }) {
     return PostPlanState(
       currentStep: currentStep ?? this.currentStep,
+      planId: planId ?? this.planId,
       selectedActivityName: selectedActivityName ?? this.selectedActivityName,
       selectedActivityImage: selectedActivityImage ?? this.selectedActivityImage,
       title: title ?? this.title,

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'bloc/post_plan_bloc.dart';
 import '../requests_sent/requests_sent_screen.dart';
+import '../my_plans/my_plan_screen.dart';
 
 class Success5View extends StatelessWidget {
   final VoidCallback onBackToDateNow;
@@ -236,6 +237,41 @@ class Success5View extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      String day = state.whenDate.isNotEmpty ? state.whenDate : 'Today';
+                      String categoryEmoji = _getActivityEmoji(state.selectedActivityName ?? '');
+                      String category = '$categoryEmoji ${state.selectedActivityName ?? 'Activity'}';
+                      String timeString = state.time?.format(context) ?? '6:00 PM';
+                      String loc = state.locationName.isNotEmpty ? state.locationName : 'Location';
+                      String subtitle = '$day · $timeString · $loc';
+                      String title = '$categoryEmoji ${state.title.isNotEmpty ? state.title : (state.selectedActivityName ?? 'Activity')}';
+                      List<String> tags = ['🤝 ${state.whoPays}', '👥 ${state.groupSize}'];
+
+                      String currentPlanId = state.planId ?? DateTime.now().millisecondsSinceEpoch.toString();
+
+                      final Map<String, dynamic> newPlan = {
+                        'id': currentPlanId,
+                        'day': day,
+                        'category': category,
+                        'imageUrl': state.selectedActivityImage?.isNotEmpty == true 
+                            ? state.selectedActivityImage 
+                            : 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                        'title': title,
+                        'subtitle': subtitle,
+                        'tags': tags,
+                        'isLive': true,
+                        'requests': <Map<String, dynamic>>[],
+                        'originalState': state.copyWith(planId: currentPlanId),
+                      };
+
+                      int existingIndex = MyPlanScreen.myHostedPlans.indexWhere((p) => p['id'] == currentPlanId);
+                      if (existingIndex != -1) {
+                        // Update existing plan
+                        MyPlanScreen.myHostedPlans[existingIndex] = newPlan;
+                      } else {
+                        // Insert new plan
+                        MyPlanScreen.myHostedPlans.insert(0, newPlan);
+                      }
+
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

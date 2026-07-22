@@ -3,7 +3,7 @@ import 'post_plan_event.dart';
 import 'post_plan_state.dart';
 
 class PostPlanBloc extends Bloc<PostPlanEvent, PostPlanState> {
-  PostPlanBloc() : super(const PostPlanState()) {
+  PostPlanBloc({PostPlanState? initialState}) : super(initialState ?? const PostPlanState()) {
     on<JumpToStepEvent>((event, emit) {
       emit(state.copyWith(currentStep: event.step));
     });

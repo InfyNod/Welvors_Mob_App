@@ -9,12 +9,25 @@ import 'bloc/post_plan_event.dart';
 import 'bloc/post_plan_state.dart';
 
 class Activity1Screen extends StatelessWidget {
-  const Activity1Screen({Key? key}) : super(key: key);
+  final PostPlanState? initialState;
+  final int initialStep;
+  
+  const Activity1Screen({
+    Key? key,
+    this.initialState,
+    this.initialStep = 1,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PostPlanBloc(),
+      create: (context) {
+        final bloc = PostPlanBloc(initialState: initialState);
+        if (initialStep != 1) {
+          bloc.add(JumpToStepEvent(initialStep));
+        }
+        return bloc;
+      },
       child: const Activity1ScreenBody(),
     );
   }

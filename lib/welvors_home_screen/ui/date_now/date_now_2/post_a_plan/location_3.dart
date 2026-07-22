@@ -608,7 +608,7 @@ class _Location3ViewState extends State<Location3View> {
                                   locationName: _searchController.text,
                                   locationSubtitle: _selectedPlaceSubtext,
                                   landmark: '', // We could add controller for landmark later
-                                  whenDate: 'Tomorrow', // Dummy for now, or add state
+                                  whenDate: _selectedWhen == 'This weekend' ? 'Weekend' : _selectedWhen,
                                   time: _selectedTime,
                                   howLong: _selectedHowLong,
                                   whoPays: _selectedWhoPays,

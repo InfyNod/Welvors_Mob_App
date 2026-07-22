@@ -7,25 +7,7 @@ import 'manage_plan.dart';
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
 
-  @override
-  State<MyPlanScreen> createState() => _MyPlanScreenState();
-}
-
-class _MyPlanScreenState extends State<MyPlanScreen> {
-  String _selectedDayFilter = 'Today';
-  String? _selectedCategoryFilter;
-  final List<String> _myPlansFilters = [
-    'Today',
-    'Tomorrow',
-    'Weekend',
-    '|',
-    '☕ Coffee',
-    '🍽️ Dinner',
-    '🍸 Drinks',
-    '🚶 Walk',
-  ];
-
-  final List<Map<String, dynamic>> _myHostedPlans = [
+  static List<Map<String, dynamic>> myHostedPlans = [
     {
       'day': 'Today',
       'category': '☕ Coffee',
@@ -80,12 +62,32 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
   ];
 
   @override
+  State<MyPlanScreen> createState() => _MyPlanScreenState();
+}
+
+class _MyPlanScreenState extends State<MyPlanScreen> {
+  String _selectedDayFilter = 'Today';
+  String? _selectedCategoryFilter;
+  final List<String> _myPlansFilters = [
+    'Today',
+    'Tomorrow',
+    'Weekend',
+    '|',
+    '☕ Coffee',
+    '🍽️ Dinner',
+    '🍸 Drinks',
+    '🚶 Walk',
+  ];
+
+
+
+  @override
   Widget build(BuildContext context) {
     return _buildMyPlansTab();
   }
 
   Widget _buildMyPlansTab() {
-    List<Map<String, dynamic>> filteredPlans = _myHostedPlans.where((plan) {
+    List<Map<String, dynamic>> filteredPlans = MyPlanScreen.myHostedPlans.where((plan) {
       bool matchesDay = plan['day'] == _selectedDayFilter;
       bool matchesCategory = true;
       if (_selectedCategoryFilter != null) {
@@ -115,7 +117,13 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           Expanded(
             child: filteredPlans.isEmpty
                 ? _buildEmptyState()
-                : _buildContent(filteredPlans.first),
+                : ListView.builder(
+                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 40),
+                    itemCount: filteredPlans.length,
+                    itemBuilder: (context, index) {
+                      return _buildContent(filteredPlans[index]);
+                    },
+                  ),
           ),
         ],
       ),
@@ -197,13 +205,12 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
   Widget _buildContent(Map<String, dynamic> plan) {
     List<Map<String, dynamic>> requests = plan['requests'] ?? [];
 
-    return SingleChildScrollView(
-      child: Container(
-        margin: EdgeInsets.only(
+    return Container(
+        margin: const EdgeInsets.only(
           left: 16,
           right: 16,
           top: 16,
-          bottom: MediaQuery.of(context).padding.bottom + 40,
+          bottom: 16,
         ),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -263,8 +270,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildMyPlansFilterChip(String label, int index) {
@@ -387,7 +393,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                 child: GestureDetector(
                   onTap: () => showManageBottomSheet(context, plan, () {
                     setState(() {
-                      _myHostedPlans.remove(plan);
+                      MyPlanScreen.myHostedPlans.remove(plan);
                     });
                   }),
                   child: ClipRRect(
