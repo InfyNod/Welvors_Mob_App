@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'map_selection_dialog.dart';
+import 'bloc/post_plan_bloc.dart';
+import 'bloc/post_plan_event.dart';
 
 class Location3View extends StatefulWidget {
   final VoidCallback onContinue;
@@ -28,6 +31,27 @@ class _Location3ViewState extends State<Location3View> {
   String _selectedVisibility = 'Premium 👑';
   bool _isLocationSelected = false;
   String _selectedPlaceSubtext = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<PostPlanBloc>().state;
+      if (state.locationName.isNotEmpty) {
+        setState(() {
+          _isLocationSelected = true;
+          _searchController.text = state.locationName;
+          _selectedPlaceSubtext = state.locationSubtitle;
+          _selectedTime = state.time;
+          _selectedHowLong = state.howLong;
+          _selectedWhoPays = state.whoPays;
+          _selectedHowMany = state.groupSize;
+          _selectedWhoCanJoin = state.whoCanRequest;
+          _selectedVisibility = state.visibility;
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -577,7 +601,25 @@ class _Location3ViewState extends State<Location3View> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: isContinueActive ? widget.onContinue : null,
+                  onTap: isContinueActive
+                      ? () {
+                          context.read<PostPlanBloc>().add(
+                                UpdateStep3Event(
+                                  locationName: _searchController.text,
+                                  locationSubtitle: _selectedPlaceSubtext,
+                                  landmark: '', // We could add controller for landmark later
+                                  whenDate: 'Tomorrow', // Dummy for now, or add state
+                                  time: _selectedTime,
+                                  howLong: _selectedHowLong,
+                                  whoPays: _selectedWhoPays,
+                                  groupSize: _selectedHowMany,
+                                  whoCanRequest: _selectedWhoCanJoin,
+                                  visibility: _selectedVisibility,
+                                ),
+                              );
+                          widget.onContinue();
+                        }
+                      : null,
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),

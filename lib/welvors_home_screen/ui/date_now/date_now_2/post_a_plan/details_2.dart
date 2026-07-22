@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'bloc/post_plan_bloc.dart';
+import 'bloc/post_plan_event.dart';
 
 class Details2View extends StatefulWidget {
   final VoidCallback onContinue;
@@ -32,6 +35,23 @@ class _Details2ViewState extends State<Details2View> {
     'Chill',
     'Adventurous',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<PostPlanBloc>().state;
+      if (state.title.isNotEmpty) {
+        setState(() {
+          _titleController.text = state.title;
+          _noteController.text = state.description;
+          if (state.tags.isNotEmpty) {
+            _selectedVibe = state.tags.first;
+          }
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -281,7 +301,18 @@ class _Details2ViewState extends State<Details2View> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: isContinueActive ? widget.onContinue : null,
+                  onTap: isContinueActive
+                      ? () {
+                          context.read<PostPlanBloc>().add(
+                                UpdateStep2Event(
+                                  title: _titleController.text.trim(),
+                                  description: _noteController.text.trim(),
+                                  tags: _selectedVibe != null ? [_selectedVibe!] : [],
+                                ),
+                              );
+                          widget.onContinue();
+                        }
+                      : null,
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),

@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'details_2.dart';
 import 'location_3.dart';
+import 'review_4.dart';
+import 'bloc/post_plan_bloc.dart';
+import 'bloc/post_plan_event.dart';
+import 'bloc/post_plan_state.dart';
 
-class Activity1Screen extends StatefulWidget {
+class Activity1Screen extends StatelessWidget {
   const Activity1Screen({Key? key}) : super(key: key);
 
   @override
-  _Activity1ScreenState createState() => _Activity1ScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => PostPlanBloc(),
+      child: const Activity1ScreenBody(),
+    );
+  }
 }
 
-class _Activity1ScreenState extends State<Activity1Screen> {
-  int _currentStep = 1;
-  // Step 1 Data
+class Activity1ScreenBody extends StatefulWidget {
+  const Activity1ScreenBody({Key? key}) : super(key: key);
+
+  @override
+  _Activity1ScreenBodyState createState() => _Activity1ScreenBodyState();
+}
+
+class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
+  // Step 1 Data (local state until continue is pressed)
   String? _selectedActivity;
+  String? _selectedActivityImage;
   final List<Map<String, String>> _activities = [
     {
       'name': 'Coffee',
@@ -76,11 +93,28 @@ class _Activity1ScreenState extends State<Activity1Screen> {
     },
   ];
 
-  // State for step 1 only
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill if editing
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<PostPlanBloc>().state;
+      if (state.selectedActivityName != null) {
+        setState(() {
+          _selectedActivity = state.selectedActivityName;
+          _selectedActivityImage = state.selectedActivityImage;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocBuilder<PostPlanBloc, PostPlanState>(
+      builder: (context, state) {
+        final currentStep = state.currentStep;
+
+        return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -92,10 +126,8 @@ class _Activity1ScreenState extends State<Activity1Screen> {
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
             onTap: () {
-              if (_currentStep > 1) {
-                setState(() {
-                  _currentStep--;
-                });
+              if (currentStep > 1) {
+                context.read<PostPlanBloc>().add(JumpToStepEvent(currentStep - 1));
               } else {
                 Navigator.pop(context);
               }
@@ -136,42 +168,41 @@ class _Activity1ScreenState extends State<Activity1Screen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Stepper
-            _buildStepper(),
+            _buildStepper(currentStep),
 
               // Main Content
               Expanded(
-                child: _currentStep == 1
-                    ? _buildStep1Content()
-                    : _currentStep == 2
+                child: currentStep == 1
+                    ? _buildStep1Content(context)
+                    : currentStep == 2
                         ? Details2View(
                             onContinue: () {
-                              setState(() {
-                                _currentStep = 3;
-                              });
+                              // Details2View updates BLoC internally, we just jump
                             },
                             onBack: () {
-                              setState(() {
-                                _currentStep = 1;
-                              });
+                              context.read<PostPlanBloc>().add(JumpToStepEvent(1));
                             },
                           )
-                        : Location3View(
-                            onContinue: () {
-                              setState(() {
-                                _currentStep = 4;
-                              });
-                            },
-                            onBack: () {
-                              setState(() {
-                                _currentStep = 2;
-                              });
-                            },
-                          ),
+                        : currentStep == 3
+                            ? Location3View(
+                                onContinue: () {
+                                  // Location3View updates BLoC internally, we just jump
+                                },
+                                onBack: () {
+                                  context.read<PostPlanBloc>().add(JumpToStepEvent(2));
+                                },
+                              )
+                            : Review4View(
+                                onBack: () {
+                                  context.read<PostPlanBloc>().add(JumpToStepEvent(3));
+                                },
+                              ),
               ),
           ],
         ),
       ),
     );
+  });
   }
 
   Widget _buildBalanceBanner() {
@@ -388,7 +419,7 @@ class _Activity1ScreenState extends State<Activity1Screen> {
     );
   }
 
-  Widget _buildStep1Content() {
+  Widget _buildStep1Content(BuildContext context) {
     return Column(
       children: [
         Expanded(
@@ -454,10 +485,11 @@ class _Activity1ScreenState extends State<Activity1Screen> {
                   final isSelected = _selectedActivity == act['name'];
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _selectedActivity = act['name'];
-                      });
-                    },
+                    setState(() {
+                      _selectedActivity = _activities[index]['name'];
+                      _selectedActivityImage = _activities[index]['image'];
+                    });
+                  },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -542,13 +574,16 @@ class _Activity1ScreenState extends State<Activity1Screen> {
           child: SafeArea(
             top: false,
             child: GestureDetector(
-              onTap: _selectedActivity != null
-                  ? () {
-                      setState(() {
-                        _currentStep = 2;
-                      });
-                    }
-                  : null,
+                onTap: _selectedActivity != null
+                    ? () {
+                        context.read<PostPlanBloc>().add(
+                              UpdateStep1Event(
+                                activityName: _selectedActivity!,
+                                activityImage: _selectedActivityImage ?? '',
+                              ),
+                            );
+                      }
+                    : null,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -591,7 +626,7 @@ class _Activity1ScreenState extends State<Activity1Screen> {
 
 
 
-  Widget _buildStepper() {
+  Widget _buildStepper(int currentStep) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
       child: Row(
@@ -599,29 +634,29 @@ class _Activity1ScreenState extends State<Activity1Screen> {
           _buildStep(
             1,
             'ACTIVITY',
-            status: _currentStep == 1 ? 'active' : 'completed',
+            status: currentStep == 1 ? 'active' : 'completed',
           ),
-          _buildLine(isCompleted: _currentStep > 1),
+          _buildLine(isCompleted: currentStep > 1),
           _buildStep(
             2,
             'DETAILS',
-            status: _currentStep == 2
+            status: currentStep == 2
                 ? 'active'
-                : (_currentStep > 2 ? 'completed' : 'pending'),
+                : (currentStep > 2 ? 'completed' : 'pending'),
           ),
-          _buildLine(isCompleted: _currentStep > 2),
+          _buildLine(isCompleted: currentStep > 2),
           _buildStep(
             3,
             'LOCATION',
-            status: _currentStep == 3
+            status: currentStep == 3
                 ? 'active'
-                : (_currentStep > 3 ? 'completed' : 'pending'),
+                : (currentStep > 3 ? 'completed' : 'pending'),
           ),
-          _buildLine(isCompleted: _currentStep > 3),
+          _buildLine(isCompleted: currentStep > 3),
           _buildStep(
             4,
             'REVIEW',
-            status: _currentStep == 4 ? 'active' : 'pending',
+            status: currentStep == 4 ? 'active' : 'pending',
           ),
         ],
       ),
