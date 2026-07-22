@@ -91,7 +91,14 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
       bool matchesDay = plan['day'] == _selectedDayFilter;
       bool matchesCategory = true;
       if (_selectedCategoryFilter != null) {
-        matchesCategory = plan['category'] == _selectedCategoryFilter;
+        // Strip emojis and get the raw text (e.g. 'Coffee')
+        String filterText = _selectedCategoryFilter!.replaceAll(RegExp(r'[^\w\s]+'), '').trim().toLowerCase();
+        
+        String planCategory = (plan['category'] ?? '').toString().toLowerCase();
+        String planTitle = (plan['title'] ?? '').toString().toLowerCase();
+        
+        // Match if the category name OR the title contains the filter text
+        matchesCategory = planCategory.contains(filterText) || planTitle.contains(filterText);
       }
       return matchesDay && matchesCategory;
     }).toList();

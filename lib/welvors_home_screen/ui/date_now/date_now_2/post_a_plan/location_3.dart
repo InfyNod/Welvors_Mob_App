@@ -61,7 +61,8 @@ class _Location3ViewState extends State<Location3View> {
 
   @override
   Widget build(BuildContext context) {
-    bool isContinueActive = _isLocationSelected &&
+    bool isContinueActive =
+        _isLocationSelected &&
         _selectedTime != null &&
         _selectedHowLong != null &&
         _selectedWhoPays != null &&
@@ -107,11 +108,17 @@ class _Location3ViewState extends State<Location3View> {
               // Search Field or Selected Card
               if (_isLocationSelected)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE43A6A).withOpacity(0.06),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE43A6A), width: 1.5),
+                    border: Border.all(
+                      color: const Color(0xFFE43A6A),
+                      width: 1.5,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -133,11 +140,19 @@ class _Location3ViewState extends State<Location3View> {
                           children: [
                             Text(
                               _searchController.text,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
                             Text(
-                              _selectedPlaceSubtext.isEmpty ? 'Mumbai' : _selectedPlaceSubtext,
-                              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                              _selectedPlaceSubtext.isEmpty
+                                  ? 'Mumbai'
+                                  : _selectedPlaceSubtext,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -155,7 +170,11 @@ class _Location3ViewState extends State<Location3View> {
                             color: Colors.black.withOpacity(0.05),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.close, size: 14, color: Colors.black54),
+                          child: const Icon(
+                            Icons.close,
+                            size: 14,
+                            color: Colors.black54,
+                          ),
                         ),
                       ),
                     ],
@@ -173,7 +192,10 @@ class _Location3ViewState extends State<Location3View> {
                           color: Colors.grey.shade400,
                           fontSize: 14,
                         ),
-                        prefixIcon: const Icon(Icons.search, color: Colors.black54),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.black54,
+                        ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 14,
@@ -212,15 +234,35 @@ class _Location3ViewState extends State<Location3View> {
                         ),
                         child: Column(
                           children: [
-                            _buildSuggestionItem('☕', 'Starbucks Reserve', 'Lower Parel, Mumbai'),
+                            _buildSuggestionItem(
+                              '☕',
+                              'Starbucks Reserve',
+                              'Lower Parel, Mumbai',
+                            ),
                             const Divider(height: 1, color: Color(0xFFEEEEEE)),
-                            _buildSuggestionItem('🍸', 'AER Rooftop Bar', 'Worli, Mumbai'),
+                            _buildSuggestionItem(
+                              '🍸',
+                              'AER Rooftop Bar',
+                              'Worli, Mumbai',
+                            ),
                             const Divider(height: 1, color: Color(0xFFEEEEEE)),
-                            _buildSuggestionItem('🍺', 'Toit Taproom', 'Bandra, Mumbai'),
+                            _buildSuggestionItem(
+                              '🍺',
+                              'Toit Taproom',
+                              'Bandra, Mumbai',
+                            ),
                             const Divider(height: 1, color: Color(0xFFEEEEEE)),
-                            _buildSuggestionItem('🌅', 'Carter Road Promenade', 'Bandra, Mumbai'),
+                            _buildSuggestionItem(
+                              '🌅',
+                              'Carter Road Promenade',
+                              'Bandra, Mumbai',
+                            ),
                             const Divider(height: 1, color: Color(0xFFEEEEEE)),
-                            _buildSuggestionItem('🌳', 'Joggers Park', 'Bandra, Mumbai'),
+                            _buildSuggestionItem(
+                              '🌳',
+                              'Joggers Park',
+                              'Bandra, Mumbai',
+                            ),
                           ],
                         ),
                       ),
@@ -274,7 +316,7 @@ class _Location3ViewState extends State<Location3View> {
                 ),
                 const SizedBox(height: 24),
               ],
-              
+
               if (_isLocationSelected) ...[
                 const SizedBox(height: 24),
                 // Landmark
@@ -329,7 +371,10 @@ class _Location3ViewState extends State<Location3View> {
                       Expanded(
                         child: Text(
                           'Only the place name is shown — your exact spot stays private.',
-                          style: TextStyle(color: Colors.blue.shade700, fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -604,19 +649,22 @@ class _Location3ViewState extends State<Location3View> {
                   onTap: isContinueActive
                       ? () {
                           context.read<PostPlanBloc>().add(
-                                UpdateStep3Event(
-                                  locationName: _searchController.text,
-                                  locationSubtitle: _selectedPlaceSubtext,
-                                  landmark: '', // We could add controller for landmark later
-                                  whenDate: _selectedWhen == 'This weekend' ? 'Weekend' : _selectedWhen,
-                                  time: _selectedTime,
-                                  howLong: _selectedHowLong,
-                                  whoPays: _selectedWhoPays,
-                                  groupSize: _selectedHowMany,
-                                  whoCanRequest: _selectedWhoCanJoin,
-                                  visibility: _selectedVisibility,
-                                ),
-                              );
+                            UpdateStep3Event(
+                              locationName: _searchController.text,
+                              locationSubtitle: _selectedPlaceSubtext,
+                              landmark:
+                                  '', // We could add controller for landmark later
+                              whenDate: _selectedWhen == 'This weekend'
+                                  ? 'Weekend'
+                                  : _selectedWhen,
+                              time: _selectedTime,
+                              howLong: _selectedHowLong,
+                              whoPays: _selectedWhoPays,
+                              groupSize: _selectedHowMany,
+                              whoCanRequest: _selectedWhoCanJoin,
+                              visibility: _selectedVisibility,
+                            ),
+                          );
                           widget.onContinue();
                         }
                       : null,
@@ -860,7 +908,10 @@ class _Location3ViewState extends State<Location3View> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                   Text(
                     subtitle,

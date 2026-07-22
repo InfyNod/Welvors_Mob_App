@@ -345,7 +345,7 @@ class Success5View extends StatelessWidget {
       case 'coffee':
         return '☕';
       case 'dinner':
-        return '🍝';
+        return '🍽️';
       case 'drinks':
         return '🍸';
       case 'walk':
