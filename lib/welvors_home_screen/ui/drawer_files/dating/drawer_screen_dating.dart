@@ -7,6 +7,7 @@ import 'privacy_safety_and_membership_plan.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/compliments/compliments_screen.dart';
 import 'my_wallet/my_wallet_screen.dart';
 import 'roses/roses_screen.dart';
+import 'date_plans/date_plan_wallet.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({Key? key}) : super(key: key);
@@ -715,11 +716,22 @@ class _DrawerScreenState extends State<DrawerScreen> {
   }
 
   Widget _buildDatePlansCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Reduced vertical padding
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+    return GestureDetector(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DatePlanWallet(),
+          ),
+        );
+        // Refresh the drawer to show the updated plan count
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Reduced vertical padding
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFF0F0F0), width: 1), 
         boxShadow: [
           BoxShadow(
@@ -766,7 +778,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '3',
+                '${DatePlanWallet.availablePlans}',
                 style: const TextStyle(
                   fontSize: 22, // larger
                   fontWeight: FontWeight.w900,
@@ -793,6 +805,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
             ],
           ),
         ],
+      ),
       ),
     );
   }
