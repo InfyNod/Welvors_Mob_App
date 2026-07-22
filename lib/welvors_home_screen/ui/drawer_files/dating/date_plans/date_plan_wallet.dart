@@ -84,6 +84,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
           ),
         ),
       ),
+      bottomNavigationBar: _buildBottomBar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
@@ -246,48 +247,6 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    final plansToAdd =
-                        _packages[_selectedPackageIndex]['count'] as int;
-                    setState(() {
-                      DatePlanWallet.availablePlans += plansToAdd;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Successfully added $plansToAdd plans!'),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: const Color(0xFFF18C28),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF9F0),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '＋ Top up plans',
-                          style: TextStyle(
-                            color: Color(0xFF8A5A00),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ],
@@ -699,6 +658,91 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
             color: Colors.grey.shade100,
           ),
       ],
+    );
+  }
+
+  Widget _buildBottomBar() {
+    final selectedPkg = _packages[_selectedPackageIndex];
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FA),
+        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${selectedPkg['count']} PLANS · ${selectedPkg['tag'] ?? 'TRY IT OUT'}',
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              Row(
+                children: [
+                  const Text('🪙', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 4),
+                  Text(
+                    selectedPkg['price'],
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: () {
+                final plansToAdd = selectedPkg['count'] as int;
+                setState(() {
+                  DatePlanWallet.availablePlans += plansToAdd;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Successfully added $plansToAdd plans!'),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: const Color(0xFFF18C28),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF18C28),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text(
+                'Get plans',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Never expire · Unused plans stay in your wallet',
+            style: TextStyle(color: Colors.black45, fontSize: 11),
+          ),
+        ],
+      ),
     );
   }
 }
