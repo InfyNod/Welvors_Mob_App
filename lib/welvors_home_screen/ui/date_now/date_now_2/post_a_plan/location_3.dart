@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'map_selection_dialog.dart';
 
 class Location3View extends StatefulWidget {
   final VoidCallback onContinue;
@@ -25,18 +26,23 @@ class _Location3ViewState extends State<Location3View> {
   String? _selectedHowMany;
   String? _selectedWhoCanJoin;
   String _selectedVisibility = 'Premium 👑';
+  bool _isLocationSelected = false;
+  String _selectedPlaceSubtext = '';
 
   @override
   void dispose() {
     _searchController.dispose();
-    _manualController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isContinueActive =
-        _searchController.text.isNotEmpty || _manualController.text.isNotEmpty;
+    bool isContinueActive = _isLocationSelected &&
+        _selectedTime != null &&
+        _selectedHowLong != null &&
+        _selectedWhoPays != null &&
+        _selectedHowMany != null &&
+        _selectedWhoCanJoin != null;
 
     return Column(
       children: [
@@ -74,114 +80,239 @@ class _Location3ViewState extends State<Location3View> {
               ),
               const SizedBox(height: 12),
 
-              // Search Field
-              TextField(
-                controller: _searchController,
-                onChanged: (val) => setState(() {}),
-                decoration: InputDecoration(
-                  hintText: 'Search cafe, park, restaurant...',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 14,
-                  ),
-                  prefixIcon: const Icon(Icons.search, color: Colors.black54),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
+              // Search Field or Selected Card
+              if (_isLocationSelected)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE43A6A).withOpacity(0.06),
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    border: Border.all(color: const Color(0xFFE43A6A), width: 1.5),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Center(
+                          child: Text('☕', style: TextStyle(fontSize: 16)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _searchController.text,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                            Text(
+                              _selectedPlaceSubtext.isEmpty ? 'Mumbai' : _selectedPlaceSubtext,
+                              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isLocationSelected = false;
+                            _searchController.clear();
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.05),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close, size: 14, color: Colors.black54),
+                        ),
+                      ),
+                    ],
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFE43A6A),
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Locate on map button
-              GestureDetector(
-                onTap: () {
-                  // Map logic
-                },
-                child: DottedBorder(
-                  color: const Color(0xFFE43A6A),
-                  strokeWidth: 1.2,
-                  dashPattern: const [6, 4],
-                  borderType: BorderType.RRect,
-                  radius: const Radius.circular(12),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE43A6A).withOpacity(0.06),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        '🗺️ Locate on map',
-                        style: TextStyle(
-                          color: Color(0xFFE43A6A),
-                          fontWeight: FontWeight.bold,
+                )
+              else
+                Column(
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      onChanged: (val) => setState(() {}),
+                      decoration: InputDecoration(
+                        hintText: 'Search cafe, park, restaurant...',
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade400,
                           fontSize: 14,
+                        ),
+                        prefixIcon: const Icon(Icons.search, color: Colors.black54),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE43A6A),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_searchController.text.isNotEmpty)
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            _buildSuggestionItem('☕', 'Starbucks Reserve', 'Lower Parel, Mumbai'),
+                            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                            _buildSuggestionItem('🍸', 'AER Rooftop Bar', 'Worli, Mumbai'),
+                            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                            _buildSuggestionItem('🍺', 'Toit Taproom', 'Bandra, Mumbai'),
+                            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                            _buildSuggestionItem('🌅', 'Carter Road Promenade', 'Bandra, Mumbai'),
+                            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                            _buildSuggestionItem('🌳', 'Joggers Park', 'Bandra, Mumbai'),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+
+              if (!_isLocationSelected) ...[
+                const SizedBox(height: 16),
+                // Locate on map button
+                GestureDetector(
+                  onTap: () async {
+                    final result = await Navigator.push<String>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MapSelectionDialog(),
+                      ),
+                    );
+                    if (result != null) {
+                      setState(() {
+                        _searchController.text = result;
+                        _selectedPlaceSubtext = 'Selected from Map';
+                        _isLocationSelected = true;
+                      });
+                    }
+                  },
+                  child: DottedBorder(
+                    color: const Color(0xFFE43A6A),
+                    strokeWidth: 1.2,
+                    dashPattern: const [6, 4],
+                    borderType: BorderType.RRect,
+                    radius: const Radius.circular(12),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE43A6A).withOpacity(0.06),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '🗺️ Locate on map',
+                          style: TextStyle(
+                            color: Color(0xFFE43A6A),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-
-              // Or enter name directly
-              const Text(
-                'Or enter name directly',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _manualController,
-                onChanged: (val) => setState(() {}),
-                decoration: InputDecoration(
-                  hintText: 'Type place name...',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
+                const SizedBox(height: 24),
+              ],
+              
+              if (_isLocationSelected) ...[
+                const SizedBox(height: 24),
+                // Landmark
+                const Text(
+                  '🏛️ Landmark (optional)',
+                  style: TextStyle(
                     fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFE43A6A),
-                      width: 1.5,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'e.g. Near the fountain, 2nd floor...',
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFE43A6A),
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('🔒 ', style: TextStyle(fontSize: 14)),
+                      Expanded(
+                        child: Text(
+                          'Only the place name is shown — your exact spot stays private.',
+                          style: TextStyle(color: Colors.blue.shade700, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
 
               // When
               const Text(
@@ -650,6 +781,52 @@ class _Location3ViewState extends State<Location3View> {
                 size: 20,
                 color: Color(0xFFE43A6A),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionItem(String emoji, String title, String subtitle) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _searchController.text = title;
+          _selectedPlaceSubtext = subtitle;
+          _isLocationSelected = true;
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(emoji, style: const TextStyle(fontSize: 16)),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
