@@ -22,7 +22,10 @@ class _Review4ViewState extends State<Review4View> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 children: [
                   const Text(
                     "Review your plan",
@@ -85,7 +88,10 @@ class _Review4ViewState extends State<Review4View> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF2EAA5F), // Green
                                   borderRadius: BorderRadius.circular(16),
@@ -113,7 +119,10 @@ class _Review4ViewState extends State<Review4View> {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.black.withOpacity(0.5),
                                   borderRadius: BorderRadius.circular(16),
@@ -148,17 +157,24 @@ class _Review4ViewState extends State<Review4View> {
                                 children: [
                                   _buildImageChip('📅', state.whenDate),
                                   const SizedBox(width: 8),
-                                  _buildImageChip('⏰', state.time?.format(context) ?? '5:30 PM'),
+                                  _buildImageChip(
+                                    '⏰',
+                                    state.time?.format(context) ?? '5:30 PM',
+                                  ),
                                   const SizedBox(width: 8),
                                   _buildImageChip(
-                                    _getActivityEmoji(state.selectedActivityName ?? ''),
+                                    _getActivityEmoji(
+                                      state.selectedActivityName ?? '',
+                                    ),
                                     state.selectedActivityName ?? 'Dinner',
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                state.title.isNotEmpty ? state.title : 'Coffee & deep talks',
+                                state.title.isNotEmpty
+                                    ? state.title
+                                    : 'Coffee & deep talks',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -168,7 +184,10 @@ class _Review4ViewState extends State<Review4View> {
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  const Text('🤝 ', style: TextStyle(fontSize: 14)),
+                                  const Text(
+                                    '🤝 ',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
                                   Text(
                                     '${state.whoPays ?? 'Split (TTMM)'} · 👥 ${state.groupSize ?? '1 person'}',
                                     style: const TextStyle(
@@ -214,7 +233,7 @@ class _Review4ViewState extends State<Review4View> {
                   const SizedBox(height: 12),
                   _buildSummaryItem(
                     'Group',
-                    state.groupSize ?? 'Just 1 person',
+                    state.groupSize ?? '1 person',
                     () => context.read<PostPlanBloc>().add(JumpToStepEvent(3)),
                   ),
                   const SizedBox(height: 12),
@@ -257,90 +276,52 @@ class _Review4ViewState extends State<Review4View> {
                     'Verified members only',
                     'Only ID-verified people can request to join',
                     state.verifiedMembersOnly,
-                    (val) => context.read<PostPlanBloc>().add(UpdateReviewSettingsEvent(verifiedMembersOnly: val)),
+                    (val) => context.read<PostPlanBloc>().add(
+                      UpdateReviewSettingsEvent(verifiedMembersOnly: val),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _buildToggle(
                     'Auto-approve requests',
                     'Off = you approve each person yourself',
                     state.autoApproveRequests,
-                    (val) => context.read<PostPlanBloc>().add(UpdateReviewSettingsEvent(autoApproveRequests: val)),
+                    (val) => context.read<PostPlanBloc>().add(
+                      UpdateReviewSettingsEvent(autoApproveRequests: val),
+                    ),
                   ),
                   const SizedBox(height: 32),
 
                   // Alerts
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('🛡️ ', style: TextStyle(fontSize: 14)),
-                        Expanded(
-                          child: Text(
-                            'Your exact location stays hidden. Requesters only see the public venue, and you approve who joins.',
-                            style: TextStyle(
-                              color: Colors.green.shade800,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  _buildInfoCard(
+                    emoji: '🛡️',
+                    baseColor: const Color(0xFF2EAA5F), // Green
+                    title: 'Privacy Protected',
+                    subtitle:
+                        'Your exact location stays hidden. Requesters only see the public venue, and you approve who joins.',
                   ),
                   const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF9EE),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        const Text('📋 ', style: TextStyle(fontSize: 14)),
-                        Expanded(
-                          child: RichText(
-                            text: const TextSpan(
-                              style: TextStyle(
-                                color: Color(0xFF9E7019),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              children: [
-                                TextSpan(text: 'Uses '),
-                                TextSpan(
-                                  text: '1 Date Plan ',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(text: 'from your balance · 3 plans left'),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  _buildInfoCard(
+                    emoji: '📋',
+                    baseColor: const Color(0xFF95691F),
+                    customBgColor: const Color(0xFFFFF4E0),
+                    customTextColor: const Color(0xFF95691F),
+                    title: 'Uses 1 Date Plan',
+                    subtitle:
+                        'This will be deducted from your balance. You have 3 plans left.',
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 0),
                 ],
               ),
             ),
-            
+
             // Bottom Bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    offset: const Offset(0, -5),
-                    blurRadius: 10,
-                  ),
-                ],
+                border: Border(
+                  top: BorderSide(color: Colors.grey.shade100, width: 1),
+                ),
               ),
               child: SafeArea(
                 top: false,
@@ -349,7 +330,7 @@ class _Review4ViewState extends State<Review4View> {
                     GestureDetector(
                       onTap: () {
                         // Action to go live
-                        Navigator.pop(context); // just pop for now
+                        context.read<PostPlanBloc>().add(JumpToStepEvent(5));
                       },
                       child: Container(
                         width: double.infinity,
@@ -368,10 +349,7 @@ class _Review4ViewState extends State<Review4View> {
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              '🔴',
-                              style: TextStyle(fontSize: 12),
-                            ),
+                            Text('🔴', style: TextStyle(fontSize: 12)),
                             SizedBox(width: 8),
                             Text(
                               'Go live · uses 1 plan',
@@ -452,9 +430,9 @@ class _Review4ViewState extends State<Review4View> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -508,15 +486,21 @@ class _Review4ViewState extends State<Review4View> {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          context.read<PostPlanBloc>().add(UpdateReviewSettingsEvent(finalWhoCanJoin: label));
+          context.read<PostPlanBloc>().add(
+            UpdateReviewSettingsEvent(finalWhoCanJoin: label),
+          );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.08) : Colors.white,
+            color: isSelected
+                ? const Color(0xFFE43A6A).withOpacity(0.08)
+                : Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+              color: isSelected
+                  ? const Color(0xFFE43A6A)
+                  : Colors.grey.shade300,
               width: isSelected ? 1.5 : 1,
             ),
           ),
@@ -535,7 +519,12 @@ class _Review4ViewState extends State<Review4View> {
     );
   }
 
-  Widget _buildToggle(String title, String subtitle, bool value, Function(bool) onChanged) {
+  Widget _buildToggle(
+    String title,
+    String subtitle,
+    bool value,
+    Function(bool) onChanged,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -543,9 +532,9 @@ class _Review4ViewState extends State<Review4View> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -566,10 +555,7 @@ class _Review4ViewState extends State<Review4View> {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                 ),
               ],
             ),
@@ -581,6 +567,66 @@ class _Review4ViewState extends State<Review4View> {
             activeTrackColor: const Color(0xFFE43A6A),
             inactiveThumbColor: Colors.white,
             inactiveTrackColor: Colors.grey.shade300,
+            trackOutlineColor: MaterialStateProperty.all(Colors.transparent),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard({
+    required String emoji,
+    required Color baseColor,
+    required String title,
+    required String subtitle,
+    Color? customBgColor,
+    Color? customTextColor,
+  }) {
+    final bgColor = customBgColor ?? baseColor.withOpacity(0.04);
+    final textColor = customTextColor ?? baseColor;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: textColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: textColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Text(emoji, style: const TextStyle(fontSize: 16)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: textColor.withOpacity(0.9),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: textColor.withOpacity(0.75),
+                    fontSize: 12,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -589,19 +635,32 @@ class _Review4ViewState extends State<Review4View> {
 
   String _getActivityEmoji(String name) {
     switch (name.toLowerCase()) {
-      case 'coffee': return '☕';
-      case 'dinner': return '🍝';
-      case 'drinks': return '🍸';
-      case 'walk': return '🚶';
-      case 'brunch': return '🥞';
-      case 'movie': return '🍿';
-      case 'dessert': return '🍦';
-      case 'gallery': return '🎨';
-      case 'live music': return '🎸';
-      case 'beach': return '🏖️';
-      case 'shopping': return '🛍️';
-      case 'games': return '🎲';
-      default: return '✨';
+      case 'coffee':
+        return '☕';
+      case 'dinner':
+        return '🍝';
+      case 'drinks':
+        return '🍸';
+      case 'walk':
+        return '🚶';
+      case 'brunch':
+        return '🥞';
+      case 'movie':
+        return '🍿';
+      case 'dessert':
+        return '🍦';
+      case 'gallery':
+        return '🎨';
+      case 'live music':
+        return '🎸';
+      case 'beach':
+        return '🏖️';
+      case 'shopping':
+        return '🛍️';
+      case 'games':
+        return '🎲';
+      default:
+        return '✨';
     }
   }
 }

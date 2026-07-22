@@ -4,7 +4,8 @@ import 'package:dotted_border/dotted_border.dart';
 import '../my_plans/my_plan_screen.dart';
 
 class RequestsSentScreen extends StatefulWidget {
-  const RequestsSentScreen({super.key});
+  final int initialTabIndex;
+  const RequestsSentScreen({super.key, this.initialTabIndex = 0});
 
   @override
   State<RequestsSentScreen> createState() => _RequestsSentScreenState();
@@ -19,7 +20,12 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _selectedTabIndex = widget.initialTabIndex;
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
     _tabController.addListener(() {
       setState(() {
         _selectedTabIndex = _tabController.index;

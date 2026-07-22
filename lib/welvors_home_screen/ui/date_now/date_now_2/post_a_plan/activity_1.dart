@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'details_2.dart';
 import 'location_3.dart';
 import 'review_4.dart';
+import 'success_5.dart';
 import 'bloc/post_plan_bloc.dart';
 import 'bloc/post_plan_event.dart';
 import 'bloc/post_plan_state.dart';
@@ -168,7 +169,8 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Stepper
-            _buildStepper(currentStep),
+            if (currentStep < 5)
+              _buildStepper(currentStep),
 
               // Main Content
               Expanded(
@@ -192,11 +194,17 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                                   context.read<PostPlanBloc>().add(JumpToStepEvent(2));
                                 },
                               )
-                            : Review4View(
-                                onBack: () {
-                                  context.read<PostPlanBloc>().add(JumpToStepEvent(3));
-                                },
-                              ),
+                            : currentStep == 4
+                                ? Review4View(
+                                    onBack: () {
+                                      context.read<PostPlanBloc>().add(JumpToStepEvent(3));
+                                    },
+                                  )
+                                : Success5View(
+                                    onBackToDateNow: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
               ),
           ],
         ),

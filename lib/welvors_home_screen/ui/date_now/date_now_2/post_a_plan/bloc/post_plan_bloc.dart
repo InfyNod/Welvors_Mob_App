@@ -46,6 +46,7 @@ class PostPlanBloc extends Bloc<PostPlanEvent, PostPlanState> {
     on<UpdateReviewSettingsEvent>((event, emit) {
       emit(state.copyWith(
         finalWhoCanJoin: event.finalWhoCanJoin,
+        groupSize: event.finalWhoCanJoin, // Sync back to step 3 state
         verifiedMembersOnly: event.verifiedMembersOnly,
         autoApproveRequests: event.autoApproveRequests,
       ));

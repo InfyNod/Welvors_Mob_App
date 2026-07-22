@@ -508,7 +508,7 @@ class _Location3ViewState extends State<Location3View> {
               Wrap(
                 spacing: 8,
                 runSpacing: 10,
-                children: ['Just 1', '2 people', 'Small group']
+                children: ['1 person', '2 people', 'Small group']
                     .map(
                       (option) =>
                           _buildGenericChip(option, _selectedHowMany, (val) {
