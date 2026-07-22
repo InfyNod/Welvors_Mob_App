@@ -160,7 +160,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 2),
           ],
         ),
       ),
@@ -247,6 +247,48 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                InkWell(
+                  onTap: () {
+                    final plansToAdd =
+                        _packages[_selectedPackageIndex]['count'] as int;
+                    setState(() {
+                      DatePlanWallet.availablePlans += plansToAdd;
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Successfully added $plansToAdd plans!'),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: const Color(0xFFF18C28),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF9F0),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '＋ Top up plans',
+                          style: TextStyle(
+                            color: Color(0xFF8A5A00),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
