@@ -211,8 +211,8 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 .splashFactory, // Removes ripple effect for smoother look
             overlayColor: WidgetStateProperty.all(Colors.transparent),
             tabs: [
-              _buildTab('Requests sent', 3, 0),
-              _buildTab('My plans', 4, 1),
+              _buildTab('Requests sent', _plans.length, 0),
+              _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
             ],
           ),
           const Divider(height: 1, color: Colors.black12),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'send_request_drawer.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
+import 'date_now_2/my_plans/my_plan_screen.dart';
 
 
 class DateNowScreen extends StatefulWidget {
@@ -232,7 +233,11 @@ class _DateNowScreenState extends State<DateNowScreen> {
                     MaterialPageRoute(
                       builder: (context) => const RequestsSentScreen(),
                     ),
-                  );
+                  ).then((_) {
+                    if (mounted) {
+                      setState(() {}); // Refresh the badge number when returning
+                    }
+                  });
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -262,9 +267,9 @@ class _DateNowScreenState extends State<DateNowScreen> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: const Text(
-                          '7',
-                          style: TextStyle(
+                        child: Text(
+                          '${3 + MyPlanScreen.myHostedPlans.length}',
+                          style: const TextStyle(
                             color: Color(0xFFDE2957),
                             fontWeight: FontWeight.bold,
                             fontSize: 10,
