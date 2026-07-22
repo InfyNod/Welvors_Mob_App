@@ -98,56 +98,54 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     '🚶 Walk',
   ];
 
-
-
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredPlans = RequestsSentScreen.mySentRequests.where((plan) {
-      if (_selectedFilterIndex == -1) return true;
-      String filter = _filters[_selectedFilterIndex].toLowerCase();
-      String title = plan['title'].toString().toLowerCase();
+    List<Map<String, dynamic>> filteredPlans = RequestsSentScreen.mySentRequests
+        .where((plan) {
+          if (_selectedFilterIndex == -1) return true;
+          String filter = _filters[_selectedFilterIndex].toLowerCase();
+          String title = plan['title'].toString().toLowerCase();
 
-      if (filter.contains('coffee') && title.contains('coffee')) return true;
-      if (filter.contains('dinner') &&
-          (title.contains('dinner') || title.contains('pasta')))
-        return true;
-      if (filter.contains('drinks') &&
-          (title.contains('drinks') || title.contains('cocktails'))) {
-        return true;
-      }
-      if (filter.contains('walk') && title.contains('walk')) return true;
+          if (filter.contains('coffee') && title.contains('coffee'))
+            return true;
+          if (filter.contains('dinner') &&
+              (title.contains('dinner') || title.contains('pasta')))
+            return true;
+          if (filter.contains('drinks') &&
+              (title.contains('drinks') || title.contains('cocktails'))) {
+            return true;
+          }
+          if (filter.contains('walk') && title.contains('walk')) return true;
 
-      return false;
-    }).toList();
+          return false;
+        })
+        .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: 48,
+        toolbarHeight: 55,
         backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
         elevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: false,
-        titleSpacing: 24,
+        titleSpacing: 16,
         title: RichText(
           text: const TextSpan(
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.5,
+            ),
             children: [
               TextSpan(
                 text: 'Date ',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w900,
-                ),
+                style: TextStyle(color: Colors.black),
               ),
               TextSpan(
                 text: 'Now',
-                style: TextStyle(
-                  color: Color(0xFFE43A6A),
-                  fontSize: 25,
-                  fontWeight: FontWeight.w900,
-                ),
+                style: TextStyle(color: Color(0xFFE43A6A)), // Pink
               ),
             ],
           ),
@@ -166,29 +164,40 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.add, color: Colors.white, size: 16),
-                      SizedBox(width: 4),
-                      Text(
-                        'Post a plan',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFDE2957).withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
                     ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.add, color: Colors.white, size: 16),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'Post a plan',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -213,7 +222,11 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 .splashFactory, // Removes ripple effect for smoother look
             overlayColor: WidgetStateProperty.all(Colors.transparent),
             tabs: [
-              _buildTab('Requests sent', RequestsSentScreen.mySentRequests.length, 0),
+              _buildTab(
+                'Requests sent',
+                RequestsSentScreen.mySentRequests.length,
+                0,
+              ),
               _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
             ],
           ),
@@ -246,24 +259,91 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     Expanded(
                       child: filteredPlans.isEmpty
                           ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.event_busy,
-                                    size: 48,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'No plans found for ${_filters[_selectedFilterIndex].substring(2).trim()}',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (RequestsSentScreen
+                                            .mySentRequests
+                                            .isNotEmpty &&
+                                        _selectedFilterIndex != -1) ...[
+                                      Icon(
+                                        Icons.event_busy,
+                                        size: 48,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'No plans found for ${_filters[_selectedFilterIndex].substring(2).trim()}',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ] else ...[
+                                      Container(
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFA6A85).withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.search_rounded,
+                                          size: 40,
+                                          color: Color(0xFFFA6A85),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        'No requests sent',
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'Find a live plan you like and ask to join. Your requests show up here so you can track or withdraw them.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey.shade600,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                            borderRadius: BorderRadius.circular(24),
+                                          ),
+                                          child: const Text(
+                                            'Discover plans',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             )
                           : ListView.builder(
@@ -763,7 +843,12 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          padding: const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 16),
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 24,
+            right: 24,
+            bottom: 16,
+          ),
           child: SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -787,143 +872,145 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     color: const Color(0xFFFA6A85).withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Text(
-                    '💔',
-                    style: TextStyle(fontSize: 28),
-                  ),
+                  child: const Text('💔', style: TextStyle(fontSize: 28)),
                 ),
                 const SizedBox(height: 16),
-              const Text(
-                'Cancel this date?',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                const Text(
+                  'Cancel this date?',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Builder(
-                builder: (context) {
-                  final name = plan['hostName'].split(',')[0].trim();
-                  String cleanTitle = plan['title'];
-                  if (cleanTitle.contains(' ')) {
-                    cleanTitle = cleanTitle.substring(cleanTitle.indexOf(' ') + 1);
-                  }
+                const SizedBox(height: 12),
+                Builder(
+                  builder: (context) {
+                    final name = plan['hostName'].split(',')[0].trim();
+                    String cleanTitle = plan['title'];
+                    if (cleanTitle.contains(' ')) {
+                      cleanTitle = cleanTitle.substring(
+                        cleanTitle.indexOf(' ') + 1,
+                      );
+                    }
 
-                  return Text(
-                    "$name approved you for $cleanTitle.\nThey'll be notified that you can no longer make it.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                      height: 1.5,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              // Host details card
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF6F4EF),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundImage: NetworkImage(plan['hostAvatar']),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            plan['hostName'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            plan['subtitle'],
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 12,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                    return Text(
+                      "$name approved you for $cleanTitle.\nThey'll be notified that you can no longer make it.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                        height: 1.5,
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 32),
-              // Cancel Date button
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    RequestsSentScreen.mySentRequests.remove(plan);
-                  });
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                const SizedBox(height: 24),
+                // Host details card
+                Container(
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFCB3A31),
+                    color: const Color(0xFFF6F4EF),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Center(
-                    child: Text(
-                      'Cancel date',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundImage: NetworkImage(plan['hostAvatar']),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              plan['hostName'],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              plan['subtitle'],
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                // Cancel Date button
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      RequestsSentScreen.mySentRequests.remove(plan);
+                    });
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFCB3A31),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Cancel date',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              // Keep it button
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Keep it',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                const SizedBox(height: 12),
+                // Keep it button
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Keep it',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  void _showWithdrawBottomSheet(BuildContext context, Map<String, dynamic> plan) {
+  void _showWithdrawBottomSheet(
+    BuildContext context,
+    Map<String, dynamic> plan,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -934,7 +1021,12 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          padding: const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 16),
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 24,
+            right: 24,
+            bottom: 16,
+          ),
           child: SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -960,10 +1052,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   ),
                   child: const Text(
                     '↩️',
-                    style: TextStyle(
-                      fontSize: 28,
-                      height: 1.2,
-                    ),
+                    style: TextStyle(fontSize: 28, height: 1.2),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -981,7 +1070,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     final name = plan['hostName'].split(',')[0].trim();
                     String cleanTitle = plan['title'];
                     if (cleanTitle.contains(' ')) {
-                      cleanTitle = cleanTitle.substring(cleanTitle.indexOf(' ') + 1);
+                      cleanTitle = cleanTitle.substring(
+                        cleanTitle.indexOf(' ') + 1,
+                      );
                     }
                     return RichText(
                       textAlign: TextAlign.center,
@@ -1000,7 +1091,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                               color: Colors.black87,
                             ),
                           ),
-                          TextSpan(text: ' will be\nremoved and $name won\'t see it anymore.'),
+                          TextSpan(
+                            text:
+                                ' will be\nremoved and $name won\'t see it anymore.',
+                          ),
                         ],
                       ),
                     );
@@ -1108,7 +1202,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     );
   }
 
-  void _showViewPlanBottomSheet(BuildContext context, Map<String, dynamic> plan) {
+  void _showViewPlanBottomSheet(
+    BuildContext context,
+    Map<String, dynamic> plan,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1124,13 +1221,18 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             children: [
               // Top image with title overlay
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
                 child: Container(
                   height: 260,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(plan['imageUrl'] ?? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'),
+                      image: NetworkImage(
+                        plan['imageUrl'] ??
+                            'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                      ),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -1159,7 +1261,12 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 24),
+                padding: const EdgeInsets.only(
+                  top: 16,
+                  left: 24,
+                  right: 24,
+                  bottom: 24,
+                ),
                 child: SafeArea(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1167,7 +1274,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     children: [
                       // Match pill
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFA6A85).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
@@ -1185,11 +1295,18 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       // Date/Time
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today, size: 16, color: Colors.black54),
+                          const Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Colors.black54,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             plan['subtitle'],
-                            style: const TextStyle(color: Colors.black87, fontSize: 13),
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
@@ -1197,18 +1314,31 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       // Tags row (Payment, people)
                       Row(
                         children: [
-                          const Icon(Icons.person_outline, size: 16, color: Colors.black54),
+                          const Icon(
+                            Icons.person_outline,
+                            size: 16,
+                            color: Colors.black54,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             plan['pay'],
-                            style: const TextStyle(color: Colors.black87, fontSize: 13),
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                            ),
                           ),
                           const SizedBox(width: 12),
-                          const Text('·', style: TextStyle(color: Colors.black54)),
+                          const Text(
+                            '·',
+                            style: TextStyle(color: Colors.black54),
+                          ),
                           const SizedBox(width: 12),
                           const Text(
                             '👥 2 people',
-                            style: TextStyle(color: Colors.black87, fontSize: 13),
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
@@ -1278,13 +1408,18 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.pop(context); // Close view plan
-                                _showWithdrawBottomSheet(context, plan); // Show withdraw
+                                _showWithdrawBottomSheet(
+                                  context,
+                                  plan,
+                                ); // Show withdraw
                               },
                               child: Container(
                                 height: 50,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  border: Border.all(color: Colors.grey.shade300),
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                  ),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: const Center(
@@ -1308,7 +1443,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                                 height: 50,
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                                    colors: [
+                                      Color(0xFFFA6A85),
+                                      Color(0xFFDE2957),
+                                    ],
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -1338,4 +1476,3 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     );
   }
 }
-
