@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-class PaymentProcessingDialog extends StatefulWidget {
+class ComplimentsPaymentProcessingDialog extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
   final int newBalance;
   final VoidCallback onDone;
 
-  const PaymentProcessingDialog({
+  const ComplimentsPaymentProcessingDialog({
     super.key,
     required this.selectedPackage,
     required this.newBalance,
@@ -25,7 +25,7 @@ class PaymentProcessingDialog extends StatefulWidget {
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
-        return PaymentProcessingDialog(
+        return ComplimentsPaymentProcessingDialog(
           selectedPackage: selectedPackage,
           newBalance: newBalance,
           onDone: onDone,
@@ -46,11 +46,12 @@ class PaymentProcessingDialog extends StatefulWidget {
   }
 
   @override
-  State<PaymentProcessingDialog> createState() =>
-      _PaymentProcessingDialogState();
+  State<ComplimentsPaymentProcessingDialog> createState() =>
+      _ComplimentsPaymentProcessingDialogState();
 }
 
-class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
+class _ComplimentsPaymentProcessingDialogState
+    extends State<ComplimentsPaymentProcessingDialog> {
   bool _isProcessing = true;
 
   @override
@@ -99,7 +100,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color.fromRGBO(61, 169, 255, 1.0),
+                      Color(0xFFE43A6A),
                     ),
                   ),
                 ),
@@ -123,13 +124,16 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                   ),
                 ),
               ] else ...[
-                Lottie.asset(
-                  'assets/Payment_roses.json',
-                  width: 100,
-                  height: 100,
-                  repeat: false,
+                Transform.translate(
+                  offset: const Offset(0, -20),
+                  child: Lottie.asset(
+                    'assets/succeess.json',
+                    width: 160,
+                    height: 160,
+                    repeat: false,
+                  ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 0),
                 const Text(
                   'Payment successful',
                   style: TextStyle(
@@ -140,11 +144,11 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Your roses have been added to your wallet.',
+                  'Your compliments have been added to your wallet.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -160,7 +164,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('🌹', style: TextStyle(fontSize: 16)),
+                        const Text('💌', style: TextStyle(fontSize: 16)),
                         const SizedBox(width: 8),
                         Text(
                           'Balance now ',
@@ -170,7 +174,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                           ),
                         ),
                         Text(
-                          '${widget.newBalance} roses',
+                          '${widget.newBalance} compliments',
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -181,7 +185,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -191,7 +195,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                       widget.onDone(); // Callback to trigger UI updates
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(61, 169, 255, 1.0),
+                      backgroundColor: const Color(0xFFE43A6A),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

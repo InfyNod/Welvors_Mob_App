@@ -591,16 +591,17 @@ class _DrawerScreenState extends State<DrawerScreen> {
           child: _buildBalanceCard(
             emoji: '💌',
             bgColor: const Color(0xFFFBE4E7),
-            value: '5',
+            value: '${ComplimentsScreen.availableCompliments}',
             label: 'Compliments',
             hasDot: true,
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const ComplimentsScreen(),
                 ),
               );
+              setState(() {});
             },
           ),
         ),

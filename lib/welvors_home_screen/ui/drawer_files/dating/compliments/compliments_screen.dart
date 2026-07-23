@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'get_compliments_drawer.dart';
 
 class ComplimentsScreen extends StatefulWidget {
+  static int availableCompliments = 5;
+
   const ComplimentsScreen({super.key});
 
   @override
@@ -264,9 +267,9 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                     children: [
                       Row(
                         children: [
-                          const Text(
-                            '5',
-                            style: TextStyle(
+                          Text(
+                            '${ComplimentsScreen.availableCompliments}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -831,7 +834,11 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
             width: double.infinity,
             height: 54,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                GetComplimentsDrawer.show(context, selectedPkg, () {
+                  setState(() {});
+                });
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE43A6A),
                 foregroundColor: Colors.white,
