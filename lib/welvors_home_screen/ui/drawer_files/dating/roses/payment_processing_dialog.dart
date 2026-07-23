@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class PaymentProcessingDialog extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -34,10 +35,9 @@ class PaymentProcessingDialog extends StatefulWidget {
         return FadeTransition(
           opacity: animation,
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.95, end: 1.0).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            )),
+            scale: Tween<double>(begin: 0.95, end: 1.0).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            ),
             child: child,
           ),
         );
@@ -46,7 +46,8 @@ class PaymentProcessingDialog extends StatefulWidget {
   }
 
   @override
-  State<PaymentProcessingDialog> createState() => _PaymentProcessingDialogState();
+  State<PaymentProcessingDialog> createState() =>
+      _PaymentProcessingDialogState();
 }
 
 class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
@@ -75,7 +76,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
       child: Center(
         child: Container(
           width: 320,
-          height: 480,
+          height: 450,
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -97,7 +98,9 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                   height: 48,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(Color.fromRGBO(61, 169, 255, 1.0)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color.fromRGBO(61, 169, 255, 1.0),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -120,22 +123,13 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                   ),
                 ),
               ] else ...[
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.check_circle,
-                      color: Color(0xFF34A853),
-                      size: 40,
-                    ),
-                  ),
+                Lottie.asset(
+                  'assets/Payment_roses.json',
+                  width: 100,
+                  height: 100,
+                  repeat: false,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 14),
                 const Text(
                   'Payment successful',
                   style: TextStyle(
@@ -148,14 +142,14 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                 Text(
                   'Your roses have been added to your wallet.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade500,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                 ),
                 const SizedBox(height: 32),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8F9FA),
                     borderRadius: BorderRadius.circular(12),
