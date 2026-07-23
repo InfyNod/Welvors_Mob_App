@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../boost_all_screen/boost_top_nav.dart';
+import 'activate_drawer.dart';
 
 class BoostWalletScreen extends StatelessWidget {
   const BoostWalletScreen({super.key});
@@ -32,6 +33,7 @@ class BoostWalletScreen extends StatelessWidget {
             title: '1 hour Spotlight',
             buttonText: 'Activate',
             isBordered: true,
+            onTap: () => showActivateBoostDrawer(context),
           ),
           const SizedBox(height: 12),
           _buildLiveBoostCard(),
@@ -154,6 +156,7 @@ class BoostWalletScreen extends StatelessWidget {
     required String title,
     required String buttonText,
     bool isBordered = false,
+    VoidCallback? onTap,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -179,18 +182,21 @@ class BoostWalletScreen extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE43A6A),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              buttonText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+          GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE43A6A),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                buttonText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

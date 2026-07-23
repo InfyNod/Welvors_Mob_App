@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../boost_all_screen/boost_top_nav.dart';
+import 'super_activate_drawer.dart';
 
 class SuperBoostWalletScreen extends StatelessWidget {
   const SuperBoostWalletScreen({super.key});
@@ -36,6 +37,7 @@ class SuperBoostWalletScreen extends StatelessWidget {
             title: '3 hour Super Boost',
             buttonText: 'Activate',
             isBordered: true,
+            onTap: () => showSuperActivateBoostDrawer(context),
           ),
           const SizedBox(height: 12),
           _buildLiveBoostCard(),
@@ -159,6 +161,7 @@ class SuperBoostWalletScreen extends StatelessWidget {
     required String title,
     required String buttonText,
     bool isBordered = false,
+    VoidCallback? onTap,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -184,18 +187,21 @@ class SuperBoostWalletScreen extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C2C),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              buttonText,
-              style: const TextStyle(
-                color: Color(0xFFFFC107), // Yellow text on black button
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+          GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2C),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                buttonText,
+                style: const TextStyle(
+                  color: Color(0xFFFFC107), // Yellow text on black button
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
