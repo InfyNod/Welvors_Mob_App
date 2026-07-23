@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'boost_screen.dart';
+import 'boost/boost_screen.dart';
 
 class BoostTopNav extends StatefulWidget {
   const BoostTopNav({super.key});

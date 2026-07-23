@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'date_plan_wallet.dart';
-import 'date_plans_payment_processing_dialog.dart';
+import 'boost_screen.dart';
+import 'boost_payment_processing_dialog.dart';
 
-class GetDatePlansDrawer extends StatefulWidget {
+class GetBoostsDrawer extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
   final VoidCallback onPurchased;
 
-  const GetDatePlansDrawer({
+  const GetBoostsDrawer({
     super.key,
     required this.selectedPackage,
     required this.onPurchased,
@@ -17,7 +17,7 @@ class GetDatePlansDrawer extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => GetDatePlansDrawer(
+      builder: (context) => GetBoostsDrawer(
         selectedPackage: package,
         onPurchased: onPurchased,
       ),
@@ -25,10 +25,10 @@ class GetDatePlansDrawer extends StatefulWidget {
   }
 
   @override
-  State<GetDatePlansDrawer> createState() => _GetDatePlansDrawerState();
+  State<GetBoostsDrawer> createState() => _GetBoostsDrawerState();
 }
 
-class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
+class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
   String _selectedPaymentMethod = 'wallet';
 
   @override
@@ -88,14 +88,14 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                 ),
                 child: Row(
                   children: [
-                    const Text('📋', style: TextStyle(fontSize: 24)),
+                    const Text('⚡️', style: TextStyle(fontSize: 24)),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${widget.selectedPackage['title']}',
+                            '${int.parse(widget.selectedPackage['title'])} Boosts',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                       ),
                     ),
                     Text(
-                      '₹${widget.selectedPackage['price']}',
+                      widget.selectedPackage['totalPrice'] != null ? widget.selectedPackage['totalPrice'].split(' ')[0] : '',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -165,20 +165,20 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context); // Close the bottom sheet
-                    final itemsToAdd = widget.selectedPackage['count'] as int;
-                    final newBalance = DatePlanWallet.availablePlans + itemsToAdd;
-                    DatePlansPaymentProcessingDialog.show(
+                    final itemsToAdd = int.parse(widget.selectedPackage['title']);
+                    final newBalance = BoostScreen.availableBoosts + itemsToAdd;
+                    BoostPaymentProcessingDialog.show(
                       context: context,
                       selectedPackage: widget.selectedPackage,
                       newBalance: newBalance,
                       onDone: () {
-                        DatePlanWallet.availablePlans = newBalance;
+                        BoostScreen.availableBoosts = newBalance;
                         widget.onPurchased();
                       },
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF18C28), // Brand Yellow/Orange
+                    backgroundColor: const Color(0xFFE43A6A), // Brand Pink
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -186,7 +186,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                     ),
                   ),
                   child: Text(
-                    'Pay ₹${widget.selectedPackage['price']}',
+                    'Pay ${widget.selectedPackage['totalPrice'] != null ? widget.selectedPackage['totalPrice'].split(' ')[0] : ''}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -221,7 +221,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFFF18C28) : Colors.grey.shade200,
+            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -255,9 +255,9 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
               height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? const Color(0xFFF18C28) : Colors.white,
+                color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFFF18C28) : Colors.grey.shade300,
+                  color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
                   width: 1,
                 ),
               ),

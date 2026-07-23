@@ -195,21 +195,6 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                 ),
               ),
               
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.lock, size: 12, color: Colors.grey.shade500),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Secured by Razorpay · 256-bit encrypted',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
