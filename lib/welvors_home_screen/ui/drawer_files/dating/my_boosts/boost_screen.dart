@@ -67,6 +67,19 @@ class _BoostScreenState extends State<BoostScreen> {
                 child: _buildPackageCard(index),
               );
             }),
+            const SizedBox(height: 16),
+            const Text(
+              'WHY BOOST WORKS',
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildWhyBoostWorksSection(),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -90,18 +103,17 @@ class _BoostScreenState extends State<BoostScreen> {
           // Faint lightning bolt background
           Positioned(
             right: -20,
-            bottom: -20,
-            child: Opacity(
-              opacity: 0.15,
-              child: Icon(
-                Icons.bolt,
-                size: 180,
-                color: Colors.white,
+            top: -20,
+            child: Transform.rotate(
+              angle: 5.9,
+              child: Opacity(
+                opacity: 0.2,
+                child: const Text('⚡️', style: TextStyle(fontSize: 120)),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20), // reduced padding
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -114,7 +126,7 @@ class _BoostScreenState extends State<BoostScreen> {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.bolt, color: Color(0xFFFFD54F), size: 14),
+                      Text('⚡️', style: TextStyle(fontSize: 12)),
                       SizedBox(width: 4),
                       Text(
                         '30 MINUTES • NEARBY',
@@ -128,7 +140,7 @@ class _BoostScreenState extends State<BoostScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 const Text(
                   'Be a top profile\nin your area',
                   style: TextStyle(
@@ -138,17 +150,17 @@ class _BoostScreenState extends State<BoostScreen> {
                     height: 1.1,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 const Text(
                   'Get 5x more profile views and stand out to\nyour most compatible matches instantly.',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 13,
+                    fontSize: 12, // slightly smaller to save space
                     fontWeight: FontWeight.w500,
-                    height: 1.4,
+                    height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -204,10 +216,11 @@ class _BoostScreenState extends State<BoostScreen> {
               _selectedPackageIndex = index;
             });
           },
-          child: Container(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 12),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 10),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isSelected ? const Color(0xFFFDF0F3) : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
@@ -231,7 +244,7 @@ class _BoostScreenState extends State<BoostScreen> {
                     Text(
                       package['title'],
                       style: const TextStyle(
-                        fontSize: 28,
+                        fontSize: 26,
                         fontWeight: FontWeight.w900,
                         color: Colors.black87,
                       ),
@@ -270,22 +283,42 @@ class _BoostScreenState extends State<BoostScreen> {
                     ),
                   ],
                 ),
-                if (package['discount'] != null) ...[
-                  const SizedBox(height: 12),
-                  const Divider(height: 1, color: Color(0xFFF0F0F0)),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
+                const SizedBox(height: 10),
+                // Dotted Divider
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final boxWidth = constraints.constrainWidth();
+                    const dashWidth = 4.0;
+                    final dashCount = (boxWidth / (2 * dashWidth)).floor();
+                    return Flex(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      direction: Axis.horizontal,
+                      children: List.generate(dashCount, (_) {
+                        return SizedBox(
+                          width: dashWidth,
+                          height: 1.5,
+                          child: const DecoratedBox(
+                            decoration: BoxDecoration(color: Color(0xFFE5E5E5)),
+                          ),
+                        );
+                      }),
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    if (package['discount'] != null) ...[
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
+                          color: const Color.fromRGBO(232, 249, 240, 1.0),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           package['discount'],
                           style: const TextStyle(
-                            color: Color(0xFF4CAF50),
+                            color: Color.fromRGBO(44, 175, 107, 1.0),
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -300,26 +333,26 @@ class _BoostScreenState extends State<BoostScreen> {
                           decoration: TextDecoration.lineThrough,
                         ),
                       ),
-                      const Spacer(),
-                      // Checkmark
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isSelected ? const Color(0xFFE43A6A) : Colors.transparent,
-                          border: Border.all(
-                            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                            width: 1,
-                          ),
-                        ),
-                        child: isSelected
-                            ? const Icon(Icons.check, size: 14, color: Colors.white)
-                            : null,
-                      ),
                     ],
-                  ),
-                ],
+                    const Spacer(),
+                    // Checkmark (always visible now)
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isSelected ? const Color(0xFFE43A6A) : Colors.transparent,
+                        border: Border.all(
+                          color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                      child: isSelected
+                          ? const Icon(Icons.check, size: 14, color: Colors.white)
+                          : null,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -436,6 +469,188 @@ class _BoostScreenState extends State<BoostScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWhyBoostWorksSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildWhyBoostWorkItem(
+            icon: Icons.bolt,
+            iconColor: const Color(0xFFE43A6A),
+            iconBgColor: const Color(0xFFFDF0F3),
+            title: 'Boost · 30 min',
+            subtitle: 'Quick visibility lift',
+            tag: '⚡ INSTANT',
+            tagColor: const Color(0xFFE43A6A),
+            tagBgColor: const Color(0xFFFDF0F3),
+            isFirst: true,
+          ),
+          _buildWhyBoostWorkItem(
+            icon: Icons.bolt,
+            iconColor: const Color(0xFFE43A6A),
+            iconBgColor: const Color(0xFFFDF0F3),
+            title: 'Top of nearby decks',
+            subtitle:
+                'Your profile jumps to position 1 in the discovery\ndeck within 2 km of you.',
+            tag: 'INSTANT',
+            tagColor: const Color(0xFFE43A6A),
+            tagBgColor: const Color(0xFFFDF0F3),
+          ),
+          _buildWhyBoostWorkItem(
+            icon: Icons.trending_up,
+            iconColor: const Color(0xFF34A853),
+            iconBgColor: const Color(0xFFE6F4EA),
+            title: '5× more profile views',
+            subtitle:
+                'On average, boosted profiles receive 245% more\nviews than regular ones in the same window.',
+            tag: '+245%',
+            tagColor: const Color(0xFFE43A6A),
+            tagBgColor: const Color(0xFFFDF0F3),
+          ),
+          _buildWhyBoostWorkItem(
+            icon: Icons.favorite,
+            iconColor: const Color(0xFFF6B042),
+            iconBgColor: const Color(0xFFFFF3E0),
+            title: '3× higher match rate',
+            subtitle:
+                'Better signal to compatible users means 3× more\nright-swipes during your boost.',
+          ),
+          _buildWhyBoostWorkItem(
+            icon: Icons.chat_bubble_outline,
+            iconColor: const Color(0xFF2383F6),
+            iconBgColor: const Color(0xFFE3F0FF),
+            title: '3× faster replies',
+            subtitle:
+                'Boosted profiles are seen as more active — your\nmessages get replies sooner.',
+          ),
+          _buildWhyBoostWorkItem(
+            icon: Icons.search,
+            iconColor: const Color(0xFF8E24AA),
+            iconBgColor: const Color(0xFFF3E5F5),
+            title: 'Smart audience targeting',
+            subtitle:
+                'Algorithm prioritizes showing you to people who\nmatch your filters and intent.',
+          ),
+          _buildWhyBoostWorkItem(
+            icon: Icons.monitor_heart,
+            iconColor: const Color(0xFFE43A6A),
+            iconBgColor: const Color(0xFFFDF0F3),
+            title: 'Live performance dashboard',
+            subtitle:
+                'Watch views, likes and visibility lift update in\nreal-time during your boost.',
+            tag: 'NEW',
+            tagColor: const Color(0xFFE43A6A),
+            tagBgColor: const Color(0xFFFDF0F3),
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWhyBoostWorkItem({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required String title,
+    required String subtitle,
+    String? tag,
+    Color? tagColor,
+    Color? tagBgColor,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (tag != null) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: tagBgColor,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              tag,
+                              style: TextStyle(
+                                color: tagColor,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 11,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!isLast)
+          Divider(
+            height: 1,
+            color: Colors.grey.shade100,
+            indent: 56, // Align with text
+            endIndent: 16,
+          ),
+      ],
     );
   }
 }
