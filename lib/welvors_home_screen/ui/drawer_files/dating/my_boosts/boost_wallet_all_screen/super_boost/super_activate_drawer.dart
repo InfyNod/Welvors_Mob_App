@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../going_live.dart';
 
 void showSuperActivateBoostDrawer(BuildContext context) {
   showModalBottomSheet(
@@ -164,8 +165,8 @@ class _SuperActivateBoostDrawer extends StatelessWidget {
             height: 50,
             child: ElevatedButton(
               onPressed: () {
-                // Handle activation logic here
-                Navigator.pop(context);
+                Navigator.pop(context); // Close drawer
+                showGoingLiveOverlay(context, isSuperBoost: true); // Show loading overlay for super boost
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2C2C2C), // Black button

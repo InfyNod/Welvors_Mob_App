@@ -25,11 +25,7 @@ class SuperBoostWalletScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             'Activate a 3 hour Super Boost for maximum visibility to all compatible matches in your city.',
-            style: TextStyle(
-              color: Colors.black54,
-              fontSize: 13,
-              height: 1.4,
-            ),
+            style: TextStyle(color: Colors.black54, fontSize: 13, height: 1.4),
           ),
           const SizedBox(height: 20),
           _buildActionCard(
@@ -77,12 +73,15 @@ class SuperBoostWalletScreen extends StatelessWidget {
         child: Stack(
           children: [
             Positioned(
-              right: 10,
+              right: 40,
               top: -10,
-              child: Icon(
-                Icons.bolt, // Lightning bolt for Super Boost
-                size: 110,
-                color: const Color(0xFFFFC107).withOpacity(0.15), // Yellow icon tint
+              child: Text(
+                '✦',
+                style: TextStyle(
+                  fontSize: 70,
+                  color: const Color(0xFFFFC107).withOpacity(0.15),
+                  height: 1.0,
+                ),
               ),
             ),
             Padding(
@@ -133,7 +132,9 @@ class SuperBoostWalletScreen extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFC107).withOpacity(0.2), // Yellow tint
+                          color: const Color(
+                            0xFFFFC107,
+                          ).withOpacity(0.2), // Yellow tint
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
@@ -223,7 +224,9 @@ class SuperBoostWalletScreen extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFC107).withOpacity(0.15), // Faint yellow box
+              color: const Color(
+                0xFFFFC107,
+              ).withOpacity(0.15), // Faint yellow box
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
@@ -259,21 +262,14 @@ class SuperBoostWalletScreen extends StatelessWidget {
                     const SizedBox(width: 6),
                     const Text(
                       '02:54:12 remaining · View performance',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 11,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 11),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          const Icon(
-            Icons.chevron_right,
-            color: Colors.white54,
-            size: 20,
-          ),
+          const Icon(Icons.chevron_right, color: Colors.white54, size: 20),
         ],
       ),
     );
@@ -318,10 +314,7 @@ class SuperBoostWalletScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 const Text(
                   'Top up your wallet anytime',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.black54, fontSize: 12),
                 ),
               ],
             ),
@@ -362,7 +355,8 @@ class SuperBoostWalletScreen extends StatelessWidget {
                 child: _buildBenefitCard(
                   icon: Icons.trending_up,
                   title: '10x More Views',
-                  subtitle: 'Super Boost gives your profile maximum visibility.',
+                  subtitle:
+                      'Super Boost gives your profile maximum visibility.',
                 ),
               ),
               const SizedBox(width: 12),

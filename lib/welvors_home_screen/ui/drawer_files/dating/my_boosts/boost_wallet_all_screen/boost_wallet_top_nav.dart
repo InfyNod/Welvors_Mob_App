@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'boost_wallet/boost_wallet_screen.dart';
 import 'super_boost/super_boost_screen.dart';
+import '../boost_history.dart/boost_history.dart';
 
 class BoostWalletTopNav extends StatefulWidget {
   const BoostWalletTopNav({super.key});
@@ -60,7 +61,12 @@ class _BoostWalletTopNavState extends State<BoostWalletTopNav> {
           Padding(
             padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const BoostHistoryScreen()),
+                );
+              },
               borderRadius: BorderRadius.circular(24),
               child: Container(
                 width: 40,
