@@ -8,7 +8,6 @@ class BoostScreen extends StatefulWidget {
 }
 
 class _BoostScreenState extends State<BoostScreen> {
-  int _selectedTab = 0; // 0 for Boost, 1 for Super Boost
   int _selectedPackageIndex = 1; // 10 Boosts is selected by default
 
   final List<Map<String, dynamic>> _packages = [
@@ -44,237 +43,34 @@ class _BoostScreenState extends State<BoostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black87,
-                size: 16,
+      backgroundColor: Colors.transparent,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeroBanner(),
+            const SizedBox(height: 24),
+            const Text(
+              'CHOOSE YOUR PACK',
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
               ),
             ),
-          ),
+            const SizedBox(height: 16),
+            ...List.generate(_packages.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildPackageCard(index),
+              );
+            }),
+          ],
         ),
-        title: const Text(
-          'Boost',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-            child: InkWell(
-              onTap: () {},
-              borderRadius: BorderRadius.circular(24),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade200),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(
-                      Icons.account_balance_wallet_outlined,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                    Positioned(
-                      top: 10,
-                      right: 8,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-          _buildToggle(),
-          const SizedBox(height: 16),
-          Expanded(
-            child: _selectedTab == 0
-                ? _buildBoostContent()
-                : _buildSuperBoostContent(),
-          ),
-        ],
       ),
       bottomNavigationBar: _buildBottomBar(),
-    );
-  }
-
-  Widget _buildToggle() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEBEBEB),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedTab = 0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: _selectedTab == 0 ? Colors.white : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: _selectedTab == 0
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.bolt,
-                      size: 16,
-                      color: _selectedTab == 0 ? Colors.black : Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Boost',
-                      style: TextStyle(
-                        color: _selectedTab == 0 ? Colors.black : Colors.grey.shade600,
-                        fontWeight: _selectedTab == 0 ? FontWeight.bold : FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedTab = 1),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: _selectedTab == 1 ? Colors.white : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: _selectedTab == 1
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.star,
-                      size: 16,
-                      color: _selectedTab == 1 ? Colors.black : Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Super Boost',
-                      style: TextStyle(
-                        color: _selectedTab == 1 ? Colors.black : Colors.grey.shade600,
-                        fontWeight: _selectedTab == 1 ? FontWeight.bold : FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBoostContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeroBanner(),
-          const SizedBox(height: 24),
-          const Text(
-            'CHOOSE YOUR PACK',
-            style: TextStyle(
-              color: Colors.black54,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...List.generate(_packages.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _buildPackageCard(index),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuperBoostContent() {
-    return const Center(
-      child: Text(
-        'Super Boost coming soon...',
-        style: TextStyle(color: Colors.grey),
-      ),
     );
   }
 
@@ -283,7 +79,7 @@ class _BoostScreenState extends State<BoostScreen> {
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFF16E7F), Color(0xFFC73E67)],
+          colors: [Color.fromRGBO(252, 131, 160, 1.0), Color(0xFFDE2957)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -414,13 +210,13 @@ class _BoostScreenState extends State<BoostScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? const Color(0xFFF16E7F) : Colors.grey.shade200,
+                color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: const Color(0xFFF16E7F).withOpacity(0.1),
+                        color: const Color(0xFFE43A6A).withOpacity(0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -511,9 +307,9 @@ class _BoostScreenState extends State<BoostScreen> {
                         height: 20,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isSelected ? const Color(0xFFF16E7F) : Colors.transparent,
+                          color: isSelected ? const Color(0xFFE43A6A) : Colors.transparent,
                           border: Border.all(
-                            color: isSelected ? const Color(0xFFF16E7F) : Colors.grey.shade300,
+                            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
                             width: 1,
                           ),
                         ),
@@ -531,21 +327,34 @@ class _BoostScreenState extends State<BoostScreen> {
         if (hasTag)
           Positioned(
             left: 16,
-            top: -8,
+            top: -10,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: package['tag'] == 'BEST VALUE'
-                    ? const Color(0xFFFFD54F)
-                    : const Color(0xFFF16E7F),
-                borderRadius: BorderRadius.circular(4),
+                gradient: LinearGradient(
+                  colors: package['tag'] == 'BEST VALUE'
+                      ? [const Color(0xFFFFD54F), const Color(0xFFF6B042)]
+                      : [const Color(0xFFFA6A85), const Color(0xFFDE2957)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: [
+                  BoxShadow(
+                    color: package['tag'] == 'BEST VALUE'
+                        ? const Color(0xFFF6B042).withOpacity(0.3)
+                        : const Color(0xFFDE2957).withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Text(
                 package['tag'],
                 style: TextStyle(
                   color: package['tag'] == 'BEST VALUE' ? Colors.black87 : Colors.white,
                   fontSize: 9,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -565,7 +374,7 @@ class _BoostScreenState extends State<BoostScreen> {
         bottom: MediaQuery.of(context).padding.bottom + 16,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: Colors.white,
         border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
       ),
       child: Column(
@@ -600,7 +409,7 @@ class _BoostScreenState extends State<BoostScreen> {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF16E7F),
+                backgroundColor: const Color(0xFFE43A6A),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
