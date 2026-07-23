@@ -8,6 +8,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/compliments/c
 import 'my_wallet/my_wallet_screen.dart';
 import 'roses/roses_screen.dart';
 import 'date_plans/date_plan_wallet.dart';
+import 'my_boosts/boost_screen.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({Key? key}) : super(key: key);
@@ -613,6 +614,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
             value: '1',
             label: 'My Boosts',
             hasDot: true,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BoostScreen(),
+                ),
+              );
+            },
           ),
         ),
         const SizedBox(width: 8),

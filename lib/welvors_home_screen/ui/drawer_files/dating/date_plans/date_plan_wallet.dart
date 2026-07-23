@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'get_date_plans_drawer.dart';
 
 class DatePlanWallet extends StatefulWidget {
   static int availablePlans = 3;
@@ -207,12 +208,12 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                   'DATE PLANS AVAILABLE',
                   style: TextStyle(
                     color: Colors.white70,
-                    fontSize: 11,
+                    fontSize: 13,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.5,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -220,9 +221,9 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                       '${DatePlanWallet.availablePlans}',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 48,
+                        fontSize: 56,
                         fontWeight: FontWeight.w900,
-                        height: 1.1,
+                        height: 1.0,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -232,63 +233,21 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                         'plans',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 22,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 const Text(
                   'Each plan lets you post one date on Date Now · any activity type',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    final plansToAdd =
-                        _packages[_selectedPackageIndex]['count'] as int;
-                    setState(() {
-                      DatePlanWallet.availablePlans += plansToAdd;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Successfully added $plansToAdd plans!'),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: const Color(0xFFF18C28),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF9F0),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '＋ Top up plans',
-                          style: TextStyle(
-                            color: Color(0xFF8A5A00),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ],
@@ -749,20 +708,9 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
             height: 54,
             child: ElevatedButton(
               onPressed: () {
-                final plansToAdd = selectedPkg['count'] as int;
-                setState(() {
-                  DatePlanWallet.availablePlans += plansToAdd;
+                GetDatePlansDrawer.show(context, selectedPkg, () {
+                  setState(() {});
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Successfully added $plansToAdd plans!'),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: const Color(0xFFF18C28),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF18C28),
