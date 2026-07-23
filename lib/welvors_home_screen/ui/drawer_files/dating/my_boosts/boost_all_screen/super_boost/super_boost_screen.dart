@@ -1,0 +1,960 @@
+import 'package:flutter/material.dart';
+import 'get_super_boosts_drawer.dart';
+
+class SuperBoostScreen extends StatefulWidget {
+  static int availableSuperBoosts = 0;
+
+  const SuperBoostScreen({super.key});
+
+  @override
+  State<SuperBoostScreen> createState() => _SuperBoostScreenState();
+}
+
+class _SuperBoostScreenState extends State<SuperBoostScreen> {
+  int _selectedPackageIndex = 1; // 05 Super Boosts is selected by default
+
+  final List<Map<String, dynamic>> _packages = [
+    {
+      'title': '10',
+      'subtitle': 'Super Boosts',
+      'pricePerItem': '₹399/each',
+      'discount': 'Save 48%',
+      'oldPrice': '₹766/each',
+      'totalPrice': '₹3,990 total',
+      'tag': 'BEST VALUE',
+    },
+    {
+      'title': '05',
+      'subtitle': 'Super Boosts',
+      'pricePerItem': '₹499/each',
+      'discount': 'Save 35%',
+      'oldPrice': '₹766/each',
+      'totalPrice': '₹2,495 total',
+      'tag': 'POPULAR',
+    },
+    {
+      'title': '01',
+      'subtitle': 'Super Boosts',
+      'pricePerItem': '₹766/each',
+      'discount': null,
+      'oldPrice': null,
+      'totalPrice': '₹766 total',
+      'tag': null,
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeroBanner(),
+            const SizedBox(height: 24),
+            const Text(
+              'CHOOSE YOUR PACK',
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...List.generate(_packages.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildPackageCard(index),
+              );
+            }),
+            const SizedBox(height: 24),
+            const Text(
+              'WHY SUPER BOOST WORKS',
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildWhySuperBoostWorksSection(),
+            const SizedBox(height: 24),
+            const Text(
+              'BOOST VS SUPER BOOST',
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildComparisonSection(),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: Divider(color: Colors.grey.shade300)),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    'OR GET PREMIUM',
+                    style: TextStyle(
+                      color: Colors.black45,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ),
+                Expanded(child: Divider(color: Colors.grey.shade300)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildPremiumBanner(),
+            const SizedBox(height: 2),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomBar(),
+    );
+  }
+
+  Widget _buildHeroBanner() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2C2C2C), Color(0xFF0A0A0A)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
+        children: [
+          // Background star graphic
+          Positioned(
+            right: -0,
+            top: -0,
+            child: Transform.rotate(
+              angle: 0.2,
+              child: Opacity(
+                opacity: 0.2,
+                child: const Text('✨', style: TextStyle(fontSize: 100)),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(
+                      0xFFCBA164,
+                    ).withOpacity(0.2), // Light yellow tint
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    '✦ 3 HOURS · CITYWIDE',
+                    style: TextStyle(
+                      color: Color(0xFFCBA164),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Be the top profile\nin your city',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    height: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Get 10× more views, advanced targeting and\nverified-only mode for 3 full hours.',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildStatItem('10×', 'MORE VIEWS'),
+                    _buildStatItem('5×', 'MORE MATCHES'),
+                    _buildStatItem('3h', 'DURATION'),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String value, String label) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPackageCard(int index) {
+    final isSelected = _selectedPackageIndex == index;
+    final package = _packages[index];
+    final hasTag = package['tag'] != null;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedPackageIndex = index;
+            });
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: 10,
+            ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color.fromRGBO(255, 253, 246, 1.0)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? Colors.black : Colors.grey.shade200,
+                width: isSelected ? 2 : 1,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    // Count
+                    Text(
+                      package['title'],
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      package['subtitle'],
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                    const Spacer(),
+                    // Price
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          package['pricePerItem'],
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        if (package['totalPrice'] != null)
+                          Text(
+                            package['totalPrice'].split(' ')[0] + ' total',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Dotted Divider
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final boxWidth = constraints.constrainWidth();
+                    const dashWidth = 4.0;
+                    final dashCount = (boxWidth / (2 * dashWidth)).floor();
+                    return Flex(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      direction: Axis.horizontal,
+                      children: List.generate(dashCount, (_) {
+                        return SizedBox(
+                          width: dashWidth,
+                          height: 1.5,
+                          child: const DecoratedBox(
+                            decoration: BoxDecoration(color: Color(0xFFE5E5E5)),
+                          ),
+                        );
+                      }),
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    if (package['discount'] != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(232, 249, 240, 1.0),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          package['discount'],
+                          style: const TextStyle(
+                            color: Color.fromRGBO(44, 175, 107, 1.0),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        package['oldPrice'],
+                        style: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 12,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                    ],
+                    const Spacer(),
+                    // Checkmark (always visible now)
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isSelected ? Colors.black : Colors.transparent,
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.black
+                              : Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                      child: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              size: 14,
+                              color: Colors.white,
+                            )
+                          : null,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (hasTag)
+          Positioned(
+            left: 16,
+            top: -10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: package['tag'] == 'BEST VALUE'
+                      ? [Colors.black87, Colors.black]
+                      : [const Color(0xFFFA6A85), const Color(0xFFDE2957)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: [
+                  BoxShadow(
+                    color: package['tag'] == 'BEST VALUE'
+                        ? Colors.black.withOpacity(0.3)
+                        : const Color(0xFFDE2957).withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                package['tag'],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildWhySuperBoostWorksSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.bolt,
+            iconColor: const Color(0xFFF6B042),
+            iconBgColor: const Color(0xFFFFF8E1),
+            title: 'Super Boost · 3 hours',
+            subtitle: 'Maximum citywide reach',
+            tag: '✦ PREMIUM',
+            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
+            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
+            isFirst: true,
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.star,
+            iconColor: const Color(0xFFF6B042),
+            iconBgColor: const Color(0xFFFFF8E1),
+            title: 'Citywide priority placement',
+            subtitle:
+                'Profile shown across the entire city, not just\nwithin 2 km — reach matches you would never\nsee.',
+            tag: 'TOP TIER',
+            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
+            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.trending_up,
+            iconColor: const Color(0xFFE43A6A),
+            iconBgColor: const Color(0xFFFDF0F3),
+            title: '10× visibility lift',
+            subtitle:
+                'On average, Super Boost users see 800% more\nviews than baseline. That\'s 2× the impact of a\nregular boost.',
+            tag: '+800%',
+            tagColor: const Color(0xFFE43A6A),
+            tagBgColor: const Color(0xFFFDF0F3),
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.favorite,
+            iconColor: const Color(0xFF34A853),
+            iconBgColor: const Color(0xFFE6F4EA),
+            title: '3 hours of premium exposure',
+            subtitle:
+                'Six times the duration of a regular boost —\nperfect for Friday and Saturday peak nights.',
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.verified,
+            iconColor: const Color(0xFFF6B042),
+            iconBgColor: const Color(0xFFFFF8E1),
+            title: 'Verified-only audience mode',
+            subtitle:
+                'Show only to verified profiles. Higher quality\nviews, fewer wasted impressions.',
+            tag: 'EXCLUSIVE',
+            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
+            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.settings,
+            iconColor: const Color(0xFF8E24AA),
+            iconBgColor: const Color(0xFFF3E5F5),
+            title: 'Advanced AI targeting',
+            subtitle:
+                'AI optimizes who sees your profile — prioritizes\nlifestyle, intent, and chemistry compatibility.',
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.monitor_heart_sharp,
+            iconColor: const Color(0xFF2383F6),
+            iconBgColor: const Color(0xFFE3F0FF),
+            title: 'Detailed live analytics',
+            subtitle:
+                'See real-time graph by hour, demographics,\nlocation breakdown — everything tracked.',
+            tag: 'PRO',
+            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
+            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.chat_bubble_outline,
+            iconColor: const Color(0xFFE43A6A),
+            iconBgColor: const Color(0xFFFDF0F3),
+            title: '5× faster replies',
+            subtitle:
+                'Super Boost signals premium activity — your\nconversations get replies almost instantly.',
+          ),
+          _buildWhySuperBoostWorkItem(
+            icon: Icons.access_time,
+            iconColor: const Color(0xFF34A853),
+            iconBgColor: const Color(0xFFE6F4EA),
+            title: 'Never expires + carry over',
+            subtitle:
+                'Save unused minutes — paused if you go offline,\nresume anytime.',
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWhySuperBoostWorkItem({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required String title,
+    required String subtitle,
+    String? tag,
+    Color? tagColor,
+    Color? tagBgColor,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (tag != null) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: tagBgColor,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              tag,
+                              style: TextStyle(
+                                color: tagColor,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 11,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!isLast)
+          Divider(
+            height: 1,
+            color: Colors.grey.shade100,
+            indent: 56, // Align with text
+            endIndent: 16,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildComparisonSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              "What's the difference?",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: const Color(0xFFFAFAFA),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'FEATURE',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.grey.shade600,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Center(
+                    child: Text(
+                      'BOOST',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.grey.shade600,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Center(
+                    child: Text(
+                      'SUPER',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.grey.shade600,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _buildComparisonRow('Duration', '30 min', '3 hours'),
+          _buildComparisonRow('Visibility lift', '5×', '10×'),
+          _buildComparisonRow('Reach', 'Nearby', 'Citywide'),
+          _buildComparisonRow('Top of search', '✓', '✓ Priority'),
+          _buildComparisonRow('Smart targeting', 'Basic', 'Advanced AI'),
+          _buildComparisonRow('Verified-only mode', '—', '✓'),
+          _buildComparisonRow('Reply rate boost', '3×', '5×'),
+          _buildComparisonRow('Live analytics', '✓', '✓ Detailed', isLast: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildComparisonRow(
+    String feature,
+    String boostValue,
+    String superValue, {
+    bool isLast = false,
+  }) {
+    final boostColor = const Color(0xFFE43A6A); // Pink
+    final superColor = const Color(0xFFE69A2B); // Orange
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  feature,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Center(
+                  child: Text(
+                    boostValue,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: boostColor,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Center(
+                  child: Text(
+                    superValue,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: superColor,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!isLast)
+          Divider(
+            height: 1,
+            color: Colors.grey.shade100,
+            indent: 16,
+            endIndent: 16,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildPremiumBanner() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(255, 255, 245, 225),
+            Color(0xFFFFF0F5),
+            Color.fromARGB(255, 251, 226, 234),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFDE68A),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+              Icons.workspace_premium,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Go Premium+',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '1 free boost every month ·\nUnlimited likes · Verified badge',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.black54,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black87,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Row(
+              children: [
+                Text(
+                  'View ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Icon(Icons.arrow_forward, color: Colors.white, size: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar() {
+    final selectedPkg = _packages[_selectedPackageIndex];
+    return Container(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: MediaQuery.of(context).padding.bottom + 16,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${int.parse(selectedPkg['title'])} SUPER BOOSTS · 3 HOURS EACH',
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              Text(
+                selectedPkg['totalPrice'].split(' ')[0],
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: () {
+                GetSuperBoostsDrawer.show(
+                  context,
+                  selectedPkg,
+                  () {
+                    setState(() {});
+                  },
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.star, size: 18),
+                  SizedBox(width: 8),
+                  Text(
+                    'Continue',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Boosts never expire · Use anytime',
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 10),
+          ),
+        ],
+      ),
+    );
+  }
+}

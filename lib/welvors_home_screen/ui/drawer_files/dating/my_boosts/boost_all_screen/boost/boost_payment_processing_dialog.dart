@@ -144,39 +144,42 @@ class _BoostPaymentProcessingDialogState
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Your boosts have been added to your wallet.',
+                  '${int.parse(widget.selectedPackage['title'])} Boosts added to your wallet.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
+                    horizontal: 24,
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
+                    color: const Color(0xFFFAFAFA),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('⚡️', style: TextStyle(fontSize: 16)),
+                        const Icon(
+                          Icons.bolt,
+                          color: Color(0xFFE43A6A),
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Text(
-                          'Balance now ',
+                          'Boost balance now ',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 14,
                             color: Colors.grey.shade700,
                           ),
                         ),
                         Text(
-                          '${widget.newBalance} boosts',
+                          '${widget.newBalance}',
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
@@ -185,14 +188,14 @@ class _BoostPaymentProcessingDialogState
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 48,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context); // Close the dialog
-                      widget.onDone(); // Callback to trigger UI updates
+                      widget.onDone();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -203,9 +206,34 @@ class _BoostPaymentProcessingDialogState
                       ),
                     ),
                     child: const Text(
-                      'Done',
+                      'Activate a boost now',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close the dialog
+                      widget.onDone();
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFFF3F2EE),
+                      foregroundColor: Colors.black87,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Go to wallet',
+                      style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

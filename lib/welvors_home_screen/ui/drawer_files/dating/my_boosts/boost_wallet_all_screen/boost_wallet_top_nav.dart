@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'boost/boost_screen.dart';
+import 'boost_wallet/boost_wallet_screen.dart';
+import 'super_boost/super_boost_screen.dart';
 
-class BoostTopNav extends StatefulWidget {
-  const BoostTopNav({super.key});
+class BoostWalletTopNav extends StatefulWidget {
+  const BoostWalletTopNav({super.key});
 
   @override
-  State<BoostTopNav> createState() => _BoostTopNavState();
+  State<BoostWalletTopNav> createState() => _BoostWalletTopNavState();
 }
 
-class _BoostTopNavState extends State<BoostTopNav> {
+class _BoostWalletTopNavState extends State<BoostWalletTopNav> {
   int _selectedTab = 0; // 0 for Boost, 1 for Super Boost
 
   @override
@@ -48,7 +49,7 @@ class _BoostTopNavState extends State<BoostTopNav> {
           ),
         ),
         title: const Text(
-          'Boost',
+          'Boost Wallet',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -76,23 +77,10 @@ class _BoostTopNavState extends State<BoostTopNav> {
                     ),
                   ],
                 ),
-                child: const Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(
-                      Icons.account_balance_wallet_outlined,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                    Positioned(
-                      top: 10,
-                      right: 8,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 3,
-                      ),
-                    ),
-                  ],
+                child: const Icon(
+                  Icons.history,
+                  color: Color(0xFFE43A6A),
+                  size: 20,
                 ),
               ),
             ),
@@ -106,8 +94,8 @@ class _BoostTopNavState extends State<BoostTopNav> {
           const SizedBox(height: 6),
           Expanded(
             child: _selectedTab == 0
-                ? const BoostScreen()
-                : _buildSuperBoostContent(),
+                ? const BoostWalletScreen()
+                : const SuperBoostWalletScreen(),
           ),
         ],
       ),
@@ -120,7 +108,7 @@ class _BoostTopNavState extends State<BoostTopNav> {
       height: 48,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFEBEBEB),
+        color: const Color(0xFFFFF0F5), // Light pink background
         borderRadius: BorderRadius.circular(24),
       ),
       child: Stack(
@@ -157,31 +145,18 @@ class _BoostTopNavState extends State<BoostTopNav> {
                   behavior: HitTestBehavior.opaque,
                   onTap: () => setState(() => _selectedTab = 0),
                   child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.bolt,
-                          size: 18,
-                          color: _selectedTab == 0
-                              ? const Color(0xFFE43A6A)
-                              : Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 200),
-                          style: TextStyle(
-                            color: _selectedTab == 0
-                                ? const Color(0xFFE43A6A)
-                                : Colors.grey.shade600,
-                            fontWeight: _selectedTab == 0
-                                ? FontWeight.bold
-                                : FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                          child: const Text('Boost'),
-                        ),
-                      ],
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 200),
+                      style: TextStyle(
+                        color: _selectedTab == 0
+                            ? const Color(0xFFE43A6A)
+                            : Colors.grey.shade600,
+                        fontWeight: _selectedTab == 0
+                            ? FontWeight.bold
+                            : FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      child: const Text('Boost'),
                     ),
                   ),
                 ),
@@ -191,31 +166,18 @@ class _BoostTopNavState extends State<BoostTopNav> {
                   behavior: HitTestBehavior.opaque,
                   onTap: () => setState(() => _selectedTab = 1),
                   child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.star,
-                          size: 18,
-                          color: _selectedTab == 1
-                              ? Colors.black
-                              : Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 200),
-                          style: TextStyle(
-                            color: _selectedTab == 1
-                                ? Colors.black
-                                : Colors.grey.shade600,
-                            fontWeight: _selectedTab == 1
-                                ? FontWeight.bold
-                                : FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                          child: const Text('Super Boost'),
-                        ),
-                      ],
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 200),
+                      style: TextStyle(
+                        color: _selectedTab == 1
+                            ? Colors.black
+                            : Colors.grey.shade600,
+                        fontWeight: _selectedTab == 1
+                            ? FontWeight.bold
+                            : FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      child: const Text('Super Boost'),
                     ),
                   ),
                 ),
@@ -223,15 +185,6 @@ class _BoostTopNavState extends State<BoostTopNav> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSuperBoostContent() {
-    return const Center(
-      child: Text(
-        'Super Boost coming soon...',
-        style: TextStyle(color: Colors.grey),
       ),
     );
   }

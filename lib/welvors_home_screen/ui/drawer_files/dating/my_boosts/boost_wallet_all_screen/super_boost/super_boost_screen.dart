@@ -1,0 +1,439 @@
+import 'package:flutter/material.dart';
+
+class SuperBoostWalletScreen extends StatelessWidget {
+  const SuperBoostWalletScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildBalanceCard(),
+          const SizedBox(height: 24),
+          const Text(
+            'Ready to Shine?',
+            style: TextStyle(
+              color: Color(0xFF2C2C2C), // Faint Black
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Activate a 3 hour Super Boost for maximum visibility to all compatible matches in your city.',
+            style: TextStyle(
+              color: Colors.black54,
+              fontSize: 13,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildActionCard(
+            icon: Icons.timer_outlined,
+            title: '3 hour Super Boost',
+            buttonText: 'Activate',
+            isBordered: true,
+          ),
+          const SizedBox(height: 12),
+          _buildLiveBoostCard(),
+          const SizedBox(height: 12),
+          _buildBuyMoreCard(),
+          const SizedBox(height: 32),
+          const Text(
+            'Super Boost Benefits',
+            style: TextStyle(
+              color: Color(0xFF2C2C2C),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildBenefitsRow(),
+          const SizedBox(height: 32), // Bottom padding
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBalanceCard() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        // Faint black gradient
+        gradient: const LinearGradient(
+          colors: [Color(0xFF4A4A4A), Color(0xFF2C2C2C)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            Positioned(
+              right: 10,
+              top: -10,
+              child: Icon(
+                Icons.bolt, // Lightning bolt for Super Boost
+                size: 110,
+                color: const Color(0xFFFFC107).withOpacity(0.15), // Yellow icon tint
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'CURRENT BALANCE',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          const Text(
+                            '2',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Super Boosts',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFC107).withOpacity(0.2), // Yellow tint
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Active',
+                          style: TextStyle(
+                            color: Color(0xFFFFC107), // Yellow text
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionCard({
+    required IconData icon,
+    required String title,
+    required String buttonText,
+    bool isBordered = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isBordered ? const Color(0xFF2C2C2C) : Colors.grey.shade200,
+          width: isBordered ? 1.5 : 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF2C2C2C), size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2C2C2C),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              buttonText,
+              style: const TextStyle(
+                color: Color(0xFFFFC107), // Yellow text on black button
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLiveBoostCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2C2C2C), // Black background
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFC107).withOpacity(0.15), // Faint yellow box
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.trending_up,
+              color: Color(0xFFFFC107), // Yellow icon
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Super Boost is live now',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Colors.greenAccent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Text(
+                      '02:54:12 remaining · View performance',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.chevron_right,
+            color: Colors.white54,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBuyMoreCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF9E6), // Light yellow background
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.star,
+              color: Color(0xFF2C2C2C), // Black icon
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Buy More Super Boosts',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'Top up your wallet anytime',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2C2C2C), // Black button
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              'Activate',
+              style: TextStyle(
+                color: Color(0xFFFFC107), // Yellow text
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBenefitsRow() {
+    return Column(
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _buildBenefitCard(
+                  icon: Icons.trending_up,
+                  title: '10x More Views',
+                  subtitle: 'Super Boost gives your profile maximum visibility.',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildBenefitCard(
+                  icon: Icons.arrow_upward,
+                  title: 'Always on Top',
+                  subtitle: 'Stay at the top of search results for longer.',
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _buildBenefitCard(
+                  icon: Icons.bar_chart,
+                  title: 'Detailed Analytics',
+                  subtitle: 'See real-time graph by hour, demographics, location breakdown.',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildBenefitCard(
+                  icon: Icons.location_city,
+                  title: 'Citywide Reach',
+                  subtitle: 'Reach compatible matches across your entire city.',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBenefitCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: const Color(0xFF2C2C2C), size: 24), // Black icon
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 11,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
