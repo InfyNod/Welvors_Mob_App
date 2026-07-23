@@ -103,12 +103,15 @@ class _BoostWalletTopNavState extends State<BoostWalletTopNav> {
   }
 
   Widget _buildToggle() {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
       margin: const EdgeInsets.symmetric(horizontal: 20),
       height: 48,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF0F5), // Light pink background
+        color: _selectedTab == 0
+            ? const Color.fromARGB(255, 245, 194, 211)
+            : const Color(0xFF4A4A4A), // Soft Black for Super Boost
         borderRadius: BorderRadius.circular(24),
       ),
       child: Stack(
@@ -150,7 +153,7 @@ class _BoostWalletTopNavState extends State<BoostWalletTopNav> {
                       style: TextStyle(
                         color: _selectedTab == 0
                             ? const Color(0xFFE43A6A)
-                            : Colors.grey.shade600,
+                            : Colors.white54,
                         fontWeight: _selectedTab == 0
                             ? FontWeight.bold
                             : FontWeight.w600,

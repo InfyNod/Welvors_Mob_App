@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../boost_all_screen/boost_top_nav.dart';
 
 class BoostWalletScreen extends StatelessWidget {
   const BoostWalletScreen({super.key});
@@ -35,7 +36,7 @@ class BoostWalletScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _buildLiveBoostCard(),
           const SizedBox(height: 12),
-          _buildBuyMoreCard(),
+          _buildBuyMoreCard(context),
           const SizedBox(height: 32),
           const Text(
             'Boost Benefits',
@@ -256,7 +257,7 @@ class BoostWalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBuyMoreCard() {
+  Widget _buildBuyMoreCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -296,18 +297,23 @@ class BoostWalletScreen extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE43A6A),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Text(
-              'Activate',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context, 0); // Pop with tab index 0 (Boost)
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE43A6A),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'Activate',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

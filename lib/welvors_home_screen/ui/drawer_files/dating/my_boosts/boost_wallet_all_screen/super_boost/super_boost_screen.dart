@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../boost_all_screen/boost_top_nav.dart';
 
 class SuperBoostWalletScreen extends StatelessWidget {
   const SuperBoostWalletScreen({super.key});
@@ -39,7 +40,7 @@ class SuperBoostWalletScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _buildLiveBoostCard(),
           const SizedBox(height: 12),
-          _buildBuyMoreCard(),
+          _buildBuyMoreCard(context),
           const SizedBox(height: 32),
           const Text(
             'Super Boost Benefits',
@@ -272,7 +273,7 @@ class SuperBoostWalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBuyMoreCard() {
+  Widget _buildBuyMoreCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -286,12 +287,12 @@ class SuperBoostWalletScreen extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF9E6), // Light yellow background
+              color: const Color(0xFF2C2C2C), // Black background
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.star,
-              color: Color(0xFF2C2C2C), // Black icon
+              color: Color(0xFFFFC107), // Yellow icon
               size: 24,
             ),
           ),
@@ -319,18 +320,23 @@ class SuperBoostWalletScreen extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C2C), // Black button
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Text(
-              'Activate',
-              style: TextStyle(
-                color: Color(0xFFFFC107), // Yellow text
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context, 1); // Pop with tab index 1 (Super Boost)
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2C), // Black button
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'Activate',
+                style: TextStyle(
+                  color: Color(0xFFFFC107), // Yellow text
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -371,17 +377,17 @@ class SuperBoostWalletScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildBenefitCard(
-                  icon: Icons.bar_chart,
-                  title: 'Detailed Analytics',
-                  subtitle: 'See real-time graph by hour, demographics, location breakdown.',
+                  icon: Icons.chat_bubble_outline,
+                  title: 'More Conversations',
+                  subtitle: '5× higher reply rate from matches during boost.',
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _buildBenefitCard(
-                  icon: Icons.location_city,
-                  title: 'Citywide Reach',
-                  subtitle: 'Reach compatible matches across your entire city.',
+                  icon: Icons.track_changes,
+                  title: 'Smart Targeting',
+                  subtitle: 'Reach your most compatible matches in your area.',
                 ),
               ),
             ],

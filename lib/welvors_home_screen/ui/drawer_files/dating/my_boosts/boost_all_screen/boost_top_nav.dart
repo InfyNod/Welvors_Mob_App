@@ -4,14 +4,21 @@ import 'super_boost/super_boost_screen.dart';
 import '../boost_wallet_all_screen/boost_wallet_top_nav.dart';
 
 class BoostTopNav extends StatefulWidget {
-  const BoostTopNav({super.key});
+  final int initialTab;
+  const BoostTopNav({super.key, this.initialTab = 0});
 
   @override
   State<BoostTopNav> createState() => _BoostTopNavState();
 }
 
 class _BoostTopNavState extends State<BoostTopNav> {
-  int _selectedTab = 0; // 0 for Boost, 1 for Super Boost
+  late int _selectedTab; // 0 for Boost, 1 for Super Boost
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTab = widget.initialTab;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +68,18 @@ class _BoostTopNavState extends State<BoostTopNav> {
           Padding(
             padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
             child: InkWell(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const BoostWalletTopNav(),
                   ),
                 );
+                if (result != null && result is int) {
+                  setState(() {
+                    _selectedTab = result;
+                  });
+                }
               },
               borderRadius: BorderRadius.circular(24),
               child: Container(
