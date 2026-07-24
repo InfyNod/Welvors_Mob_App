@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 // import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
 
-
 class PerformanceScreen extends StatefulWidget {
   final BoostHistoryItem item;
 
@@ -277,7 +276,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           child: Column(
             children: [
               _buildMetricCard(
-                icon: Icons.rocket_launch_outlined,
+                icon: Icons.rocket_launch,
                 iconColor: const Color(0xFFE43A6A),
                 label: 'REACH',
                 value: _formatReach(widget.item.reach),
@@ -287,7 +286,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               ),
               const SizedBox(height: 12),
               _buildMetricCard(
-                icon: Icons.visibility_outlined,
+                icon: Icons.visibility,
                 iconColor: const Color(0xFFE43A6A),
                 label: 'VIEWS',
                 value: (widget.item.reach ~/ 40).toString(), // mock calculation
@@ -303,7 +302,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           child: Column(
             children: [
               _buildMetricCard(
-                icon: Icons.chat_bubble_outline,
+                icon: Icons.chat_bubble,
                 iconColor: const Color(0xFF57D38C),
                 label: 'INTERESTS',
                 value: widget.item.interests.toString(),
@@ -314,7 +313,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               const SizedBox(height: 12),
               _buildMetricCard(
                 icon: Icons.favorite,
-                iconColor: const Color(0xFFFFB6C1),
+                iconColor: const Color(0xFFE43A6A),
                 label: 'LIKES',
                 value: widget.item.likes.toString(),
                 badgeText: 'Hot',
@@ -583,7 +582,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           children: [
             Expanded(
               child: _buildIndividualDemoCard(
-                icon: Icons.location_on_outlined,
+                icon: Icons.location_on,
                 title: 'Location',
                 label: 'Mumbai',
                 percentage: '42%',
@@ -594,7 +593,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: _buildIndividualDemoCard(
-                icon: Icons.work_outline,
+                icon: Icons.work,
                 title: 'Profession',
                 label: 'Tech',
                 percentage: '56%',
@@ -628,11 +627,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(
-                    Icons.people_outline,
-                    color: Color(0xFFE43A6A),
-                    size: 16,
-                  ),
+                  const Icon(Icons.people, color: Color(0xFFE43A6A), size: 16),
                   const SizedBox(width: 8),
                   const Text(
                     'Religion / Community',
@@ -656,7 +651,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           children: [
             Expanded(
               child: _buildIndividualDemoCard(
-                icon: Icons.person_outline,
+                icon: Icons.person,
                 title: 'Age',
                 label: '24-32',
                 percentage: '68%',
@@ -667,7 +662,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: _buildIndividualDemoCard(
-                icon: Icons.check_circle_outline,
+                icon: Icons.check_circle,
                 title: 'Verified',
                 label: 'High intent',
                 percentage: '73%',

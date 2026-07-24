@@ -63,105 +63,106 @@ class SuperBoostWalletScreen extends StatelessWidget {
     return BlocBuilder<BoostBloc, BoostState>(
       builder: (context, state) {
         return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        // Faint black gradient
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4A4A4A), Color(0xFF2C2C2C)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            Positioned(
-              right: 40,
-              top: -10,
-              child: Text(
-                '✦',
-                style: TextStyle(
-                  fontSize: 70,
-                  color: const Color(0xFFFFC107).withOpacity(0.15),
-                  height: 1.0,
-                ),
-              ),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            // Faint black gradient
+            gradient: const LinearGradient(
+              colors: [Color(0xFF4A4A4A), Color(0xFF2C2C2C)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
             ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'CURRENT BALANCE',
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: 40,
+                  top: -10,
+                  child: Text(
+                    '✦',
                     style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                      fontSize: 60,
+                      color: const Color(0xFFFFC107).withOpacity(0.15),
+                      height: 1.0,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const Text(
+                        'CURRENT BALANCE',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            '${state.superBoostBalance}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                '${state.superBoostBalance}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Super Boosts',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Super Boosts',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFFFC107,
+                              ).withOpacity(0.2), // Yellow tint
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              'Active',
+                              style: TextStyle(
+                                color: Color(0xFFFFC107), // Yellow text
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(
-                            0xFFFFC107,
-                          ).withOpacity(0.2), // Yellow tint
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'Active',
-                          style: TextStyle(
-                            color: Color(0xFFFFC107), // Yellow text
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
-  });
-}
+  }
 
   Widget _buildActionCard({
     required IconData icon,

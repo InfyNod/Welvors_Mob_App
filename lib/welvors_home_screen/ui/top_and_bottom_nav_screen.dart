@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -330,12 +331,16 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                               }
                             },
                             child: _PulsingBoostIcon(
-                              isActive: isActive,
+                              activeBoost: isActive && boostState.history.isNotEmpty ? boostState.history.first : null,
                               child: _buildTopIcon(
                                 Icons.bolt,
-                                color: isActive ? Colors.white : Colors.amber.shade700,
+                                color: isActive
+                                    ? Colors.white
+                                    : Colors.amber.shade700,
                                 iconSize: 24,
-                                bgColor: isActive ? const Color(0xFFE43A6A) : Colors.white,
+                                bgColor: isActive
+                                    ? const Color(0xFFE43A6A)
+                                    : Colors.white,
                               ),
                             ),
                           );
@@ -588,17 +593,19 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
 }
 
 class _PulsingBoostIcon extends StatefulWidget {
-  final bool isActive;
+  final BoostHistoryItem? activeBoost;
   final Widget child;
 
-  const _PulsingBoostIcon({required this.isActive, required this.child});
+  const _PulsingBoostIcon({required this.activeBoost, required this.child});
 
   @override
   State<_PulsingBoostIcon> createState() => _PulsingBoostIconState();
 }
 
-class _PulsingBoostIconState extends State<_PulsingBoostIcon> with SingleTickerProviderStateMixin {
+class _PulsingBoostIconState extends State<_PulsingBoostIcon>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -607,23 +614,37 @@ class _PulsingBoostIconState extends State<_PulsingBoostIcon> with SingleTickerP
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    if (widget.isActive) _controller.repeat(reverse: true);
+    if (widget.activeBoost != null) {
+      _controller.repeat(reverse: true);
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() {});
+      });
+    }
   }
 
   @override
   void didUpdateWidget(_PulsingBoostIcon oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isActive && !oldWidget.isActive) {
+    final isActiveNow = widget.activeBoost != null;
+    final wasActive = oldWidget.activeBoost != null;
+
+    if (isActiveNow && !wasActive) {
       _controller.repeat(reverse: true);
-    } else if (!widget.isActive && oldWidget.isActive) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() {});
+      });
+    } else if (!isActiveNow && wasActive) {
       _controller.stop();
       _controller.animateTo(0.0);
+      _timer?.cancel();
+      _timer = null;
     }
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -632,21 +653,51 @@ class _PulsingBoostIconState extends State<_PulsingBoostIcon> with SingleTickerP
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        return Transform.scale(
-          scale: 1.0 + (_controller.value * 0.15),
-          child: Container(
-            decoration: widget.isActive ? BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFE43A6A).withOpacity(_controller.value * 0.6),
-                  blurRadius: 15 * _controller.value,
-                  spreadRadius: 5 * _controller.value,
+        final isActive = widget.activeBoost != null;
+        double progress = 0.0;
+        Color progressColor = Colors.transparent;
+
+        if (isActive) {
+          final isSuper = widget.activeBoost!.isSuperBoost;
+          final totalDuration = isSuper
+              ? const Duration(hours: 3)
+              : const Duration(hours: 1);
+          final elapsed = DateTime.now().difference(widget.activeBoost!.date);
+          progress = elapsed.inMilliseconds / totalDuration.inMilliseconds;
+          progress = progress.clamp(0.0, 1.0);
+          progressColor = isSuper ? const Color(0xFFFFC107) : const Color(0xFFE43A6A);
+        }
+
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            if (isActive)
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 2.5,
+                  backgroundColor: Colors.grey.shade300,
+                  valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                 ),
-              ],
-            ) : null,
-            child: child,
-          ),
+              ),
+            Container(
+              decoration: isActive
+                  ? BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: progressColor.withOpacity(_controller.value * 0.4),
+                          blurRadius: 10 * _controller.value,
+                          spreadRadius: 2 * _controller.value,
+                        ),
+                      ],
+                    )
+                  : null,
+              child: child,
+            ),
+          ],
         );
       },
       child: widget.child,
