@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
+import 'performance_screen.dart';
 
 class BoostHistoryScreen extends StatelessWidget {
   const BoostHistoryScreen({super.key});
@@ -99,7 +100,8 @@ class BoostHistoryScreen extends StatelessWidget {
                 ...state.history.map((item) => Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: _buildEventCard(
-                        dateObj: item.date,
+                        context: context,
+                        item: item,
                         date: formatDate(item.date),
                         title: item.title,
                         reach: formatReach(item.reach),
@@ -206,7 +208,8 @@ class BoostHistoryScreen extends StatelessWidget {
   }
 
   Widget _buildEventCard({
-    required DateTime dateObj,
+    required BuildContext context,
+    required BoostHistoryItem item,
     required String date,
     required String title,
     required String reach,
@@ -249,7 +252,7 @@ class BoostHistoryScreen extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              _BoostStatusBadge(dateObj: dateObj, isSuperBoost: isSuperBoost),
+              _BoostStatusBadge(dateObj: item.date, isSuperBoost: isSuperBoost),
             ],
           ),
           const SizedBox(height: 4),
@@ -318,26 +321,40 @@ class BoostHistoryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  Text(
-                    'View Report',
-                    style: TextStyle(
-                      color: isSuperBoost
-                          ? const Color(0xFFD99026)
-                          : const Color(0xFFE43A6A),
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PerformanceScreen(item: item),
                     ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Row(
+                    children: [
+                      Text(
+                        'View Report',
+                        style: TextStyle(
+                          color: isSuperBoost
+                              ? const Color(0xFFD99026)
+                              : const Color(0xFFE43A6A),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: isSuperBoost
+                            ? const Color(0xFFD99026)
+                            : const Color(0xFFE43A6A),
+                        size: 16,
+                      ),
+                    ],
                   ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: isSuperBoost
-                        ? const Color(0xFFD99026)
-                        : const Color(0xFFE43A6A),
-                    size: 16,
-                  ),
-                ],
+                ),
               ),
             ],
           ),

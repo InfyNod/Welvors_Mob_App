@@ -38,25 +38,7 @@ class BoostState extends Equatable {
     return BoostState(
       boostBalance: 0,
       superBoostBalance: 0,
-      history: [
-        BoostHistoryItem(
-          title: 'Evening Prime Spotlight',
-          date: DateTime.now().subtract(const Duration(days: 2)),
-          reach: 3800,
-          likes: 38,
-          interests: 9,
-          duration: '1 Hour Duration',
-        ),
-        BoostHistoryItem(
-          title: 'Grand Celebration Boost',
-          date: DateTime.now().subtract(const Duration(days: 7)),
-          reach: 12500,
-          likes: 156,
-          interests: 42,
-          duration: '3 Hours Duration',
-          isSuperBoost: true,
-        ),
-      ],
+      history: const [],
     );
   }
 

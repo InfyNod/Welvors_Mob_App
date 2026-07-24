@@ -197,6 +197,12 @@ class _BoostPaymentProcessingDialogState
                     onPressed: () {
                       Navigator.pop(context); // Close the dialog
                       widget.onDone();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BoostWalletTopNav(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -208,37 +214,6 @@ class _BoostPaymentProcessingDialogState
                     ),
                     child: const Text(
                       'Activate a boost now',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Close the dialog
-                      widget.onDone();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BoostWalletTopNav(),
-                        ),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFF3F2EE),
-                      foregroundColor: Colors.black87,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Go to wallet',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

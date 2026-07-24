@@ -4,14 +4,25 @@ import 'super_boost/super_boost_screen.dart';
 import '../boost_history.dart/boost_history.dart';
 
 class BoostWalletTopNav extends StatefulWidget {
-  const BoostWalletTopNav({super.key});
+  final int initialIndex;
+
+  const BoostWalletTopNav({
+    super.key,
+    this.initialIndex = 0,
+  });
 
   @override
   State<BoostWalletTopNav> createState() => _BoostWalletTopNavState();
 }
 
 class _BoostWalletTopNavState extends State<BoostWalletTopNav> {
-  int _selectedTab = 0; // 0 for Boost, 1 for Super Boost
+  late int _selectedTab;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTab = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
