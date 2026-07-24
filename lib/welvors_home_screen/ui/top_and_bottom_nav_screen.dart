@@ -10,6 +10,10 @@ import 'admirers/admirers_screen.dart';
 import 'chat/chat_screen.dart';
 import 'event/events_screen.dart';
 import 'drawer_files/dating/drawer_screen_dating.dart';
+import 'drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
+import 'drawer_files/dating/my_boosts/boost_bloc/boost_state.dart';
+import 'drawer_files/dating/my_boosts/boost_history.dart/performance_screen.dart';
+import 'drawer_files/dating/my_boosts/boost_wallet_all_screen/boost_wallet_top_nav.dart';
 
 class TopAndBottomNavScreen extends StatelessWidget {
   const TopAndBottomNavScreen({super.key});
@@ -302,10 +306,40 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildTopIcon(
-                        Icons.bolt,
-                        color: Colors.amber.shade700,
-                        iconSize: 24,
+                      BlocBuilder<BoostBloc, BoostState>(
+                        builder: (context, boostState) {
+                          final isActive = boostState.isAnyBoostActive;
+                          return GestureDetector(
+                            onTap: () {
+                              if (isActive && boostState.history.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PerformanceScreen(
+                                      item: boostState.history.first,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const BoostWalletTopNav(),
+                                  ),
+                                );
+                              }
+                            },
+                            child: _PulsingBoostIcon(
+                              isActive: isActive,
+                              child: _buildTopIcon(
+                                Icons.bolt,
+                                color: isActive ? Colors.white : Colors.amber.shade700,
+                                iconSize: 24,
+                                bgColor: isActive ? const Color(0xFFE43A6A) : Colors.white,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(width: 8),
                       _buildTopIcon(
@@ -331,12 +365,13 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
     Color? color,
     double iconSize = 22,
     double circleSize = 40,
+    Color bgColor = Colors.white,
   }) {
     return Container(
       width: circleSize,
       height: circleSize,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: bgColor,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
@@ -548,6 +583,73 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PulsingBoostIcon extends StatefulWidget {
+  final bool isActive;
+  final Widget child;
+
+  const _PulsingBoostIcon({required this.isActive, required this.child});
+
+  @override
+  State<_PulsingBoostIcon> createState() => _PulsingBoostIconState();
+}
+
+class _PulsingBoostIconState extends State<_PulsingBoostIcon> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    if (widget.isActive) _controller.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(_PulsingBoostIcon oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _controller.repeat(reverse: true);
+    } else if (!widget.isActive && oldWidget.isActive) {
+      _controller.stop();
+      _controller.animateTo(0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: 1.0 + (_controller.value * 0.15),
+          child: Container(
+            decoration: widget.isActive ? BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFE43A6A).withOpacity(_controller.value * 0.6),
+                  blurRadius: 15 * _controller.value,
+                  spreadRadius: 5 * _controller.value,
+                ),
+              ],
+            ) : null,
+            child: child,
+          ),
+        );
+      },
+      child: widget.child,
     );
   }
 }
