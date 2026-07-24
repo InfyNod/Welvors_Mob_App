@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
+import '../boost_wallet_all_screen/boost_wallet/activate_drawer.dart';
 
 class PerformanceScreen extends StatefulWidget {
   final BoostHistoryItem item;
@@ -61,9 +64,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
@@ -360,14 +363,19 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
     required Color badgeTextColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withOpacity(0.10),
             blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
@@ -378,7 +386,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, color: iconColor, size: 20),
+              Icon(icon, color: iconColor, size: 16),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -396,7 +404,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Text(
             label,
             style: const TextStyle(
@@ -406,12 +414,12 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               letterSpacing: 1.0,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             value,
             style: const TextStyle(
               color: Colors.black87,
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -443,8 +451,13 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withOpacity(0.10),
             blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
@@ -619,8 +632,13 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 10,
+                color: Colors.black.withOpacity(0.10),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
             ],
@@ -695,8 +713,13 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withOpacity(0.10),
             blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
@@ -730,32 +753,41 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
       children: [
         Expanded(
           flex: 2,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE43A6A),
-              foregroundColor: Colors.white,
-              elevation: 4,
-              shadowColor: const Color(0xFFE43A6A).withOpacity(0.5),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.bolt, size: 18),
-                SizedBox(width: 8),
-                Text(
-                  'Boost Again',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+          child: BlocBuilder<BoostBloc, BoostState>(
+            builder: (context, state) {
+              final isActive = state.isAnyBoostActive;
+              return ElevatedButton(
+                onPressed: isActive
+                    ? null
+                    : () {
+                        showActivateBoostDrawer(context);
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isActive ? Colors.grey.shade300 : const Color(0xFFE43A6A),
+                  foregroundColor: isActive ? Colors.grey.shade600 : Colors.white,
+                  elevation: isActive ? 0 : 4,
+                  shadowColor: isActive ? Colors.transparent : const Color(0xFFE43A6A).withOpacity(0.5),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
                   ),
                 ),
-              ],
-            ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(isActive ? Icons.access_time : Icons.bolt, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      isActive ? 'Boost Active' : 'Boost Again',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
         const SizedBox(width: 16),

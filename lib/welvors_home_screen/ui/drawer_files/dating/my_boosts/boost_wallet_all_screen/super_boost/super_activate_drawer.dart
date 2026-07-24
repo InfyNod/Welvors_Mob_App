@@ -170,6 +170,35 @@ class _SuperActivateBoostDrawer extends StatelessWidget {
           const SizedBox(height: 24),
           BlocBuilder<BoostBloc, BoostState>(
             builder: (context, state) {
+              if (state.isAnyBoostActive) {
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.amber.shade200),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.orange, size: 24),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'A boost is currently active. You can activate another one once the current boost finishes.',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               return SizedBox(
                 width: double.infinity,
                 height: 50,

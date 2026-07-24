@@ -34,6 +34,15 @@ class BoostState extends Equatable {
     required this.history,
   });
 
+  bool get isAnyBoostActive {
+    if (history.isEmpty) return false;
+    final latest = history.first;
+    final totalDuration = latest.isSuperBoost 
+        ? const Duration(hours: 3) 
+        : const Duration(hours: 1);
+    return DateTime.now().difference(latest.date) < totalDuration;
+  }
+
   factory BoostState.initial() {
     return BoostState(
       boostBalance: 0,
