@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../boost_bloc/boost_bloc.dart';
@@ -98,6 +99,7 @@ class BoostHistoryScreen extends StatelessWidget {
                 ...state.history.map((item) => Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: _buildEventCard(
+                        dateObj: item.date,
                         date: formatDate(item.date),
                         title: item.title,
                         reach: formatReach(item.reach),
@@ -204,6 +206,7 @@ class BoostHistoryScreen extends StatelessWidget {
   }
 
   Widget _buildEventCard({
+    required DateTime dateObj,
     required String date,
     required String title,
     required String reach,
@@ -246,24 +249,7 @@ class BoostHistoryScreen extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(232, 249, 240, 1.0),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  '• COMPLETED',
-                  style: TextStyle(
-                    color: Color(0xFF57D38C),
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              _BoostStatusBadge(dateObj: dateObj, isSuperBoost: isSuperBoost),
             ],
           ),
           const SizedBox(height: 4),
@@ -548,3 +534,99 @@ class BoostHistoryScreen extends StatelessWidget {
     );
   }
 }
+
+class _BoostStatusBadge extends StatefulWidget {
+  final DateTime dateObj;
+  final bool isSuperBoost;
+
+  const _BoostStatusBadge({required this.dateObj, required this.isSuperBoost});
+
+  @override
+  State<_BoostStatusBadge> createState() => _BoostStatusBadgeState();
+}
+
+class _BoostStatusBadgeState extends State<_BoostStatusBadge> {
+  Timer? _timer;
+  late Duration _totalDuration;
+  bool _isCompleted = false;
+  Duration _remaining = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _totalDuration = widget.isSuperBoost ? const Duration(hours: 3) : const Duration(hours: 1);
+    _updateStatus();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateStatus());
+  }
+
+  void _updateStatus() {
+    final diff = DateTime.now().difference(widget.dateObj);
+    if (diff >= _totalDuration) {
+      if (!_isCompleted) {
+        setState(() => _isCompleted = true);
+        _timer?.cancel();
+      }
+    } else {
+      setState(() {
+        _isCompleted = false;
+        _remaining = _totalDuration - diff;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isCompleted) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(232, 249, 240, 1.0),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Text(
+          '• COMPLETED',
+          style: TextStyle(
+            color: Color(0xFF57D38C),
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    } else {
+      String timerText;
+      if (_remaining.inHours > 0) {
+        final h = _remaining.inHours;
+        final m = (_remaining.inMinutes % 60).toString().padLeft(2, '0');
+        final s = (_remaining.inSeconds % 60).toString().padLeft(2, '0');
+        timerText = '$h:$m:$s';
+      } else {
+        final m = _remaining.inMinutes.toString().padLeft(2, '0');
+        final s = (_remaining.inSeconds % 60).toString().padLeft(2, '0');
+        timerText = '$m:$s';
+      }
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF0F5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          '• ACTIVE ($timerText)',
+          style: const TextStyle(
+            color: Color(0xFFE43A6A),
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+  }
+}
+

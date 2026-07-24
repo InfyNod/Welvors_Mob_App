@@ -25,7 +25,7 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
           reach: 2000 + Random().nextInt(3000),
           likes: 20 + Random().nextInt(30),
           interests: 5 + Random().nextInt(15),
-          duration: '30 Mins Duration',
+          duration: '1 Hour Duration',
           isSuperBoost: false,
         );
         emit(state.copyWith(
@@ -43,7 +43,7 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
           reach: 8000 + Random().nextInt(7000),
           likes: 100 + Random().nextInt(80),
           interests: 30 + Random().nextInt(20),
-          duration: '24 Hours Duration',
+          duration: '3 Hours Duration',
           isSuperBoost: true,
         );
         emit(state.copyWith(
