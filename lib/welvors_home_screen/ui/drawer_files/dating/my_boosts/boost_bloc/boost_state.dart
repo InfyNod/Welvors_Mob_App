@@ -53,7 +53,7 @@ class BoostState extends Equatable {
           reach: 12500,
           likes: 156,
           interests: 42,
-          duration: '48 Hours Duration',
+          duration: '3 Hours Duration',
           isSuperBoost: true,
         ),
       ],
