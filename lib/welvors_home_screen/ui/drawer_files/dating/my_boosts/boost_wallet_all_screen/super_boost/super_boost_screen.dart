@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_state.dart';
 import '../../boost_all_screen/boost_top_nav.dart';
+import '../live_boost_card_widget.dart';
 import 'super_activate_drawer.dart';
 
 class SuperBoostWalletScreen extends StatelessWidget {
@@ -39,8 +40,7 @@ class SuperBoostWalletScreen extends StatelessWidget {
             onTap: () => showSuperActivateBoostDrawer(context),
           ),
           const SizedBox(height: 12),
-          _buildLiveBoostCard(),
-          const SizedBox(height: 12),
+          const LiveBoostCardWidget(),
           _buildBuyMoreCard(context),
           const SizedBox(height: 32),
           const Text(
@@ -212,70 +212,6 @@ class SuperBoostWalletScreen extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLiveBoostCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C), // Black background
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(
-                0xFFFFC107,
-              ).withOpacity(0.15), // Faint yellow box
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.trending_up,
-              color: Color(0xFFFFC107), // Yellow icon
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Super Boost is live now',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.greenAccent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      '02:54:12 remaining · View performance',
-                      style: TextStyle(color: Colors.white70, fontSize: 11),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right, color: Colors.white54, size: 20),
         ],
       ),
     );

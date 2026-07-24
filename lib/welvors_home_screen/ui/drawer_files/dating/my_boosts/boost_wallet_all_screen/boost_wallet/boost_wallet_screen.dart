@@ -4,6 +4,7 @@ import '../../../../../../../../main.dart'; // No need, BLoC is provided there
 import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_state.dart';
 import '../../boost_all_screen/boost_top_nav.dart';
+import '../live_boost_card_widget.dart';
 import 'activate_drawer.dart';
 
 class BoostWalletScreen extends StatelessWidget {
@@ -40,8 +41,7 @@ class BoostWalletScreen extends StatelessWidget {
             onTap: () => showActivateBoostDrawer(context),
           ),
           const SizedBox(height: 12),
-          _buildLiveBoostCard(),
-          const SizedBox(height: 12),
+          const LiveBoostCardWidget(),
           _buildBuyMoreCard(context),
           const SizedBox(height: 32),
           const Text(
@@ -207,64 +207,6 @@ class BoostWalletScreen extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLiveBoostCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF0F5),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE43A6A),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.trending_up, color: Colors.white, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Boost is live now',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      '23:54:12 remaining · View performance',
-                      style: TextStyle(color: Colors.black54, fontSize: 11),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right, color: Color(0xFFE43A6A), size: 20),
         ],
       ),
     );

@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../boost_bloc/boost_bloc.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
-import '../boost_wallet_all_screen/boost_wallet/activate_drawer.dart';
-import 'boost_history.dart';
+
 
 class PerformanceScreen extends StatefulWidget {
   final BoostHistoryItem item;
@@ -24,8 +23,8 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   @override
   void initState() {
     super.initState();
-    _totalDuration = widget.item.isSuperBoost 
-        ? const Duration(hours: 3) 
+    _totalDuration = widget.item.isSuperBoost
+        ? const Duration(hours: 3)
         : const Duration(hours: 1);
     _updateStatus();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateStatus());
@@ -105,35 +104,6 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const BoostHistoryScreen(),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(24),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: const Icon(
-                  Icons.history,
-                  color: Colors.black54,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -148,12 +118,6 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             _buildDemographicsSection(),
             const SizedBox(height: 24),
           ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: _buildBottomButtons(),
         ),
       ),
     );
@@ -493,10 +457,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                   const SizedBox(height: 2),
                   Text(
                     'Hourly traffic comparison',
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                   ),
                 ],
               ),
@@ -533,10 +494,22 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(t1, style: TextStyle(color: Colors.grey.shade400, fontSize: 10)),
-              Text(t2, style: TextStyle(color: Colors.grey.shade400, fontSize: 10)),
-              Text(t3, style: TextStyle(color: Colors.grey.shade400, fontSize: 10)),
-              Text(t4, style: TextStyle(color: Colors.grey.shade400, fontSize: 10)),
+              Text(
+                t1,
+                style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+              ),
+              Text(
+                t2,
+                style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+              ),
+              Text(
+                t3,
+                style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+              ),
+              Text(
+                t4,
+                style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+              ),
             ],
           ),
         ],
@@ -550,10 +523,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         Container(
           width: 6,
           height: 6,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 4),
         Text(
@@ -592,7 +562,6 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
       ],
     );
   }
-
 
   Widget _buildDemographicsSection() {
     return Column(
@@ -659,7 +628,11 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.people_outline, color: Color(0xFFE43A6A), size: 16),
+                  const Icon(
+                    Icons.people_outline,
+                    color: Color(0xFFE43A6A),
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   const Text(
                     'Religion / Community',
@@ -759,86 +732,12 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
     );
   }
 
-  Widget _buildBottomButtons() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: BlocBuilder<BoostBloc, BoostState>(
-            builder: (context, state) {
-              final isActive = state.isAnyBoostActive;
-              return ElevatedButton(
-                onPressed: isActive
-                    ? null
-                    : () {
-                        showActivateBoostDrawer(context);
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isActive ? Colors.grey.shade300 : const Color(0xFFE43A6A),
-                  foregroundColor: isActive ? Colors.grey.shade600 : Colors.white,
-                  elevation: isActive ? 0 : 4,
-                  shadowColor: isActive ? Colors.transparent : const Color(0xFFE43A6A).withOpacity(0.5),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(isActive ? Icons.access_time : Icons.bolt, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      isActive ? 'Boost Active' : 'Boost Again',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          flex: 1,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black87,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-                side: BorderSide(color: Colors.grey.shade200),
-              ),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.share_outlined, size: 16),
-                SizedBox(width: 8),
-                Text(
-                  'Share',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-
-
-  Widget _buildProgressBar(String label, String percentage, double progress, Color color) {
+  Widget _buildProgressBar(
+    String label,
+    String percentage,
+    double progress,
+    Color color,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
