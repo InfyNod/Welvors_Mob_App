@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_state.dart';
-import '../../boost_all_screen/boost_top_nav.dart';
 import '../live_boost_card_widget.dart';
 import 'super_activate_drawer.dart';
 
@@ -41,8 +40,42 @@ class SuperBoostWalletScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const LiveBoostCardWidget(),
-          _buildBuyMoreCard(context),
-          const SizedBox(height: 32),
+          BlocBuilder<BoostBloc, BoostState>(
+            builder: (context, state) {
+              if (state.superBoostBalance == 0) {
+                return Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF8E1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFFFFC107).withOpacity(0.5),
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Color(0xFFD99026)),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'You have 0 Super Boosts. Get more from the Boost shop for maximum visibility!',
+                          style: TextStyle(
+                            color: Color(0xFFD99026),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+          const SizedBox(height: 10),
           const Text(
             'Super Boost Benefits',
             style: TextStyle(
@@ -207,75 +240,6 @@ class SuperBoostWalletScreen extends StatelessWidget {
                 buttonText,
                 style: const TextStyle(
                   color: Color(0xFFFFC107), // Yellow text on black button
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBuyMoreCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C2C), // Black background
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.star,
-              color: Color(0xFFFFC107), // Yellow icon
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Buy More Super Boosts',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  'Top up your wallet anytime',
-                  style: TextStyle(color: Colors.black54, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.pop(context, 1); // Pop with tab index 1 (Super Boost)
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2C), // Black button
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'Activate',
-                style: TextStyle(
-                  color: Color(0xFFFFC107), // Yellow text
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
