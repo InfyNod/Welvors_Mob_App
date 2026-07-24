@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
 import '../boost_wallet_all_screen/boost_wallet/activate_drawer.dart';
+import 'boost_history.dart';
 
 class PerformanceScreen extends StatefulWidget {
   final BoostHistoryItem item;
@@ -107,18 +108,28 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: const Icon(
-                Icons.history,
-                color: Colors.black54,
-                size: 20,
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const BoostHistoryScreen(),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(24),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: const Icon(
+                  Icons.history,
+                  color: Colors.black54,
+                  size: 20,
+                ),
               ),
             ),
           ),

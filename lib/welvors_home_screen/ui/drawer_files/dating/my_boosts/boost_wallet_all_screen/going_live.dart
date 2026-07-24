@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import '../boost_history.dart/boost_history.dart';
+import '../boost_history.dart/performance_screen.dart';
+import '../boost_bloc/boost_bloc.dart';
 
 void showGoingLiveOverlay(BuildContext context, {bool isSuperBoost = false}) {
   showGeneralDialog(
@@ -32,9 +34,10 @@ class _GoingLiveScreenState extends State<_GoingLiveScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.of(context).pop(); // Close overlay
+        final item = context.read<BoostBloc>().state.history.first;
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const BoostHistoryScreen(),
+            builder: (context) => PerformanceScreen(item: item),
           ),
         );
       }
