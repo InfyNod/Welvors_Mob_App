@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../boost_bloc/boost_bloc.dart';
+import '../../boost_bloc/boost_state.dart';
 import '../../boost_all_screen/boost_top_nav.dart';
 import 'super_activate_drawer.dart';
 
@@ -57,7 +60,9 @@ class SuperBoostWalletScreen extends StatelessWidget {
   }
 
   Widget _buildBalanceCard() {
-    return Container(
+    return BlocBuilder<BoostBloc, BoostState>(
+      builder: (context, state) {
+        return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         // Faint black gradient
@@ -106,9 +111,9 @@ class SuperBoostWalletScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          const Text(
-                            '2',
-                            style: TextStyle(
+                          Text(
+                            '${state.superBoostBalance}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -155,7 +160,8 @@ class SuperBoostWalletScreen extends StatelessWidget {
         ),
       ),
     );
-  }
+  });
+}
 
   Widget _buildActionCard({
     required IconData icon,

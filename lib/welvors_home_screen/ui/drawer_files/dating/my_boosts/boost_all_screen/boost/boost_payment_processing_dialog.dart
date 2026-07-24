@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import '../../boost_wallet_all_screen/boost_wallet_top_nav.dart';
 
 class BoostPaymentProcessingDialog extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -222,6 +223,12 @@ class _BoostPaymentProcessingDialogState
                     onPressed: () {
                       Navigator.pop(context); // Close the dialog
                       widget.onDone();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BoostWalletTopNav(),
+                        ),
+                      );
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: const Color(0xFFF3F2EE),

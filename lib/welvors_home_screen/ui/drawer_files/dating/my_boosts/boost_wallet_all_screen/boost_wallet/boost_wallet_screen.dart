@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../../../main.dart'; // No need, BLoC is provided there
+import '../../boost_bloc/boost_bloc.dart';
+import '../../boost_bloc/boost_state.dart';
 import '../../boost_all_screen/boost_top_nav.dart';
 import 'activate_drawer.dart';
 
@@ -57,7 +61,9 @@ class BoostWalletScreen extends StatelessWidget {
   }
 
   Widget _buildBalanceCard() {
-    return Container(
+    return BlocBuilder<BoostBloc, BoostState>(
+      builder: (context, state) {
+        return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -102,9 +108,9 @@ class BoostWalletScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          const Text(
-                            '5',
-                            style: TextStyle(
+                          Text(
+                            '${state.boostBalance}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -149,7 +155,8 @@ class BoostWalletScreen extends StatelessWidget {
         ),
       ),
     );
-  }
+  });
+}
 
   Widget _buildActionCard({
     required IconData icon,

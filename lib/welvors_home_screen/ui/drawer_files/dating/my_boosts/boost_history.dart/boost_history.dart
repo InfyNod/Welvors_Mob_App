@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../boost_bloc/boost_bloc.dart';
+import '../boost_bloc/boost_state.dart';
 
 class BoostHistoryScreen extends StatelessWidget {
   const BoostHistoryScreen({super.key});
@@ -47,59 +50,79 @@ class BoostHistoryScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildLifetimeImpactCard(),
-            const SizedBox(height: 24),
-            const Text(
-              'Recent Boost Events',
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+      body: BlocBuilder<BoostBloc, BoostState>(
+        builder: (context, state) {
+          int totalReach = 0;
+          int totalLikes = 0;
+          int totalInterests = 0;
+          for (final item in state.history) {
+            totalReach += item.reach;
+            totalLikes += item.likes;
+            totalInterests += item.interests;
+          }
+
+          String formatReach(int value) {
+            if (value >= 1000) {
+              return '${(value / 1000).toStringAsFixed(1)}k';
+            }
+            return value.toString();
+          }
+
+          String formatDate(DateTime date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            final day = date.day.toString().padLeft(2, '0');
+            final month = months[date.month - 1];
+            return '$day $month, ${date.year}';
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildLifetimeImpactCard(
+                  totalReach: formatReach(totalReach),
+                  totalLikes: totalLikes.toString(),
+                  totalInterests: totalInterests.toString(),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Recent Boost Events',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ...state.history.map((item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _buildEventCard(
+                        date: formatDate(item.date),
+                        title: item.title,
+                        reach: formatReach(item.reach),
+                        likes: item.likes.toString(),
+                        interests: item.interests.toString(),
+                        duration: item.duration,
+                        isSuperBoost: item.isSuperBoost,
+                      ),
+                    )),
+                const SizedBox(height: 8),
+                _buildReadyForMoreCard(context),
+                const SizedBox(height: 40), // Extra space at bottom
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildEventCard(
-              date: '12 Oct, 2025',
-              title: 'Weekend Surge Boost',
-              reach: '4.2k',
-              likes: '45',
-              interests: '12',
-              duration: '24 Hours Duration',
-            ),
-            const SizedBox(height: 16),
-            _buildEventCard(
-              date: '05 Oct, 2025',
-              title: 'Evening Prime Spotlight',
-              reach: '3.8k',
-              likes: '38',
-              interests: '09',
-              duration: '1 Hour Duration',
-            ),
-            const SizedBox(height: 16),
-            _buildEventCard(
-              date: '28 Sep, 2025',
-              title: 'Grand Celebration Boost',
-              reach: '12.5k',
-              likes: '156',
-              interests: '42',
-              duration: '48 Hours Duration',
-              isSuperBoost: true,
-            ),
-            const SizedBox(height: 24),
-            _buildReadyForMoreCard(context),
-            const SizedBox(height: 40), // Extra space at bottom
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildLifetimeImpactCard() {
+  Widget _buildLifetimeImpactCard({
+    required String totalReach,
+    required String totalLikes,
+    required String totalInterests,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -136,11 +159,11 @@ class BoostHistoryScreen extends StatelessWidget {
           const SizedBox(height: 32),
           Row(
             children: [
-              Expanded(child: _buildImpactMetric('24.5k', 'Total Reach')),
+              Expanded(child: _buildImpactMetric(totalReach, 'Total Reach')),
               const SizedBox(width: 8),
-              Expanded(child: _buildImpactMetric('312', 'New Likes')),
+              Expanded(child: _buildImpactMetric(totalLikes, 'New Likes')),
               const SizedBox(width: 8),
-              Expanded(child: _buildImpactMetric('88', 'Interests')),
+              Expanded(child: _buildImpactMetric(totalInterests, 'Interests')),
             ],
           ),
         ],

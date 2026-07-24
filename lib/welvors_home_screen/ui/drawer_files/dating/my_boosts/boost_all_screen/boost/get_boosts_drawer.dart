@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../boost_bloc/boost_bloc.dart';
+import '../../boost_bloc/boost_event.dart';
 import 'boost_screen.dart';
 import 'boost_payment_processing_dialog.dart';
 
@@ -164,15 +167,19 @@ class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close the bottom sheet
+                    final rootContext = Navigator.of(context).context;
+                    final boostBloc = context.read<BoostBloc>();
                     final itemsToAdd = int.parse(widget.selectedPackage['title']);
-                    final newBalance = BoostScreen.availableBoosts + itemsToAdd;
+                    final newBalance = boostBloc.state.boostBalance + itemsToAdd;
+                    
+                    Navigator.pop(context); // Close the bottom sheet
+                    
                     BoostPaymentProcessingDialog.show(
-                      context: context,
+                      context: rootContext,
                       selectedPackage: widget.selectedPackage,
                       newBalance: newBalance,
                       onDone: () {
-                        BoostScreen.availableBoosts = newBalance;
+                        boostBloc.add(AddBoostEvent(itemsToAdd));
                         widget.onPurchased();
                       },
                     );

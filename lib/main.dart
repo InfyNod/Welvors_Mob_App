@@ -5,6 +5,7 @@ import 'onbording_allpage/theme/app_theme.dart';
 import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
 import 'welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'welvors_home_screen/bloc/home_bloc.dart';
+import 'welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 
 void main() {
   runApp(const WelvorsApp());
@@ -22,6 +23,9 @@ class WelvorsApp extends StatelessWidget {
         ),
         BlocProvider<HomeBloc>(
           create: (context) => HomeBloc(),
+        ),
+        BlocProvider<BoostBloc>(
+          create: (context) => BoostBloc(),
         ),
       ],
       child: MaterialApp(

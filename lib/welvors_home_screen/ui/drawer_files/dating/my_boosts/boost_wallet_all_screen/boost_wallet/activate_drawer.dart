@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../boost_bloc/boost_bloc.dart';
+import '../../boost_bloc/boost_event.dart';
+import '../../boost_bloc/boost_state.dart';
 import '../going_live.dart';
 
 void showActivateBoostDrawer(BuildContext context) {
@@ -136,54 +140,67 @@ class _ActivateBoostDrawer extends StatelessWidget {
                   fontSize: 14,
                 ),
               ),
-              const Row(
-                children: [
-                  Text(
-                    '5',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Icon(Icons.arrow_right_alt, size: 16, color: Colors.black87),
-                  Text(
-                    '4',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              BlocBuilder<BoostBloc, BoostState>(
+                builder: (context, state) {
+                  return Row(
+                    children: [
+                      Text(
+                        '${state.boostBalance}',
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Icon(Icons.arrow_right_alt, size: 16, color: Colors.black87),
+                      Text(
+                        '${state.boostBalance > 0 ? state.boostBalance - 1 : 0}',
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Close drawer
-                showGoingLiveOverlay(context, isSuperBoost: false); // Show loading overlay
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE43A6A),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          BlocBuilder<BoostBloc, BoostState>(
+            builder: (context, state) {
+              return SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: state.boostBalance > 0
+                      ? () {
+                          context.read<BoostBloc>().add(ConsumeBoostEvent());
+                          Navigator.pop(context); // Close drawer
+                          showGoingLiveOverlay(context, isSuperBoost: false); // Show loading overlay
+                        }
+                      : () {
+                          Navigator.pop(context); // Close drawer
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE43A6A),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    state.boostBalance > 0 ? 'Activate now' : 'Get more Boosts',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-                elevation: 0,
-              ),
-              child: const Text(
-                'Activate now',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           Center(

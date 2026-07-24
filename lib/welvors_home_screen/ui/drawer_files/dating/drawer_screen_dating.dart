@@ -5,6 +5,9 @@ import '../mature_dating/drawer_mature_dating_screen.dart';
 import 'ecosytem_history_support.dart';
 import 'privacy_safety_and_membership_plan.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/compliments/compliments_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'my_boosts/boost_bloc/boost_bloc.dart';
+import 'my_boosts/boost_bloc/boost_state.dart';
 import 'my_wallet/my_wallet_screen.dart';
 import 'roses/roses_screen.dart';
 import 'date_plans/date_plan_wallet.dart';
@@ -608,18 +611,23 @@ class _DrawerScreenState extends State<DrawerScreen> {
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: _buildBalanceCard(
-            emoji: '🚀',
-            bgColor: const Color(0xFFE5F1FB),
-            value: '1',
-            label: 'My Boosts',
-            hasDot: true,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BoostTopNav(),
-                ),
+          child: BlocBuilder<BoostBloc, BoostState>(
+            builder: (context, state) {
+              final totalBoosts = state.boostBalance + state.superBoostBalance;
+              return _buildBalanceCard(
+                emoji: '🚀',
+                bgColor: const Color(0xFFE5F1FB),
+                value: '$totalBoosts',
+                label: 'My Boosts',
+                hasDot: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BoostTopNav(),
+                    ),
+                  );
+                },
               );
             },
           ),
