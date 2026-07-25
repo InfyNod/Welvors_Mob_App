@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
-class AboutYouSection extends StatefulWidget {
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
+
+class AboutYouSection extends StatelessWidget {
   const AboutYouSection({super.key});
 
   @override
-  State<AboutYouSection> createState() => _AboutYouSectionState();
-}
-
-class _AboutYouSectionState extends State<AboutYouSection> {
-  String _bio = 'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.';
-
-  @override
   Widget build(BuildContext context) {
-    return Column(
+    return BlocBuilder<ProfileEditCubit, ProfileEditState>(
+      builder: (context, state) {
+        return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Row(
@@ -36,13 +35,11 @@ class _AboutYouSectionState extends State<AboutYouSection> {
             final result = await Navigator.push<String>(
               context,
               MaterialPageRoute(
-                builder: (context) => EditBioScreen(initialBio: _bio),
+                builder: (context) => EditBioScreen(initialBio: state.bio),
               ),
             );
-            if (result != null && mounted) {
-              setState(() {
-                _bio = result;
-              });
+            if (result != null && context.mounted) {
+              context.read<ProfileEditCubit>().updateBio(result);
             }
           },
           child: Container(
@@ -74,22 +71,19 @@ class _AboutYouSectionState extends State<AboutYouSection> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _bio.isEmpty ? 'Add a bio to your profile' : _bio,
+                  state.bio.isEmpty ? 'Add a bio to your profile' : state.bio,
                   style: TextStyle(
-                    color: _bio.isEmpty ? Colors.grey : Colors.black87,
+                    color: state.bio.isEmpty ? Colors.grey : Colors.black87,
                     fontSize: 14,
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 0),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    '${_bio.length}/300',
-                    style: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 11,
-                    ),
+                    '${state.bio.length}/300',
+                    style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
                   ),
                 ),
               ],
@@ -97,6 +91,8 @@ class _AboutYouSectionState extends State<AboutYouSection> {
           ),
         ),
       ],
+        );
+      },
     );
   }
 }
@@ -152,18 +148,30 @@ class _EditBioScreenState extends State<EditBioScreen> {
                   color: const Color(0xFFE43A6A).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.warning_amber_rounded, color: Color(0xFFE43A6A), size: 32),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Color(0xFFE43A6A),
+                  size: 32,
+                ),
               ),
               const SizedBox(height: 16),
               const Text(
                 'Unsaved Changes',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 12),
               const Text(
                 'You have unsaved changes. Do you want to save them before leaving?',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.black54, height: 1.4),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -171,16 +179,24 @@ class _EditBioScreenState extends State<EditBioScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context, false); // Close dialog
-                    Navigator.pop(context, _controller.text); // Save and Pop screen
+                    Navigator.pop(
+                      context,
+                      _controller.text,
+                    ); // Save and Pop screen
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                   ),
-                  child: const Text('Save Changes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Save Changes',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -192,7 +208,10 @@ class _EditBioScreenState extends State<EditBioScreen> {
                     foregroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('Discard', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Discard',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               SizedBox(
@@ -202,7 +221,10 @@ class _EditBioScreenState extends State<EditBioScreen> {
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.grey.shade600,
                   ),
-                  child: const Text('Cancel', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ],
@@ -255,7 +277,11 @@ class _EditBioScreenState extends State<EditBioScreen> {
           ),
           title: const Text(
             'Edit Bio',
-            style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         body: SafeArea(
@@ -275,10 +301,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
                 const SizedBox(height: 8),
                 const Text(
                   'Write a little bit about yourself to give others a sense of who you are.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
                 ),
                 const SizedBox(height: 24),
                 Expanded(

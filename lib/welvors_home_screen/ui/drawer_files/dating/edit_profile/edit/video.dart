@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'dart:io';
 
 class VideoSection extends StatefulWidget {
@@ -12,7 +15,6 @@ class VideoSection extends StatefulWidget {
 }
 
 class _VideoSectionState extends State<VideoSection> {
-  String? _recordedVideoPath;
   VideoPlayerController? _thumbnailController;
 
   @override
@@ -31,9 +33,11 @@ class _VideoSectionState extends State<VideoSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    return BlocBuilder<ProfileEditCubit, ProfileEditState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
         const Row(
           children: [
             Icon(Icons.videocam_outlined, color: Color(0xFFE43A6A), size: 18),
@@ -50,9 +54,9 @@ class _VideoSectionState extends State<VideoSection> {
           ],
         ),
         const SizedBox(height: 16),
-        _recordedVideoPath == null
+        state.videoPath == null
             ? _buildEmptyCard()
-            : _buildRecordedCard(),
+            : _buildRecordedCard(state.videoPath!),
         const SizedBox(height: 12),
         Text(
           'Record a 30s intro live to keep profiles genuine. A live video gets 2x more matches.',
@@ -64,6 +68,8 @@ class _VideoSectionState extends State<VideoSection> {
           ),
         ),
       ],
+      );
+      },
     );
   }
 
@@ -77,9 +83,7 @@ class _VideoSectionState extends State<VideoSection> {
           ),
         );
         if (result != null && mounted) {
-          setState(() {
-            _recordedVideoPath = result;
-          });
+          context.read<ProfileEditCubit>().updateVideoPath(result);
           _initializeThumbnail(result);
         }
       },
@@ -134,7 +138,7 @@ class _VideoSectionState extends State<VideoSection> {
     );
   }
 
-  Widget _buildRecordedCard() {
+  Widget _buildRecordedCard(String videoPath) {
     return Container(
       width: 180,
       height: 260,
@@ -211,9 +215,7 @@ class _VideoSectionState extends State<VideoSection> {
             right: 12,
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  _recordedVideoPath = null;
-                });
+                context.read<ProfileEditCubit>().updateVideoPath(null);
                 _thumbnailController?.dispose();
                 _thumbnailController = null;
               },
@@ -282,9 +284,7 @@ class _VideoSectionState extends State<VideoSection> {
                       ),
                     );
                     if (result != null && mounted) {
-                      setState(() {
-                        _recordedVideoPath = result;
-                      });
+                      context.read<ProfileEditCubit>().updateVideoPath(result);
                       _initializeThumbnail(result);
                     }
                   },

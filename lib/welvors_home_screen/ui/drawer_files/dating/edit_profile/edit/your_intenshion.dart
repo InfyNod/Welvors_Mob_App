@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 
 const List<Map<String, String>> intentionsOptions = [
   {
@@ -19,19 +22,14 @@ const List<Map<String, String>> intentionsOptions = [
   },
 ];
 
-class YourIntentionsSection extends StatefulWidget {
+class YourIntentionsSection extends StatelessWidget {
   const YourIntentionsSection({super.key});
 
   @override
-  State<YourIntentionsSection> createState() => _YourIntentionsSectionState();
-}
-
-class _YourIntentionsSectionState extends State<YourIntentionsSection> {
-  String _selectedIntention = 'Open to marriage, when it’s right'; // Default
-
-  @override
   Widget build(BuildContext context) {
-    return Column(
+    return BlocBuilder<ProfileEditCubit, ProfileEditState>(
+      builder: (context, state) {
+        return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Row(
@@ -55,13 +53,11 @@ class _YourIntentionsSectionState extends State<YourIntentionsSection> {
             final result = await Navigator.push<String>(
               context,
               MaterialPageRoute(
-                builder: (context) => EditIntentionsScreen(currentIntention: _selectedIntention),
+                builder: (context) => EditIntentionsScreen(currentIntention: state.intention),
               ),
             );
-            if (result != null && mounted) {
-              setState(() {
-                _selectedIntention = result;
-              });
+            if (result != null && context.mounted) {
+              context.read<ProfileEditCubit>().updateIntention(result);
             }
           },
           child: Container(
@@ -97,7 +93,7 @@ class _YourIntentionsSectionState extends State<YourIntentionsSection> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _selectedIntention,
+                        state.intention,
                         style: const TextStyle(
                           color: Colors.black87,
                           fontSize: 14,
@@ -106,7 +102,7 @@ class _YourIntentionsSectionState extends State<YourIntentionsSection> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        intentionsOptions.firstWhere((element) => element['title'] == _selectedIntention, orElse: () => {'subtitle': ''})['subtitle'] ?? '',
+                        intentionsOptions.firstWhere((element) => element['title'] == state.intention, orElse: () => {'subtitle': ''})['subtitle'] ?? '',
                         style: const TextStyle(
                           color: Colors.black54,
                           fontSize: 12,
@@ -123,6 +119,8 @@ class _YourIntentionsSectionState extends State<YourIntentionsSection> {
           ),
         ),
       ],
+        );
+      },
     );
   }
 }

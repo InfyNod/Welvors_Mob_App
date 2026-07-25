@@ -2,57 +2,54 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 
-class CompletionAndPhotosSection extends StatefulWidget {
-  const CompletionAndPhotosSection({super.key});
+class CompletionAndPhotosSection extends StatelessWidget {
+  CompletionAndPhotosSection({super.key});
 
-  @override
-  State<CompletionAndPhotosSection> createState() => _CompletionAndPhotosSectionState();
-}
-
-class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection> {
-  final List<XFile?> _photos = [null, null, null, null, null, null];
   final ImagePicker _picker = ImagePicker();
 
-  int get _photoCount => _photos.where((p) => p != null).length;
+  int _photoCount(List<XFile?> photos) => photos.where((p) => p != null).length;
 
-  Future<void> _pickImage() async {
-    final emptyIndex = _photos.indexWhere((p) => p == null);
+  Future<void> _pickImage(BuildContext context, List<XFile?> currentPhotos) async {
+    final emptyIndex = currentPhotos.indexWhere((p) => p == null);
     if (emptyIndex != -1) {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        setState(() {
-          _photos[emptyIndex] = image;
-        });
+      if (image != null && context.mounted) {
+        context.read<ProfileEditCubit>().updateSinglePhoto(emptyIndex, image);
       }
     }
   }
 
-  Future<void> _replaceImage(int index) async {
+  Future<void> _replaceImage(BuildContext context, int index) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _photos[index] = image;
-      });
+    if (image != null && context.mounted) {
+      context.read<ProfileEditCubit>().updateSinglePhoto(index, image);
     }
   }
 
-  void _removePhoto(int index) {
-    setState(() {
-      _photos.removeAt(index);
-      _photos.add(null); // Shifts remaining photos left and adds empty slot at the end
-    });
+  void _removePhoto(BuildContext context, List<XFile?> currentPhotos, int index) {
+    final updatedPhotos = List<XFile?>.from(currentPhotos);
+    updatedPhotos.removeAt(index);
+    updatedPhotos.add(null);
+    context.read<ProfileEditCubit>().updatePhotos(updatedPhotos);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildProfileCompletionCard(),
-        const SizedBox(height: 32),
-        _buildPhotosSection(),
-      ],
+    return BlocBuilder<ProfileEditCubit, ProfileEditState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildProfileCompletionCard(),
+            const SizedBox(height: 32),
+            _buildPhotosSection(context, state.photos),
+          ],
+        );
+      },
     );
   }
 
@@ -121,7 +118,7 @@ class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection>
     );
   }
 
-  Widget _buildPhotosSection() {
+  Widget _buildPhotosSection(BuildContext context, List<XFile?> photos) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -152,15 +149,15 @@ class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection>
           ),
           itemCount: 6,
           itemBuilder: (context, index) {
-            return _buildPhotoSlot(index);
+            return _buildPhotoSlot(context, photos, index);
           },
         ),
       ],
     );
   }
 
-  Widget _buildPhotoSlot(int index) {
-    final photo = _photos[index];
+  Widget _buildPhotoSlot(BuildContext context, List<XFile?> photos, int index) {
+    final photo = photos[index];
     final isMain = index == 0 && photo != null;
 
     if (photo != null) {
@@ -202,7 +199,7 @@ class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection>
                   ),
                 ),
               ),
-            if (_photoCount > 2)
+            if (_photoCount(photos) > 2)
               Positioned(
                 top: -6,
                 right: -6,
@@ -215,14 +212,14 @@ class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection>
                     ),
                     child: const Icon(Icons.close, color: Colors.white, size: 12),
                   ),
-                  onPressed: () => _removePhoto(index),
+                  onPressed: () => _removePhoto(context, photos, index),
                 ),
               ),
             Positioned(
               bottom: 6,
               right: 6,
               child: GestureDetector(
-                onTap: () => _replaceImage(index),
+                onTap: () => _replaceImage(context, index),
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -247,7 +244,7 @@ class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection>
 
     // Empty slot
     return GestureDetector(
-      onTap: () => _pickImage(),
+      onTap: () => _pickImage(context, photos),
       child: DottedBorder(
         borderType: BorderType.RRect,
         radius: const Radius.circular(12),
