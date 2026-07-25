@@ -4,7 +4,7 @@ import 'package:velvors/onbording_allpage/features/onboarding/landing_screen.dar
 import 'onbording_allpage/theme/app_theme.dart';
 import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
 import 'welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
-import 'welvors_home_screen/bloc/home_bloc.dart';
+import 'welvors_home_screen/home_bloc/home_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 
 void main() {
