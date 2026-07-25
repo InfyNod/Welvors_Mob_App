@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'edit/completion_image.dart';
+import 'edit/video.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -211,6 +212,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
           CompletionAndPhotosSection(),
+          SizedBox(height: 32),
+          VideoSection(),
           SizedBox(height: 100), // Extra scrolling space for later
         ],
       ),
