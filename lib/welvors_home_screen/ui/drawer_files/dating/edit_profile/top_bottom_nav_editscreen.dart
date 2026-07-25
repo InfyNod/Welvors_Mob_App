@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'edit/completion_image.dart';
-import 'edit/video.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/completion_image.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/video.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/about_you.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/your_intenshion.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_detail.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -15,9 +18,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -214,6 +217,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           CompletionAndPhotosSection(),
           SizedBox(height: 32),
           VideoSection(),
+          SizedBox(height: 32),
+          AboutYouSection(),
+          SizedBox(height: 32),
+          YourIntentionsSection(),
+          SizedBox(height: 32),
+          BasicDetailsSection(),
           SizedBox(height: 100), // Extra scrolling space for later
         ],
       ),
