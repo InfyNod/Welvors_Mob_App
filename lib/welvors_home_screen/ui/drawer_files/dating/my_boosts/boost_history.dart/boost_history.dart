@@ -111,9 +111,7 @@ class BoostHistoryScreen extends StatelessWidget {
                         isSuperBoost: item.isSuperBoost,
                       ),
                     )),
-                const SizedBox(height: 8),
-                _buildReadyForMoreCard(context),
-                const SizedBox(height: 40), // Extra space at bottom
+                const SizedBox(height: 16),
               ],
             ),
           );
@@ -403,92 +401,6 @@ class BoostHistoryScreen extends StatelessWidget {
     }
 
     return card;
-  }
-
-  Widget _buildReadyForMoreCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFF0F5), Color(0xFFFFE4E1)], // Soft pink gradient
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFFFB6C1).withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE43A6A).withOpacity(0.1),
-            blurRadius: 15,
-            spreadRadius: 2,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE43A6A).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.bolt,
-                  color: Color(0xFFE43A6A),
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Ready for more?',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'Put your profile in front of 10,000+\npotential matches right now.',
-            style: TextStyle(color: Colors.black54, fontSize: 14, height: 1.4),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity, // Full width button for better visibility
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE43A6A),
-                elevation: 4,
-                shadowColor: const Color(0xFFE43A6A).withOpacity(0.4),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-              ),
-              child: const Text(
-                'Boost Profile Now',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildVerticalDivider() {

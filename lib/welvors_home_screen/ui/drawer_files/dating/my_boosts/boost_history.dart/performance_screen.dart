@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../../top_and_bottom_nav_screen.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
@@ -104,19 +105,74 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildStatusCard(),
-            const SizedBox(height: 12),
-            _buildMetricsGrid(),
-            const SizedBox(height: 12),
-            _buildChartCard(),
-            const SizedBox(height: 12),
-            _buildDemographicsSection(),
-            const SizedBox(height: 24),
-          ],
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  _buildStatusCard(),
+                  const SizedBox(height: 12),
+                  _buildMetricsGrid(),
+                  const SizedBox(height: 12),
+                  _buildChartCard(),
+                  const SizedBox(height: 12),
+                  _buildDemographicsSection(),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Container(
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: _buildExploreMoreButton(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExploreMoreButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const TopAndBottomNavScreen(),
+            ),
+            (route) => false,
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFE43A6A),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 0,
+        ),
+        child: const Text(
+          'Explore More Profiles',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

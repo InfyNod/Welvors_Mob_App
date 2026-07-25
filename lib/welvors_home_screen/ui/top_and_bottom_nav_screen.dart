@@ -325,21 +325,25 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const BoostWalletTopNav(),
+                                    builder: (context) =>
+                                        const BoostWalletTopNav(),
                                   ),
                                 );
                               }
                             },
                             child: _PulsingBoostIcon(
-                              activeBoost: isActive && boostState.history.isNotEmpty ? boostState.history.first : null,
+                              activeBoost:
+                                  isActive && boostState.history.isNotEmpty
+                                  ? boostState.history.first
+                                  : null,
                               child: _buildTopIcon(
                                 Icons.bolt,
                                 color: isActive
-                                    ? Colors.white
+                                    ? const Color(0xFFE43A6A) // Vibrant Pink for contrast
                                     : Colors.amber.shade700,
                                 iconSize: 24,
                                 bgColor: isActive
-                                    ? const Color(0xFFE43A6A)
+                                    ? const Color(0xFFFFF0F5) // Soft light premium pink
                                     : Colors.white,
                               ),
                             ),
@@ -602,20 +606,13 @@ class _PulsingBoostIcon extends StatefulWidget {
   State<_PulsingBoostIcon> createState() => _PulsingBoostIconState();
 }
 
-class _PulsingBoostIconState extends State<_PulsingBoostIcon>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _PulsingBoostIconState extends State<_PulsingBoostIcon> {
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
     if (widget.activeBoost != null) {
-      _controller.repeat(reverse: true);
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (mounted) setState(() {});
       });
@@ -629,13 +626,10 @@ class _PulsingBoostIconState extends State<_PulsingBoostIcon>
     final wasActive = oldWidget.activeBoost != null;
 
     if (isActiveNow && !wasActive) {
-      _controller.repeat(reverse: true);
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (mounted) setState(() {});
       });
     } else if (!isActiveNow && wasActive) {
-      _controller.stop();
-      _controller.animateTo(0.0);
       _timer?.cancel();
       _timer = null;
     }
@@ -643,64 +637,45 @@ class _PulsingBoostIconState extends State<_PulsingBoostIcon>
 
   @override
   void dispose() {
-    _controller.dispose();
     _timer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final isActive = widget.activeBoost != null;
-        double progress = 0.0;
-        Color progressColor = Colors.transparent;
+    final isActive = widget.activeBoost != null;
+    double progress = 0.0;
+    Color progressColor = Colors.transparent;
 
-        if (isActive) {
-          final isSuper = widget.activeBoost!.isSuperBoost;
-          final totalDuration = isSuper
-              ? const Duration(hours: 3)
-              : const Duration(hours: 1);
-          final elapsed = DateTime.now().difference(widget.activeBoost!.date);
-          progress = elapsed.inMilliseconds / totalDuration.inMilliseconds;
-          progress = progress.clamp(0.0, 1.0);
-          progressColor = isSuper ? const Color(0xFFFFC107) : const Color(0xFFE43A6A);
-        }
+    if (isActive) {
+      final isSuper = widget.activeBoost!.isSuperBoost;
+      final totalDuration = isSuper
+          ? const Duration(hours: 3)
+          : const Duration(hours: 1);
+      final elapsed = DateTime.now().difference(widget.activeBoost!.date);
+      progress = elapsed.inMilliseconds / totalDuration.inMilliseconds;
+      progress = progress.clamp(0.0, 1.0);
+      progressColor = isSuper
+          ? const Color(0xFFFFC107)
+          : const Color(0xFFE43A6A);
+    }
 
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            if (isActive)
-              SizedBox(
-                width: 48,
-                height: 48,
-                child: CircularProgressIndicator(
-                  value: progress,
-                  strokeWidth: 2.5,
-                  backgroundColor: Colors.grey.shade300,
-                  valueColor: AlwaysStoppedAnimation<Color>(progressColor),
-                ),
-              ),
-            Container(
-              decoration: isActive
-                  ? BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: progressColor.withOpacity(_controller.value * 0.4),
-                          blurRadius: 10 * _controller.value,
-                          spreadRadius: 2 * _controller.value,
-                        ),
-                      ],
-                    )
-                  : null,
-              child: child,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (isActive)
+          SizedBox(
+            width: 44,
+            height: 44,
+            child: CircularProgressIndicator(
+              value: progress,
+              strokeWidth: 2.5,
+              backgroundColor: Colors.grey.shade300,
+              valueColor: AlwaysStoppedAnimation<Color>(progressColor),
             ),
-          ],
-        );
-      },
-      child: widget.child,
+          ),
+        widget.child,
+      ],
     );
   }
 }

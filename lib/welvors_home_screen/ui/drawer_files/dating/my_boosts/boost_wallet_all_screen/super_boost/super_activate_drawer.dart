@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_event.dart';
 import '../../boost_bloc/boost_state.dart';
+import '../../boost_all_screen/boost_top_nav.dart';
 import '../going_live.dart';
 
 void showSuperActivateBoostDrawer(BuildContext context) {
@@ -211,6 +212,13 @@ class _SuperActivateBoostDrawer extends StatelessWidget {
                         }
                       : () {
                           Navigator.pop(context); // Close drawer
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BoostTopNav(),
+                            ),
+                            (route) => route.isFirst,
+                          );
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2C2C2C), // Black button
