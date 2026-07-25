@@ -24,6 +24,9 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   
   void updateVideoPath(String? path) => emit(state.copyWith(videoPath: path));
   
+  void updateInterestedIn(String interested) => emit(state.copyWith(interestedIn: interested));
+  void updateSexualOrientation(String orientation) => emit(state.copyWith(sexualOrientation: orientation));
+  
   void updateSinglePhoto(int index, XFile? photo) {
     final updatedPhotos = List<XFile?>.from(state.photos);
     updatedPhotos[index] = photo;

@@ -13,6 +13,8 @@ class ProfileEditState extends Equatable {
   final String zodiac;
   final String loveLanguage;
   final String communication;
+  final String interestedIn;
+  final String sexualOrientation;
   
   final String bio;
   final String intention;
@@ -32,6 +34,8 @@ class ProfileEditState extends Equatable {
     required this.zodiac,
     required this.loveLanguage,
     required this.communication,
+    required this.interestedIn,
+    required this.sexualOrientation,
     required this.bio,
     required this.intention,
     required this.photos,
@@ -51,6 +55,8 @@ class ProfileEditState extends Equatable {
       zodiac: 'Leo',
       loveLanguage: 'Quality time',
       communication: 'Phone calls over texts',
+      interestedIn: 'Men',
+      sexualOrientation: 'Straight',
       bio: 'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
       intention: 'Open to marriage, when it’s right',
       photos: List.filled(6, null),
@@ -70,6 +76,8 @@ class ProfileEditState extends Equatable {
     String? zodiac,
     String? loveLanguage,
     String? communication,
+    String? interestedIn,
+    String? sexualOrientation,
     String? bio,
     String? intention,
     List<XFile?>? photos,
@@ -87,6 +95,8 @@ class ProfileEditState extends Equatable {
       zodiac: zodiac ?? this.zodiac,
       loveLanguage: loveLanguage ?? this.loveLanguage,
       communication: communication ?? this.communication,
+      interestedIn: interestedIn ?? this.interestedIn,
+      sexualOrientation: sexualOrientation ?? this.sexualOrientation,
       bio: bio ?? this.bio,
       intention: intention ?? this.intention,
       photos: photos ?? this.photos,
@@ -107,6 +117,8 @@ class ProfileEditState extends Equatable {
         zodiac,
         loveLanguage,
         communication,
+        interestedIn,
+        sexualOrientation,
         bio,
         intention,
         photos,
