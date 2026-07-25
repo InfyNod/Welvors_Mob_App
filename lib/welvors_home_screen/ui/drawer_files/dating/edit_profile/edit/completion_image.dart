@@ -59,15 +59,16 @@ class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection>
   Widget _buildProfileCompletionCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.08)), // Subtle pink border
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -81,37 +82,38 @@ class _CompletionAndPhotosSectionState extends State<CompletionAndPhotosSection>
                 'Profile completion',
                 style: TextStyle(
                   color: Colors.black87,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14, // Slightly smaller
+                  fontWeight: FontWeight.w800, // Extra bold for premium look
                 ),
               ),
               Text(
                 '82%',
                 style: TextStyle(
                   color: Color(0xFFE43A6A),
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8), // Reduced spacing
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: const LinearProgressIndicator(
               value: 0.82,
-              minHeight: 8,
+              minHeight: 5, // Thinner progress bar
               backgroundColor: Color(0xFFF3F2EE),
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE43A6A)),
             ),
           ),
-          const SizedBox(height: 12),
-          const Text(
+          const SizedBox(height: 8), // Reduced spacing
+          Text(
             'Add 1 more photo and a video to reach 100% and get 3x more matches.',
             style: TextStyle(
-              color: Colors.black54,
-              fontSize: 12,
-              height: 1.4,
+              color: Colors.grey.shade600, // Softer grey
+              fontSize: 11, // Smaller text
+              height: 1.3,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
