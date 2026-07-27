@@ -40,6 +40,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateStateLocation(String val) => emit(state.copyWith(stateLocation: val));
   void updateShowDistance(bool val) => emit(state.copyWith(showDistance: val));
   
+  // VIP Networking Intent
+  void updateNetworkingIntents(List<String> intents) => emit(state.copyWith(networkingIntents: intents));
+  void updateNetworkingInYourWords(String val) => emit(state.copyWith(networkingInYourWords: val));
+  
   // Education & Career
   void updateCollege(String val) => emit(state.copyWith(college: val));
   void updateHighestEducation(String val) => emit(state.copyWith(highestEducation: val));

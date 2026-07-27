@@ -32,6 +32,10 @@ class ProfileEditState extends Equatable {
   final String stateLocation;
   final bool showDistance;
   
+  // VIP Networking Intent
+  final List<String> networkingIntents;
+  final String networkingInYourWords;
+  
   // Education & Career
   final String college;
   final String highestEducation;
@@ -88,6 +92,8 @@ class ProfileEditState extends Equatable {
     required this.city,
     required this.stateLocation,
     required this.showDistance,
+    required this.networkingIntents,
+    required this.networkingInYourWords,
     required this.college,
     required this.highestEducation,
     required this.degreeCourse,
@@ -150,6 +156,8 @@ class ProfileEditState extends Equatable {
       city: 'Pune',
       stateLocation: 'Maharashtra',
       showDistance: true,
+      networkingIntents: const ['Mentorship', 'Career advice', 'Founder circles', 'Coffee chats'],
+      networkingInYourWords: '',
       college: 'IIM Ahmedabad',
       highestEducation: 'Master',
       degreeCourse: 'MBA · Business & Strategy',
@@ -203,6 +211,8 @@ class ProfileEditState extends Equatable {
     String? city,
     String? stateLocation,
     bool? showDistance,
+    List<String>? networkingIntents,
+    String? networkingInYourWords,
     String? college,
     String? highestEducation,
     String? degreeCourse,
@@ -254,6 +264,8 @@ class ProfileEditState extends Equatable {
       city: city ?? this.city,
       stateLocation: stateLocation ?? this.stateLocation,
       showDistance: showDistance ?? this.showDistance,
+      networkingIntents: networkingIntents ?? this.networkingIntents,
+      networkingInYourWords: networkingInYourWords ?? this.networkingInYourWords,
       college: college ?? this.college,
       highestEducation: highestEducation ?? this.highestEducation,
       degreeCourse: degreeCourse ?? this.degreeCourse,
@@ -308,6 +320,8 @@ class ProfileEditState extends Equatable {
         city,
         stateLocation,
         showDistance,
+        networkingIntents,
+        networkingInYourWords,
         college,
         highestEducation,
         degreeCourse,

@@ -5,6 +5,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/your_intenshion.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_detail.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/location.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/vip_elite.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/who_you_seeing.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/prompts.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/lifestyle_card.dart';
@@ -254,6 +255,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const PromptsSection(),
           const SizedBox(height: 32),
           const LocationSection(),
+          const SizedBox(height: 32),
+          const NetworkingIntentSection(),
           const SizedBox(height: 20), // Extra scrolling space for later
         ],
       ),
