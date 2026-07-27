@@ -1,8 +1,6 @@
 // import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
@@ -178,161 +176,67 @@ class _ProfileDetailsView extends StatelessWidget {
           const SizedBox(height: 16),
 
           // ABOUT Section
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          _buildDetailCard(
+            title: 'ABOUT',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Row (Person Icon, ABOUT title, Quote Icon)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.black12,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.person_outline,
-                            size: 16,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'ABOUT',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Icon(
-                      CupertinoIcons.quote_bubble_fill,
-                      size: 25,
-                      color: Colors.grey.shade300,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                // The paragraph
                 Text(
                   profile.about,
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 17,
+                  style: const TextStyle(
+                    fontSize: 15,
                     color: Colors.black87,
-                    height: 1.5,
-                    fontWeight: FontWeight.w600,
+                    height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 8),
-                // The elegant divider
-                Row(
+                const SizedBox(height: 16),
+                const Divider(color: Colors.black12, height: 1),
+                const SizedBox(height: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: const Text('✦', style: TextStyle(fontSize: 14)),
-                    ),
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // LOOKING FOR Container
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black12),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 45,
-                        height: 45,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A), // Almost black
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.favorite_border_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
+                    const Text(
+                      'LOOKING FOR',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black45,
+                        letterSpacing: 1.0,
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'LOOKING FOR',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black54,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                            const SizedBox(height: 0),
-                            Text(
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF2ECE6), // Warm grey
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.auto_awesome_rounded, // Keeping a nice icon
+                            color: Colors.black54,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
                               profile.lookingFor,
                               style: const TextStyle(
                                 color: Colors.black87,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 0),
-                            Text(
-                              _getLookingForSubtitle(profile.lookingFor),
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -340,74 +244,59 @@ class _ProfileDetailsView extends StatelessWidget {
           const SizedBox(height: 16),
 
           // THE BASICS Section
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          _buildDetailCard(
+            title: 'THE BASICS',
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('✦', style: TextStyle(fontSize: 16, color: Colors.black87)),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'THE BASICS',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(color: Colors.black12, height: 1),
-                      ),
-                    ),
-                  ],
+                _buildBasicRow(
+                  Icons.cake_outlined,
+                  'Age',
+                  '${profile.age} years old',
+                  '19 Feb 1999',
                 ),
-                const SizedBox(height: 24),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final double itemWidth = (constraints.maxWidth - 12) / 2;
-                    return Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        _buildBentoPill(Icons.calendar_today_outlined, '${profile.age} years old', '19 Feb 1999', itemWidth),
-                        _buildBentoPill(Icons.straighten_outlined, profile.height.split(' • ').first, profile.height.split(' • ').last, itemWidth),
-                        _buildBentoPill(Icons.account_balance_outlined, profile.religion.split(' • ').first, profile.religion.split(' • ').last, itemWidth),
-                        _buildBentoPill(Icons.location_on_outlined, profile.location.split(', ').first, profile.location.split(', ').last, itemWidth, stacked: true),
-                        _buildBentoPill(Icons.translate, profile.motherTongue, '', itemWidth),
-                        _buildBentoPill(Icons.nightlight_round, 'Scorpio', '', itemWidth),
-                        _buildBentoPill(Icons.favorite_border, 'Words of affirmation', 'Compliments mean the most', itemWidth, stacked: true),
-                        _buildBentoPill(Icons.phone_in_talk_outlined, 'Phone calls over texts', 'I prefer real conversations', itemWidth, stacked: true),
-                      ],
-                    );
-                  },
+                const Divider(height: 18, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.height_outlined,
+                  'Height',
+                  profile.height.split(' • ').first,
+                  profile.height.split(' • ').last,
+                ),
+                const Divider(height: 18, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.mosque_outlined,
+                  'Religion',
+                  profile.religion.split(' • ').first,
+                  profile.religion.split(' • ').last,
+                ),
+                const Divider(height: 18, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.location_on_outlined,
+                  'Lives in',
+                  profile.location.split(', ').first,
+                  profile.location.split(', ').last,
+                ),
+                const Divider(height: 18, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.translate,
+                  'Mother tongue',
+                  profile.motherTongue,
+                  '',
+                ),
+                const Divider(height: 18, color: Colors.black12),
+                _buildBasicRow(Icons.nightlight_round, 'Zodiac', 'Scorpio', ''),
+                const Divider(height: 18, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.favorite,
+                  'Love language',
+                  'Words of affirmation',
+                  'Compliments mean the most',
+                ),
+                const Divider(height: 18, color: Colors.black12),
+                _buildBasicRow(
+                  Icons.phone_in_talk_outlined,
+                  'Communication',
+                  'Phone calls over texts',
+                  '',
                 ),
               ],
             ),
@@ -434,19 +323,12 @@ class _ProfileDetailsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -602,19 +484,12 @@ class _ProfileDetailsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -681,19 +556,12 @@ class _ProfileDetailsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -772,19 +640,12 @@ class _ProfileDetailsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -874,19 +735,12 @@ class _ProfileDetailsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -989,19 +843,12 @@ class _ProfileDetailsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -1172,19 +1019,15 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        // border removed to match benefits drawer design
+        border: Border.all(
+          color: const Color(0xFF5E2750).withOpacity(0.2),
+          width: 1.5,
+        ), // Subtle premium purple
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 16,
-            spreadRadius: 0,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
+            color: const Color(0xFF5E2750).withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -1432,19 +1275,12 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        // border removed to match benefits drawer design
+        border: Border.all(color: Colors.grey.shade200, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 16,
-            spreadRadius: 0,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -1470,23 +1306,6 @@ class _ProfileDetailsView extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getLookingForSubtitle(String lookingFor) {
-    switch (lookingFor) {
-      case 'A long-term relationship':
-        return 'Looking to build something that lasts';
-      case 'Let’s see where it goes':
-        return 'Open and unhurried, no fixed expectations';
-      case 'Open to marriage, when it’s right':
-        return 'Serious, on the right timeline - not rushed';
-      case 'New friends & connections':
-        return 'Meeting genuine people first';
-      case 'Long-term, marriage-open.':
-        return 'Looking to build something that lasts, open to taking the next big step.';
-      default:
-        return 'Seeking meaningful connections';
-    }
   }
 
   Widget _buildBasicRow(
@@ -1541,76 +1360,6 @@ class _ProfileDetailsView extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildBentoPill(
-    IconData icon,
-    String text1,
-    String text2,
-    double width, {
-    bool stacked = false,
-  }) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F8F8), // Very light grey pill
-        borderRadius: BorderRadius.circular(50), // Fully rounded
-      ),
-      child: Row(
-        crossAxisAlignment: stacked ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.transparent,
-              border: Border.all(color: Colors.black87, width: 1.2),
-            ),
-            child: Icon(icon, size: 16, color: Colors.black87),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: stacked
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        text1,
-                        style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w600),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (text2.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          text2,
-                          style: const TextStyle(fontSize: 11, color: Colors.black54),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                  )
-                : RichText(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                      style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w600),
-                      children: [
-                        TextSpan(text: text1),
-                        if (text2.isNotEmpty) ...[
-                          const TextSpan(text: '  •  ', style: TextStyle(color: Colors.black38)),
-                          TextSpan(text: text2, style: TextStyle(color: Colors.black54, fontWeight: FontWeight.normal)),
-                        ],
-                      ],
-                    ),
-                  ),
-          ),
-        ],
-      ),
     );
   }
 }
