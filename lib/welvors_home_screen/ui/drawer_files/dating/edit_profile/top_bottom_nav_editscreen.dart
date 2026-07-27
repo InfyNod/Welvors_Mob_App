@@ -4,7 +4,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/about_you.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/your_intenshion.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_detail.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/interested.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/who_you_seeing.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
@@ -233,9 +233,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: 32),
           const YourIntentionsSection(),
           const SizedBox(height: 32),
-          const WhoYouAreSeeingSection(),
-          const SizedBox(height: 32),
           const BasicDetailsSection(),
+          const SizedBox(height: 32),
+          const WhoYouAreSeeingSection(),
           const SizedBox(height: 100), // Extra scrolling space for later
         ],
       ),

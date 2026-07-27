@@ -905,7 +905,8 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                             // Accordion / Expanded Caste List
                             if (isSelectedReligion && hasCastes) ...[
                               Divider(height: 1, color: const Color(0xFFE43A6A).withOpacity(0.2)),
-                              Padding(
+                              Container(
+                                width: double.infinity,
                                 padding: const EdgeInsets.all(16),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -919,43 +920,39 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                                       ),
                                     ),
                                     const SizedBox(height: 12),
-                                    ..._castes[religion]!.map((caste) {
-                                      final isSelectedCaste = _selectedCaste == caste;
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _selectedCaste = caste;
-                                          });
-                                        },
-                                        child: Container(
-                                          margin: const EdgeInsets.only(bottom: 8),
-                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                          decoration: BoxDecoration(
-                                            color: isSelectedCaste ? const Color(0xFFE43A6A).withOpacity(0.08) : Colors.white,
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: isSelectedCaste ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                                              width: isSelectedCaste ? 2 : 1,
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: _castes[religion]!.map((caste) {
+                                        final isSelectedCaste = _selectedCaste == caste;
+                                        return GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _selectedCaste = caste;
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: isSelectedCaste ? const Color(0xFFE43A6A) : Colors.white,
+                                              borderRadius: BorderRadius.circular(24),
+                                              border: Border.all(
+                                                color: isSelectedCaste ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              caste,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: isSelectedCaste ? FontWeight.bold : FontWeight.w500,
+                                                color: isSelectedCaste ? Colors.white : Colors.black87,
+                                              ),
                                             ),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                caste,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: isSelectedCaste ? FontWeight.bold : FontWeight.w500,
-                                                  color: isSelectedCaste ? const Color(0xFFE43A6A) : Colors.black87,
-                                                ),
-                                              ),
-                                              if (isSelectedCaste)
-                                                const Icon(Icons.check_circle, color: Color(0xFFE43A6A), size: 18),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }),
+                                        );
+                                      }).toList(),
+                                    ),
                                   ],
                                 ),
                               ),
