@@ -57,6 +57,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     emit(state.copyWith(pets: updatedPets));
   }
   
+  void updateInterests(List<String> interests) {
+    emit(state.copyWith(interests: interests));
+  }
+  
   void updateSinglePhoto(int index, XFile? photo) {
     final updatedPhotos = List<XFile?>.from(state.photos);
     updatedPhotos[index] = photo;

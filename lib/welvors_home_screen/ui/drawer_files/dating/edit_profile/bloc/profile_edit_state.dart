@@ -23,6 +23,7 @@ class ProfileEditState extends Equatable {
   final String travel;
   final String sleep;
   final List<String> pets;
+  final List<String> interests;
   
   // Education & Career
   final String college;
@@ -74,6 +75,7 @@ class ProfileEditState extends Equatable {
     required this.travel,
     required this.sleep,
     required this.pets,
+    required this.interests,
     required this.college,
     required this.highestEducation,
     required this.degreeCourse,
@@ -121,6 +123,7 @@ class ProfileEditState extends Equatable {
       travel: '4–5 trips/year',
       sleep: 'Night owl',
       pets: const [],
+      interests: const ['✈️ Travel', '☕ Coffee', '🥾 Trekking', '📚 Books', '🧘 Yoga', '🎧 Indie music'],
       college: 'IIM Ahmedabad',
       highestEducation: 'Master',
       degreeCourse: 'MBA · Business & Strategy',
@@ -168,6 +171,7 @@ class ProfileEditState extends Equatable {
     String? travel,
     String? sleep,
     List<String>? pets,
+    List<String>? interests,
     String? college,
     String? highestEducation,
     String? degreeCourse,
@@ -213,6 +217,7 @@ class ProfileEditState extends Equatable {
       travel: travel ?? this.travel,
       sleep: sleep ?? this.sleep,
       pets: pets ?? this.pets,
+      interests: interests ?? this.interests,
       college: college ?? this.college,
       highestEducation: highestEducation ?? this.highestEducation,
       degreeCourse: degreeCourse ?? this.degreeCourse,
@@ -261,6 +266,7 @@ class ProfileEditState extends Equatable {
         travel,
         sleep,
         pets,
+        interests,
         college,
         highestEducation,
         degreeCourse,
