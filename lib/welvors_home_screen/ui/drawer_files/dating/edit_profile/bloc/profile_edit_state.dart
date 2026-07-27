@@ -24,6 +24,13 @@ class ProfileEditState extends Equatable {
   final String sleep;
   final List<String> pets;
   final List<String> interests;
+  final List<Map<String, String>> prompts;
+  
+  // Location
+  final String area;
+  final String city;
+  final String stateLocation;
+  final bool showDistance;
   
   // Education & Career
   final String college;
@@ -76,6 +83,11 @@ class ProfileEditState extends Equatable {
     required this.sleep,
     required this.pets,
     required this.interests,
+    required this.prompts,
+    required this.area,
+    required this.city,
+    required this.stateLocation,
+    required this.showDistance,
     required this.college,
     required this.highestEducation,
     required this.degreeCourse,
@@ -124,6 +136,20 @@ class ProfileEditState extends Equatable {
       sleep: 'Night owl',
       pets: const [],
       interests: const ['✈️ Travel', '☕ Coffee', '🥾 Trekking', '📚 Books', '🧘 Yoga', '🎧 Indie music'],
+      prompts: const [
+        {
+          'question': 'The way to win me over is…',
+          'answer': 'A good book rec and a strong chai opinion.'
+        },
+        {
+          'question': 'My simple pleasures…',
+          'answer': 'Roadside chai after a long trek, no signal, good comp'
+        }
+      ],
+      area: 'Kalyani Nagar',
+      city: 'Pune',
+      stateLocation: 'Maharashtra',
+      showDistance: true,
       college: 'IIM Ahmedabad',
       highestEducation: 'Master',
       degreeCourse: 'MBA · Business & Strategy',
@@ -172,6 +198,11 @@ class ProfileEditState extends Equatable {
     String? sleep,
     List<String>? pets,
     List<String>? interests,
+    List<Map<String, String>>? prompts,
+    String? area,
+    String? city,
+    String? stateLocation,
+    bool? showDistance,
     String? college,
     String? highestEducation,
     String? degreeCourse,
@@ -218,6 +249,11 @@ class ProfileEditState extends Equatable {
       sleep: sleep ?? this.sleep,
       pets: pets ?? this.pets,
       interests: interests ?? this.interests,
+      prompts: prompts ?? this.prompts,
+      area: area ?? this.area,
+      city: city ?? this.city,
+      stateLocation: stateLocation ?? this.stateLocation,
+      showDistance: showDistance ?? this.showDistance,
       college: college ?? this.college,
       highestEducation: highestEducation ?? this.highestEducation,
       degreeCourse: degreeCourse ?? this.degreeCourse,
@@ -267,6 +303,11 @@ class ProfileEditState extends Equatable {
         sleep,
         pets,
         interests,
+        prompts,
+        area,
+        city,
+        stateLocation,
+        showDistance,
         college,
         highestEducation,
         degreeCourse,

@@ -34,6 +34,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateTravel(String val) => emit(state.copyWith(travel: val));
   void updateSleep(String val) => emit(state.copyWith(sleep: val));
   
+  // Location
+  void updateArea(String val) => emit(state.copyWith(area: val));
+  void updateCity(String val) => emit(state.copyWith(city: val));
+  void updateStateLocation(String val) => emit(state.copyWith(stateLocation: val));
+  void updateShowDistance(bool val) => emit(state.copyWith(showDistance: val));
+  
   // Education & Career
   void updateCollege(String val) => emit(state.copyWith(college: val));
   void updateHighestEducation(String val) => emit(state.copyWith(highestEducation: val));
@@ -59,6 +65,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   
   void updateInterests(List<String> interests) {
     emit(state.copyWith(interests: interests));
+  }
+  
+  void updatePrompts(List<Map<String, String>> prompts) {
+    emit(state.copyWith(prompts: prompts));
   }
   
   void updateSinglePhoto(int index, XFile? photo) {
