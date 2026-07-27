@@ -18,7 +18,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       videoUrl: 'assets/video.mp4',
       name: 'Shraddha',
       age: 21,
-      location: 'Pune, Maharashtra',
+      location: 'Hadapsar, Pune, Maharashtra',
       job: "Fashion Designer",
       intent: 'Serious relationship',
       matchPercentage: '92% Match',
@@ -41,7 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // No videoUrl
       name: 'Priya',
       age: 23,
-      location: 'Mumbai, Maharashtra',
+      location: 'Bandra, Mumbai, Maharashtra',
       job: "Software Engineer",
       intent: 'Casual dating',
       matchPercentage: '85% Match',

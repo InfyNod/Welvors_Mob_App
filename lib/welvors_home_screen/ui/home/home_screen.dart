@@ -368,7 +368,10 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text('✦', style: TextStyle(fontSize: 16, color: Colors.black87)),
+                        const Text(
+                          '✦',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
                         const SizedBox(width: 8),
                         const Text(
                           'THE BASICS',
@@ -397,14 +400,61 @@ class _ProfileDetailsView extends StatelessWidget {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _buildBentoPill(Icons.calendar_today_outlined, '${profile.age} years old', '19 Feb 1999', itemWidth),
-                        _buildBentoPill(Icons.straighten_outlined, profile.height.split(' • ').first, profile.height.split(' • ').last, itemWidth),
-                        _buildBentoPill(Icons.account_balance_outlined, profile.religion.split(' • ').first, profile.religion.split(' • ').last, itemWidth),
-                        _buildBentoPill(Icons.location_on_outlined, profile.location.split(', ').first, profile.location.split(', ').last, itemWidth, stacked: true),
-                        _buildBentoPill(Icons.translate, profile.motherTongue, '', itemWidth),
-                        _buildBentoPill(Icons.nightlight_round, 'Scorpio', '', itemWidth),
-                        _buildBentoPill(Icons.favorite_border, 'Words of affirmation', 'Compliments mean the most', itemWidth, stacked: true),
-                        _buildBentoPill(Icons.phone_in_talk_outlined, 'Phone calls over texts', 'I prefer real conversations', itemWidth, stacked: true),
+                        _buildBentoPill(
+                          Icons.calendar_today_outlined,
+                          '${profile.age} years old',
+                          '19 Feb 1999',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.straighten_outlined,
+                          profile.height.split(' • ').first,
+                          profile.height.split(' • ').last,
+                          itemWidth,
+                        ),
+                        _buildBentoPill(
+                          Icons.temple_hindu_outlined,
+                          profile.religion.split(' • ').first,
+                          profile.religion.split(' • ').last,
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.location_on_outlined,
+                          profile.location.split(', ').first,
+                          profile.location.split(', ').length > 1
+                              ? profile.location.split(', ')[1]
+                              : '',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.translate,
+                          profile.motherTongue,
+                          '',
+                          itemWidth,
+                        ),
+                        _buildBentoPill(
+                          Icons.nightlight_round,
+                          'Scorpio',
+                          '',
+                          itemWidth,
+                        ),
+                        _buildBentoPill(
+                          Icons.favorite_border,
+                          'Words of affirmation',
+                          'Compliments mean the most',
+                          constraints.maxWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.phone_in_talk_outlined,
+                          'Phone calls over texts',
+                          'I prefer real conversations',
+                          constraints.maxWidth,
+                          stacked: true,
+                        ),
                       ],
                     );
                   },
@@ -507,76 +557,134 @@ class _ProfileDetailsView extends StatelessWidget {
           const SizedBox(height: 16),
 
           // CAREER & AMBITION Section
-          _buildDetailCard(
-            title: 'CAREER & AMBITION',
+          Container(
+            padding: const EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: 12,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 16,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Text(
+                          '✦',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'CAREER & AMBITION',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(color: Colors.black12, height: 1),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
                 _buildBasicRow(
                   Icons.school_outlined,
                   'Education',
                   'NIFT Pune',
                   'Fashion Design · 3rd year',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const SizedBox(height: 8),
                 _buildBasicRow(
                   Icons.work_outline_rounded,
                   'Work as',
                   'Fashion Design',
                   'Freelance · 2 yrs exp',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const SizedBox(height: 8),
                 _buildBasicRow(
                   Icons.attach_money_rounded,
                   'Income',
                   '₹8-12 L / year',
                   'Growing steadily',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const SizedBox(height: 8),
                 _buildBasicRow(
                   Icons.computer_rounded,
                   'Work style',
                   'Creative · Hybrid',
                   '',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const SizedBox(height: 8),
                 _buildBasicRow(
                   Icons.trending_up_rounded,
                   'Ambition level',
                   'HIGHLY DRIVEN',
                   '',
                 ),
-                const Divider(height: 18, color: Colors.black12),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Row(
                   children: [
-                    Container(
-                      width: 4,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: Colors.pinkAccent,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                    const Expanded(
+                      child: Divider(color: Colors.black12, height: 1),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'HER BIG DREAM',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.pinkAccent,
-                        letterSpacing: 1.5,
-                      ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: const Text('✦', style: TextStyle(fontSize: 14)),
+                    ),
+                    const Expanded(
+                      child: Divider(color: Colors.black12, height: 1),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 05),
+                const Center(
+                  child: Text(
+                    'HER BIG DREAM',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black87,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
                 const Text(
                   'Launch her own sustainable Indian fashion label — handcrafted, slow fashion made with heart. Also wants to travel every fashion capital before 30.',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.black87,
                     height: 1.5,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ],
@@ -819,34 +927,34 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Diet',
                   'Vegetarian',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.wine_bar_outlined,
                   'Drinking',
                   'Socially',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.smoking_rooms_outlined,
                   'Smoking',
                   'Non-smoker',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.fitness_center_outlined,
                   'Fitness',
                   'Gym 4×/week',
                   subValue: 'Yoga · Trekking',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.flight_takeoff_outlined,
                   'Travel',
                   '4–5 trips/year',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(Icons.pets_outlined, 'Pets', 'Cat parent'),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.dark_mode_outlined,
                   'Sleep',
@@ -922,41 +1030,41 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Nuclear',
                   subValue: 'Close-knit',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.person_outline,
                   'Father',
                   'Retired banker',
                   subValue: 'Bank of Maharashtra',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.woman_outlined,
                   'Mother',
                   'Homemaker',
                   subValue: 'Former school teacher',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.group_outlined,
                   'Siblings',
                   'Sister—unmarried, studying\nBrother—married, working',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.location_on_outlined,
                   'Family home',
                   'Pune',
                   subValue: 'Native: Nashik',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 _buildLifestyleRow(
                   Icons.account_balance_wallet_outlined,
                   'Family income',
                   '₹25–40 L / year',
                   subValue: 'Household, approx',
                 ),
-                const Divider(height: 18, color: Colors.black12),
+                const Divider(height: 24, color: Colors.black12),
                 const SizedBox(height: 16),
                 const Text(
                   'Grew up in a close, easy-going Marathi family that values ambition as much togetherness. My parents married for love and never made it about timelines — they\'d want the same warmth for me.',
@@ -1495,52 +1603,63 @@ class _ProfileDetailsView extends StatelessWidget {
     String value,
     String subtitle,
   ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.pink.shade50.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(12),
+    return Container(
+      width: double.infinity,
+      height: 60,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F8F8),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.transparent,
+              border: Border.all(color: Colors.black87, width: 1.2),
+            ),
+            child: Icon(icon, size: 16, color: Colors.black87),
           ),
-          child: Icon(icon, color: AppColors.pinkDeep, size: 20),
-        ),
-        const SizedBox(width: 16),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black54,
-            fontWeight: FontWeight.w600,
+          const SizedBox(width: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              color: Colors.black87,
+              fontWeight: FontWeight.w400,
+            ),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                value,
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (subtitle.isNotEmpty) ...[
-                const SizedBox(height: 2),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
                 Text(
-                  subtitle,
+                  value,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 12, color: Colors.black45),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
+                if (subtitle.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(fontSize: 13, color: Colors.black45),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -1553,13 +1672,14 @@ class _ProfileDetailsView extends StatelessWidget {
   }) {
     return Container(
       width: width,
+      height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F8F8), // Very light grey pill
         borderRadius: BorderRadius.circular(50), // Fully rounded
       ),
       child: Row(
-        crossAxisAlignment: stacked ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.all(6),
@@ -1579,7 +1699,11 @@ class _ProfileDetailsView extends StatelessWidget {
                     children: [
                       Text(
                         text1,
-                        style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w600,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1587,7 +1711,10 @@ class _ProfileDetailsView extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           text2,
-                          style: const TextStyle(fontSize: 11, color: Colors.black54),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.black54,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1598,12 +1725,25 @@ class _ProfileDetailsView extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     text: TextSpan(
-                      style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
                       children: [
                         TextSpan(text: text1),
                         if (text2.isNotEmpty) ...[
-                          const TextSpan(text: '  •  ', style: TextStyle(color: Colors.black38)),
-                          TextSpan(text: text2, style: TextStyle(color: Colors.black54, fontWeight: FontWeight.normal)),
+                          const TextSpan(
+                            text: '  •  ',
+                            style: TextStyle(color: Colors.black38),
+                          ),
+                          TextSpan(
+                            text: text2,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
                         ],
                       ],
                     ),
