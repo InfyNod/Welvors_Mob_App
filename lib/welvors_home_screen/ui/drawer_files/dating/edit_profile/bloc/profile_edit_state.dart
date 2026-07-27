@@ -24,6 +24,29 @@ class ProfileEditState extends Equatable {
   final String sleep;
   final List<String> pets;
   
+  // Education & Career
+  final String college;
+  final String highestEducation;
+  final String degreeCourse;
+  final String graduationYear;
+  final String profession;
+  final String company;
+  final String experience;
+  final String employmentType;
+  final String salaryRange;
+  final String ambitionLevel;
+  final String bigDreams;
+  
+  // Family
+  final String familyType;
+  final String father;
+  final String mother;
+  final String sisters;
+  final String brothers;
+  final String familyHome;
+  final String nativePlace;
+  final String familyIncome;
+  
   final String bio;
   final String intention;
   
@@ -51,6 +74,25 @@ class ProfileEditState extends Equatable {
     required this.travel,
     required this.sleep,
     required this.pets,
+    required this.college,
+    required this.highestEducation,
+    required this.degreeCourse,
+    required this.graduationYear,
+    required this.profession,
+    required this.company,
+    required this.experience,
+    required this.employmentType,
+    required this.salaryRange,
+    required this.ambitionLevel,
+    required this.bigDreams,
+    required this.familyType,
+    required this.father,
+    required this.mother,
+    required this.sisters,
+    required this.brothers,
+    required this.familyHome,
+    required this.nativePlace,
+    required this.familyIncome,
     required this.bio,
     required this.intention,
     required this.photos,
@@ -79,6 +121,25 @@ class ProfileEditState extends Equatable {
       travel: '4–5 trips/year',
       sleep: 'Night owl',
       pets: const [],
+      college: 'IIM Ahmedabad',
+      highestEducation: 'Master',
+      degreeCourse: 'MBA · Business & Strategy',
+      graduationYear: '2019',
+      profession: 'Product Manager',
+      company: 'Flipkart',
+      experience: '5–10 yrs',
+      employmentType: 'Full-time',
+      salaryRange: '30–45 LPA',
+      ambitionLevel: 'Highly driven',
+      bigDreams: 'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
+      familyType: 'Nuclear · Close-knit',
+      father: 'Retired banker · Bank of Maharashtra',
+      mother: 'Former school teacher · Homemaker',
+      sisters: 'Sisters · None',
+      brothers: '2\n1: Married, Working\n2: Unmarried, Studying',
+      familyHome: 'Pune',
+      nativePlace: 'Nashik',
+      familyIncome: '₹25–40 L / year',
       bio: 'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
       intention: 'Open to marriage, when it’s right',
       photos: List.filled(6, null),
@@ -107,6 +168,25 @@ class ProfileEditState extends Equatable {
     String? travel,
     String? sleep,
     List<String>? pets,
+    String? college,
+    String? highestEducation,
+    String? degreeCourse,
+    String? graduationYear,
+    String? profession,
+    String? company,
+    String? experience,
+    String? employmentType,
+    String? salaryRange,
+    String? ambitionLevel,
+    String? bigDreams,
+    String? familyType,
+    String? father,
+    String? mother,
+    String? sisters,
+    String? brothers,
+    String? familyHome,
+    String? nativePlace,
+    String? familyIncome,
     String? bio,
     String? intention,
     List<XFile?>? photos,
@@ -133,6 +213,25 @@ class ProfileEditState extends Equatable {
       travel: travel ?? this.travel,
       sleep: sleep ?? this.sleep,
       pets: pets ?? this.pets,
+      college: college ?? this.college,
+      highestEducation: highestEducation ?? this.highestEducation,
+      degreeCourse: degreeCourse ?? this.degreeCourse,
+      graduationYear: graduationYear ?? this.graduationYear,
+      profession: profession ?? this.profession,
+      company: company ?? this.company,
+      experience: experience ?? this.experience,
+      employmentType: employmentType ?? this.employmentType,
+      salaryRange: salaryRange ?? this.salaryRange,
+      ambitionLevel: ambitionLevel ?? this.ambitionLevel,
+      bigDreams: bigDreams ?? this.bigDreams,
+      familyType: familyType ?? this.familyType,
+      father: father ?? this.father,
+      mother: mother ?? this.mother,
+      sisters: sisters ?? this.sisters,
+      brothers: brothers ?? this.brothers,
+      familyHome: familyHome ?? this.familyHome,
+      nativePlace: nativePlace ?? this.nativePlace,
+      familyIncome: familyIncome ?? this.familyIncome,
       bio: bio ?? this.bio,
       intention: intention ?? this.intention,
       photos: photos ?? this.photos,
@@ -162,6 +261,25 @@ class ProfileEditState extends Equatable {
         travel,
         sleep,
         pets,
+        college,
+        highestEducation,
+        degreeCourse,
+        graduationYear,
+        profession,
+        company,
+        experience,
+        employmentType,
+        salaryRange,
+        ambitionLevel,
+        bigDreams,
+        familyType,
+        father,
+        mother,
+        sisters,
+        brothers,
+        familyHome,
+        nativePlace,
+        familyIncome,
         bio,
         intention,
         photos,

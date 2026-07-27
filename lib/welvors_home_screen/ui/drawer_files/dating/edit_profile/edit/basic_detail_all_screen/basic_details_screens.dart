@@ -79,7 +79,7 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
   return shouldPop ?? false; // Returns true for 'Save', false for 'Discard'
 }
 
-Widget _buildCustomAppBar(BuildContext context, String title, Future<bool> Function() onWillPop) {
+Widget buildCustomAppBar(BuildContext context, String title, Future<bool> Function() onWillPop) {
   return AppBar(
     backgroundColor: Colors.white,
     elevation: 0,
@@ -133,6 +133,8 @@ class EditTextInputScreen extends StatefulWidget {
   final String subHeaderText;
   final String currentValue;
   final TextInputType keyboardType;
+  final int maxLines;
+  final int? maxLength;
 
   const EditTextInputScreen({
     super.key,
@@ -142,6 +144,8 @@ class EditTextInputScreen extends StatefulWidget {
     required this.subHeaderText,
     required this.currentValue,
     this.keyboardType = TextInputType.text,
+    this.maxLines = 1,
+    this.maxLength,
   });
 
   @override
@@ -183,7 +187,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
         backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: _buildCustomAppBar(context, widget.title, _onWillPop),
+          child: buildCustomAppBar(context, widget.title, _onWillPop),
         ),
         body: SafeArea(
           child: Padding(
@@ -221,6 +225,8 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                 TextField(
                   controller: _controller,
                   keyboardType: widget.keyboardType,
+                  maxLines: widget.maxLines,
+                  maxLength: widget.maxLength,
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -320,7 +326,7 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
         backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: _buildCustomAppBar(context, widget.title, _onWillPop),
+          child: buildCustomAppBar(context, widget.title, _onWillPop),
         ),
         body: SafeArea(
           child: Padding(
@@ -489,7 +495,7 @@ class _EditDobScreenState extends State<EditDobScreen> {
         backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: _buildCustomAppBar(context, 'Date of Birth', _onWillPop),
+          child: buildCustomAppBar(context, 'Date of Birth', _onWillPop),
         ),
         body: SafeArea(
           child: Padding(
@@ -663,7 +669,7 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
         backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: _buildCustomAppBar(context, 'Height', _onWillPop),
+          child: buildCustomAppBar(context, 'Height', _onWillPop),
         ),
         body: SafeArea(
           child: Padding(
@@ -826,7 +832,7 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
         backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: _buildCustomAppBar(context, 'Religion & Caste', _onWillPop),
+          child: buildCustomAppBar(context, 'Religion & Caste', _onWillPop),
         ),
         body: SafeArea(
           child: Padding(

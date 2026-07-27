@@ -5,7 +5,9 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/your_intenshion.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_detail.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/who_you_seeing.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/lifestyle/lifestyle_card.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/lifestyle_card.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/education_career.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/family.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
@@ -239,6 +241,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const WhoYouAreSeeingSection(),
           const SizedBox(height: 32),
           const LifestyleSection(),
+          const SizedBox(height: 32),
+          const EducationCareerSection(),
+          const SizedBox(height: 32),
+          const FamilySection(),
           const SizedBox(height: 100), // Extra scrolling space for later
         ],
       ),

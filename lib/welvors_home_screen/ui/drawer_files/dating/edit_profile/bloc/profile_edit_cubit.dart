@@ -34,6 +34,19 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateTravel(String val) => emit(state.copyWith(travel: val));
   void updateSleep(String val) => emit(state.copyWith(sleep: val));
   
+  // Education & Career
+  void updateCollege(String val) => emit(state.copyWith(college: val));
+  void updateHighestEducation(String val) => emit(state.copyWith(highestEducation: val));
+  void updateDegreeCourse(String val) => emit(state.copyWith(degreeCourse: val));
+  void updateGraduationYear(String val) => emit(state.copyWith(graduationYear: val));
+  void updateProfession(String val) => emit(state.copyWith(profession: val));
+  void updateCompany(String val) => emit(state.copyWith(company: val));
+  void updateExperience(String val) => emit(state.copyWith(experience: val));
+  void updateEmploymentType(String val) => emit(state.copyWith(employmentType: val));
+  void updateSalaryRange(String val) => emit(state.copyWith(salaryRange: val));
+  void updateAmbitionLevel(String val) => emit(state.copyWith(ambitionLevel: val));
+  void updateBigDreams(String val) => emit(state.copyWith(bigDreams: val));
+  
   void togglePet(String pet) {
     final updatedPets = List<String>.from(state.pets);
     if (updatedPets.contains(pet)) {
@@ -49,4 +62,14 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     updatedPhotos[index] = photo;
     emit(state.copyWith(photos: updatedPhotos));
   }
+  
+  // Family
+  void updateFamilyType(String val) => emit(state.copyWith(familyType: val));
+  void updateFather(String val) => emit(state.copyWith(father: val));
+  void updateMother(String val) => emit(state.copyWith(mother: val));
+  void updateSisters(String val) => emit(state.copyWith(sisters: val));
+  void updateBrothers(String val) => emit(state.copyWith(brothers: val));
+  void updateFamilyHome(String val) => emit(state.copyWith(familyHome: val));
+  void updateNativePlace(String val) => emit(state.copyWith(nativePlace: val));
+  void updateFamilyIncome(String val) => emit(state.copyWith(familyIncome: val));
 }
