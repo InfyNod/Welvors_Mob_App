@@ -1603,6 +1603,11 @@ class _ProfileDetailsView extends StatelessWidget {
     String value,
     String subtitle,
   ) {
+    String combinedInfo = value;
+    if (subtitle.isNotEmpty) {
+      combinedInfo = '$value  ·  $subtitle';
+    }
+
     return Container(
       width: double.infinity,
       height: 60,
@@ -1623,38 +1628,33 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
             child: Icon(icon, size: 16, color: Colors.black87),
           ),
-          const SizedBox(width: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              color: Colors.black87,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  value,
-                  textAlign: TextAlign.right,
+                  title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: Colors.black87,
                     fontWeight: FontWeight.w600,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                if (subtitle.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(fontSize: 13, color: Colors.black45),
+                const SizedBox(height: 2),
+                Text(
+                  combinedInfo,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w600,
                   ),
-                ],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
@@ -1714,6 +1714,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 11,
                             color: Colors.black54,
+                            fontWeight: FontWeight.w600,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1739,9 +1740,9 @@ class _ProfileDetailsView extends StatelessWidget {
                           ),
                           TextSpan(
                             text: text2,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black54,
-                              fontWeight: FontWeight.normal,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
