@@ -302,15 +302,15 @@ class _ProfileDetailsView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'LOOKING FOR',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black54,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
+                            // const Text(
+                            //   'LOOKING FOR',
+                            //   style: TextStyle(
+                            //     fontSize: 10,
+                            //     fontWeight: FontWeight.w800,
+                            //     color: Colors.black54,
+                            //     letterSpacing: 1.5,
+                            //   ),
+                            // ),
                             const SizedBox(height: 0),
                             Text(
                               profile.lookingFor,
@@ -393,7 +393,7 @@ class _ProfileDetailsView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final double itemWidth = (constraints.maxWidth - 12) / 2;
@@ -630,7 +630,7 @@ class _ProfileDetailsView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 _buildBasicRow(
                   Icons.school_outlined,
                   'Education',
@@ -665,7 +665,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'HIGHLY DRIVEN',
                   '',
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     const Expanded(
@@ -680,7 +680,7 @@ class _ProfileDetailsView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 05),
+                const SizedBox(height: 8),
                 const Center(
                   child: Text(
                     'HER BIG DREAM',
@@ -844,25 +844,27 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          width: 4,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: Colors.pinkAccent,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
+                        const Text(
+                          '✦',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
                         ),
                         const SizedBox(width: 8),
                         const Text(
                           'INTERESTS & HOBBIES',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.pinkAccent,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
                             letterSpacing: 1.5,
                           ),
                         ),
                       ],
+                    ),
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(color: Colors.black12, height: 1),
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -870,15 +872,15 @@ class _ProfileDetailsView extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.pink.shade300,
+                        color: const Color(0xFF28161C), // Aesthetic dark plum
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
+                      child: const Text(
                         '4 in common',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: Color(0xFFDCB8B5), // Soft blush gold
                         ),
                       ),
                     ),
@@ -889,14 +891,46 @@ class _ProfileDetailsView extends StatelessWidget {
                   spacing: 10,
                   runSpacing: 12,
                   children: [
-                    _buildInterestPill('✈️', 'Travel', isMatch: true),
-                    _buildInterestPill('☕️', 'Coffee', isMatch: true),
-                    _buildInterestPill('⛰️', 'Trekking', isMatch: true),
-                    _buildInterestPill('📖', 'Books', isMatch: false),
-                    _buildInterestPill('🧘‍♀️', 'Yoga', isMatch: false),
-                    _buildInterestPill('🎵', 'Indie music', isMatch: true),
-                    _buildInterestPill('🥘', 'Cooking', isMatch: false),
-                    _buildInterestPill('📸', 'Photography', isMatch: false),
+                    _buildInterestPill(
+                      Icons.flight_takeoff_outlined,
+                      'Travel',
+                      isMatch: true,
+                    ),
+                    _buildInterestPill(
+                      Icons.coffee_outlined,
+                      'Coffee',
+                      isMatch: true,
+                    ),
+                    _buildInterestPill(
+                      Icons.landscape_outlined,
+                      'Trekking',
+                      isMatch: true,
+                    ),
+                    _buildInterestPill(
+                      Icons.menu_book_outlined,
+                      'Books',
+                      isMatch: false,
+                    ),
+                    _buildInterestPill(
+                      Icons.self_improvement_outlined,
+                      'Yoga',
+                      isMatch: false,
+                    ),
+                    _buildInterestPill(
+                      Icons.music_note_outlined,
+                      'Indie music',
+                      isMatch: true,
+                    ),
+                    _buildInterestPill(
+                      Icons.restaurant_outlined,
+                      'Cooking',
+                      isMatch: false,
+                    ),
+                    _buildInterestPill(
+                      Icons.camera_alt_outlined,
+                      'Photography',
+                      isMatch: false,
+                    ),
                   ],
                 ),
               ],
@@ -957,7 +991,7 @@ class _ProfileDetailsView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final double itemWidth = (constraints.maxWidth - 12) / 2;
@@ -1087,7 +1121,7 @@ class _ProfileDetailsView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 _buildBasicRow(
                   Icons.people_alt_outlined,
                   'Family type',
@@ -1129,7 +1163,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   '₹25–40 L / year',
                   'Household, approx',
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     const Expanded(
@@ -1344,36 +1378,47 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildInterestPill(String emoji, String text, {bool isMatch = false}) {
+  Widget _buildInterestPill(
+    IconData icon,
+    String text, {
+    bool isMatch = false,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isMatch ? Colors.pink.shade50 : Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: isMatch ? const Color(0xFF28161C) : const Color(0xFFF8F8F8),
+        borderRadius: BorderRadius.circular(50),
         border: Border.all(
-          color: isMatch ? Colors.transparent : Colors.pink.shade100,
-          width: 1.2,
+          color: isMatch ? Colors.transparent : Colors.black12,
+          width: 1.0,
         ),
-        boxShadow: [
-          if (!isMatch)
-            BoxShadow(
-              color: Colors.pink.shade50,
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.transparent,
+              border: Border.all(
+                color: isMatch ? const Color(0xFFDCB8B5) : Colors.black87,
+                width: 1.2,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 14,
+              color: isMatch ? const Color(0xFFDCB8B5) : Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 8),
           Text(
             text,
             style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: isMatch ? AppColors.pinkDeep : Colors.black87,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isMatch ? const Color(0xFFDCB8B5) : Colors.black87,
             ),
           ),
         ],
@@ -1386,21 +1431,25 @@ class _ProfileDetailsView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF2A211D), // richBlack
+            Color(0xFF1E1715), // black
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(24),
-        // border removed to match benefits drawer design
+        border: Border.all(
+          color: const Color(0xFF956630).withOpacity(0.5), // antiqueGold
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withOpacity(0.30),
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -1408,31 +1457,33 @@ class _ProfileDetailsView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 'NETWORKING INTENT',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: Colors.black87,
+                  color: Color(0xFFD4A85F), // luxuryGold
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(width: 12),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3E5F5), // Light purple background
-                  borderRadius: BorderRadius.circular(20),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFAB8F63), Color(0xFFEFC676)], // royalGold to premiumGold
+                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
                   'VIP & VIP Elite',
                   style: TextStyle(
-                    color: Color(0xFF5E2750), // Dark purple text
-                    fontSize: 9,
+                    color: Color(0xFF1E1715), // black
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
                   ),
@@ -1440,7 +1491,7 @@ class _ProfileDetailsView extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // LOOKING FOR
           _buildNetworkingCategory('LOOKING FOR', [
@@ -1449,7 +1500,10 @@ class _ProfileDetailsView extends StatelessWidget {
           ]),
 
           // CIRCLES
-          _buildNetworkingCategory('CIRCLES', ['Founder circles', 'Creators']),
+          _buildNetworkingCategory('CIRCLES', [
+            'Founder circles',
+            'Creators'
+          ]),
 
           // MEETS OVER
           _buildNetworkingCategory('MEETS OVER', [
@@ -1457,25 +1511,45 @@ class _ProfileDetailsView extends StatelessWidget {
             'Curated dinners',
           ]),
 
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Expanded(
+                child: Divider(color: const Color(0xFF956630).withOpacity(0.5), height: 1), // antiqueGold
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text('✦', style: TextStyle(fontSize: 14, color: Color(0xFFD4A85F))), // luxuryGold
+              ),
+              Expanded(
+                child: Divider(color: const Color(0xFF956630).withOpacity(0.5), height: 1), // antiqueGold
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          
           // IN HER WORDS
-          const Text(
-            'IN HER WORDS',
-            style: TextStyle(
-              color: Colors.black45,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.0,
+          const Center(
+            child: Text(
+              'IN HER WORDS',
+              style: TextStyle(
+                color: Color(0xFFD4A85F), // luxuryGold
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.5,
+              ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           const Text(
             'Happy to swap notes on building a brand — coffee over pitch decks. Dating first, network second.',
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.black87,
+              color: Color(0xFFFBF5D2), // ivoryGlow
               fontSize: 13,
               fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w500,
-              height: 1.5,
+              fontWeight: FontWeight.w400,
+              height: 1.4,
             ),
           ),
         ],
@@ -1485,23 +1559,23 @@ class _ProfileDetailsView extends StatelessWidget {
 
   Widget _buildNetworkingCategory(String title, List<String> tags) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
             style: const TextStyle(
-              color: Colors.black45,
+              color: Color(0xFFAB8F63), // royalGold
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.0,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: 6,
+            runSpacing: 6,
             children: tags.map((tag) {
               return Container(
                 padding: const EdgeInsets.symmetric(
@@ -1509,15 +1583,19 @@ class _ProfileDetailsView extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF2ECE6), // Warm grey
-                  borderRadius: BorderRadius.circular(20),
+                  color: const Color(0xFF493628).withOpacity(0.3), // darkBrown
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF956630).withOpacity(0.6), // antiqueGold
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   tag,
                   style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFCCB688), // champagne
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               );
@@ -2558,12 +2636,30 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                   right: 16,
                   bottom: 16,
                   child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
+                    width: 38,
+                    height: 38,
+                    padding: const EdgeInsets.all(2.5),
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: AssetImage('assets/hr.jpeg'),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color.fromARGB(255, 40, 22, 28),
+                          Color.fromARGB(255, 220, 184, 181),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: Lottie.asset(
+                        'assets/message.json',
                         fit: BoxFit.cover,
                         alignment: const Alignment(0.8, 0),
                       ),
