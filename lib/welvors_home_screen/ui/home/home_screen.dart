@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../home_bloc/home_bloc.dart';
 import '../../../onbording_allpage/theme/app_colors.dart';
 
@@ -475,25 +476,24 @@ class _ProfileDetailsView extends StatelessWidget {
           // Prompt Card
           Container(
             padding: const EdgeInsets.only(
-              left: 16,
-              top: 16,
-              right: 16,
-              bottom: 8,
+              left: 24,
+              right: 15,
+              top: 10,
+              bottom: 24,
             ),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
+                  color: Colors.black.withOpacity(0.08),
                   blurRadius: 16,
                   spreadRadius: 0,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.04),
                   blurRadius: 4,
                   spreadRadius: 0,
                   offset: const Offset(0, 2),
@@ -503,52 +503,68 @@ class _ProfileDetailsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'The way to win me over is..',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.pinkAccent,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'A good book rec and a strong chai opinion.',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade200,
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+                Row(
+                  children: [
+                    const Text(
+                      '✦',
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Divider(color: Colors.black12, height: 1),
+                    ),
+                    const SizedBox(width: 9),
+                    Container(
+                      width: 35,
+                      height: 35,
+                      padding: const EdgeInsets.all(2.5),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 40, 22, 28),
+                            Color.fromARGB(255, 220, 184, 181),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 2.0),
-                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Lottie.asset(
+                          'assets/message.json',
+                          fit: BoxFit.cover,
+                          alignment: const Alignment(0.9, 0),
+                        ),
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 0),
+                const Text(
+                  'THE WAY TO WIN ME OVER IS..?',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: Color.fromARGB(221, 53, 53, 53),
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'A good book rec and a strong chai opinion.',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.2,
+                    height: 1.4,
                   ),
                 ),
               ],
@@ -701,25 +717,24 @@ class _ProfileDetailsView extends StatelessWidget {
           // Second Prompt Card
           Container(
             padding: const EdgeInsets.only(
-              left: 16,
-              top: 16,
-              right: 16,
-              bottom: 8,
+              left: 24,
+              right: 15,
+              top: 10,
+              bottom: 24,
             ),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
+                  color: Colors.black.withOpacity(0.08),
                   blurRadius: 16,
                   spreadRadius: 0,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.04),
                   blurRadius: 4,
                   spreadRadius: 0,
                   offset: const Offset(0, 2),
@@ -729,52 +744,68 @@ class _ProfileDetailsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    const Text(
+                      '✦',
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Divider(color: Colors.black12, height: 1),
+                    ),
+                    const SizedBox(width: 9),
+                    Container(
+                      width: 35,
+                      height: 35,
+                      padding: const EdgeInsets.all(2.5),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 40, 22, 28),
+                            Color.fromARGB(255, 220, 184, 181),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Lottie.asset(
+                          'assets/message.json',
+                          fit: BoxFit.cover,
+                          alignment: const Alignment(0.9, 0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 0),
                 const Text(
-                  'My simple pleasures..',
+                  'MY SIMPLE PLEASURES..',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.pinkAccent,
-                    letterSpacing: 0.5,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: Color.fromARGB(221, 53, 53, 53),
+                    letterSpacing: 1.5,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
                 const Text(
                   'Roadside chai after a long trek, no signal, good company.',
                   style: TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.bold,
                     color: Colors.black87,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.2,
                     height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade200,
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 2.0),
-                        child: Text('🌹', style: TextStyle(fontSize: 18)),
-                      ),
-                    ),
                   ),
                 ),
               ],
@@ -876,11 +907,9 @@ class _ProfileDetailsView extends StatelessWidget {
           // LIFESTYLE Section
           Container(
             padding: const EdgeInsets.all(20),
-            width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.10),
@@ -900,65 +929,94 @@ class _ProfileDetailsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: 4,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Colors.pinkAccent,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                    Row(
+                      children: [
+                        const Text(
+                          '✦',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'LIFESTYLE',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'LIFESTYLE',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.pinkAccent,
-                        letterSpacing: 1.5,
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(color: Colors.black12, height: 1),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                _buildLifestyleRow(
-                  Icons.restaurant_outlined,
-                  'Diet',
-                  'Vegetarian',
-                ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
-                  Icons.wine_bar_outlined,
-                  'Drinking',
-                  'Socially',
-                ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
-                  Icons.smoking_rooms_outlined,
-                  'Smoking',
-                  'Non-smoker',
-                ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
-                  Icons.fitness_center_outlined,
-                  'Fitness',
-                  'Gym 4×/week',
-                  subValue: 'Yoga · Trekking',
-                ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
-                  Icons.flight_takeoff_outlined,
-                  'Travel',
-                  '4–5 trips/year',
-                ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(Icons.pets_outlined, 'Pets', 'Cat parent'),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
-                  Icons.dark_mode_outlined,
-                  'Sleep',
-                  'Night Owl',
+                const SizedBox(height: 24),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double itemWidth = (constraints.maxWidth - 12) / 2;
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        _buildBentoPill(
+                          Icons.restaurant_outlined,
+                          'Diet',
+                          'Vegetarian',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.wine_bar_outlined,
+                          'Drinking',
+                          'Socially',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.smoking_rooms_outlined,
+                          'Smoking',
+                          'Non-smoker',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.flight_takeoff_outlined,
+                          'Travel',
+                          '4–5 trips/year',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.pets_outlined,
+                          'Pets',
+                          'Cat parent',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.dark_mode_outlined,
+                          'Sleep',
+                          'Night Owl',
+                          itemWidth,
+                          stacked: true,
+                        ),
+                        _buildBentoPill(
+                          Icons.fitness_center_outlined,
+                          'Gym 4×/week',
+                          'Yoga · Trekking',
+                          constraints.maxWidth,
+                          stacked: true,
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -982,7 +1040,6 @@ class _ProfileDetailsView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.10),
@@ -1002,76 +1059,112 @@ class _ProfileDetailsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: 4,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: Colors.pinkAccent,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                    Row(
+                      children: [
+                        const Text(
+                          '✦',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'FAMILY',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'FAMILY',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.pinkAccent,
-                        letterSpacing: 1.5,
+                    const Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(color: Colors.black12, height: 1),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                _buildLifestyleRow(
+                const SizedBox(height: 24),
+                _buildBasicRow(
                   Icons.people_alt_outlined,
                   'Family type',
                   'Nuclear',
-                  subValue: 'Close-knit',
+                  'Close-knit',
                 ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
+                const SizedBox(height: 8),
+                _buildBasicRow(
                   Icons.person_outline,
                   'Father',
                   'Retired banker',
-                  subValue: 'Bank of Maharashtra',
+                  'Bank of Maharashtra',
                 ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
+                const SizedBox(height: 8),
+                _buildBasicRow(
                   Icons.woman_outlined,
                   'Mother',
                   'Homemaker',
-                  subValue: 'Former school teacher',
+                  'Former school teacher',
                 ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
+                const SizedBox(height: 8),
+                _buildBasicRow(
                   Icons.group_outlined,
                   'Siblings',
                   'Sister—unmarried, studying\nBrother—married, working',
+                  '',
                 ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
+                const SizedBox(height: 8),
+                _buildBasicRow(
                   Icons.location_on_outlined,
                   'Family home',
                   'Pune',
-                  subValue: 'Native: Nashik',
+                  'Native: Nashik',
                 ),
-                const Divider(height: 24, color: Colors.black12),
-                _buildLifestyleRow(
+                const SizedBox(height: 8),
+                _buildBasicRow(
                   Icons.account_balance_wallet_outlined,
                   'Family income',
                   '₹25–40 L / year',
-                  subValue: 'Household, approx',
+                  'Household, approx',
                 ),
-                const Divider(height: 24, color: Colors.black12),
                 const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Divider(color: Colors.black12, height: 1),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: const Text('✦', style: TextStyle(fontSize: 14)),
+                    ),
+                    const Expanded(
+                      child: Divider(color: Colors.black12, height: 1),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Center(
+                  child: Text(
+                    'THE FAMILY DYNAMIC',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black87,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
                 const Text(
                   'Grew up in a close, easy-going Marathi family that values ambition as much togetherness. My parents married for love and never made it about timelines — they\'d want the same warmth for me.',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.black87,
                     height: 1.5,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ],
@@ -1088,25 +1181,24 @@ class _ProfileDetailsView extends StatelessWidget {
           // Third Prompt Card
           Container(
             padding: const EdgeInsets.only(
-              left: 16,
-              top: 16,
-              right: 16,
-              bottom: 8,
+              left: 24,
+              right: 15,
+              top: 10,
+              bottom: 24,
             ),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
+                  color: Colors.black.withOpacity(0.08),
                   blurRadius: 16,
                   spreadRadius: 0,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.04),
                   blurRadius: 4,
                   spreadRadius: 0,
                   offset: const Offset(0, 2),
@@ -1116,52 +1208,68 @@ class _ProfileDetailsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    const Text(
+                      '✦',
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Divider(color: Colors.black12, height: 1),
+                    ),
+                    const SizedBox(width: 9),
+                    Container(
+                      width: 35,
+                      height: 35,
+                      padding: const EdgeInsets.all(2.5),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 40, 22, 28),
+                            Color.fromARGB(255, 220, 184, 181),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Lottie.asset(
+                          'assets/message.json',
+                          fit: BoxFit.cover,
+                          alignment: const Alignment(0.9, 0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 0),
                 const Text(
-                  'We\'ll get along if…',
+                  'WE\'LL GET ALONG IF..',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.pinkAccent,
-                    letterSpacing: 0.5,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: Color.fromARGB(221, 53, 53, 53),
+                    letterSpacing: 1.5,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
                 const Text(
                   'You can debate me for an hour and still want dessert after.',
                   style: TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.bold,
                     color: Colors.black87,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.2,
                     height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade200,
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 2.0),
-                        child: Text('🌹', style: TextStyle(fontSize: 18)),
-                      ),
-                    ),
                   ),
                 ),
               ],
@@ -1506,24 +1614,32 @@ class _ProfileDetailsView extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
-                width: 40,
-                height: 40,
+                width: 38,
+                height: 38,
+                padding: const EdgeInsets.all(2.5),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey.shade200, width: 1.5),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 40, 22, 28),
+                      Color.fromARGB(255, 220, 184, 181),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 2.0),
-                    child: Text('🌹', style: TextStyle(fontSize: 18)),
+                child: ClipOval(
+                  child: Lottie.asset(
+                    'assets/message.json',
+                    fit: BoxFit.cover,
+                    alignment: const Alignment(0.8, 0),
                   ),
                 ),
               ),
@@ -2444,25 +2560,12 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                   child: Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade200,
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 2.0),
-                        child: Text('🌹', style: TextStyle(fontSize: 18)),
+                      image: DecorationImage(
+                        image: AssetImage('assets/hr.jpeg'),
+                        fit: BoxFit.cover,
+                        alignment: const Alignment(0.8, 0),
                       ),
                     ),
                   ),
