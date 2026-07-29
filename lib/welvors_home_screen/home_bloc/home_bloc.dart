@@ -25,7 +25,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       trustPercentage: '98% Trust',
       replyTime: '~5m Replies',
       about:
-          'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
+          'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious. Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious. Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
       lookingFor: 'Long-term, marriage-open',
       height: '5\'5" • 165 cm',
       religion: 'Hindu • Marathi',

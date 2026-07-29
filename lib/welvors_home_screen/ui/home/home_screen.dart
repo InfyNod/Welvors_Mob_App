@@ -247,13 +247,14 @@ class _ProfileDetailsView extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 // The paragraph
-                Text(
-                  profile.about,
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 17,
+                _ExpandableText(
+                  text: profile.about,
+                  maxLines: 3,
+                  style: const TextStyle(
+                    fontSize: 16,
                     color: Colors.black87,
                     height: 1.5,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -2760,6 +2761,76 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ExpandableText extends StatefulWidget {
+  final String text;
+  final int maxLines;
+  final TextStyle style;
+
+  const _ExpandableText({
+    Key? key,
+    required this.text,
+    this.maxLines = 4,
+    required this.style,
+  }) : super(key: key);
+
+  @override
+  __ExpandableTextState createState() => __ExpandableTextState();
+}
+
+class __ExpandableTextState extends State<_ExpandableText> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final span = TextSpan(text: widget.text, style: widget.style);
+        final tp = TextPainter(
+          text: span,
+          maxLines: widget.maxLines,
+          textDirection: TextDirection.ltr,
+        );
+        tp.layout(maxWidth: constraints.maxWidth);
+
+        if (tp.didExceedMaxLines) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.text,
+                maxLines: isExpanded ? null : widget.maxLines,
+                overflow:
+                    isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                style: widget.style,
+              ),
+              if (!isExpanded) ...[
+                const SizedBox(height: 6),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isExpanded = true;
+                    });
+                  },
+                  child: const Text(
+                    'See more',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF0F766E), // Matches ABOUT section teal
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          );
+        } else {
+          return Text(widget.text, style: widget.style);
+        }
+      },
     );
   }
 }
