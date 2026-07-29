@@ -223,7 +223,7 @@ class _ProfileDetailsView extends StatelessWidget {
                       '✦',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Color(0xFF0F766E), // Unique elegant teal
+                        color: Color(0xFF831843), // Unique elegant burgundy
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -232,14 +232,14 @@ class _ProfileDetailsView extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F766E),
+                        color: Color(0xFF831843),
                         letterSpacing: 1.5,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Divider(
-                        color: const Color(0xFF0F766E).withOpacity(0.3),
+                        color: const Color(0xFF831843).withOpacity(0.3),
                         height: 1,
                       ),
                     ),
@@ -2819,7 +2819,7 @@ class __ExpandableTextState extends State<_ExpandableText> {
                     'See more',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF0F766E), // Matches ABOUT section teal
+                      color: Color(0xFF831843), // Matches ABOUT section burgundy
                       fontWeight: FontWeight.bold,
                     ),
                   ),
