@@ -272,67 +272,64 @@ class _ProfileDetailsView extends StatelessWidget {
                 const SizedBox(height: 8),
                 // LOOKING FOR Container
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black12),
+                    border: Border.all(color: const Color(0xFFE5E5E5)), // Opaque grey border
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 45,
-                        height: 45,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A), // Almost black
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.favorite_border_rounded,
-                            color: Colors.white,
-                            size: 28,
+                  clipBehavior: Clip.antiAlias,
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          width: 60,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF1A1A1A), // Almost black
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(19),
+                              bottomLeft: Radius.circular(19),
+                            ),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.favorite_border_rounded,
+                              color: Colors.white,
+                              size: 26,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // const Text(
-                            //   'LOOKING FOR',
-                            //   style: TextStyle(
-                            //     fontSize: 10,
-                            //     fontWeight: FontWeight.w800,
-                            //     color: Colors.black54,
-                            //     letterSpacing: 1.5,
-                            //   ),
-                            // ),
-                            const SizedBox(height: 0),
-                            Text(
-                              profile.lookingFor,
-                              style: const TextStyle(
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  profile.lookingFor,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _getLookingForSubtitle(profile.lookingFor),
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 0),
-                            Text(
-                              _getLookingForSubtitle(profile.lookingFor),
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 16),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -1475,7 +1472,10 @@ class _ProfileDetailsView extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFAB8F63), Color(0xFFEFC676)], // royalGold to premiumGold
+                    colors: [
+                      Color(0xFFAB8F63),
+                      Color(0xFFEFC676),
+                    ], // royalGold to premiumGold
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1500,10 +1500,7 @@ class _ProfileDetailsView extends StatelessWidget {
           ]),
 
           // CIRCLES
-          _buildNetworkingCategory('CIRCLES', [
-            'Founder circles',
-            'Creators'
-          ]),
+          _buildNetworkingCategory('CIRCLES', ['Founder circles', 'Creators']),
 
           // MEETS OVER
           _buildNetworkingCategory('MEETS OVER', [
@@ -1515,19 +1512,28 @@ class _ProfileDetailsView extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Divider(color: const Color(0xFF956630).withOpacity(0.5), height: 1), // antiqueGold
+                child: Divider(
+                  color: const Color(0xFF956630).withOpacity(0.5),
+                  height: 1,
+                ), // antiqueGold
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text('✦', style: TextStyle(fontSize: 14, color: Color(0xFFD4A85F))), // luxuryGold
+                child: Text(
+                  '✦',
+                  style: TextStyle(fontSize: 14, color: Color(0xFFD4A85F)),
+                ), // luxuryGold
               ),
               Expanded(
-                child: Divider(color: const Color(0xFF956630).withOpacity(0.5), height: 1), // antiqueGold
+                child: Divider(
+                  color: const Color(0xFF956630).withOpacity(0.5),
+                  height: 1,
+                ), // antiqueGold
               ),
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // IN HER WORDS
           const Center(
             child: Text(
@@ -1586,7 +1592,9 @@ class _ProfileDetailsView extends StatelessWidget {
                   color: const Color(0xFF493628).withOpacity(0.3), // darkBrown
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: const Color(0xFF956630).withOpacity(0.6), // antiqueGold
+                    color: const Color(
+                      0xFF956630,
+                    ).withOpacity(0.6), // antiqueGold
                     width: 1,
                   ),
                 ),
