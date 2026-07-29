@@ -1244,15 +1244,27 @@ class _ProfileDetailsView extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
+                    Expanded(
+                      child: Divider(
+                        color: SectionColors.family.icon.withOpacity(0.3),
+                        height: 1,
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: const Text('✦', style: TextStyle(fontSize: 14)),
+                      child: Text(
+                        '✦',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: SectionColors.family.icon,
+                        ),
+                      ),
                     ),
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
+                    Expanded(
+                      child: Divider(
+                        color: SectionColors.family.icon.withOpacity(0.3),
+                        height: 1,
+                      ),
                     ),
                   ],
                 ),
@@ -1264,7 +1276,7 @@ class _ProfileDetailsView extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
                       color: Colors.black87,
-                      letterSpacing: 1.5,
+                      letterSpacing: 2.5,
                     ),
                   ),
                 ),
