@@ -500,7 +500,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: SectionColors.intent.bg, // Light blush/pink tint for romantic vibe
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -522,21 +522,21 @@ class _ProfileDetailsView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       '✦',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: SectionColors.intent.icon,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'THE WAY TO WIN ME OVER IS..?',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: Color.fromARGB(221, 53, 53, 53),
+                          color: SectionColors.intent.icon,
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -760,7 +760,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: SectionColors.lifestyle.bg, // Soft mint/teal tint for chill vibe
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -782,21 +782,21 @@ class _ProfileDetailsView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       '✦',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: SectionColors.lifestyle.icon,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'MY SIMPLE PLEASURES..',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: Color.fromARGB(221, 53, 53, 53),
+                          color: SectionColors.lifestyle.icon,
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -1299,7 +1299,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: const Color(0xFFFFF5E6), // Soft peach/yellow tint for friendly vibe
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -1325,17 +1325,17 @@ class _ProfileDetailsView extends StatelessWidget {
                       '✦',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Color(0xFFC05621), // Dark terracotta/orange for peach bg
                       ),
                     ),
                     const SizedBox(width: 8),
                     const Expanded(
                       child: Text(
-                        'WE\'LL GET ALONG IF..',
+                        'WE\'LL GET ALONG IF..?',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: Color.fromARGB(221, 53, 53, 53),
+                          color: Color(0xFFC05621),
                           letterSpacing: 1.5,
                         ),
                       ),
