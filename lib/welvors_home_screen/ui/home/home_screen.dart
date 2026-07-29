@@ -11,6 +11,21 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../home_bloc/home_bloc.dart';
 import '../../../onbording_allpage/theme/app_colors.dart';
 
+class SectionColor {
+  final Color bg;
+  final Color icon;
+  const SectionColor(this.bg, this.icon);
+}
+
+abstract class SectionColors {
+  static const intent = SectionColor(Color(0xFFFBEAF0), Color(0xFF993556));
+  static const basics = SectionColor(Color(0xFFE6F1FB), Color(0xFF185FA5));
+  static const career = SectionColor(Color(0xFFFAEEDA), Color(0xFF854F0B));
+  static const interests = SectionColor(Color(0xFFEEEDFE), Color(0xFF534AB7));
+  static const lifestyle = SectionColor(Color(0xFFE1F5EE), Color(0xFF0F6E56));
+  static const family = SectionColor(Color(0xFFFAECE7), Color(0xFF993C1D));
+}
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -273,7 +288,9 @@ class _ProfileDetailsView extends StatelessWidget {
                 // LOOKING FOR Container
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFE5E5E5)), // Opaque grey border
+                    border: Border.all(
+                      color: const Color(0xFFE5E5E5),
+                    ), // Opaque grey border
                     borderRadius: BorderRadius.circular(20),
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -283,18 +300,15 @@ class _ProfileDetailsView extends StatelessWidget {
                       children: [
                         Container(
                           width: 60,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF1A1A1A), // Almost black
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(19),
-                              bottomLeft: Radius.circular(19),
-                            ),
+                          decoration: BoxDecoration(
+                            color: SectionColors.intent.bg, // Colored tint
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Icon(
                               Icons.favorite_border_rounded,
-                              color: Colors.white,
-                              size: 26,
+                              color:
+                                  SectionColors.intent.icon, // Dark tint icon
+                              size: 28,
                             ),
                           ),
                         ),
@@ -366,26 +380,32 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '✦',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: SectionColors.basics.icon,
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'THE BASICS',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                            color: SectionColors.basics.icon,
                             letterSpacing: 1.5,
                           ),
                         ),
                       ],
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(color: Colors.black12, height: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(
+                          color: SectionColors.basics.icon.withOpacity(0.3),
+                          height: 1,
+                        ),
                       ),
                     ),
                   ],
@@ -504,13 +524,42 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     const Text(
                       '✦',
-                      style: TextStyle(fontSize: 14, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'THE WAY TO WIN ME OVER IS..?',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Color.fromARGB(221, 53, 53, 53),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'A good book rec and a strong chai opinion.',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.2,
+                          height: 1.4,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
-                    ),
-                    const SizedBox(width: 9),
                     Container(
                       width: 35,
                       height: 35,
@@ -542,27 +591,6 @@ class _ProfileDetailsView extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 0),
-                const Text(
-                  'THE WAY TO WIN ME OVER IS..?',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: Color.fromARGB(221, 53, 53, 53),
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'A good book rec and a strong chai opinion.',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.2,
-                    height: 1.4,
-                  ),
                 ),
               ],
             ),
@@ -603,26 +631,32 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '✦',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: SectionColors.career.icon,
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'CAREER & AMBITION',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                            color: SectionColors.career.icon,
                             letterSpacing: 1.5,
                           ),
                         ),
                       ],
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(color: Colors.black12, height: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(
+                          color: SectionColors.career.icon.withOpacity(0.3),
+                          height: 1,
+                        ),
                       ),
                     ),
                   ],
@@ -633,6 +667,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Education',
                   'NIFT Pune',
                   'Fashion Design · 3rd year',
+                  color: SectionColors.career,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -640,6 +675,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Work as',
                   'Fashion Design',
                   'Freelance · 2 yrs exp',
+                  color: SectionColors.career,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -647,6 +683,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Income',
                   '₹8-12 L / year',
                   'Growing steadily',
+                  color: SectionColors.career,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -654,6 +691,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Work style',
                   'Creative · Hybrid',
                   '',
+                  color: SectionColors.career,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -661,6 +699,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Ambition level',
                   'HIGHLY DRIVEN',
                   '',
+                  color: SectionColors.career,
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -745,13 +784,42 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     const Text(
                       '✦',
-                      style: TextStyle(fontSize: 14, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'MY SIMPLE PLEASURES..',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Color.fromARGB(221, 53, 53, 53),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Roadside chai after a long trek, no signal, good company.',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.2,
+                          height: 1.4,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
-                    ),
-                    const SizedBox(width: 9),
                     Container(
                       width: 35,
                       height: 35,
@@ -783,27 +851,6 @@ class _ProfileDetailsView extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 0),
-                const Text(
-                  'MY SIMPLE PLEASURES..',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: Color.fromARGB(221, 53, 53, 53),
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                const Text(
-                  'Roadside chai after a long trek, no signal, good company.',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.2,
-                    height: 1.4,
-                  ),
                 ),
               ],
             ),
@@ -841,26 +888,32 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '✦',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: SectionColors.interests.icon,
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'INTERESTS & HOBBIES',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                            color: SectionColors.interests.icon,
                             letterSpacing: 1.5,
                           ),
                         ),
                       ],
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(color: Colors.black12, height: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(
+                          color: SectionColors.interests.icon.withOpacity(0.3),
+                          height: 1,
+                        ),
                       ),
                     ),
                     Container(
@@ -869,15 +922,17 @@ class _ProfileDetailsView extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF28161C), // Aesthetic dark plum
+                        color: SectionColors.interests.bg, // Faint smooth tint
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
+                      child: Text(
                         '4 in common',
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFDCB8B5), // Soft blush gold
+                          fontWeight: FontWeight.w700,
+                          color: SectionColors
+                              .interests
+                              .icon, // Dark text on faint bg
                         ),
                       ),
                     ),
@@ -964,26 +1019,32 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '✦',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: SectionColors.lifestyle.icon,
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'LIFESTYLE',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                            color: SectionColors.lifestyle.icon,
                             letterSpacing: 1.5,
                           ),
                         ),
                       ],
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(color: Colors.black12, height: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(
+                          color: SectionColors.lifestyle.icon.withOpacity(0.3),
+                          height: 1,
+                        ),
                       ),
                     ),
                   ],
@@ -1002,6 +1063,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           'Vegetarian',
                           itemWidth,
                           stacked: true,
+                          color: SectionColors.lifestyle,
                         ),
                         _buildBentoPill(
                           Icons.wine_bar_outlined,
@@ -1009,6 +1071,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           'Socially',
                           itemWidth,
                           stacked: true,
+                          color: SectionColors.lifestyle,
                         ),
                         _buildBentoPill(
                           Icons.smoking_rooms_outlined,
@@ -1016,6 +1079,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           'Non-smoker',
                           itemWidth,
                           stacked: true,
+                          color: SectionColors.lifestyle,
                         ),
                         _buildBentoPill(
                           Icons.flight_takeoff_outlined,
@@ -1023,6 +1087,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           '4–5 trips/year',
                           itemWidth,
                           stacked: true,
+                          color: SectionColors.lifestyle,
                         ),
                         _buildBentoPill(
                           Icons.pets_outlined,
@@ -1030,6 +1095,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           'Cat parent',
                           itemWidth,
                           stacked: true,
+                          color: SectionColors.lifestyle,
                         ),
                         _buildBentoPill(
                           Icons.dark_mode_outlined,
@@ -1037,6 +1103,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           'Night Owl',
                           itemWidth,
                           stacked: true,
+                          color: SectionColors.lifestyle,
                         ),
                         _buildBentoPill(
                           Icons.fitness_center_outlined,
@@ -1044,6 +1111,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           'Yoga · Trekking',
                           constraints.maxWidth,
                           stacked: true,
+                          color: SectionColors.lifestyle,
                         ),
                       ],
                     );
@@ -1094,26 +1162,32 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           '✦',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: SectionColors.family.icon,
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'FAMILY',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                            color: SectionColors.family.icon,
                             letterSpacing: 1.5,
                           ),
                         ),
                       ],
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(color: Colors.black12, height: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(
+                          color: SectionColors.family.icon.withOpacity(0.3),
+                          height: 1,
+                        ),
                       ),
                     ),
                   ],
@@ -1124,6 +1198,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Family type',
                   'Nuclear',
                   'Close-knit',
+                  color: SectionColors.family,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -1131,6 +1206,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Father',
                   'Retired banker',
                   'Bank of Maharashtra',
+                  color: SectionColors.family,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -1138,6 +1214,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Mother',
                   'Homemaker',
                   'Former school teacher',
+                  color: SectionColors.family,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -1145,6 +1222,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Siblings',
                   'Sister—unmarried, studying\nBrother—married, working',
                   '',
+                  color: SectionColors.family,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -1152,6 +1230,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Family home',
                   'Pune',
                   'Native: Nashik',
+                  color: SectionColors.family,
                 ),
                 const SizedBox(height: 8),
                 _buildBasicRow(
@@ -1159,6 +1238,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   'Family income',
                   '₹25–40 L / year',
                   'Household, approx',
+                  color: SectionColors.family,
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -1243,13 +1323,42 @@ class _ProfileDetailsView extends StatelessWidget {
                   children: [
                     const Text(
                       '✦',
-                      style: TextStyle(fontSize: 14, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'WE\'LL GET ALONG IF..',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Color.fromARGB(221, 53, 53, 53),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'You can debate me for an hour and still want dessert after.',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.2,
+                          height: 1.4,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
-                    ),
-                    const SizedBox(width: 9),
                     Container(
                       width: 35,
                       height: 35,
@@ -1281,27 +1390,6 @@ class _ProfileDetailsView extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 0),
-                const Text(
-                  'WE\'LL GET ALONG IF..',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: Color.fromARGB(221, 53, 53, 53),
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                const Text(
-                  'You can debate me for an hour and still want dessert after.',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.2,
-                    height: 1.4,
-                  ),
                 ),
               ],
             ),
@@ -1383,7 +1471,7 @@ class _ProfileDetailsView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isMatch ? const Color(0xFF28161C) : const Color(0xFFF8F8F8),
+        color: isMatch ? SectionColors.interests.bg : const Color(0xFFF8F8F8),
         borderRadius: BorderRadius.circular(50),
         border: Border.all(
           color: isMatch ? Colors.transparent : Colors.black12,
@@ -1394,20 +1482,18 @@ class _ProfileDetailsView extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(4),
+            padding: EdgeInsets.all(isMatch ? 4 : 5.2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.transparent,
-              border: Border.all(
-                color: isMatch ? const Color(0xFFDCB8B5) : Colors.black87,
-                width: 1.2,
-              ),
+              color: isMatch ? Colors.white : SectionColors.interests.bg,
+              border: isMatch
+                  ? Border.all(
+                      color: SectionColors.interests.icon.withOpacity(0.5),
+                      width: 1.2,
+                    )
+                  : null,
             ),
-            child: Icon(
-              icon,
-              size: 14,
-              color: isMatch ? const Color(0xFFDCB8B5) : Colors.black87,
-            ),
+            child: Icon(icon, size: 14, color: SectionColors.interests.icon),
           ),
           const SizedBox(width: 8),
           Text(
@@ -1415,7 +1501,7 @@ class _ProfileDetailsView extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: isMatch ? const Color(0xFFDCB8B5) : Colors.black87,
+              color: isMatch ? SectionColors.interests.icon : Colors.black87,
             ),
           ),
         ],
@@ -1803,8 +1889,9 @@ class _ProfileDetailsView extends StatelessWidget {
     IconData icon,
     String title,
     String value,
-    String subtitle,
-  ) {
+    String subtitle, {
+    SectionColor? color,
+  }) {
     String combinedInfo = value;
     if (subtitle.isNotEmpty) {
       combinedInfo = '$value  ·  $subtitle';
@@ -1822,13 +1909,19 @@ class _ProfileDetailsView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: EdgeInsets.all(color != null ? 7.2 : 6),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.transparent,
-              border: Border.all(color: Colors.black87, width: 1.2),
+              color: color != null ? color.bg : Colors.transparent,
+              border: color != null
+                  ? null
+                  : Border.all(color: Colors.black87, width: 1.2),
             ),
-            child: Icon(icon, size: 16, color: Colors.black87),
+            child: Icon(
+              icon,
+              size: 16,
+              color: color != null ? color.icon : Colors.black87,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -1871,7 +1964,9 @@ class _ProfileDetailsView extends StatelessWidget {
     String text2,
     double width, {
     bool stacked = false,
+    SectionColor? color,
   }) {
+    final c = color ?? SectionColors.basics;
     return Container(
       width: width,
       height: 60,
@@ -1884,13 +1979,9 @@ class _ProfileDetailsView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.transparent,
-              border: Border.all(color: Colors.black87, width: 1.2),
-            ),
-            child: Icon(icon, size: 16, color: Colors.black87),
+            padding: const EdgeInsets.all(7.2),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: c.bg),
+            child: Icon(icon, size: 16, color: c.icon),
           ),
           const SizedBox(width: 10),
           Expanded(
