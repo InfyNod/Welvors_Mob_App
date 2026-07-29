@@ -283,56 +283,66 @@ class _ProfileDetailsView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          width: 60,
-                          decoration: BoxDecoration(
-                            color: SectionColors.intent.bg, // Colored tint
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.favorite_border_rounded,
-                              color:
-                                  SectionColors.intent.icon, // Dark tint icon
-                              size: 28,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: 60,
+                        child: Container(
+                          color: SectionColors.intent.bg,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 60,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Center(
+                                child: Icon(
+                                  Icons.favorite_border_rounded,
+                                  color: SectionColors.intent.icon,
+                                  size: 28,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  profile.lookingFor,
-                                  style: const TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    profile.lookingFor,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _getLookingForSubtitle(profile.lookingFor),
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 13,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _getLookingForSubtitle(profile.lookingFor),
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                      height: 1.4,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                      ],
-                    ),
+                          const SizedBox(width: 16),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -787,7 +797,7 @@ class _ProfileDetailsView extends StatelessWidget {
                       '✦',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF6B21A8), // Dark purple
+                        color: Color(0xFFBE185D), // Deep Rose / Magenta
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -797,7 +807,7 @@ class _ProfileDetailsView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFF6B21A8), // Dark purple
+                          color: Color(0xFFBE185D), // Deep Rose / Magenta
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -1531,7 +1541,7 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color(0xFF4A3C31), // Soft Premium Mocha
+            Color.fromARGB(255, 57, 46, 38), // Soft Premium Mocha
             Color(0xFF2C221C), // Deep Espresso
           ],
           begin: Alignment.topLeft,
@@ -2827,8 +2837,9 @@ class __ExpandableTextState extends State<_ExpandableText> {
               Text(
                 widget.text,
                 maxLines: isExpanded ? null : widget.maxLines,
-                overflow:
-                    isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                overflow: isExpanded
+                    ? TextOverflow.visible
+                    : TextOverflow.ellipsis,
                 style: widget.style,
               ),
               if (!isExpanded) ...[
@@ -2843,7 +2854,9 @@ class __ExpandableTextState extends State<_ExpandableText> {
                     'See more',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF831843), // Matches ABOUT section burgundy
+                      color: Color(
+                        0xFF831843,
+                      ), // Matches ABOUT section burgundy
                       fontWeight: FontWeight.bold,
                     ),
                   ),
