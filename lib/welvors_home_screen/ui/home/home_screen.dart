@@ -1916,15 +1916,8 @@ class _ProfileDetailsView extends StatelessWidget {
                       ],
                     ],
                   )
-                : RichText(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w600,
-                      ),
+                : Text.rich(
+                    TextSpan(
                       children: [
                         TextSpan(text: text1),
                         if (text2.isNotEmpty) ...[
@@ -1942,6 +1935,13 @@ class _ProfileDetailsView extends StatelessWidget {
                         ],
                       ],
                     ),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
           ),
         ],
