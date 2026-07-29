@@ -500,7 +500,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: SectionColors.intent.bg, // Light blush/pink tint for romantic vibe
+              color: Colors.white,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -760,7 +760,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: SectionColors.lifestyle.bg, // Soft mint/teal tint for chill vibe
+              color: Colors.white,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -782,21 +782,21 @@ class _ProfileDetailsView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
+                    const Text(
                       '✦',
                       style: TextStyle(
                         fontSize: 14,
-                        color: SectionColors.lifestyle.icon,
+                        color: Color(0xFF6B21A8), // Dark purple
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
+                    const Expanded(
                       child: Text(
-                        'MY SIMPLE PLEASURES..',
+                        'MY SIMPLE PLEASURES..?',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: SectionColors.lifestyle.icon,
+                          color: Color(0xFF6B21A8), // Dark purple
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -1299,7 +1299,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF5E6), // Soft peach/yellow tint for friendly vibe
+              color: Colors.white,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -1325,7 +1325,9 @@ class _ProfileDetailsView extends StatelessWidget {
                       '✦',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFFC05621), // Dark terracotta/orange for peach bg
+                        color: Color(
+                          0xFFC05621,
+                        ), // Dark terracotta/orange for peach bg
                       ),
                     ),
                     const SizedBox(width: 8),
