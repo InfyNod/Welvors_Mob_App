@@ -217,43 +217,31 @@ class _ProfileDetailsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Row (Person Icon, ABOUT title, Quote Icon)
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.black12,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.person_outline,
-                            size: 16,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'ABOUT',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      '✦',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF0F766E), // Unique elegant teal
+                      ),
                     ),
-                    Icon(
-                      CupertinoIcons.quote_bubble_fill,
-                      size: 25,
-                      color: Colors.grey.shade300,
+                    const SizedBox(width: 8),
+                    const Text(
+                      'ABOUT',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F766E),
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Divider(
+                        color: const Color(0xFF0F766E).withOpacity(0.3),
+                        height: 1,
+                      ),
                     ),
                   ],
                 ),
