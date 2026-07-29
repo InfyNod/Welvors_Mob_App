@@ -1531,8 +1531,8 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color(0xFF2A211D), // richBlack
-            Color(0xFF1E1715), // black
+            Color(0xFF4A3C31), // Soft Premium Mocha
+            Color(0xFF2C221C), // Deep Espresso
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
