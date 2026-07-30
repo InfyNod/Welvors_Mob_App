@@ -189,9 +189,7 @@ class HowYouMatchSection extends StatelessWidget {
               child: _buildGridItem('🎓', '85%', 'Education & ambition', 0.85),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: _buildGridItem('📍', '82%', 'Location', 0.82),
-            ),
+            Expanded(child: _buildGridItem('📍', '82%', 'Location', 0.82)),
           ],
         ),
       ],
@@ -249,8 +247,9 @@ class HowYouMatchSection extends StatelessWidget {
           const SizedBox(height: 12),
           Container(
             height: 4,
+            width: double.infinity,
             decoration: BoxDecoration(
-              color: const Color(0xFFF0F0F5), // Light grey track for visibility
+              color: const Color(0xFFE8E8E8), // Clear grey track for visibility
               borderRadius: BorderRadius.circular(4),
             ),
             child: FractionallySizedBox(
