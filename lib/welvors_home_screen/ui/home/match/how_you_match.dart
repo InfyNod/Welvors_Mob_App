@@ -13,7 +13,7 @@ class HowYouMatchSection extends StatelessWidget {
           child: Text(
             'HOW YOU MATCH',
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Color(0xFFE85A7A),
               letterSpacing: 1.5,
@@ -284,7 +284,7 @@ class WhatYouShareSection extends StatelessWidget {
           child: Text(
             'WHAT YOU SHARE',
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Color(0xFFE85A7A),
               letterSpacing: 1.5,
@@ -363,7 +363,7 @@ class AFewDifferencesSection extends StatelessWidget {
           child: Text(
             'A FEW DIFFERENCES',
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Color(0xFFE85A7A),
               letterSpacing: 1.5,
@@ -388,15 +388,16 @@ class AFewDifferencesSection extends StatelessWidget {
 
   Widget _buildDifferenceCard(String emoji, String title, String description) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE8E8E8), width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -419,19 +420,19 @@ class AFewDifferencesSection extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF242424),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   description,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w500,
                     color: Color(0xFF6D6D78),
-                    height: 1.4,
+                    height: 1.3,
                   ),
                 ),
               ],
@@ -456,7 +457,7 @@ class SideBySideSection extends StatelessWidget {
           child: Text(
             'SIDE BY SIDE',
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Color(0xFFE85A7A),
               letterSpacing: 1.5,
@@ -468,11 +469,12 @@ class SideBySideSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE8E8E8), width: 1.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
@@ -516,7 +518,7 @@ class SideBySideSection extends StatelessWidget {
 
   Widget _buildHeaderRow() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       color: const Color(0xFFF7F7F7),
       child: Row(
         children: [
@@ -576,10 +578,10 @@ class SideBySideSection extends StatelessWidget {
         : const Color(0xFF242424);
     final border = isLast
         ? null
-        : Border(bottom: BorderSide(color: Colors.grey.shade100));
+        : Border(bottom: BorderSide(color: Colors.white));
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(color: bgColor, border: border),
       child: Row(
         children: [
@@ -587,8 +589,10 @@ class SideBySideSection extends StatelessWidget {
             flex: 2,
             child: Text(
               attribute,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF6D6D78),
               ),
@@ -599,8 +603,10 @@ class SideBySideSection extends StatelessWidget {
             child: Text(
               you,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11,
                 fontWeight: FontWeight.w800,
                 color: textColor,
               ),
@@ -611,8 +617,10 @@ class SideBySideSection extends StatelessWidget {
             child: Text(
               aanya,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 11,
                 fontWeight: FontWeight.w800,
                 color: textColor,
               ),

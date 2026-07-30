@@ -95,6 +95,7 @@ class MatchAnalysisScreen extends StatelessWidget {
                 const AFewDifferencesSection(),
                 const SizedBox(height: 24),
                 const SideBySideSection(),
+                const SizedBox(height: 34),
               ],
             ),
           ),
