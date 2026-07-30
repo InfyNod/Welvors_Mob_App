@@ -288,9 +288,7 @@ class _ProfileDetailsView extends StatelessWidget {
                         top: 0,
                         bottom: 0,
                         width: 60,
-                        child: Container(
-                          color: SectionColors.intent.bg,
-                        ),
+                        child: Container(color: SectionColors.intent.bg),
                       ),
                       Row(
                         children: [
@@ -541,10 +539,11 @@ class _ProfileDetailsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Stack(
+                  clipBehavior: Clip.none,
                   children: [
-                    const Expanded(
+                    const Padding(
+                      padding: EdgeInsets.only(right: 50.0, bottom: 0),
                       child: Text(
                         'A good book rec and a strong chai opinion.',
                         style: TextStyle(
@@ -556,34 +555,18 @@ class _ProfileDetailsView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 35,
-                      height: 35,
-                      padding: const EdgeInsets.all(2.5),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color.fromARGB(255, 40, 22, 28),
-                            Color.fromARGB(255, 220, 184, 181),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
+                    Positioned(
+                      bottom: -20,
+                      right: -14,
+                      child: Container(
+                        width: 55,
+                        height: 55,
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/final.png',
+                            fit: BoxFit.cover,
+                            alignment: const Alignment(0.9, 0),
                           ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Lottie.asset(
-                          'assets/message.json',
-                          fit: BoxFit.cover,
-                          alignment: const Alignment(0.9, 0),
                         ),
                       ),
                     ),
@@ -813,10 +796,11 @@ class _ProfileDetailsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Stack(
+                  clipBehavior: Clip.none,
                   children: [
-                    const Expanded(
+                    const Padding(
+                      padding: EdgeInsets.only(right: 50.0, bottom: 0),
                       child: Text(
                         'Roadside chai after a long trek, no signal, good company.',
                         style: TextStyle(
@@ -828,34 +812,18 @@ class _ProfileDetailsView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 35,
-                      height: 35,
-                      padding: const EdgeInsets.all(2.5),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color.fromARGB(255, 40, 22, 28),
-                            Color.fromARGB(255, 220, 184, 181),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
+                    Positioned(
+                      bottom: -20,
+                      right: -14,
+                      child: Container(
+                        width: 55,
+                        height: 55,
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/final.png',
+                            fit: BoxFit.cover,
+                            alignment: const Alignment(0.9, 0),
                           ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Lottie.asset(
-                          'assets/message.json',
-                          fit: BoxFit.cover,
-                          alignment: const Alignment(0.9, 0),
                         ),
                       ),
                     ),
@@ -1366,10 +1334,11 @@ class _ProfileDetailsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Stack(
+                  clipBehavior: Clip.none,
                   children: [
-                    const Expanded(
+                    const Padding(
+                      padding: EdgeInsets.only(right: 50.0, bottom: 0),
                       child: Text(
                         'You can debate me for an hour and still want dessert after.',
                         style: TextStyle(
@@ -1381,34 +1350,37 @@ class _ProfileDetailsView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 35,
-                      height: 35,
-                      padding: const EdgeInsets.all(2.5),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color.fromARGB(255, 40, 22, 28),
-                            Color.fromARGB(255, 220, 184, 181),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
+                    Positioned(
+                      bottom: -20,
+                      right: -14,
+                      child: Container(
+                        width: 55,
+                        height: 55,
+                        // padding: const EdgeInsets.all(2.5),
+                        // decoration: BoxDecoration(
+                        //   shape: BoxShape.circle,
+                        //   gradient: const LinearGradient(
+                        //     colors: [
+                        //       Color.fromARGB(255, 40, 22, 28),
+                        //       Color.fromARGB(255, 220, 184, 181),
+                        //     ],
+                        //     begin: Alignment.topLeft,
+                        //     end: Alignment.bottomRight,
+                        //   ),
+                        //   boxShadow: [
+                        //     BoxShadow(
+                        //       color: Colors.black.withOpacity(0.08),
+                        //       blurRadius: 6,
+                        //       offset: const Offset(0, 3),
+                        //     ),
+                        //   ],
+                        // ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/final.png',
+                            fit: BoxFit.cover,
+                            alignment: const Alignment(0.9, 0),
                           ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Lottie.asset(
-                          'assets/message.json',
-                          fit: BoxFit.cover,
-                          alignment: const Alignment(0.9, 0),
                         ),
                       ),
                     ),
