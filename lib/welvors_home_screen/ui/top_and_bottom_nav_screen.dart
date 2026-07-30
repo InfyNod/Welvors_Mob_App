@@ -339,11 +339,15 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                               child: _buildTopIcon(
                                 Icons.bolt,
                                 color: isActive
-                                    ? const Color(0xFFE43A6A) // Vibrant Pink for contrast
+                                    ? const Color(
+                                        0xFFE43A6A,
+                                      ) // Vibrant Pink for contrast
                                     : Colors.amber.shade700,
                                 iconSize: 24,
                                 bgColor: isActive
-                                    ? const Color(0xFFFFF0F5) // Soft light premium pink
+                                    ? const Color(
+                                        0xFFFFF0F5,
+                                      ) // Soft light premium pink
                                     : Colors.white,
                               ),
                             ),

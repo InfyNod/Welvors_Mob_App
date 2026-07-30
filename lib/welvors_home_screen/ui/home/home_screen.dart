@@ -19,7 +19,7 @@ abstract class SectionColors {
   static const intent = SectionColor(Color(0xFFFBEAF0), Color(0xFF993556));
   static const basics = SectionColor(Color(0xFFE6F1FB), Color(0xFF185FA5));
   static const career = SectionColor(Color(0xFFFAEEDA), Color(0xFF854F0B));
-  static const interests = SectionColor(Color(0xFFACD5D8), Color(0xFF37535E));
+  static const interests = SectionColor(Color(0xFFEEEDFE), Color(0xFF534AB7));
   static const lifestyle = SectionColor(Color(0xFFE1F5EE), Color(0xFF0F6E56));
   static const family = SectionColor(Color(0xFFFAECE7), Color(0xFF993C1D));
 }
