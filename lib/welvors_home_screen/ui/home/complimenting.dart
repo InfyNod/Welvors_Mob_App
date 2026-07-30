@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ComplimentingBottomSheet extends StatelessWidget {
-  final String complimentingType; // e.g., 'Prompt', 'Video intro', 'Photo'
+class ComplimentingBottomSheet extends StatefulWidget {
+  final String complimentingType;
 
   const ComplimentingBottomSheet({
     Key? key,
@@ -18,15 +18,64 @@ class ComplimentingBottomSheet extends StatelessWidget {
   }
 
   @override
+  State<ComplimentingBottomSheet> createState() => _ComplimentingBottomSheetState();
+}
+
+class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
+  final TextEditingController _textController = TextEditingController();
+  String _selectedGiftType = 'None'; 
+
+  final Color _primaryColor = const Color(0xFFE43A6A); 
+  final Color _softGrey = const Color(0xFFF5F5F5);
+  final Color _borderGrey = const Color(0xFFEBEBEB);
+
+  @override
+  void initState() {
+    super.initState();
+    _textController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  String get _buttonText {
+    bool hasText = _textController.text.trim().isNotEmpty;
+    bool hasRose = _selectedGiftType == 'Rose';
+    bool hasGift = _selectedGiftType == 'Gift';
+
+    if (hasText && hasRose) {
+      return 'Send 💬 🌹';
+    } else if (hasText && hasGift) {
+      return 'Send 💬 🎁';
+    } else if (hasText) {
+      return 'Send 💬';
+    } else if (hasRose) {
+      return 'Send 🌹';
+    } else if (hasGift) {
+      return 'Send 🎁';
+    } else {
+      return 'Send Compliment';
+    }
+  }
+
+  bool get _canSend {
+    return _textController.text.trim().isNotEmpty || _selectedGiftType != 'None';
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Get keyboard height to adjust the padding when keyboard is open
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
       margin: const EdgeInsets.only(top: 60),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Padding(
         padding: EdgeInsets.only(
@@ -35,7 +84,7 @@ class ComplimentingBottomSheet extends StatelessWidget {
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            padding: const EdgeInsets.fromLTRB(24.0, 14.0, 24.0, 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -47,7 +96,7 @@ class ComplimentingBottomSheet extends StatelessWidget {
                     height: 4,
                     margin: const EdgeInsets.only(bottom: 24),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
+                      color: const Color(0xFFE0E0E0),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -59,105 +108,93 @@ class ComplimentingBottomSheet extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: Colors.grey.shade500,
+                    color: Colors.grey.shade400,
                     letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
-                  complimentingType,
+                  widget.complimentingType,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
                 // Stats Row
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
+                  clipBehavior: Clip.none,
                   child: Row(
                     children: [
-                      _buildStatPill(
-                        icon: Icons.chat_bubble_outline,
-                        text: '3 comments',
-                        iconColor: Colors.grey.shade600,
-                      ),
+                      _buildStatPill(emoji: '💬', text: '3 comments'),
                       const SizedBox(width: 8),
-                      _buildStatPill(
-                        isAsset: true,
-                        assetPath: 'assets/final.png',
-                        text: '2 roses',
-                      ),
+                      _buildStatPill(emoji: '🌹', text: '2 roses'),
                       const SizedBox(width: 8),
-                      _buildStatPill(
-                        icon: Icons.circle, // Placeholder for coin icon
-                        text: '5,258 balance',
-                        iconColor: Colors.grey.shade400,
-                      ),
+                      _buildStatPill(emoji: '🪙', text: '5,258 balance'),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
                 // Text Input Area
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFBF6F7), // Very light pinkish grey
+                    color: const Color(0xFFFAFAFA),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: _borderGrey, width: 1.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       TextField(
-                        maxLines: 3,
-                        minLines: 1,
+                        controller: _textController,
+                        maxLines: 4,
+                        minLines: 2,
+                        maxLength: 140,
+                        buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
                         style: const TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                           color: Colors.black87,
+                          height: 1.4,
                         ),
                         decoration: InputDecoration(
                           hintText: 'Write a sweet compliment...',
                           hintStyle: TextStyle(
                             color: Colors.grey.shade400,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 15,
                           ),
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
+                      // 'Try' Button
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: const Color(0xFFFFB6C1).withOpacity(0.5),
-                          ),
+                          border: Border.all(color: const Color(0xFFFFB6C1).withOpacity(0.5)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
-                              Icons.lightbulb_outline,
-                              size: 14,
-                              color: Color(0xFFE43A6A),
-                            ),
+                            Icon(Icons.lightbulb_outline, size: 14, color: _primaryColor),
                             const SizedBox(width: 4),
                             Text(
                               'Try',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFFE43A6A),
+                                color: _primaryColor,
                               ),
                             ),
                           ],
@@ -166,25 +203,39 @@ class ComplimentingBottomSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 // Gift Selection Row
                 Row(
                   children: [
-                    _buildGiftButton(
-                      text: 'Rose',
-                      assetPath: 'assets/final.png',
-                      isSelected: true,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedGiftType = _selectedGiftType == 'Rose' ? 'None' : 'Rose';
+                        });
+                      },
+                      child: _buildGiftButton(
+                        text: 'Rose',
+                        emoji: '🌹',
+                        isSelected: _selectedGiftType == 'Rose',
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    _buildGiftButton(
-                      text: 'Select Gift',
-                      icon: Icons.card_giftcard,
-                      isSelected: false,
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedGiftType = _selectedGiftType == 'Gift' ? 'None' : 'Gift';
+                        });
+                      },
+                      child: _buildGiftButton(
+                        text: 'Select Gift',
+                        emoji: '🎁',
+                        isSelected: _selectedGiftType == 'Gift',
+                      ),
                     ),
                     const Spacer(),
                     Text(
-                      '0/140',
+                      '${_textController.text.length}/140',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -193,7 +244,7 @@ class ComplimentingBottomSheet extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
                 // Bottom Actions
                 Row(
@@ -204,25 +255,19 @@ class ComplimentingBottomSheet extends StatelessWidget {
                       height: 50,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFFE43A6A).withOpacity(0.3),
-                          width: 1.5,
-                        ),
+                        border: Border.all(color: _primaryColor.withOpacity(0.3), width: 1.5),
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.favorite,
-                            color: Color(0xFFE43A6A),
-                            size: 20,
-                          ),
+                          Icon(Icons.favorite, color: _primaryColor, size: 20),
+                          const SizedBox(height: 2),
                           Text(
                             'Like',
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFFE43A6A),
+                              color: _primaryColor,
                             ),
                           ),
                         ],
@@ -231,19 +276,29 @@ class ComplimentingBottomSheet extends StatelessWidget {
                     const SizedBox(width: 16),
                     // Send Button
                     Expanded(
-                      child: Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE43A6A).withOpacity(0.3), // Light pink disabled state
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Send Compliment',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                      child: GestureDetector(
+                        onTap: _canSend ? () {
+                          Navigator.pop(context);
+                        } : null,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: _canSend ? _primaryColor : _primaryColor.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Center(
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              child: Text(
+                                _buttonText,
+                                key: ValueKey(_buttonText),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -261,25 +316,19 @@ class ComplimentingBottomSheet extends StatelessWidget {
   }
 
   Widget _buildStatPill({
-    bool isAsset = false,
-    String? assetPath,
-    IconData? icon,
-    Color? iconColor,
+    required String emoji,
     required String text,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: _softGrey,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (isAsset && assetPath != null)
-            Image.asset(assetPath, height: 14, width: 14)
-          else if (icon != null)
-            Icon(icon, size: 14, color: iconColor),
+          Text(emoji, style: const TextStyle(fontSize: 14)),
           const SizedBox(width: 6),
           Text(
             text,
@@ -296,42 +345,41 @@ class ComplimentingBottomSheet extends StatelessWidget {
 
   Widget _buildGiftButton({
     required String text,
-    String? assetPath,
-    IconData? icon,
+    required String emoji,
     required bool isSelected,
   }) {
+    // We can't access _primaryColor directly if this was static, but it's an instance method, so we can!
+    final primaryPink = const Color(0xFFE43A6A);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isSelected ? primaryPink.withOpacity(0.05) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isSelected ? Colors.grey.shade300 : Colors.grey.shade200,
+          color: isSelected ? primaryPink : Colors.grey.shade200,
           width: isSelected ? 1.5 : 1,
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (assetPath != null)
-            Image.asset(assetPath, height: 18, width: 18)
-          else if (icon != null)
-            Icon(icon, size: 18, color: const Color(0xFFD4AF37)), // Gold-ish color for gift
+          Text(emoji, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 8),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: Colors.black87,
+              color: isSelected ? primaryPink : Colors.black87,
             ),
           ),
           if (isSelected) ...[
             const SizedBox(width: 6),
             Container(
               padding: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(
-                color: Colors.grey,
+              decoration: BoxDecoration(
+                color: primaryPink,
                 shape: BoxShape.circle,
               ),
               child: const Icon(

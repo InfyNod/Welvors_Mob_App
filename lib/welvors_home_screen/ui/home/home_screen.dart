@@ -1,9 +1,9 @@
 // import 'dart:math';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:lottie/lottie.dart';
 import 'complimenting.dart';
+import 'match/match_analysis_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -185,7 +185,19 @@ class _ProfileDetailsView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildPillTag(profile.matchPercentage, Colors.blue),
+              _buildPillTag(
+                profile.matchPercentage,
+                Colors.blue,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MatchAnalysisScreen(matchName: profile.name),
+                    ),
+                  );
+                },
+              ),
               _buildPillTag(profile.trustPercentage, Colors.green),
               _buildPillTag(profile.replyTime, Colors.orange),
             ],
@@ -560,7 +572,10 @@ class _ProfileDetailsView extends StatelessWidget {
                       bottom: -18,
                       right: -13,
                       child: GestureDetector(
-                        onTap: () => ComplimentingBottomSheet.show(context, type: 'Prompt'),
+                        onTap: () => ComplimentingBottomSheet.show(
+                          context,
+                          type: 'Prompt',
+                        ),
                         child: Container(
                           width: 65,
                           height: 65,
@@ -820,7 +835,10 @@ class _ProfileDetailsView extends StatelessWidget {
                       bottom: -18,
                       right: -13,
                       child: GestureDetector(
-                        onTap: () => ComplimentingBottomSheet.show(context, type: 'Prompt'),
+                        onTap: () => ComplimentingBottomSheet.show(
+                          context,
+                          type: 'Prompt',
+                        ),
                         child: Container(
                           width: 65,
                           height: 65,
@@ -1361,7 +1379,10 @@ class _ProfileDetailsView extends StatelessWidget {
                       bottom: -18,
                       right: -13,
                       child: GestureDetector(
-                        onTap: () => ComplimentingBottomSheet.show(context, type: 'Prompt'),
+                        onTap: () => ComplimentingBottomSheet.show(
+                          context,
+                          type: 'Prompt',
+                        ),
                         child: Container(
                           width: 65,
                           height: 65,
@@ -1394,58 +1415,66 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildPillTag(String text, Color dotColor) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: dotColor.withOpacity(0.2), width: 1.2),
-          boxShadow: [
-            BoxShadow(
-              color: dotColor.withOpacity(0.08),
-              blurRadius: 12,
-              spreadRadius: 2,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: dotColor,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: dotColor.withOpacity(0.4),
-                    blurRadius: 4,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: Colors.black.withOpacity(0.85),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.3,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
+  Widget _buildPillTag(String text, Color dotColor, {VoidCallback? onTap}) {
+    Widget content = Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: dotColor.withOpacity(0.2), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: dotColor.withOpacity(0.08),
+            blurRadius: 12,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: dotColor,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: dotColor.withOpacity(0.4),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.85),
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.3,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Expanded(
+      child: onTap != null
+          ? GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: content,
+            )
+          : content,
     );
   }
 
@@ -1772,7 +1801,8 @@ class _ProfileDetailsView extends StatelessWidget {
             bottom: 6,
             right: 2,
             child: GestureDetector(
-              onTap: () => ComplimentingBottomSheet.show(context, type: 'Photo'),
+              onTap: () =>
+                  ComplimentingBottomSheet.show(context, type: 'Photo'),
               child: Container(
                 width: 65,
                 height: 65,
@@ -2710,20 +2740,21 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
             Positioned(
               bottom: 6,
               right: 2,
-            child: GestureDetector(
-              onTap: () => ComplimentingBottomSheet.show(context, type: 'Video intro'),
-              child: Container(
-                width: 65,
-                height: 65,
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/final.png',
-                    fit: BoxFit.cover,
-                    alignment: const Alignment(0.9, 0),
+              child: GestureDetector(
+                onTap: () =>
+                    ComplimentingBottomSheet.show(context, type: 'Video intro'),
+                child: Container(
+                  width: 65,
+                  height: 65,
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/final.png',
+                      fit: BoxFit.cover,
+                      alignment: const Alignment(0.9, 0),
+                    ),
                   ),
                 ),
               ),
-            ),
             ),
           ],
         ),
