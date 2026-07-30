@@ -578,7 +578,7 @@ class SideBySideSection extends StatelessWidget {
         : const Color(0xFF242424);
     final border = isLast
         ? null
-        : Border(bottom: BorderSide(color: Colors.white));
+        : Border(bottom: BorderSide(color: Colors.grey.shade300));
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
