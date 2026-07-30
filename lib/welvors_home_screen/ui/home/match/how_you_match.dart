@@ -270,3 +270,356 @@ class HowYouMatchSection extends StatelessWidget {
     );
   }
 }
+
+class WhatYouShareSection extends StatelessWidget {
+  const WhatYouShareSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 0),
+          child: Text(
+            'WHAT YOU SHARE',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFE85A7A),
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 12,
+          children: [
+            _buildSharePill('🧗‍♀️', 'Trekking'),
+            _buildSharePill('☕', 'Coffee'),
+            _buildSharePill('✈️', 'Travel'),
+            _buildSharePill('📚', 'Books'),
+            _buildSharePill('🎵', 'Live music'),
+            _buildSharePill('🏋️‍♀️', 'Fitness'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSharePill(String emoji, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFEDF3), // Light pink background
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFFE85A7A), // Dark pink text
+            ),
+          ),
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE85A7A),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Text(
+              'BOTH',
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AFewDifferencesSection extends StatelessWidget {
+  const AFewDifferencesSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+          child: Text(
+            'A FEW DIFFERENCES',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFE85A7A),
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildDifferenceCard(
+          '🍽️',
+          'Diet',
+          "You're vegetarian - Aanya eats everything. Easy to work around over dinner.",
+        ),
+        const SizedBox(height: 12),
+        _buildDifferenceCard(
+          '🌙',
+          'Daily rhythm',
+          "You're an early bird - she's more of a night owl. Brunch dates win.",
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDifferenceCard(String emoji, String title, String description) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFF9E6), // Light yellow background
+              shape: BoxShape.circle,
+            ),
+            child: Text(emoji, style: const TextStyle(fontSize: 18)),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF242424),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF6D6D78),
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SideBySideSection extends StatelessWidget {
+  const SideBySideSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+          child: Text(
+            'SIDE BY SIDE',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFE85A7A),
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Column(
+              children: [
+                _buildHeaderRow(),
+                _buildRow('Looking for', 'Serious', 'Serious', isMatch: true),
+                _buildRow('Love language', 'Words', 'Words', isMatch: true),
+                _buildRow('Age', '28', '24', isMatch: false),
+                _buildRow('City', 'Pune', 'Pune', isMatch: true),
+                _buildRow('Religion', 'Hindu', 'Hindu', isMatch: true),
+                _buildRow('Mother tongue', 'Marathi', 'Marathi', isMatch: true),
+                _buildRow(
+                  'Profession',
+                  'Engineer',
+                  'Fashion designer',
+                  isMatch: false,
+                ),
+                _buildRow('Diet', 'Veg', 'Non-veg', isMatch: false),
+                _buildRow('Drinks', 'Socially', 'Socially', isMatch: true),
+                _buildRow('Smoking', 'Non-smoker', 'Non-smoker', isMatch: true),
+                _buildRow('Fitness', 'Active', 'Active', isMatch: true),
+                _buildRow('Communication', 'Calls', 'Calls', isMatch: true),
+                _buildRow('Wants kids', 'Someday', 'Someday', isMatch: true),
+                _buildRow(
+                  'Sleep',
+                  'Early bird',
+                  'Night owl',
+                  isMatch: false,
+                  isLast: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderRow() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: const Color(0xFFF7F7F7),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              'ATTRIBUTE',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade500,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+          const Expanded(
+            flex: 1,
+            child: Text(
+              'YOU',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3BA7F4), // Blue for you
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+          const Expanded(
+            flex: 1,
+            child: Text(
+              'AANYA',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFE85A7A), // Pink for her
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(
+    String attribute,
+    String you,
+    String aanya, {
+    required bool isMatch,
+    bool isLast = false,
+  }) {
+    final bgColor = isMatch ? const Color(0xFFECF9F1) : Colors.white;
+    final textColor = isMatch
+        ? const Color(0xFF2CB864)
+        : const Color(0xFF242424);
+    final border = isLast
+        ? null
+        : Border(bottom: BorderSide(color: Colors.grey.shade100));
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(color: bgColor, border: border),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              attribute,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF6D6D78),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              you,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: textColor,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              aanya,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: textColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
