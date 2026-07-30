@@ -95,7 +95,21 @@ class MatchAnalysisScreen extends StatelessWidget {
                 const AFewDifferencesSection(),
                 const SizedBox(height: 24),
                 const SideBySideSection(),
-                const SizedBox(height: 34),
+                const SizedBox(height: 24),
+                const SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    '✨ Score is recalculated by Welvors AI as you both add more to your profiles — it only compares signals, never shares your private answers.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF9E9E9E),
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 26),
               ],
             ),
           ),
