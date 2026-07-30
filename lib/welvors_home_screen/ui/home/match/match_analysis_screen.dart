@@ -222,84 +222,91 @@ class MatchAnalysisScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: Stack(
-              children: [
-                // Background track
-                Positioned.fill(
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: CircularProgressIndicator(
-                      value: 1.0,
-                      strokeWidth: 12,
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(0xFFE8D9FF).withOpacity(0.5),
-                      ),
-                    ),
-                  ),
-                ),
-                // Highlight part of the circle (representing 92%)
-                Positioned.fill(
-                  child: ShaderMask(
-                    shaderCallback: (rect) {
-                      return const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF8B5CF6),
-                          Color(0xFFB95FE8),
-                          Color(0xFFF05C91),
-                        ],
-                      ).createShader(rect);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: const CircularProgressIndicator(
-                        value: 0.92,
-                        strokeWidth: 12,
-                        backgroundColor: Colors.transparent,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeCap: StrokeCap.round,
-                      ),
-                    ),
-                  ),
-                ),
-                // Center Text
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [
-                            Color(0xFF8B5CF6),
-                            Color(0xFFB95FE8),
-                            Color(0xFFF05C91),
-                          ],
-                        ).createShader(bounds),
-                        child: const Text(
-                          '92%',
-                          style: TextStyle(
-                            fontSize: 38,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -1,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0.0, end: 0.92),
+              duration: const Duration(milliseconds: 1500),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, child) {
+                return Stack(
+                  children: [
+                    // Background track
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: CircularProgressIndicator(
+                          value: 1.0,
+                          strokeWidth: 12,
+                          backgroundColor: Colors.transparent,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            const Color(0xFFE8D9FF).withOpacity(0.5),
                           ),
                         ),
                       ),
-                      const Text(
-                        'MATCH',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF9B98A7),
-                          letterSpacing: 2.0,
+                    ),
+                    // Highlight part of the circle (animating)
+                    Positioned.fill(
+                      child: ShaderMask(
+                        shaderCallback: (rect) {
+                          return const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFF8B5CF6),
+                              Color(0xFFB95FE8),
+                              Color(0xFFF05C91),
+                            ],
+                          ).createShader(rect);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: CircularProgressIndicator(
+                            value: value,
+                            strokeWidth: 12,
+                            backgroundColor: Colors.transparent,
+                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                            strokeCap: StrokeCap.round,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                    // Center Text
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [
+                                Color(0xFF8B5CF6),
+                                Color(0xFFB95FE8),
+                                Color(0xFFF05C91),
+                              ],
+                            ).createShader(bounds),
+                            child: Text(
+                              '${(value * 100).toInt()}%',
+                              style: const TextStyle(
+                                fontSize: 38,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: -1,
+                              ),
+                            ),
+                          ),
+                          const Text(
+                            'MATCH',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF9B98A7),
+                              letterSpacing: 2.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           const SizedBox(height: 14),
@@ -413,20 +420,43 @@ class MatchAnalysisScreen extends StatelessWidget {
   }
 
   Widget _buildStatColumn(String value, String label) {
+    final intValue = int.tryParse(value);
+
+    Widget valueWidget;
+    if (intValue != null) {
+      valueWidget = TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0, end: intValue.toDouble()),
+        duration: const Duration(milliseconds: 1500),
+        curve: Curves.easeOutCubic,
+        builder: (context, val, child) {
+          return Text(
+            val.toInt().toString(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF8B5CF6),
+            ),
+          );
+        },
+      );
+    } else {
+      valueWidget = Text(
+        value,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w900,
+          color: Color(0xFF8B5CF6),
+        ),
+      );
+    }
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF8B5CF6),
-              ),
-            ),
+            valueWidget,
             const SizedBox(height: 2),
             SizedBox(
               height: 28, // Fixed height for 1 or 2 lines
