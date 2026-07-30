@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lottie/lottie.dart';
+import 'complimenting.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -481,7 +482,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ProfileVideoPlayer(videoPath: profile.videoUrl!),
             const SizedBox(height: 16),
           ] else if (profile.images.length > 1) ...[
-            _buildImageWithRose(profile.images[1]),
+            _buildImageWithRose(context, profile.images[1]),
             const SizedBox(height: 16),
           ],
 
@@ -558,14 +559,17 @@ class _ProfileDetailsView extends StatelessWidget {
                     Positioned(
                       bottom: -18,
                       right: -13,
-                      child: Container(
-                        width: 65,
-                        height: 65,
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/final.png',
-                            fit: BoxFit.cover,
-                            alignment: const Alignment(0.9, 0),
+                      child: GestureDetector(
+                        onTap: () => ComplimentingBottomSheet.show(context, type: 'Prompt'),
+                        child: Container(
+                          width: 65,
+                          height: 65,
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/final.png',
+                              fit: BoxFit.cover,
+                              alignment: const Alignment(0.9, 0),
+                            ),
                           ),
                         ),
                       ),
@@ -738,7 +742,7 @@ class _ProfileDetailsView extends StatelessWidget {
 
           // Slot 2: After CAREER
           if (profile.images.length > slot2Index) ...[
-            _buildImageWithRose(profile.images[slot2Index]),
+            _buildImageWithRose(context, profile.images[slot2Index]),
             const SizedBox(height: 16),
           ],
 
@@ -815,14 +819,17 @@ class _ProfileDetailsView extends StatelessWidget {
                     Positioned(
                       bottom: -18,
                       right: -13,
-                      child: Container(
-                        width: 65,
-                        height: 65,
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/final.png',
-                            fit: BoxFit.cover,
-                            alignment: const Alignment(0.9, 0),
+                      child: GestureDetector(
+                        onTap: () => ComplimentingBottomSheet.show(context, type: 'Prompt'),
+                        child: Container(
+                          width: 65,
+                          height: 65,
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/final.png',
+                              fit: BoxFit.cover,
+                              alignment: const Alignment(0.9, 0),
+                            ),
                           ),
                         ),
                       ),
@@ -1101,7 +1108,7 @@ class _ProfileDetailsView extends StatelessWidget {
 
           // Slot 3: After LIFESTYLE
           if (profile.images.length > slot3Index) ...[
-            _buildImageWithRose(profile.images[slot3Index]),
+            _buildImageWithRose(context, profile.images[slot3Index]),
             const SizedBox(height: 16),
           ],
 
@@ -1274,7 +1281,7 @@ class _ProfileDetailsView extends StatelessWidget {
 
           // Slot 4: After FAMILY
           if (profile.images.length > slot4Index) ...[
-            _buildImageWithRose(profile.images[slot4Index]),
+            _buildImageWithRose(context, profile.images[slot4Index]),
             const SizedBox(height: 16),
           ],
 
@@ -1353,33 +1360,17 @@ class _ProfileDetailsView extends StatelessWidget {
                     Positioned(
                       bottom: -18,
                       right: -13,
-                      child: Container(
-                        width: 65,
-                        height: 65,
-                        // padding: const EdgeInsets.all(2.5),
-                        // decoration: BoxDecoration(
-                        //   shape: BoxShape.circle,
-                        //   gradient: const LinearGradient(
-                        //     colors: [
-                        //       Color.fromARGB(255, 40, 22, 28),
-                        //       Color.fromARGB(255, 220, 184, 181),
-                        //     ],
-                        //     begin: Alignment.topLeft,
-                        //     end: Alignment.bottomRight,
-                        //   ),
-                        //   boxShadow: [
-                        //     BoxShadow(
-                        //       color: Colors.black.withOpacity(0.08),
-                        //       blurRadius: 6,
-                        //       offset: const Offset(0, 3),
-                        //     ),
-                        //   ],
-                        // ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/final.png',
-                            fit: BoxFit.cover,
-                            alignment: const Alignment(0.9, 0),
+                      child: GestureDetector(
+                        onTap: () => ComplimentingBottomSheet.show(context, type: 'Prompt'),
+                        child: Container(
+                          width: 65,
+                          height: 65,
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/final.png',
+                              fit: BoxFit.cover,
+                              alignment: const Alignment(0.9, 0),
+                            ),
                           ),
                         ),
                       ),
@@ -1394,7 +1385,7 @@ class _ProfileDetailsView extends StatelessWidget {
           // Bottom Slots: Extra photos below "We'll get along if..."
           if (profile.images.length > bottomIndexStart) ...[
             for (int i = bottomIndexStart; i < profile.images.length; i++) ...[
-              _buildImageWithRose(profile.images[i]),
+              _buildImageWithRose(context, profile.images[i]),
               const SizedBox(height: 16),
             ],
           ],
@@ -1756,7 +1747,7 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildImageWithRose(String imageUrl) {
+  Widget _buildImageWithRose(BuildContext context, String imageUrl) {
     return Container(
       width: double.infinity,
       height: 550,
@@ -1780,14 +1771,17 @@ class _ProfileDetailsView extends StatelessWidget {
           Positioned(
             bottom: 6,
             right: 2,
-            child: Container(
-              width: 65,
-              height: 65,
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/final.png',
-                  fit: BoxFit.cover,
-                  alignment: const Alignment(0.9, 0),
+            child: GestureDetector(
+              onTap: () => ComplimentingBottomSheet.show(context, type: 'Photo'),
+              child: Container(
+                width: 65,
+                height: 65,
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/final.png',
+                    fit: BoxFit.cover,
+                    alignment: const Alignment(0.9, 0),
+                  ),
                 ),
               ),
             ),
@@ -2716,6 +2710,8 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
             Positioned(
               bottom: 6,
               right: 2,
+            child: GestureDetector(
+              onTap: () => ComplimentingBottomSheet.show(context, type: 'Video intro'),
               child: Container(
                 width: 65,
                 height: 65,
@@ -2727,6 +2723,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                   ),
                 ),
               ),
+            ),
             ),
           ],
         ),
