@@ -19,7 +19,7 @@ abstract class SectionColors {
   static const intent = SectionColor(Color(0xFFFBEAF0), Color(0xFF993556));
   static const basics = SectionColor(Color(0xFFE6F1FB), Color(0xFF185FA5));
   static const career = SectionColor(Color(0xFFFAEEDA), Color(0xFF854F0B));
-  static const interests = SectionColor(Color(0xFFEEEDFE), Color(0xFF534AB7));
+  static const interests = SectionColor(Color(0xFFACD5D8), Color(0xFF37535E));
   static const lifestyle = SectionColor(Color(0xFFE1F5EE), Color(0xFF0F6E56));
   static const family = SectionColor(Color(0xFFFAECE7), Color(0xFF993C1D));
 }
@@ -543,7 +543,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   clipBehavior: Clip.none,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.only(right: 50.0, bottom: 0),
+                      padding: EdgeInsets.only(right: 60.0, bottom: 0),
                       child: Text(
                         'A good book rec and a strong chai opinion.',
                         style: TextStyle(
@@ -556,11 +556,11 @@ class _ProfileDetailsView extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      bottom: -20,
-                      right: -14,
+                      bottom: -18,
+                      right: -13,
                       child: Container(
-                        width: 55,
-                        height: 55,
+                        width: 65,
+                        height: 65,
                         child: ClipOval(
                           child: Image.asset(
                             'assets/final.png',
@@ -800,7 +800,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   clipBehavior: Clip.none,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.only(right: 50.0, bottom: 0),
+                      padding: EdgeInsets.only(right: 60.0, bottom: 0),
                       child: Text(
                         'Roadside chai after a long trek, no signal, good company.',
                         style: TextStyle(
@@ -813,11 +813,11 @@ class _ProfileDetailsView extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      bottom: -20,
-                      right: -14,
+                      bottom: -18,
+                      right: -13,
                       child: Container(
-                        width: 55,
-                        height: 55,
+                        width: 65,
+                        height: 65,
                         child: ClipOval(
                           child: Image.asset(
                             'assets/final.png',
@@ -1338,7 +1338,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   clipBehavior: Clip.none,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.only(right: 50.0, bottom: 0),
+                      padding: EdgeInsets.only(right: 60.0, bottom: 0),
                       child: Text(
                         'You can debate me for an hour and still want dessert after.',
                         style: TextStyle(
@@ -1351,11 +1351,11 @@ class _ProfileDetailsView extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      bottom: -20,
-                      right: -14,
+                      bottom: -18,
+                      right: -13,
                       child: Container(
-                        width: 55,
-                        height: 55,
+                        width: 65,
+                        height: 65,
                         // padding: const EdgeInsets.all(2.5),
                         // decoration: BoxDecoration(
                         //   shape: BoxShape.circle,
@@ -1775,39 +1775,19 @@ class _ProfileDetailsView extends StatelessWidget {
         ],
       ),
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: 38,
-                height: 38,
-                padding: const EdgeInsets.all(2.5),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color.fromARGB(255, 40, 22, 28),
-                      Color.fromARGB(255, 220, 184, 181),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Lottie.asset(
-                    'assets/message.json',
-                    fit: BoxFit.cover,
-                    alignment: const Alignment(0.8, 0),
-                  ),
+          Positioned(
+            bottom: 6,
+            right: 2,
+            child: Container(
+              width: 65,
+              height: 65,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/final.png',
+                  fit: BoxFit.cover,
+                  alignment: const Alignment(0.9, 0),
                 ),
               ),
             ),
@@ -2614,155 +2594,141 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: GestureDetector(
-            onTap: _toggleControls,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (_controller.value.isInitialized)
-                  FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _controller.value.size.width,
-                      height: _controller.value.size.height,
-                      child: VideoPlayer(_controller),
-                    ),
-                  )
-                else
-                  Container(
-                    color: Colors.grey.shade900,
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.pinkAccent,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: GestureDetector(
+                onTap: _toggleControls,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (_controller.value.isInitialized)
+                      FittedBox(
+                        fit: BoxFit.cover,
+                        child: SizedBox(
+                          width: _controller.value.size.width,
+                          height: _controller.value.size.height,
+                          child: VideoPlayer(_controller),
+                        ),
+                      )
+                    else
+                      Container(
+                        color: Colors.grey.shade900,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.pinkAccent,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: 120,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.8),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: AnimatedOpacity(
-                    opacity: _showControls ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 300),
-                    child: GestureDetector(
-                      onTap: _togglePlayPause,
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      height: 120,
                       child: Container(
-                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          _controller.value.isPlaying
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                          color: Colors.black87,
-                          size: 36,
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.8),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Positioned(
-                  left: 16,
-                  bottom: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      _controller.value.isInitialized
-                          ? 'Video intro · ${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}'
-                          : 'Video intro',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                    Center(
+                      child: AnimatedOpacity(
+                        opacity: _showControls ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 300),
+                        child: GestureDetector(
+                          onTap: _togglePlayPause,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.9),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              _controller.value.isPlaying
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
+                              color: Colors.black87,
+                              size: 36,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                if (_controller.value.isInitialized)
-                  Positioned(
-                    right: 16,
-                    bottom: 72,
-                    child: GestureDetector(
-                      onTap: _toggleMute,
+                    Positioned(
+                      left: 16,
+                      bottom: 16,
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.5),
-                          shape: BoxShape.circle,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(
-                          _isMuted
-                              ? Icons.volume_off_rounded
-                              : Icons.volume_up_rounded,
-                          color: Colors.white,
-                          size: 20,
+                        child: Text(
+                          _controller.value.isInitialized
+                              ? 'Video intro · ${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}'
+                              : 'Video intro',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                Positioned(
-                  right: 16,
-                  bottom: 16,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    padding: const EdgeInsets.all(2.5),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color.fromARGB(255, 40, 22, 28),
-                          Color.fromARGB(255, 220, 184, 181),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
+                    if (_controller.value.isInitialized)
+                      Positioned(
+                        right: 16,
+                        bottom: 72,
+                        child: GestureDetector(
+                          onTap: _toggleMute,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              _isMuted
+                                  ? Icons.volume_off_rounded
+                                  : Icons.volume_up_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: Lottie.asset(
-                        'assets/message.json',
-                        fit: BoxFit.cover,
-                        alignment: const Alignment(0.8, 0),
                       ),
-                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 6,
+              right: 2,
+              child: Container(
+                width: 65,
+                height: 65,
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/final.png',
+                    fit: BoxFit.cover,
+                    alignment: const Alignment(0.9, 0),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
