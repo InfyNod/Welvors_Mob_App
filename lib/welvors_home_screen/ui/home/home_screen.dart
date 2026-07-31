@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'complimenting.dart';
 import 'match/match_analysis_screen.dart';
 import 'trust_score/trust_screen.dart';
+import 'reply/reply_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -211,7 +212,11 @@ class _ProfileDetailsView extends StatelessWidget {
                   );
                 },
               ),
-              _buildPillTag(profile.replyTime, Colors.orange),
+              _buildPillTag(
+                profile.replyTime,
+                Colors.orange,
+                onTap: () => ReplyDrawer.show(context),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -2409,7 +2414,11 @@ class _ProfileCardUI extends StatelessWidget {
                         },
                       ),
                       const SizedBox(width: 8),
-                      _buildTag(profile.replyTime, Colors.orange),
+                      _buildTag(
+                        profile.replyTime,
+                        Colors.orange,
+                        onTap: () => ReplyDrawer.show(context),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
