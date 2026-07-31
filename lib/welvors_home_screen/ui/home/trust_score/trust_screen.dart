@@ -167,7 +167,7 @@ class TrustScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 22),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -175,7 +175,7 @@ class TrustScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black54,
-                  fontSize: 11,
+                  fontSize: 10,
                   height: 1.5,
                   fontWeight: FontWeight.w500,
                 ),
@@ -218,7 +218,10 @@ class TrustScreen extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.8),
+                    width: 2,
+                  ),
                   image: const DecorationImage(
                     image: NetworkImage(
                       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
@@ -245,7 +248,11 @@ class TrustScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(Icons.verified, color: Colors.blue, size: 16),
+                        const Icon(
+                          Icons.verified,
+                          color: Colors.blue,
+                          size: 16,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -334,11 +341,7 @@ class TrustScreen extends StatelessWidget {
           // Description
           const Text(
             'A high Trust Score means more of Aanya\'s identity has been independently checked — you can message with confidence.',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-              height: 1.5,
-            ),
+            style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.5),
           ),
         ],
       ),
@@ -379,7 +382,10 @@ class TrustScreen extends StatelessWidget {
                     text: 'verified result',
                     style: TextStyle(fontWeight: FontWeight.w800),
                   ),
-                  TextSpan(text: ' — never the documents. They stay private and encrypted.'),
+                  TextSpan(
+                    text:
+                        ' — never the documents. They stay private and encrypted.',
+                  ),
                 ],
               ),
             ),
@@ -436,12 +442,21 @@ class TrustScreen extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Text(
-              progress,
-              style: TextStyle(
-                color: isComplete ? const Color(0xFF2CB864) : const Color(0xFFE9A63F),
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: SizedBox(
+                width: 40,
+                child: Text(
+                  progress,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isComplete
+                        ? const Color(0xFF2CB864)
+                        : const Color(0xFFE9A63F),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
             ),
           ],
@@ -460,9 +475,7 @@ class TrustScreen extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            children: separatedItems,
-          ),
+          child: Column(children: separatedItems),
         ),
       ],
     );
@@ -477,7 +490,12 @@ class TrustScreen extends StatelessWidget {
     Color? iconBgColor,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+      padding: const EdgeInsets.only(
+        left: 16.0,
+        right: 8.0,
+        top: 14.0,
+        bottom: 14.0,
+      ),
       child: Row(
         children: [
           Container(
@@ -516,23 +534,32 @@ class TrustScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Column(
-            children: [
-              Icon(
-                isVerified ? Icons.check_circle : Icons.close,
-                color: isVerified ? const Color(0xFF2CB864) : Colors.grey.shade400,
-                size: 22,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                score,
-                style: TextStyle(
-                  color: isVerified ? const Color(0xFF2CB864) : Colors.grey.shade500,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 40,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  isVerified ? Icons.check_circle : Icons.cancel,
+                  color: isVerified
+                      ? const Color(0xFF2CB864)
+                      : Colors.grey.shade400,
+                  size: 22,
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  score,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isVerified
+                        ? const Color(0xFF2CB864)
+                        : Colors.grey.shade500,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
