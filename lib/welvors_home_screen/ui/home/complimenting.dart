@@ -218,41 +218,48 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 // Gift Selection Row
                 Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedGiftType = _selectedGiftType == 'Rose' ? 'None' : 'Rose';
-                        });
-                      },
-                      child: _buildGiftButton(
-                        text: 'Rose',
-                        emoji: '🌹',
-                        isSelected: _selectedGiftType == 'Rose',
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedGiftType = _selectedGiftType == 'Rose' ? 'None' : 'Rose';
+                          });
+                        },
+                        child: _buildGiftButton(
+                          text: 'Rose',
+                          emoji: '🌹',
+                          isSelected: _selectedGiftType == 'Rose',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedGiftType = _selectedGiftType == 'Gift' ? 'None' : 'Gift';
-                        });
-                      },
-                      child: _buildGiftButton(
-                        text: 'Select Gift',
-                        emoji: '🎁',
-                        isSelected: _selectedGiftType == 'Gift',
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${_textController.text.length}/140',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade400,
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedGiftType = _selectedGiftType == 'Gift' ? 'None' : 'Gift';
+                          });
+                        },
+                        child: _buildGiftButton(
+                          text: 'Select Gift',
+                          emoji: '🎁',
+                          isSelected: _selectedGiftType == 'Gift',
+                        ),
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '${_textController.text.length}/140',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 28),
 
@@ -372,7 +379,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         ),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(emoji, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 8),
