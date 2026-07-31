@@ -84,7 +84,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: SafeArea(
+        bottomNavigationBar: _selectedTab == 1 ? null : SafeArea(
           child: Container(
             padding: const EdgeInsets.only(
               left: 20,

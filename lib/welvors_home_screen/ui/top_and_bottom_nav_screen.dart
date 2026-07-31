@@ -16,20 +16,30 @@ import 'drawer_files/dating/my_boosts/boost_bloc/boost_state.dart';
 import 'drawer_files/dating/my_boosts/boost_history.dart/performance_screen.dart';
 import 'drawer_files/dating/my_boosts/boost_wallet_all_screen/boost_wallet_top_nav.dart';
 
-class TopAndBottomNavScreen extends StatelessWidget {
-  const TopAndBottomNavScreen({super.key});
+class TopAndBottomNavScreen extends StatefulWidget {
+  final bool isPreview;
+  const TopAndBottomNavScreen({super.key, this.isPreview = false});
 
   @override
+  State<TopAndBottomNavScreen> createState() => _TopAndBottomNavScreenState();
+}
+
+class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
+  @override
   Widget build(BuildContext context) {
+    if (widget.isPreview) {
+      return _TopAndBottomNavView(isPreview: widget.isPreview);
+    }
     return BlocProvider(
       create: (context) => HomeBloc()..add(LoadHomeDataEvent()),
-      child: const _TopAndBottomNavView(),
+      child: _TopAndBottomNavView(isPreview: widget.isPreview),
     );
   }
 }
 
 class _TopAndBottomNavView extends StatefulWidget {
-  const _TopAndBottomNavView();
+  final bool isPreview;
+  const _TopAndBottomNavView({this.isPreview = false});
 
   @override
   State<_TopAndBottomNavView> createState() => _TopAndBottomNavViewState();
@@ -216,7 +226,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
     }
     switch (_selectedIndex) {
       case 0:
-        return const HomeScreen();
+        return HomeScreen(isPreview: widget.isPreview);
       case 1:
         return const DateNowScreen();
       case 2:
