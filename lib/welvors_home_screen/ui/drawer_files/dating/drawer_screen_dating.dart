@@ -173,47 +173,51 @@ class _DrawerScreenState extends State<DrawerScreen> {
 
   Widget _buildDatingContent() {
     return SingleChildScrollView(
-      physics:
-          const ClampingScrollPhysics(), // Re-locking the scroll as requested
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Premium Top Section (Gradient + White Background)
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFFFF5EC), Colors.white],
-                stops: [0.0, 0.6], // Fades from peach to white
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x0A000000), // Very subtle shadow for separation
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
+      physics: const ClampingScrollPhysics(), // Re-locking the scroll as requested
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 1200),
+        curve: Curves.easeOutCubic,
+        builder: (context, animValue, child) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Premium Top Section (Gradient + White Background)
+              Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFFFFF5EC), Colors.white],
+                    stops: [0.0, 0.6], // Fades from peach to white
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x0A000000), // Very subtle shadow for separation
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            padding: const EdgeInsets.only(
-              top: 36,
-              bottom: 24,
-              left: 20,
-              right: 20,
-            ),
-            child: Column(
-              children: [
-                _buildProfileSection(),
-                const SizedBox(height: 24),
-                _buildProfileCompletionCard(),
-              ],
-            ),
-          ),
+                padding: const EdgeInsets.only(
+                  top: 36,
+                  bottom: 24,
+                  left: 20,
+                  right: 20,
+                ),
+                child: Column(
+                  children: [
+                    _buildProfileSection(animValue),
+                    const SizedBox(height: 24),
+                    _buildProfileCompletionCard(animValue),
+                  ],
+                ),
+              ),
 
           // Bottom Section (Grey Background)
           Padding(
@@ -236,11 +240,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
             ),
           ),
         ],
-      ),
-    );
+      );
+    },
+  ),
+);
   }
 
-  Widget _buildProfileSection() {
+  Widget _buildProfileSection(double animValue) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -271,7 +277,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   width: 106,
                   height: 106,
                   child: CircularProgressIndicator(
-                    value: 0.62,
+                    value: 0.75 * animValue,
                     strokeWidth: 5, // Made thicker as requested
                     color: AppColors.pink, // Lighter pink
                     backgroundColor: Colors.white, // Remaining circle is white
@@ -314,9 +320,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         width: 2,
                       ), // White border like screenshot
                     ),
-                    child: const Text(
-                      '62%',
-                      style: TextStyle(
+                    child: Text(
+                      '${(75 * animValue).toInt()}%',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -449,9 +455,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      const Text(
-                        '98% Trust Score',
-                        style: TextStyle(
+                      Text(
+                        '${(98 * animValue).toInt()}% Trust Score',
+                        style: const TextStyle(
                           color: Color(0xFF1EAD5D),
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
@@ -468,7 +474,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     );
   }
 
-  Widget _buildProfileCompletionCard() {
+  Widget _buildProfileCompletionCard(double animValue) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -493,9 +499,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   color: Colors.black87,
                 ),
               ),
-              const Text(
-                '75%',
-                style: TextStyle(
+              Text(
+                '${(75 * animValue).toInt()}%',
+                style: const TextStyle(
                   fontSize: 18, // slightly larger
                   fontWeight: FontWeight.w900,
                   color: AppColors.pink, // lighter pink
@@ -515,7 +521,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               ),
               Container(
                 height: 8,
-                width: 250, // Roughly 75%
+                width: 250 * animValue, // Roughly 75% mapped to width 250
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFF7B466), Color(0xFFE94E78)],
