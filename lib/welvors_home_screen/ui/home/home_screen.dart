@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'complimenting.dart';
+import 'send_compliment/complimenting.dart';
 import 'match/match_analysis_screen.dart';
 import 'trust_score/trust_screen.dart';
 import 'reply/reply_drawer.dart';

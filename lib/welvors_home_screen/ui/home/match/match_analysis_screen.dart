@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:velvors/welvors_home_screen/ui/home/complimenting.dart';
+import 'package:velvors/welvors_home_screen/ui/home/send_compliment/complimenting.dart';
 import 'package:velvors/welvors_home_screen/ui/home/match/how_you_match.dart';
 
 class MatchAnalysisScreen extends StatelessWidget {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'try_screen.dart';
 
 class ComplimentingBottomSheet extends StatefulWidget {
   final String complimentingType;
@@ -197,36 +198,49 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       ),
                       const SizedBox(height: 8),
                       // 'Try' Button
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: const Color(0xFFFFB6C1).withOpacity(0.5),
+                      GestureDetector(
+                        onTap: () async {
+                          final selectedCompliment = await ComplimentIdeasScreen.show(
+                            context,
+                            initialText: _textController.text,
+                          );
+                          if (selectedCompliment != null) {
+                            setState(() {
+                              _textController.text = selectedCompliment;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
                           ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.lightbulb_outline,
-                              size: 14,
-                              color: _primaryColor,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFFFFB6C1).withOpacity(0.5),
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Try',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.lightbulb_outline,
+                                size: 14,
                                 color: _primaryColor,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              Text(
+                                'Try',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: _primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
