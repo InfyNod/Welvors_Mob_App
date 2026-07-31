@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'complimenting.dart';
 import 'match/match_analysis_screen.dart';
+import 'trust_score/trust_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -198,7 +199,18 @@ class _ProfileDetailsView extends StatelessWidget {
                   );
                 },
               ),
-              _buildPillTag(profile.trustPercentage, Colors.green),
+              _buildPillTag(
+                profile.trustPercentage,
+                Colors.green,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TrustScreen(),
+                    ),
+                  );
+                },
+              ),
               _buildPillTag(profile.replyTime, Colors.orange),
             ],
           ),
@@ -2384,7 +2396,18 @@ class _ProfileCardUI extends StatelessWidget {
                     children: [
                       _buildTag(profile.matchPercentage, Colors.blue),
                       const SizedBox(width: 8),
-                      _buildTag(profile.trustPercentage, Colors.green),
+                      _buildTag(
+                        profile.trustPercentage,
+                        Colors.green,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TrustScreen(),
+                            ),
+                          );
+                        },
+                      ),
                       const SizedBox(width: 8),
                       _buildTag(profile.replyTime, Colors.orange),
                     ],
@@ -2445,8 +2468,8 @@ class _ProfileCardUI extends StatelessWidget {
     );
   }
 
-  Widget _buildTag(String text, Color dotColor) {
-    return Container(
+  Widget _buildTag(String text, Color dotColor, {VoidCallback? onTap}) {
+    Widget tag = Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.4),
@@ -2473,6 +2496,15 @@ class _ProfileCardUI extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: tag,
+      );
+    }
+    return tag;
   }
 
   Widget _buildInfoRow(IconData icon, String text) {
