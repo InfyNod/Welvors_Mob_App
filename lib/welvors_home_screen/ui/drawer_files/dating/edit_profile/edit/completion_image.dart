@@ -69,51 +69,58 @@ class CompletionAndPhotosSection extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0.0, end: 0.75),
+        duration: const Duration(milliseconds: 1200),
+        curve: Curves.easeOutCubic,
+        builder: (context, animValue, child) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Profile completion',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 14, // Slightly smaller
-                  fontWeight: FontWeight.w800, // Extra bold for premium look
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Profile completion',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 14, // Slightly smaller
+                      fontWeight: FontWeight.w800, // Extra bold for premium look
+                    ),
+                  ),
+                  Text(
+                    '${(animValue * 100).toInt()}%',
+                    style: const TextStyle(
+                      color: Color(0xFFE43A6A),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8), // Reduced spacing
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: animValue,
+                  minHeight: 5, // Thinner progress bar
+                  backgroundColor: const Color(0xFFF3F2EE),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE43A6A)),
                 ),
               ),
+              const SizedBox(height: 8), // Reduced spacing
               Text(
-                '82%',
+                'Add 1 more photo and a video to reach 100% and get 3x more matches.',
                 style: TextStyle(
-                  color: Color(0xFFE43A6A),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
+                  color: Colors.grey.shade600, // Softer grey
+                  fontSize: 11, // Smaller text
+                  height: 1.3,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 8), // Reduced spacing
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: const LinearProgressIndicator(
-              value: 0.82,
-              minHeight: 5, // Thinner progress bar
-              backgroundColor: Color(0xFFF3F2EE),
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE43A6A)),
-            ),
-          ),
-          const SizedBox(height: 8), // Reduced spacing
-          Text(
-            'Add 1 more photo and a video to reach 100% and get 3x more matches.',
-            style: TextStyle(
-              color: Colors.grey.shade600, // Softer grey
-              fontSize: 11, // Smaller text
-              height: 1.3,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
