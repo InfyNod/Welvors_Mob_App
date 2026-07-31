@@ -267,53 +267,92 @@ class TrustScreen extends StatelessWidget {
                 ),
               ),
               // Trust Score Circle
-              Container(
-                width: 60,
-                height: 60,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFE85A7A), Color(0xFFFF9B70)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(3.0),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF2B2144),
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0.0, end: 0.98),
+                duration: const Duration(seconds: 2),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Container(
+                    width: 84,
+                    height: 84,
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFE85A7A).withOpacity(0.6),
+                          blurRadius: 20,
+                          spreadRadius: 4,
+                        ),
+                      ],
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          '98',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            height: 1.1,
+                    child: Stack(
+                      children: [
+                        // Background track
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: CircularProgressIndicator(
+                              value: 1.0,
+                              strokeWidth: 6.5,
+                              backgroundColor: Colors.transparent,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white.withOpacity(0.1),
+                              ),
+                            ),
                           ),
                         ),
-                        Text(
-                          'TRUST',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 7,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
+                        // Animated Gradient Stroke
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: CustomPaint(
+                              painter: _GradientArcPainter(progress: value),
+                            ),
+                          ),
+                        ),
+                        // Inner content
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.5),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF2B2144),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    (value * 100).toInt().toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.1,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'TRUST',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 4),
           // Platinum verified badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -324,7 +363,7 @@ class TrustScreen extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Text('🎉', style: TextStyle(fontSize: 12)),
+                Text('👑', style: TextStyle(fontSize: 12)),
                 SizedBox(width: 6),
                 Text(
                   'Platinum verified',
@@ -352,11 +391,11 @@ class TrustScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFECF9F1), // light green
+        color: const Color(0xFF1E1730), // Dark background for contrast
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2CB864).withOpacity(0.12),
+            color: const Color(0xFF1E1730).withOpacity(0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -371,16 +410,19 @@ class TrustScreen extends StatelessWidget {
             child: RichText(
               text: const TextSpan(
                 style: TextStyle(
-                  color: Color(0xFF2CB864),
+                  color: Colors.white,
                   fontSize: 12,
                   height: 1.5,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
                 children: [
                   TextSpan(text: 'You only see the '),
                   TextSpan(
                     text: 'verified result',
-                    style: TextStyle(fontWeight: FontWeight.w800),
+                    style: TextStyle(
+                      color: Color(0xFF2CB864),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   TextSpan(
                     text:
@@ -564,5 +606,40 @@ class TrustScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _GradientArcPainter extends CustomPainter {
+  final double progress;
+
+  _GradientArcPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0.0) return;
+
+    final rect = Offset.zero & size;
+    final paint = Paint()
+      ..shader = const LinearGradient(
+        colors: [Color(0xFFE85A7A), Color(0xFFFF9B70)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6.5
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      rect.deflate(6.5 / 2),
+      -1.5707963267948966, // -pi/2 (starts at top center)
+      progress * 2 * 3.1415926535897932,
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _GradientArcPainter oldDelegate) {
+    return oldDelegate.progress != progress;
   }
 }
