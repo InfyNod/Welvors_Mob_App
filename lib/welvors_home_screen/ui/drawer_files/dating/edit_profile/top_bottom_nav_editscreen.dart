@@ -14,6 +14,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/intrested.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/preview/preview_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -265,11 +266,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // Placeholder for Preview tab
   Widget _buildPreviewBody() {
-    return const Center(
-      child: Text(
-        'Preview Content Goes Here...',
-        style: TextStyle(color: Colors.grey),
-      ),
-    );
+    return const PreviewScreen();
   }
 }

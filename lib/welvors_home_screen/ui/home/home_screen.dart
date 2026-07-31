@@ -1,5 +1,6 @@
 // import 'dart:math';
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'send_compliment/complimenting.dart';
@@ -28,7 +29,8 @@ abstract class SectionColors {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final bool isPreview;
+  const HomeScreen({super.key, this.isPreview = false});
 
   @override
   Widget build(BuildContext context) {
@@ -38,33 +40,40 @@ class HomeScreen extends StatelessWidget {
           final currentProfile = state.profiles.first;
           return LayoutBuilder(
             builder: (context, constraints) {
+              Widget child = SingleChildScrollView(
+                physics: isPreview 
+                    ? const BouncingScrollPhysics()
+                    : const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: constraints.maxHeight, // Exactly fits the visible viewport
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
+                        child: _CardsStack(),
+                      ),
+                    ),
+                    _ProfileDetailsView(profile: currentProfile),
+                    const SizedBox(height: 14),
+                  ],
+                ),
+              );
+
+              if (isPreview) {
+                return child;
+              }
+
               return RefreshIndicator(
                 onRefresh: () async {
                   context.read<HomeBloc>().add(LoadHomeDataEvent());
                   await Future.delayed(const Duration(milliseconds: 800));
                 },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics(),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: constraints
-                            .maxHeight, // Exactly fits the visible viewport
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 8.0,
-                          ),
-                          child: _CardsStack(),
-                        ),
-                      ),
-                      _ProfileDetailsView(profile: currentProfile),
-                      const SizedBox(height: 14),
-                    ],
-                  ),
-                ),
+                child: child,
               );
             },
           );
@@ -1800,7 +1809,9 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         image: DecorationImage(
-          image: NetworkImage(imageUrl),
+          image: imageUrl.startsWith('http') 
+              ? NetworkImage(imageUrl) as ImageProvider
+              : FileImage(File(imageUrl)),
           fit: BoxFit.cover,
         ),
         boxShadow: [
@@ -2301,7 +2312,9 @@ class _ProfileCardUI extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         image: DecorationImage(
-          image: NetworkImage(profile.images.first),
+          image: profile.images.first.startsWith('http')
+              ? NetworkImage(profile.images.first) as ImageProvider
+              : FileImage(File(profile.images.first)),
           fit: BoxFit.cover,
         ),
         boxShadow: [
