@@ -23,6 +23,7 @@ class ComplimentingBottomSheet extends StatefulWidget {
 
 class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
   final TextEditingController _textController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   String _selectedGiftType = 'None'; 
 
   final Color _primaryColor = const Color(0xFFE43A6A); 
@@ -35,11 +36,15 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     _textController.addListener(() {
       setState(() {});
     });
+    _focusNode.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
     _textController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -49,9 +54,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     bool hasGift = _selectedGiftType == 'Gift';
 
     if (hasText && hasRose) {
-      return 'Send 💬 🌹';
+      return 'Send 💬 + 🌹';
     } else if (hasText && hasGift) {
-      return 'Send 💬 🎁';
+      return 'Send 💬 + 🎁';
     } else if (hasText) {
       return 'Send 💬';
     } else if (hasRose) {
@@ -141,18 +146,23 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 const SizedBox(height: 20),
 
                 // Text Input Area
-                Container(
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFAFAFA),
+                    color: _focusNode.hasFocus ? Colors.white : const Color(0xFFFAFAFA),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: _borderGrey, width: 1.0),
+                    border: Border.all(
+                      color: _focusNode.hasFocus ? _primaryColor : _borderGrey,
+                      width: _focusNode.hasFocus ? 1.5 : 1.0,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       TextField(
                         controller: _textController,
+                        focusNode: _focusNode,
                         maxLines: 4,
                         minLines: 2,
                         maxLength: 140,
@@ -254,7 +264,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: _primaryColor.withOpacity(0.3), width: 1.5),
                       ),
                       child: Column(
@@ -285,7 +295,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                           height: 50,
                           decoration: BoxDecoration(
                             color: _canSend ? _primaryColor : _primaryColor.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: Center(
                             child: AnimatedSwitcher(
