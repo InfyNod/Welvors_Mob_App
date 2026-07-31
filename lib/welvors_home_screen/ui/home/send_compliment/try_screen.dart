@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class ComplimentIdeasScreen extends StatefulWidget {
   final String? initialText;
@@ -18,7 +19,11 @@ class ComplimentIdeasScreen extends StatefulWidget {
   State<ComplimentIdeasScreen> createState() => _ComplimentIdeasScreenState();
 }
 
-class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
+class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _glowController;
+  late Animation<double> _glowAnimation;
+
   final List<String> categories = [
     'Sweet',
     'Playful',
@@ -58,7 +63,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
       'You\'re definitely my type.',
       'I\'d love to get to know the person behind that smile.',
       'Has anyone told you how attractive you are today?',
-      'I think we\'d get along really well.',
+      'I think we\'d make a dangerously good team ☕➡️🍷.',
     ],
     'First Move': [
       'Hi! What\'s the best part of your week so far?',
@@ -74,6 +79,16 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
   @override
   void initState() {
     super.initState();
+
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+
+    _glowAnimation = Tween<double>(begin: 8.0, end: 35.0).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+
     for (var cat in categories) {
       categoryKeys[cat] = GlobalKey();
     }
@@ -92,6 +107,12 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToCategory(selectedCategory);
     });
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
   }
 
   void _scrollToCategory(String category) {
@@ -152,7 +173,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
             top: 0,
             left: 0,
             right: 0,
-            height: 250,
+            height: 350,
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -172,31 +193,44 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 0.0, bottom: 6.0),
                   child: Center(
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFFF05C91,
-                            ).withOpacity(0.2), // Nice pink shadow
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
+                    child: AnimatedBuilder(
+                      animation: _glowAnimation,
+                      builder: (context, child) {
+                        return Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(
+                                  255,
+                                  224,
+                                  138,
+                                  168,
+                                ).withOpacity(0.35),
+                                blurRadius: _glowAnimation.value,
+                                spreadRadius: _glowAnimation.value * 0.15,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Text('💬', style: TextStyle(fontSize: 30)),
+                          child: child,
+                        );
+                      },
+                      child: Center(
+                        child: Lottie.asset(
+                          'assets/message.json',
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 2),
 
               // Title and subtitle
               const Text(
@@ -245,10 +279,22 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? primaryPink
-                                : const Color(0xFFF5F5F5),
+                            color: isSelected ? primaryPink : Colors.white,
                             borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colors.transparent
+                                  : Colors.grey.shade200,
+                            ),
+                            boxShadow: isSelected
+                                ? null
+                                : [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                           ),
                           alignment: Alignment.center,
                           child: Text(
@@ -256,7 +302,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: isSelected ? Colors.white : Colors.black54,
+                              color: isSelected ? Colors.white : Colors.black87,
                             ),
                           ),
                         ),
@@ -274,7 +320,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen> {
                     16,
                     0,
                     16,
-                    100,
+                    120,
                   ), // extra padding for bottom button
                   physics: const BouncingScrollPhysics(),
                   itemCount: complimentMap[selectedCategory]!.length,
