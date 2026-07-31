@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 class ComplimentingBottomSheet extends StatefulWidget {
   final String complimentingType;
 
-  const ComplimentingBottomSheet({
-    Key? key,
-    this.complimentingType = 'Prompt',
-  }) : super(key: key);
+  const ComplimentingBottomSheet({Key? key, this.complimentingType = 'Prompt'})
+    : super(key: key);
 
   static void show(BuildContext context, {String type = 'Prompt'}) {
     showModalBottomSheet(
@@ -18,15 +16,16 @@ class ComplimentingBottomSheet extends StatefulWidget {
   }
 
   @override
-  State<ComplimentingBottomSheet> createState() => _ComplimentingBottomSheetState();
+  State<ComplimentingBottomSheet> createState() =>
+      _ComplimentingBottomSheetState();
 }
 
 class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  String _selectedGiftType = 'None'; 
+  String _selectedGiftType = 'None';
 
-  final Color _primaryColor = const Color(0xFFE43A6A); 
+  final Color _primaryColor = const Color(0xFFE43A6A);
   final Color _softGrey = const Color(0xFFF5F5F5);
   final Color _borderGrey = const Color(0xFFEBEBEB);
 
@@ -69,7 +68,8 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
   }
 
   bool get _canSend {
-    return _textController.text.trim().isNotEmpty || _selectedGiftType != 'None';
+    return _textController.text.trim().isNotEmpty ||
+        _selectedGiftType != 'None';
   }
 
   @override
@@ -84,7 +84,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       ),
       child: Padding(
         padding: EdgeInsets.only(
-          bottom: bottomPadding > 0 ? bottomPadding : MediaQuery.of(context).padding.bottom,
+          bottom: bottomPadding > 0
+              ? bottomPadding
+              : MediaQuery.of(context).padding.bottom,
         ),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -150,7 +152,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _focusNode.hasFocus ? Colors.white : const Color(0xFFFAFAFA),
+                    color: _focusNode.hasFocus
+                        ? Colors.white
+                        : const Color(0xFFFAFAFA),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _focusNode.hasFocus ? _primaryColor : _borderGrey,
@@ -166,7 +170,13 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                         maxLines: 4,
                         minLines: 2,
                         maxLength: 140,
-                        buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                        buildCounter:
+                            (
+                              context, {
+                              required currentLength,
+                              required isFocused,
+                              maxLength,
+                            }) => null,
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -188,16 +198,25 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       const SizedBox(height: 8),
                       // 'Try' Button
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFFFFB6C1).withOpacity(0.5)),
+                          border: Border.all(
+                            color: const Color(0xFFFFB6C1).withOpacity(0.5),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.lightbulb_outline, size: 14, color: _primaryColor),
+                            Icon(
+                              Icons.lightbulb_outline,
+                              size: 14,
+                              color: _primaryColor,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               'Try',
@@ -222,7 +241,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
-                            _selectedGiftType = _selectedGiftType == 'Rose' ? 'None' : 'Rose';
+                            _selectedGiftType = _selectedGiftType == 'Rose'
+                                ? 'None'
+                                : 'Rose';
                           });
                         },
                         child: _buildGiftButton(
@@ -237,7 +258,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
-                            _selectedGiftType = _selectedGiftType == 'Gift' ? 'None' : 'Gift';
+                            _selectedGiftType = _selectedGiftType == 'Gift'
+                                ? 'None'
+                                : 'Gift';
                           });
                         },
                         child: _buildGiftButton(
@@ -261,7 +284,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 8),
 
                 // Bottom Actions
                 Row(
@@ -272,7 +295,10 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       height: 50,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: _primaryColor.withOpacity(0.3), width: 1.5),
+                        border: Border.all(
+                          color: _primaryColor.withOpacity(0.3),
+                          width: 1.5,
+                        ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -294,14 +320,18 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                     // Send Button
                     Expanded(
                       child: GestureDetector(
-                        onTap: _canSend ? () {
-                          Navigator.pop(context);
-                        } : null,
+                        onTap: _canSend
+                            ? () {
+                                Navigator.pop(context);
+                              }
+                            : null,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           height: 50,
                           decoration: BoxDecoration(
-                            color: _canSend ? _primaryColor : _primaryColor.withOpacity(0.3),
+                            color: _canSend
+                                ? _primaryColor
+                                : _primaryColor.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Center(
@@ -332,10 +362,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     );
   }
 
-  Widget _buildStatPill({
-    required String emoji,
-    required String text,
-  }) {
+  Widget _buildStatPill({required String emoji, required String text}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -399,13 +426,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 color: primaryPink,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.check,
-                size: 10,
-                color: Colors.white,
-              ),
+              child: const Icon(Icons.check, size: 10, color: Colors.white),
             ),
-          ]
+          ],
         ],
       ),
     );
