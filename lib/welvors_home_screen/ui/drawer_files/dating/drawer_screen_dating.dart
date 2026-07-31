@@ -272,22 +272,33 @@ class _DrawerScreenState extends State<DrawerScreen> {
               alignment: Alignment.bottomCenter,
               clipBehavior: Clip.none,
               children: [
-                // Circular progress ring
-                SizedBox(
-                  width: 106,
-                  height: 106,
+                // Circular progress ring with glowing shadow
+                Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.pink.withOpacity(0.3 * animValue),
+                        blurRadius: 16,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
                   child: CircularProgressIndicator(
                     value: 0.75 * animValue,
-                    strokeWidth: 5, // Made thicker as requested
-                    color: AppColors.pink, // Lighter pink
-                    backgroundColor: Colors.white, // Remaining circle is white
+                    strokeWidth: 6.5, // Thicker for premium look
+                    strokeCap: StrokeCap.round, // Rounded starting and ending points!
+                    color: AppColors.pink, 
+                    backgroundColor: Colors.grey.shade100, // Premium track color
                   ),
                 ),
                 // Inner Avatar Image
                 Container(
-                  width: 92, // Leave space for gap and stroke
+                  width: 92, 
                   height: 92,
-                  margin: const EdgeInsets.all(7), // Center it inside the ring
+                  margin: const EdgeInsets.all(9), // Center it inside the new 110px ring
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
@@ -297,8 +308,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
                     ],

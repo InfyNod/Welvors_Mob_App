@@ -99,14 +99,37 @@ class CompletionAndPhotosSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8), // Reduced spacing
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: animValue,
-                  minHeight: 5, // Thinner progress bar
-                  backgroundColor: const Color(0xFFF3F2EE),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE43A6A)),
-                ),
+              Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  // Track
+                  Container(
+                    height: 6,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F2EE),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  // Animated Gradient Progress Bar
+                  FractionallySizedBox(
+                    widthFactor: animValue,
+                    child: Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFFFFA7B9), // Light pink
+                            Color(0xFFE43A6A), // Dark premium pink
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8), // Reduced spacing
               Text(
