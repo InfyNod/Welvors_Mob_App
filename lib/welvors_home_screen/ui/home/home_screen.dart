@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
           return LayoutBuilder(
             builder: (context, constraints) {
               Widget child = SingleChildScrollView(
-                physics: isPreview 
+                physics: isPreview
                     ? const BouncingScrollPhysics()
                     : const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics(),
@@ -49,7 +49,8 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: constraints.maxHeight, // Exactly fits the visible viewport
+                      height: constraints
+                          .maxHeight, // Exactly fits the visible viewport
                       child: const Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: 16.0,
@@ -502,16 +503,34 @@ class _ProfileDetailsView extends StatelessWidget {
                         if (profile.loveLanguage.isNotEmpty)
                           _buildBentoPill(
                             Icons.favorite_border,
-                            profile.loveLanguage.split(RegExp(r'\s*[•·]\s*')).first,
-                            profile.loveLanguage.split(RegExp(r'\s*[•·]\s*')).length > 1 ? profile.loveLanguage.split(RegExp(r'\s*[•·]\s*')).last : '',
+                            profile.loveLanguage
+                                .split(RegExp(r'\s*[•·]\s*'))
+                                .first,
+                            profile.loveLanguage
+                                        .split(RegExp(r'\s*[•·]\s*'))
+                                        .length >
+                                    1
+                                ? profile.loveLanguage
+                                      .split(RegExp(r'\s*[•·]\s*'))
+                                      .last
+                                : '',
                             constraints.maxWidth,
                             stacked: true,
                           ),
                         if (profile.communication.isNotEmpty)
                           _buildBentoPill(
                             Icons.phone_in_talk_outlined,
-                            profile.communication.split(RegExp(r'\s*[•·]\s*')).first,
-                            profile.communication.split(RegExp(r'\s*[•·]\s*')).length > 1 ? profile.communication.split(RegExp(r'\s*[•·]\s*')).last : '',
+                            profile.communication
+                                .split(RegExp(r'\s*[•·]\s*'))
+                                .first,
+                            profile.communication
+                                        .split(RegExp(r'\s*[•·]\s*'))
+                                        .length >
+                                    1
+                                ? profile.communication
+                                      .split(RegExp(r'\s*[•·]\s*'))
+                                      .last
+                                : '',
                             constraints.maxWidth,
                             stacked: true,
                           ),
@@ -536,7 +555,7 @@ class _ProfileDetailsView extends StatelessWidget {
           if (profile.prompts.isNotEmpty) ...[
             _buildPromptCard(
               context,
-              profile.prompts[0]['question'] ?? '',
+              profile.prompts[0]['prompt'] ?? '',
               profile.prompts[0]['answer'] ?? '',
             ),
             const SizedBox(height: 16),
@@ -711,7 +730,7 @@ class _ProfileDetailsView extends StatelessWidget {
           if (profile.prompts.length > 1) ...[
             _buildPromptCard(
               context,
-              profile.prompts[1]['question'] ?? '',
+              profile.prompts[1]['prompt'] ?? '',
               profile.prompts[1]['answer'] ?? '',
             ),
             const SizedBox(height: 16),
@@ -1165,7 +1184,7 @@ class _ProfileDetailsView extends StatelessWidget {
           if (profile.prompts.length > 2) ...[
             _buildPromptCard(
               context,
-              profile.prompts[2]['question'] ?? '',
+              profile.prompts[2]['prompt'] ?? '',
               profile.prompts[2]['answer'] ?? '',
             ),
             const SizedBox(height: 16),
@@ -1551,7 +1570,7 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         image: DecorationImage(
-          image: imageUrl.startsWith('http') 
+          image: imageUrl.startsWith('http')
               ? NetworkImage(imageUrl) as ImageProvider
               : FileImage(File(imageUrl)),
           fit: BoxFit.cover,
@@ -1816,14 +1835,10 @@ class _ProfileDetailsView extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildPromptCard(BuildContext context, String prompt, String answer) {
     return Container(
-      padding: const EdgeInsets.only(
-        left: 24,
-        right: 15,
-        top: 10,
-        bottom: 24,
-      ),
+      padding: const EdgeInsets.only(left: 24, right: 15, top: 10, bottom: 24),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1858,7 +1873,7 @@ class _ProfileDetailsView extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  prompt.toUpperCase() + (prompt.endsWith('?') ? '' : '..?'),
+                  prompt.toUpperCase(),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
@@ -1890,10 +1905,8 @@ class _ProfileDetailsView extends StatelessWidget {
                 bottom: -18,
                 right: -13,
                 child: GestureDetector(
-                  onTap: () => ComplimentingBottomSheet.show(
-                    context,
-                    type: 'Prompt',
-                  ),
+                  onTap: () =>
+                      ComplimentingBottomSheet.show(context, type: 'Prompt'),
                   child: Container(
                     width: 65,
                     height: 65,
@@ -2256,20 +2269,11 @@ class _ProfileCardUI extends StatelessWidget {
                       _buildTag(
                         profile.trustPercentage,
                         Colors.green,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TrustScreen(),
-                            ),
-                          );
-                        },
                       ),
                       const SizedBox(width: 8),
                       _buildTag(
                         profile.replyTime,
                         Colors.orange,
-                        onTap: () => ReplyDrawer.show(context),
                       ),
                     ],
                   ),
@@ -2404,26 +2408,29 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
   void initState() {
     super.initState();
     if (widget.videoPath.startsWith('http')) {
-      _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoPath));
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoPath),
+      );
     } else if (widget.videoPath.startsWith('assets/')) {
       _controller = VideoPlayerController.asset(widget.videoPath);
     } else {
       _controller = VideoPlayerController.file(File(widget.videoPath));
     }
-    _controller.initialize()
-          .then((_) {
-            _controller.setLooping(true);
-            _controller.setVolume(_isMuted ? 0.0 : 1.0);
-            // Video is initially paused, so we don't start the hide timer yet
+    _controller
+        .initialize()
+        .then((_) {
+          _controller.setLooping(true);
+          _controller.setVolume(_isMuted ? 0.0 : 1.0);
+          // Video is initially paused, so we don't start the hide timer yet
+          setState(() {});
+        })
+        .catchError((error) {
+          debugPrint("Video Init Error: $error");
+          // We can just stop loading by calling setState
+          if (mounted) {
             setState(() {});
-          })
-          .catchError((error) {
-            debugPrint("Video Init Error: $error");
-            // We can just stop loading by calling setState
-            if (mounted) {
-              setState(() {});
-            }
-          });
+          }
+        });
 
     _controller.addListener(_videoListener);
   }
