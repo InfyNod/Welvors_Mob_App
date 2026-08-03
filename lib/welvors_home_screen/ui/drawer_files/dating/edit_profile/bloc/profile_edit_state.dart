@@ -58,6 +58,7 @@ class ProfileEditState extends Equatable {
   final String familyHome;
   final String nativePlace;
   final String familyIncome;
+  final String familyDynamic;
   
   final String bio;
   final String intention;
@@ -113,6 +114,7 @@ class ProfileEditState extends Equatable {
     required this.familyHome,
     required this.nativePlace,
     required this.familyIncome,
+    required this.familyDynamic,
     required this.bio,
     required this.intention,
     required this.photos,
@@ -177,6 +179,7 @@ class ProfileEditState extends Equatable {
       familyHome: 'Pune',
       nativePlace: 'Nashik',
       familyIncome: '₹25–40 L / year',
+      familyDynamic: 'We are a very close-knit family. Sundays are strictly for big family lunches and endless conversations over chai. We believe in sticking together through thick and thin.',
       bio: 'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
       intention: 'Open to marriage, when it’s right',
       photos: List.filled(6, null),
@@ -232,6 +235,7 @@ class ProfileEditState extends Equatable {
     String? familyHome,
     String? nativePlace,
     String? familyIncome,
+    String? familyDynamic,
     String? bio,
     String? intention,
     List<XFile?>? photos,
@@ -285,6 +289,7 @@ class ProfileEditState extends Equatable {
       familyHome: familyHome ?? this.familyHome,
       nativePlace: nativePlace ?? this.nativePlace,
       familyIncome: familyIncome ?? this.familyIncome,
+      familyDynamic: familyDynamic ?? this.familyDynamic,
       bio: bio ?? this.bio,
       intention: intention ?? this.intention,
       photos: photos ?? this.photos,
@@ -341,6 +346,7 @@ class ProfileEditState extends Equatable {
         familyHome,
         nativePlace,
         familyIncome,
+        familyDynamic,
         bio,
         intention,
         photos,

@@ -167,6 +167,15 @@ class _FamilySectionState extends State<FamilySection> {
                     options: _incomeOptions,
                     onSelect: (val) => context.read<ProfileEditCubit>().updateFamilyIncome(val),
                   ),
+                  _buildDivider(),
+                  _buildTextFieldItem(
+                    context: context,
+                    label: 'FAMILY DYNAMIC',
+                    value: state.familyDynamic,
+                    isMultiline: true,
+                    maxLength: 300,
+                    onSelect: (val) => context.read<ProfileEditCubit>().updateFamilyDynamic(val),
+                  ),
                 ],
               ),
             ),
@@ -300,6 +309,73 @@ class _FamilySectionState extends State<FamilySection> {
                   color: Colors.grey.shade400,
                   size: 20,
                 ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextFieldItem({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required Function(String) onSelect,
+    bool isMultiline = false,
+    int? maxLength,
+  }) {
+    return InkWell(
+      onTap: () async {
+        final result = await Navigator.push<String>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditTextInputScreen(
+              title: label,
+              headerText: label,
+              subHeaderText: 'Please enter your ${label.toLowerCase()}',
+              label: label,
+              currentValue: value,
+              maxLines: isMultiline ? 5 : 1,
+              maxLength: maxLength,
+            ),
+          ),
+        );
+        if (result != null) {
+          onSelect(result);
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 10,
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    value.isNotEmpty ? value : 'Add',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: value.isNotEmpty ? Colors.black87 : Colors.grey,
+                    ),
+                    maxLines: isMultiline ? 2 : 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
               ],
             ),
           ],

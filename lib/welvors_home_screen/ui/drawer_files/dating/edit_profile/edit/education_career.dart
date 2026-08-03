@@ -195,7 +195,7 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                     label: 'BIG DREAMS',
                     value: state.bigDreams,
                     isMultiline: true,
-                    maxLength: 120,
+                    maxLength: 300,
                     onSelect: (val) =>
                         context.read<ProfileEditCubit>().updateBigDreams(val),
                   ),

@@ -210,41 +210,59 @@ class BasicDetailsSection extends StatelessWidget {
                     }
                   }),
                   _buildDivider(),
-                  _buildEditableField('LOVE LANGUAGE', state.loveLanguage, () async {
-                    final result = await Navigator.push<String>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GenericListPickerScreen(
-                          title: 'Love Language',
-                          headerText: 'What\'s your love language?',
-                          subHeaderText: 'How do you prefer to give and receive love?',
-                          currentValue: state.loveLanguage,
-                          options: ['Words of affirmation', 'Quality time', 'Receiving gifts', 'Acts of service', 'Physical touch'],
+                  _buildEditableField(
+                    'LOVE LANGUAGE',
+                    state.loveLanguage,
+                    () async {
+                      final result = await Navigator.push<String>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GenericListPickerScreen(
+                            title: 'Love Language',
+                            headerText: 'What\'s your love language?',
+                            subHeaderText: 'How do you prefer to give and receive love?',
+                            currentValue: state.loveLanguage,
+                            options: ['Words of affirmation', 'Quality time', 'Receiving gifts', 'Acts of service', 'Physical touch'],
+                            optionSubtitles: {
+                              for (var item in loveLanguageOptions)
+                                item['title']!: item['subtitle']!
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                    if (result != null && context.mounted) {
-                      context.read<ProfileEditCubit>().updateLoveLanguage(result);
-                    }
-                  }),
+                      );
+                      if (result != null && context.mounted) {
+                        context.read<ProfileEditCubit>().updateLoveLanguage(result);
+                      }
+                    },
+                    subtitle: loveLanguageOptions.firstWhere((element) => element['title'] == state.loveLanguage, orElse: () => {'subtitle': ''})['subtitle'],
+                  ),
                   _buildDivider(),
-                  _buildEditableField('COMMUNICATION', state.communication, () async {
-                    final result = await Navigator.push<String>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GenericListPickerScreen(
-                          title: 'Communication',
-                          headerText: 'How do you communicate?',
-                          subHeaderText: 'Your preferred style of communicating.',
-                          currentValue: state.communication,
-                          options: ['Phone calls over texts', 'Texts over phone calls', 'In person only', 'Video calls'],
+                  _buildEditableField(
+                    'COMMUNICATION',
+                    state.communication,
+                    () async {
+                      final result = await Navigator.push<String>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GenericListPickerScreen(
+                            title: 'Communication',
+                            headerText: 'How do you communicate?',
+                            subHeaderText: 'Your preferred style of communicating.',
+                            currentValue: state.communication,
+                            options: ['Phone calls over texts', 'Texts over phone calls', 'In person only', 'Video calls'],
+                            optionSubtitles: {
+                              for (var item in communicationOptions)
+                                item['title']!: item['subtitle']!
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                    if (result != null && context.mounted) {
-                      context.read<ProfileEditCubit>().updateCommunication(result);
-                    }
-                  }),
+                      );
+                      if (result != null && context.mounted) {
+                        context.read<ProfileEditCubit>().updateCommunication(result);
+                      }
+                    },
+                    subtitle: communicationOptions.firstWhere((element) => element['title'] == state.communication, orElse: () => {'subtitle': ''})['subtitle'],
+                  ),
                 ],
               ),
             ),
@@ -331,7 +349,49 @@ class BasicDetailsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildEditableField(String label, String value, VoidCallback onTap) {
+static final List<Map<String, String>> loveLanguageOptions = [
+  {
+    'title': 'Words of affirmation',
+    'subtitle': 'Compliments and encouragement mean the world to you.',
+  },
+  {
+    'title': 'Quality time',
+    'subtitle': 'Undivided attention and spending time together.',
+  },
+  {
+    'title': 'Receiving gifts',
+    'subtitle': 'Thoughtful gifts make you feel truly special.',
+  },
+  {
+    'title': 'Acts of service',
+    'subtitle': 'Actions speak louder than words for you.',
+  },
+  {
+    'title': 'Physical touch',
+    'subtitle': 'Hugs, holding hands, and physical closeness.',
+  },
+];
+
+static final List<Map<String, String>> communicationOptions = [
+  {
+    'title': 'Phone calls over texts',
+    'subtitle': 'You prefer hearing their voice over reading messages.',
+  },
+  {
+    'title': 'Texts over phone calls',
+    'subtitle': 'You prefer quick messages throughout the day.',
+  },
+  {
+    'title': 'In person only',
+    'subtitle': 'You prefer face-to-face conversations above all.',
+  },
+  {
+    'title': 'Video calls',
+    'subtitle': 'You prefer seeing their face when talking.',
+  },
+];
+
+  Widget _buildEditableField(String label, String value, VoidCallback onTap, {String? subtitle}) {
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -361,6 +421,18 @@ class BasicDetailsSection extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  if (subtitle != null && subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ],
               ),
             ),

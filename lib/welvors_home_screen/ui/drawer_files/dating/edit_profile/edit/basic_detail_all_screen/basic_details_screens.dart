@@ -324,6 +324,7 @@ class GenericListPickerScreen extends StatefulWidget {
   final String subHeaderText;
   final String currentValue;
   final List<String> options;
+  final Map<String, String>? optionSubtitles;
 
   const GenericListPickerScreen({
     super.key,
@@ -332,6 +333,7 @@ class GenericListPickerScreen extends StatefulWidget {
     required this.subHeaderText,
     required this.currentValue,
     required this.options,
+    this.optionSubtitles,
   });
 
   @override
@@ -398,6 +400,7 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                     itemBuilder: (context, index) {
                       final option = widget.options[index];
                       final isSelected = _selected == option;
+                      final subtitle = widget.optionSubtitles?[option];
                       return GestureDetector(
                         onTap: () {
                           setState(() {
@@ -424,16 +427,33 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                option,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                  color: isSelected
-                                      ? const Color(0xFFE43A6A)
-                                      : Colors.black87,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      option,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? const Color(0xFFE43A6A)
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                    if (subtitle != null && subtitle.isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        subtitle,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.8) : Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
                               if (isSelected)

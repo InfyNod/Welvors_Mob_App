@@ -90,4 +90,5 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateFamilyHome(String val) => emit(state.copyWith(familyHome: val));
   void updateNativePlace(String val) => emit(state.copyWith(nativePlace: val));
   void updateFamilyIncome(String val) => emit(state.copyWith(familyIncome: val));
+  void updateFamilyDynamic(String val) => emit(state.copyWith(familyDynamic: val));
 }
