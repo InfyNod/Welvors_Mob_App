@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:image_picker/image_picker.dart';
+import '../models/profile_photo.dart';
 
 class ProfileEditState extends Equatable {
   final String fullName;
@@ -64,7 +64,7 @@ class ProfileEditState extends Equatable {
   final String bio;
   final String intention;
   
-  final List<XFile?> photos;
+  final List<ProfilePhoto?> photos;
   final String? videoPath;
 
   const ProfileEditState({
@@ -242,7 +242,7 @@ class ProfileEditState extends Equatable {
     String? familyDynamic,
     String? bio,
     String? intention,
-    List<XFile?>? photos,
+    List<ProfilePhoto?>? photos,
     String? videoPath,
   }) {
     return ProfileEditState(
@@ -314,8 +314,8 @@ class ProfileEditState extends Equatable {
         if (prop.trim().isNotEmpty) filled++;
       } else if (prop is List) {
         if (prop.isNotEmpty) {
-          if (prop.every((e) => e == null)) {
-            // All null (like empty photos list), don't count
+          if (prop.every((e) => e == null || (e is ProfilePhoto && e.isEmpty))) {
+            // All empty (like empty photos list), don't count
           } else {
             filled++;
           }

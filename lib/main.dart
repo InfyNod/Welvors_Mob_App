@@ -8,7 +8,15 @@ import 'welvors_home_screen/home_bloc/home_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
-void main() {
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Set the test token provided by the backend team for testing
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('auth_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjOTFiOWZkZS0wM2JlLTRjNWItYmMwMS04MTkwNTgyYzdkMWYiLCJpYXQiOjE3ODU3NTIyOTQsImV4cCI6MTc4ODM0NDI5NH0.nTOxnLRwg29fET0FwP8G2h3d93ROZhJdsnKFLBu9xz8');
+
   runApp(const WelvorsApp());
 }
 

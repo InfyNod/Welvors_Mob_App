@@ -304,7 +304,18 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 // Inner Avatar Image
                 BlocBuilder<ProfileEditCubit, ProfileEditState>(
                   builder: (context, state) {
-                    final hasPhoto = state.photos.isNotEmpty && state.photos.first != null;
+                    final firstPhoto = state.photos.isNotEmpty ? state.photos.first : null;
+                    final hasPhoto = firstPhoto != null && !firstPhoto.isEmpty;
+                    
+                    ImageProvider? imageProvider;
+                    if (hasPhoto) {
+                      if (firstPhoto.isNetwork) {
+                        imageProvider = NetworkImage(firstPhoto.url!);
+                      } else if (firstPhoto.isLocal) {
+                        imageProvider = FileImage(File(firstPhoto.localFile!.path));
+                      }
+                    }
+
                     return Container(
                       width: 92, 
                       height: 92,
@@ -316,8 +327,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        image: hasPhoto ? DecorationImage(
-                          image: FileImage(File(state.photos.first!.path)),
+                        image: imageProvider != null ? DecorationImage(
+                          image: imageProvider,
                           fit: BoxFit.cover,
                         ) : null,
                         boxShadow: [

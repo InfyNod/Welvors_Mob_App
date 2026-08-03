@@ -5,18 +5,24 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
+import '../models/profile_photo.dart';
 
 class CompletionAndPhotosSection extends StatelessWidget {
   CompletionAndPhotosSection({super.key});
 
   final ImagePicker _picker = ImagePicker();
 
-  int _photoCount(List<XFile?> photos) => photos.where((p) => p != null).length;
+  int _photoCount(List<ProfilePhoto?> photos) => photos.where((p) => p != null && !p.isEmpty).length;
 
-  Future<void> _pickImage(BuildContext context, List<XFile?> currentPhotos) async {
-    final emptyIndex = currentPhotos.indexWhere((p) => p == null);
+  Future<void> _pickImage(BuildContext context, List<ProfilePhoto?> currentPhotos) async {
+    final emptyIndex = currentPhotos.indexWhere((p) => p == null || p.isEmpty);
     if (emptyIndex != -1) {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 60,
+        maxWidth: 1080,
+        maxHeight: 1080,
+      );
       if (image != null && context.mounted) {
         context.read<ProfileEditCubit>().updateSinglePhoto(emptyIndex, image);
       }
@@ -24,14 +30,19 @@ class CompletionAndPhotosSection extends StatelessWidget {
   }
 
   Future<void> _replaceImage(BuildContext context, int index) async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 60,
+      maxWidth: 1080,
+      maxHeight: 1080,
+    );
     if (image != null && context.mounted) {
       context.read<ProfileEditCubit>().updateSinglePhoto(index, image);
     }
   }
 
-  void _removePhoto(BuildContext context, List<XFile?> currentPhotos, int index) {
-    final updatedPhotos = List<XFile?>.from(currentPhotos);
+  void _removePhoto(BuildContext context, List<ProfilePhoto?> currentPhotos, int index) {
+    final updatedPhotos = List<ProfilePhoto?>.from(currentPhotos);
     updatedPhotos.removeAt(index);
     updatedPhotos.add(null);
     context.read<ProfileEditCubit>().updatePhotos(updatedPhotos);
@@ -148,7 +159,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPhotosSection(BuildContext context, List<XFile?> photos) {
+  Widget _buildPhotosSection(BuildContext context, List<ProfilePhoto?> photos) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -186,19 +197,28 @@ class CompletionAndPhotosSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPhotoSlot(BuildContext context, List<XFile?> photos, int index) {
+  Widget _buildPhotoSlot(BuildContext context, List<ProfilePhoto?> photos, int index) {
     final photo = photos[index];
-    final isMain = index == 0 && photo != null;
+    final isMain = index == 0 && photo != null && !photo.isEmpty;
 
-    if (photo != null) {
+    if (photo != null && !photo.isEmpty) {
+      ImageProvider? imageProvider;
+      if (photo.isNetwork) {
+        imageProvider = NetworkImage(photo.url!);
+      } else if (photo.isLocal) {
+        imageProvider = FileImage(File(photo.localFile!.path));
+      }
+
       return Container(
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(12),
-          image: DecorationImage(
-            image: FileImage(File(photo.path)),
-            fit: BoxFit.cover,
-          ),
+          image: imageProvider != null
+              ? DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
+                )
+              : null,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.02),
@@ -209,7 +229,46 @@ class CompletionAndPhotosSection extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            if (isMain)
+            if (photo.isUploading)
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+            if (photo.uploadError != null)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.redAccent, size: 24),
+                      const SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          photo.uploadError ?? 'Failed',
+                          style: const TextStyle(color: Colors.white, fontSize: 10),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            if (isMain && !photo.isUploading && photo.uploadError == null)
               Positioned(
                 top: 8,
                 left: 8,
@@ -229,7 +288,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
                   ),
                 ),
               ),
-            if (_photoCount(photos) > 2)
+            if (_photoCount(photos) > 2 && !photo.isUploading)
               Positioned(
                 top: -6,
                 right: -6,
@@ -245,28 +304,29 @@ class CompletionAndPhotosSection extends StatelessWidget {
                   onPressed: () => _removePhoto(context, photos, index),
                 ),
               ),
-            Positioned(
-              bottom: 6,
-              right: 6,
-              child: GestureDetector(
-                onTap: () => _replaceImage(context, index),
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+            if (!photo.isUploading)
+              Positioned(
+                bottom: 6,
+                right: 6,
+                child: GestureDetector(
+                  onTap: () => _replaceImage(context, index),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.edit, color: Color(0xFFE43A6A), size: 14),
                   ),
-                  child: const Icon(Icons.edit, color: Color(0xFFE43A6A), size: 14),
                 ),
               ),
-            ),
           ],
         ),
       );

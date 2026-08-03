@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
@@ -666,7 +667,12 @@ class ApiService {
 
       for (var path in imagePaths) {
         request.files.add(
-          await http.MultipartFile.fromPath('images', path),
+          await http.MultipartFile.fromPath(
+            'images', 
+            path,
+            filename: 'upload_${DateTime.now().millisecondsSinceEpoch}.jpg',
+            contentType: MediaType('image', 'jpeg'),
+          ),
         );
       }
 
@@ -695,6 +701,8 @@ class ApiService {
       return e.toString();
     }
   }
+
+
 
   /// Submits the user's bio to the server.
   static Future<String?> submitBio(String bioText) async {

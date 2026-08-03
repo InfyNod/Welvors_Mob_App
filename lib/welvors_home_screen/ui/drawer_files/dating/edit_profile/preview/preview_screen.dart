@@ -27,8 +27,8 @@ class PreviewScreen extends StatelessWidget {
       builder: (context, state) {
         // Convert current EditProfile state to a ProfileModel for the home screen
         List<String> images = state.photos
-            .where((p) => p != null)
-            .map((p) => p!.path)
+            .where((p) => p != null && !p.isEmpty)
+            .map((p) => p!.isNetwork ? p.url! : p.localFile!.path)
             .toList();
 
         if (images.isEmpty) {

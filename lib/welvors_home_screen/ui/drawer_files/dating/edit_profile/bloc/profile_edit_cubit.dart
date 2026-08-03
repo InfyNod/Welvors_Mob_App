@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import '../services/edit_profile_api_service.dart';
+import '../models/profile_photo.dart';
 import 'profile_edit_state.dart';
 
 class ProfileEditCubit extends Cubit<ProfileEditState> {
@@ -20,7 +22,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateBio(String bio) => emit(state.copyWith(bio: bio));
   void updateIntention(String intention) => emit(state.copyWith(intention: intention));
 
-  void updatePhotos(List<XFile?> newPhotos) => emit(state.copyWith(photos: newPhotos));
+  void updatePhotos(List<ProfilePhoto?> newPhotos) => emit(state.copyWith(photos: newPhotos));
   
   void updateVideoPath(String? path) => emit(state.copyWith(videoPath: path));
   
@@ -76,10 +78,59 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     emit(state.copyWith(prompts: prompts));
   }
   
-  void updateSinglePhoto(int index, XFile? photo) {
-    final updatedPhotos = List<XFile?>.from(state.photos);
-    updatedPhotos[index] = photo;
+  Future<void> updateSinglePhoto(int index, XFile? photo) async {
+    final updatedPhotos = List<ProfilePhoto?>.from(state.photos);
+    final existingPhoto = updatedPhotos[index];
+
+    if (photo == null) {
+      updatedPhotos[index] = null;
+      emit(state.copyWith(photos: updatedPhotos));
+      return;
+    }
+
+    final newPhotoState = ProfilePhoto(
+      id: existingPhoto?.id,
+      localFile: photo,
+      isUploading: true,
+    );
+    updatedPhotos[index] = newPhotoState;
     emit(state.copyWith(photos: updatedPhotos));
+
+    String? error;
+    String? newPhotoId = existingPhoto?.id; // default to existing id
+    if (existingPhoto?.id != null) {
+      error = await EditProfileApiService.updateSpecificPhoto(existingPhoto!.id!, photo.path);
+    } else {
+      final response = await EditProfileApiService.addPhoto(photo.path);
+      error = response['error'];
+      if (error == null) {
+        // try to extract new photo id from data
+        final data = response['data'];
+        if (data != null && data['data'] != null) {
+          final photoData = data['data'];
+          if (photoData is Map) {
+             newPhotoId = photoData['_id'] ?? photoData['id'] ?? photoData['photoId'];
+          } else if (photoData is List && photoData.isNotEmpty) {
+             final lastPhoto = photoData.last;
+             if (lastPhoto is Map) {
+                newPhotoId = lastPhoto['_id'] ?? lastPhoto['id'] ?? lastPhoto['photoId'];
+             }
+          }
+        }
+      }
+    }
+
+    final finishedPhotos = List<ProfilePhoto?>.from(state.photos);
+    if (error == null) {
+       finishedPhotos[index] = finishedPhotos[index]?.copyWith(
+         isUploading: false, 
+         clearError: true,
+         id: newPhotoId, // save the new id so future edits use PATCH
+       );
+    } else {
+       finishedPhotos[index] = finishedPhotos[index]?.copyWith(isUploading: false, uploadError: error);
+    }
+    emit(state.copyWith(photos: finishedPhotos));
   }
   
   // Family
