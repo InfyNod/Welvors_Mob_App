@@ -56,6 +56,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateSalaryRange(String val) => emit(state.copyWith(salaryRange: val));
   void updateAmbitionLevel(String val) => emit(state.copyWith(ambitionLevel: val));
   void updateBigDreams(String val) => emit(state.copyWith(bigDreams: val));
+  void updateWorkStyle(String val) => emit(state.copyWith(workStyle: val));
   
   void togglePet(String pet) {
     final updatedPets = List<String>.from(state.pets);

@@ -57,6 +57,13 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
     'Between roles',
   ];
 
+  static const List<String> _workStyleOptions = [
+    'On-site',
+    'Hybrid',
+    'Remote',
+    'Flexible',
+  ];
+
   static const List<String> _salaryRangeOptions = [
     'Prefer not to say',
     'Up to 10 LPA',
@@ -87,7 +94,7 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                 Icon(Icons.work_outline, color: Color(0xFFE43A6A), size: 16),
                 SizedBox(width: 8),
                 Text(
-                  "EDUCATION & CAREER",
+                  "CAREER & AMBITION",
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -137,7 +144,7 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                   _buildDivider(),
                   _buildListItem(
                     context: context,
-                    label: 'PROFESSION',
+                    label: 'WORK AS',
                     value: state.profession,
                     options: _professionOptions,
                     onSelect: (val) =>
@@ -173,11 +180,20 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                   _buildDivider(),
                   _buildListItem(
                     context: context,
-                    label: 'SALARY RANGE',
+                    label: 'INCOME',
                     value: state.salaryRange,
                     options: _salaryRangeOptions,
                     onSelect: (val) =>
                         context.read<ProfileEditCubit>().updateSalaryRange(val),
+                  ),
+                  _buildDivider(),
+                  _buildListItem(
+                    context: context,
+                    label: 'WORK STYLE',
+                    value: state.workStyle,
+                    options: _workStyleOptions,
+                    onSelect: (val) =>
+                        context.read<ProfileEditCubit>().updateWorkStyle(val),
                   ),
                   _buildDivider(),
                   _buildListItem(

@@ -48,6 +48,7 @@ class ProfileEditState extends Equatable {
   final String salaryRange;
   final String ambitionLevel;
   final String bigDreams;
+  final String workStyle;
   
   // Family
   final String familyType;
@@ -106,6 +107,7 @@ class ProfileEditState extends Equatable {
     required this.salaryRange,
     required this.ambitionLevel,
     required this.bigDreams,
+    required this.workStyle,
     required this.familyType,
     required this.father,
     required this.mother,
@@ -169,8 +171,9 @@ class ProfileEditState extends Equatable {
       experience: '5–10 yrs',
       employmentType: 'Full-time',
       salaryRange: '30–45 LPA',
-      ambitionLevel: 'Highly driven',
+      ambitionLevel: 'HIGHLY DRIVEN',
       bigDreams: 'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
+      workStyle: 'Hybrid',
       familyType: 'Nuclear · Close-knit',
       father: 'Retired banker · Bank of Maharashtra',
       mother: 'Former school teacher · Homemaker',
@@ -227,6 +230,7 @@ class ProfileEditState extends Equatable {
     String? salaryRange,
     String? ambitionLevel,
     String? bigDreams,
+    String? workStyle,
     String? familyType,
     String? father,
     String? mother,
@@ -281,6 +285,7 @@ class ProfileEditState extends Equatable {
       salaryRange: salaryRange ?? this.salaryRange,
       ambitionLevel: ambitionLevel ?? this.ambitionLevel,
       bigDreams: bigDreams ?? this.bigDreams,
+      workStyle: workStyle ?? this.workStyle,
       familyType: familyType ?? this.familyType,
       father: father ?? this.father,
       mother: mother ?? this.mother,
@@ -338,6 +343,7 @@ class ProfileEditState extends Equatable {
         salaryRange,
         ambitionLevel,
         bigDreams,
+        workStyle,
         familyType,
         father,
         mother,

@@ -9,7 +9,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/who_you_seeing.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/prompts.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/lifestyle_card.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/education_career.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/career_ambition.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/family.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/intrested.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

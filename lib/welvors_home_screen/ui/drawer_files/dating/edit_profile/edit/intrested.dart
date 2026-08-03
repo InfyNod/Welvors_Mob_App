@@ -21,7 +21,7 @@ class InterestsSection extends StatelessWidget {
                 Icon(Icons.star, color: Color(0xFFE43A6A), size: 16),
                 SizedBox(width: 8),
                 Text(
-                  "INTERESTS",
+                  "INTERESTS & HOBBIES",
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -349,7 +349,8 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                       padding: const EdgeInsets.only(left: 16, right: 12),
                       child: Icon(
                         Icons.search_rounded,
-                        color: Colors.grey.shade500, // Kept grey for softer look
+                        color:
+                            Colors.grey.shade500, // Kept grey for softer look
                         size: 20, // Slightly smaller icon
                       ),
                     ),
@@ -357,7 +358,9 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                     border: InputBorder.none,
                     filled: true,
                     fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 14), // Reduced padding
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                    ), // Reduced padding
                   ),
                   style: const TextStyle(
                     fontSize: 15,

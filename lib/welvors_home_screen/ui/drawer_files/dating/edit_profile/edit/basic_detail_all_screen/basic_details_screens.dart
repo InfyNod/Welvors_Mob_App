@@ -254,34 +254,64 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _controller,
-                  keyboardType: widget.keyboardType,
-                  maxLines: widget.maxLines,
-                  maxLength: widget.maxLength,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                if (widget.maxLines > 1)
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      keyboardType: widget.keyboardType,
+                      maxLines: null,
+                      maxLength: widget.maxLength,
+                      textInputAction: TextInputAction.done,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Color(0xFFE43A6A)),
+                        ),
+                      ),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
+                  )
+                else
+                  TextField(
+                    controller: _controller,
+                    keyboardType: widget.keyboardType,
+                    maxLines: widget.maxLines,
+                    maxLength: widget.maxLength,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFE43A6A),
-                        width: 2,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFE43A6A),
+                          width: 2,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const Spacer(),
+                if (widget.maxLines <= 1) const Spacer(),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
