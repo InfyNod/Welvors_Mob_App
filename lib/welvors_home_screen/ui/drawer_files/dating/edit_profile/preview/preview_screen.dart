@@ -48,16 +48,16 @@ class PreviewScreen extends StatelessWidget {
           job: state.profession.isNotEmpty
               ? state.profession
               : 'Your Profession',
-          intent: state.intention.isNotEmpty ? state.intention : 'Your Intent',
+          intent: state.interestedIn.isNotEmpty ? state.interestedIn : 'Men',
           matchPercentage: '100% Match', // Preview dummy data
           trustPercentage: '100% Trust',
           replyTime: '~1m Replies',
           about: state.bio.isNotEmpty
               ? state.bio
               : 'Write something about yourself...',
-          lookingFor: state.interestedIn.isNotEmpty
-              ? state.interestedIn
-              : 'Looking For',
+          lookingFor: state.intention.isNotEmpty
+              ? state.intention
+              : 'A long-term relationship',
           height: state.height.isNotEmpty ? state.height : 'Your Height',
           religion: state.religionCaste.isNotEmpty
               ? state.religionCaste

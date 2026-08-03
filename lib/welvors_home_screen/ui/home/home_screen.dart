@@ -2564,8 +2564,14 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(widget.videoPath)
-      ..initialize()
+    if (widget.videoPath.startsWith('http')) {
+      _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoPath));
+    } else if (widget.videoPath.startsWith('assets/')) {
+      _controller = VideoPlayerController.asset(widget.videoPath);
+    } else {
+      _controller = VideoPlayerController.file(File(widget.videoPath));
+    }
+    _controller.initialize()
           .then((_) {
             _controller.setLooping(true);
             _controller.setVolume(_isMuted ? 0.0 : 1.0);

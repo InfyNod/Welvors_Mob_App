@@ -18,6 +18,16 @@ class _VideoSectionState extends State<VideoSection> {
   VideoPlayerController? _thumbnailController;
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize with existing video if it exists when the screen is loaded
+    final initialVideoPath = context.read<ProfileEditCubit>().state.videoPath;
+    if (initialVideoPath != null && initialVideoPath.isNotEmpty) {
+      _initializeThumbnail(initialVideoPath);
+    }
+  }
+
+  @override
   void dispose() {
     _thumbnailController?.dispose();
     super.dispose();
@@ -25,8 +35,18 @@ class _VideoSectionState extends State<VideoSection> {
 
   void _initializeThumbnail(String path) {
     _thumbnailController?.dispose();
-    _thumbnailController = VideoPlayerController.file(File(path))
+    if (path.startsWith('http')) {
+      _thumbnailController = VideoPlayerController.networkUrl(Uri.parse(path));
+    } else if (path.startsWith('assets/')) {
+      _thumbnailController = VideoPlayerController.asset(path);
+    } else {
+      _thumbnailController = VideoPlayerController.file(File(path));
+    }
+    _thumbnailController!
       ..initialize().then((_) {
+        if (mounted) setState(() {});
+      }).catchError((e) {
+        debugPrint('Thumbnail Init Error: $e');
         if (mounted) setState(() {});
       });
   }

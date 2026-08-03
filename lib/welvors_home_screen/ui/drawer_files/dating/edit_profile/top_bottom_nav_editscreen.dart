@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/completion_image.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/video.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/about_you.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/your_intenshion.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/your_intentions.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_detail.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/location.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/vip_elite.dart';
