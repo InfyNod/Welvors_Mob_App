@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 class AboutYouSection extends StatelessWidget {
   const AboutYouSection({super.key});
@@ -108,6 +109,7 @@ class EditBioScreen extends StatefulWidget {
 class _EditBioScreenState extends State<EditBioScreen> {
   late TextEditingController _controller;
   bool _hasChanges = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -127,6 +129,22 @@ class _EditBioScreenState extends State<EditBioScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveBio(String newBio) async {
+    setState(() => _isLoading = true);
+    final error = await EditProfileApiService.updateBio(newBio);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (error == null) {
+      Navigator.pop(context, newBio);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(error),
+        backgroundColor: Colors.red,
+      ));
+    }
   }
 
   Future<bool> _onWillPop() async {
@@ -177,12 +195,9 @@ class _EditBioScreenState extends State<EditBioScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isLoading ? null : () {
                     Navigator.pop(context, false); // Close dialog
-                    Navigator.pop(
-                      context,
-                      _controller.text,
-                    ); // Save and Pop screen
+                    _saveBio(_controller.text); // Save and Pop screen
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
@@ -331,8 +346,8 @@ class _EditBioScreenState extends State<EditBioScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context, _controller.text);
+                    onPressed: _isLoading ? null : () {
+                      _saveBio(_controller.text);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -343,13 +358,19 @@ class _EditBioScreenState extends State<EditBioScreen> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Save Changes',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: _isLoading 
+                      ? const SizedBox(
+                          height: 20, 
+                          width: 20, 
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Save Changes',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                   ),
                 ),
               ],

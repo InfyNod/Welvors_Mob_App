@@ -5,7 +5,78 @@ import '../models/profile_photo.dart';
 import 'profile_edit_state.dart';
 
 class ProfileEditCubit extends Cubit<ProfileEditState> {
-  ProfileEditCubit() : super(ProfileEditState.initial());
+  ProfileEditCubit() : super(ProfileEditState.initial()) {
+    loadProfile();
+  }
+
+  Future<void> loadProfile() async {
+    final response = await EditProfileApiService.getProfileDetails();
+    if (response['error'] == null && response['data'] != null) {
+      final data = response['data'];
+      
+      final basic = data['basicDetails'] ?? {};
+      final bio = data['bio']?['bio'] ?? '';
+      final lookingFor = data['lookingFor']?['title'] ?? '';
+      final career = data['educationCareer'] ?? {};
+      final family = data['family'] ?? {};
+      final profile = data['profile'] ?? {};
+      
+      // Parse photos
+      List<ProfilePhoto?> parsedPhotos = List.filled(6, null);
+      if (data['photos'] != null && data['photos'] is List) {
+        for (var p in data['photos']) {
+          final int order = p['order'] ?? 1;
+          if (order >= 1 && order <= 6) {
+            parsedPhotos[order - 1] = ProfilePhoto(
+              id: p['id'],
+              url: p['url'],
+            );
+          }
+        }
+      }
+
+      emit(state.copyWith(
+        fullName: basic['fullName'] ?? '',
+        email: basic['email'] ?? '',
+        dob: basic['birthDate'] != null ? basic['birthDate'].toString().split('T').first : '',
+        height: basic['height'] != null ? '${basic['height']} cm' : '',
+        gender: basic['gender'] ?? '',
+        genderIdentity: basic['genderOption'] ?? '',
+        religionCaste: basic['religion']?['name'] ?? '',
+        motherTongue: '', // not in API response
+        zodiac: basic['zodiac'] ?? '',
+        loveLanguage: basic['loveLanguage'] ?? '',
+        communication: basic['communicationStyle'] ?? '',
+        
+        bio: bio,
+        intention: lookingFor,
+        
+        highestEducation: career['highestEducation'] ?? '',
+        degreeCourse: career['degree'] ?? '',
+        college: career['collegeName'] ?? '',
+        graduationYear: career['graduationYear']?.toString() ?? '',
+        profession: career['profession']?['name'] ?? '',
+        company: career['companyName'] ?? '',
+        employmentType: career['employmentType']?['name'] ?? '',
+        experience: career['experience']?['title'] ?? '',
+        salaryRange: career['salaryRange']?['title'] ?? '',
+        ambitionLevel: career['ambition']?['title'] ?? '',
+        bigDreams: career['bigDreams'] ?? '',
+        
+        familyType: family['familyType']?['value'] ?? '',
+        familyHome: family['familyHome']?['value'] ?? '',
+        nativePlace: family['nativePlace']?['value'] ?? '',
+        familyIncome: family['familyIncome']?['title'] ?? '',
+        father: family['fatherOccupation']?['value'] ?? '',
+        mother: family['motherOccupation']?['value'] ?? '',
+        
+        interestedIn: profile['interestedIn'] ?? '',
+        sexualOrientation: profile['sexualOrientation'] ?? '',
+        
+        photos: parsedPhotos,
+      ));
+    }
+  }
 
   void updateFullName(String name) => emit(state.copyWith(fullName: name));
   void updateEmail(String email) => emit(state.copyWith(email: email));

@@ -15,7 +15,7 @@ void main() async {
   
   // Set the test token provided by the backend team for testing
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('auth_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjOTFiOWZkZS0wM2JlLTRjNWItYmMwMS04MTkwNTgyYzdkMWYiLCJpYXQiOjE3ODU3NTIyOTQsImV4cCI6MTc4ODM0NDI5NH0.nTOxnLRwg29fET0FwP8G2h3d93ROZhJdsnKFLBu9xz8');
+  await prefs.setString('auth_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJlOTAxYS04ODQwLTQxYjYtYWRlMi05NzVkZGVkNWQ4YmMiLCJpYXQiOjE3ODU3MzkxNDAsImV4cCI6MTc4NjM0Mzk0MH0.ECs9pmBaKND8GXsT0u-4aBL9jtzphdCGGv9I_ROuIpg');
 
   runApp(const WelvorsApp());
 }

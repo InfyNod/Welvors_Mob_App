@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
+import '../services/edit_profile_api_service.dart';
 
 const List<Map<String, String>> intentionsOptions = [
   {
@@ -135,6 +136,39 @@ class EditIntentionsScreen extends StatefulWidget {
 
 class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
   late String _selected;
+  bool _isLoading = false;
+
+  String _getIntentionId(String title) {
+    switch (title) {
+      case 'A long-term relationship': return '44314f4d-1cdb-4c90-b945-d0d0e7f3bf47';
+      case 'Let’s see where it goes': return 'b011b7b2-93d8-4f3c-9ecb-c2d23a63498e';
+      case 'Open to marriage, when it’s right': return 'a7762fad-e8bb-431b-a3b4-8543ad4f1f04';
+      case 'New friends & connections': return '0b84f02c-7404-401b-9e72-31def6656801';
+      default: return '44314f4d-1cdb-4c90-b945-d0d0e7f3bf47';
+    }
+  }
+
+  Future<void> _saveIntention(String intentionTitle) async {
+    setState(() => _isLoading = true);
+    
+    final intentionId = _getIntentionId(intentionTitle);
+    final error = await EditProfileApiService.updateIntention(intentionId);
+    
+    if (!mounted) return;
+    
+    setState(() => _isLoading = false);
+    
+    if (error == null) {
+      Navigator.pop(context, intentionTitle);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -179,9 +213,9 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isLoading ? null : () {
                     Navigator.pop(context, false); // Close dialog
-                    Navigator.pop(context, _selected); // Save and Pop screen
+                    _saveIntention(_selected);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
@@ -359,8 +393,8 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, _selected);
+                  onPressed: _isLoading ? null : () {
+                    _saveIntention(_selected);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
@@ -371,13 +405,19 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: _isLoading
+                    ? const SizedBox(
+                        height: 20, 
+                        width: 20, 
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text(
+                        'Save Changes',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                 ),
               ),
             ],

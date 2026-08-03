@@ -90,5 +90,89 @@ class EditProfileApiService {
     }
   }
 
-  // TODO: Add get profile API here once provided by the user
+  // Updates the user's bio
+  static Future<String?> updateBio(String bioText) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/edit-profile/bio'), // updated to new URL from backend team
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({"bio": bioText}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null; // Success
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error updating bio: $e');
+      return e.toString();
+    }
+  }
+
+  // Updates the user's looking-for intention
+  static Future<String?> updateIntention(String intentionId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/profile/looking-for'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({"intentionId": intentionId}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null; // Success
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error updating intention: $e');
+      return e.toString();
+    }
+  }
+
+  // Fetches the user's full profile details
+  static Future<Map<String, dynamic>> getProfileDetails() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/user/profile/details'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return {'error': null, 'data': decoded['data']};
+        }
+        return {'error': decoded['message'] ?? 'Failed to parse profile data'};
+      }
+      return {'error': 'Error ${response.statusCode}: ${response.body}'};
+    } catch (e) {
+      debugPrint('Error fetching profile details: $e');
+      return {'error': e.toString()};
+    }
+  }
 }
