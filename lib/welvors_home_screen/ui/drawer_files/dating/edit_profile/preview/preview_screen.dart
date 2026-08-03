@@ -58,13 +58,18 @@ class PreviewScreen extends StatelessWidget {
           lookingFor: state.intention.isNotEmpty
               ? state.intention
               : 'A long-term relationship',
-          height: state.height.isNotEmpty ? state.height : 'Your Height',
+          height: state.height.isNotEmpty ? state.height : '',
           religion: state.religionCaste.isNotEmpty
               ? state.religionCaste
-              : 'Your Religion',
+              : '',
           motherTongue: state.motherTongue.isNotEmpty
               ? state.motherTongue
-              : 'Your Tongue',
+              : '',
+          dob: state.dob.isNotEmpty ? state.dob : '',
+          zodiac: state.zodiac.isNotEmpty ? state.zodiac : '',
+          loveLanguage: state.loveLanguage.isNotEmpty ? state.loveLanguage : '',
+          communication: state.communication.isNotEmpty ? state.communication : '',
+          prompts: state.prompts,
         );
 
         final phoneFrame = Center(

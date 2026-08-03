@@ -16,6 +16,11 @@ class ProfileModel extends Equatable {
   final String height;
   final String religion;
   final String motherTongue;
+  final String dob;
+  final String zodiac;
+  final String loveLanguage;
+  final String communication;
+  final List<Map<String, String>> prompts;
 
   const ProfileModel({
     required this.images,
@@ -33,6 +38,11 @@ class ProfileModel extends Equatable {
     required this.height,
     required this.religion,
     required this.motherTongue,
+    required this.dob,
+    required this.zodiac,
+    required this.loveLanguage,
+    required this.communication,
+    required this.prompts,
   });
 
   @override
@@ -52,6 +62,11 @@ class ProfileModel extends Equatable {
     height,
     religion,
     motherTongue,
+    dob,
+    zodiac,
+    loveLanguage,
+    communication,
+    prompts,
   ];
 }
 

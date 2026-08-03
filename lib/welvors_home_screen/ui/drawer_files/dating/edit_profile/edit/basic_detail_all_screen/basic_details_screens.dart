@@ -19,46 +19,70 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
                 color: const Color(0xFFE43A6A).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.warning_amber_rounded, color: Color(0xFFE43A6A), size: 32),
+              child: const Icon(
+                Icons.warning_amber_rounded,
+                color: Color(0xFFE43A6A),
+                size: 32,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
               'Unsaved Changes',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 12),
             const Text(
               'You have unsaved changes. Do you want to save them before leaving?',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.black54, height: 1.4),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context, true); // User wants to save (we handle save outside)
+                  Navigator.pop(
+                    context,
+                    true,
+                  ); // User wants to save (we handle save outside)
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE43A6A),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 0,
                 ),
-                child: const Text('Save Changes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Save Changes',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: () => Navigator.pop(context, false), // User wants to discard
+                onPressed: () =>
+                    Navigator.pop(context, false), // User wants to discard
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.red,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('Discard', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Discard',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             SizedBox(
@@ -68,7 +92,10 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.grey.shade600,
                 ),
-                child: const Text('Cancel', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ],
@@ -79,7 +106,11 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
   return shouldPop ?? false; // Returns true for 'Save', false for 'Discard'
 }
 
-Widget buildCustomAppBar(BuildContext context, String title, Future<bool> Function() onWillPop) {
+Widget buildCustomAppBar(
+  BuildContext context,
+  String title,
+  Future<bool> Function() onWillPop,
+) {
   return AppBar(
     backgroundColor: Colors.white,
     elevation: 0,
@@ -118,7 +149,11 @@ Widget buildCustomAppBar(BuildContext context, String title, Future<bool> Functi
     ),
     title: Text(
       title,
-      style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
     ),
   );
 }
@@ -206,10 +241,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                 const SizedBox(height: 8),
                 Text(
                   widget.subHeaderText,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
                 ),
                 const SizedBox(height: 32),
                 Text(
@@ -227,16 +259,25 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                   keyboardType: widget.keyboardType,
                   maxLines: widget.maxLines,
                   maxLength: widget.maxLength,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                   decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey.shade300),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE43A6A), width: 2),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFE43A6A),
+                        width: 2,
+                      ),
                     ),
                   ),
                 ),
@@ -294,7 +335,8 @@ class GenericListPickerScreen extends StatefulWidget {
   });
 
   @override
-  State<GenericListPickerScreen> createState() => _GenericListPickerScreenState();
+  State<GenericListPickerScreen> createState() =>
+      _GenericListPickerScreenState();
 }
 
 class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
@@ -345,16 +387,14 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                 const SizedBox(height: 8),
                 Text(
                   widget.subHeaderText,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
                 ),
                 const SizedBox(height: 32),
                 Expanded(
                   child: ListView.separated(
                     itemCount: widget.options.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final option = widget.options[index];
                       final isSelected = _selected == option;
@@ -365,12 +405,19 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                           });
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 18,
+                          ),
                           decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.05) : Colors.white,
+                            color: isSelected
+                                ? const Color(0xFFE43A6A).withOpacity(0.05)
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
+                              color: isSelected
+                                  ? const Color(0xFFE43A6A)
+                                  : Colors.grey.shade200,
                               width: isSelected ? 2 : 1,
                             ),
                           ),
@@ -381,12 +428,20 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                                 option,
                                 style: TextStyle(
                                   fontSize: 15,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                  color: isSelected ? const Color(0xFFE43A6A) : Colors.black87,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
+                                  color: isSelected
+                                      ? const Color(0xFFE43A6A)
+                                      : Colors.black87,
                                 ),
                               ),
                               if (isSelected)
-                                const Icon(Icons.check_circle, color: Color(0xFFE43A6A), size: 20),
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Color(0xFFE43A6A),
+                                  size: 20,
+                                ),
                             ],
                           ),
                         ),
@@ -433,7 +488,7 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
 // ---------------------------------------------------------
 class EditDobScreen extends StatefulWidget {
   final String currentValue; // Expected format: '12 / 08 / 1997'
-  
+
   const EditDobScreen({super.key, required this.currentValue});
 
   @override
@@ -442,7 +497,7 @@ class EditDobScreen extends StatefulWidget {
 
 class _EditDobScreenState extends State<EditDobScreen> {
   DateTime? _selectedDate;
-  
+
   @override
   void initState() {
     super.initState();
@@ -469,7 +524,8 @@ class _EditDobScreenState extends State<EditDobScreen> {
     if (_selectedDate == null) return 0;
     final now = DateTime.now();
     int age = now.year - _selectedDate!.year;
-    if (now.month < _selectedDate!.month || (now.month == _selectedDate!.month && now.day < _selectedDate!.day)) {
+    if (now.month < _selectedDate!.month ||
+        (now.month == _selectedDate!.month && now.day < _selectedDate!.day)) {
       age--;
     }
     return age;
@@ -482,7 +538,7 @@ class _EditDobScreenState extends State<EditDobScreen> {
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
       if (mounted) Navigator.pop(context, _formattedDate);
-      return false; 
+      return false;
     }
     return result == false;
   }
@@ -514,13 +570,10 @@ class _EditDobScreenState extends State<EditDobScreen> {
                 const SizedBox(height: 8),
                 Text(
                   "You'll appear as $_age — we only show your age.",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
                 ),
                 const SizedBox(height: 32),
-                
+
                 GestureDetector(
                   onTap: () async {
                     final picked = await showDatePicker(
@@ -532,9 +585,9 @@ class _EditDobScreenState extends State<EditDobScreen> {
                         return Theme(
                           data: Theme.of(context).copyWith(
                             colorScheme: const ColorScheme.light(
-                              primary: Color(0xFFE43A6A), 
-                              onPrimary: Colors.white, 
-                              onSurface: Colors.black, 
+                              primary: Color(0xFFE43A6A),
+                              onPrimary: Colors.white,
+                              onSurface: Colors.black,
                             ),
                           ),
                           child: child!,
@@ -549,28 +602,41 @@ class _EditDobScreenState extends State<EditDobScreen> {
                   },
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 20,
+                    ),
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFE43A6A), width: 2),
+                      border: Border.all(
+                        color: const Color(0xFFE43A6A),
+                        width: 2,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _formattedDate.isNotEmpty ? _formattedDate : 'DD / MM / YYYY',
+                          _formattedDate.isNotEmpty
+                              ? _formattedDate
+                              : 'DD / MM / YYYY',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: _formattedDate.isNotEmpty ? Colors.black : Colors.grey,
+                            color: _formattedDate.isNotEmpty
+                                ? Colors.black
+                                : Colors.grey,
                           ),
                         ),
-                        const Icon(Icons.calendar_month, color: Color(0xFFE43A6A)),
+                        const Icon(
+                          Icons.calendar_month,
+                          color: Color(0xFFE43A6A),
+                        ),
                       ],
                     ),
                   ),
                 ),
-                
+
                 const Spacer(),
                 SizedBox(
                   width: double.infinity,
@@ -639,13 +705,13 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
     double inches = _selectedCm / 2.54;
     int feet = (inches / 12).floor();
     int remainingInches = (inches % 12).round();
-    
+
     // Handle edge case where rounding inches makes it 12
     if (remainingInches == 12) {
       feet += 1;
       remainingInches = 0;
     }
-    
+
     return "$feet'$remainingInches\" · $_selectedCm cm";
   }
 
@@ -656,7 +722,7 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
       if (mounted) Navigator.pop(context, _formattedHeight);
-      return false; 
+      return false;
     }
     return result == false;
   }
@@ -686,7 +752,7 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 Text(
                   _formattedHeight,
                   style: const TextStyle(
@@ -695,14 +761,16 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
                     color: Color(0xFFE43A6A),
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Custom Height Scroll Wheel
                 Expanded(
                   child: CupertinoPicker.builder(
                     itemExtent: 50,
-                    scrollController: FixedExtentScrollController(initialItem: _selectedCm - 90),
+                    scrollController: FixedExtentScrollController(
+                      initialItem: _selectedCm - 90,
+                    ),
                     onSelectedItemChanged: (index) {
                       setState(() {
                         _selectedCm = 90 + index; // Range from 90 cm to 250 cm
@@ -714,16 +782,21 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
                       double inches = cm / 2.54;
                       int feet = (inches / 12).floor();
                       int remainingInches = (inches % 12).round();
-                      if (remainingInches == 12) { feet += 1; remainingInches = 0; }
-                      
+                      if (remainingInches == 12) {
+                        feet += 1;
+                        remainingInches = 0;
+                      }
+
                       bool isSelected = cm == _selectedCm;
-                      
+
                       return Center(
                         child: Text(
                           "$feet'$remainingInches\"   ·   $cm cm",
                           style: TextStyle(
                             fontSize: isSelected ? 22 : 18,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                             color: isSelected ? Colors.black : Colors.grey,
                           ),
                         ),
@@ -731,7 +804,7 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
                     },
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -775,16 +848,27 @@ class EditReligionCasteScreen extends StatefulWidget {
   const EditReligionCasteScreen({super.key, required this.currentValue});
 
   @override
-  State<EditReligionCasteScreen> createState() => _EditReligionCasteScreenState();
+  State<EditReligionCasteScreen> createState() =>
+      _EditReligionCasteScreenState();
 }
 
 class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
   late String _selectedReligion;
   late String _selectedCaste;
-  
+
   final List<String> _religions = [
-    'Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist', 'Parsi', 'Jewish', 
-    'Spiritual but not religious', 'Atheist', 'Agnostic', 'Prefer not to say'
+    'Hindu',
+    'Muslim',
+    'Christian',
+    'Sikh',
+    'Jain',
+    'Buddhist',
+    'Parsi',
+    'Jewish',
+    'Spiritual but not religious',
+    'Atheist',
+    'Agnostic',
+    'Prefer not to say',
   ];
 
   final Map<String, List<String>> _castes = {
@@ -819,7 +903,7 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
       if (mounted) Navigator.pop(context, _currentFormattedValue);
-      return false; 
+      return false;
     }
     return result == false;
   }
@@ -842,7 +926,11 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
               children: [
                 const Text(
                   'What\'s your religion?',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -853,18 +941,23 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                 Expanded(
                   child: ListView.separated(
                     itemCount: _religions.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final religion = _religions[index];
                       final isSelectedReligion = _selectedReligion == religion;
                       final hasCastes = _castes.containsKey(religion);
-                      
+
                       return Container(
                         decoration: BoxDecoration(
-                          color: isSelectedReligion ? const Color(0xFFE43A6A).withOpacity(0.03) : Colors.white,
+                          color: isSelectedReligion
+                              ? const Color(0xFFE43A6A).withOpacity(0.03)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isSelectedReligion ? const Color(0xFFE43A6A) : Colors.grey.shade200,
+                            color: isSelectedReligion
+                                ? const Color(0xFFE43A6A)
+                                : Colors.grey.shade200,
                             width: isSelectedReligion ? 2 : 1,
                           ),
                         ),
@@ -874,95 +967,133 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                           alignment: Alignment.topCenter,
                           child: Column(
                             children: [
-                            // Religion Row
-                            GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                setState(() {
-                                  _selectedReligion = religion;
-                                  if (!hasCastes) _selectedCaste = '';
-                                  else if (!(_castes[religion]?.contains(_selectedCaste) ?? false)) {
-                                    _selectedCaste = '';
-                                  }
-                                });
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        religion,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: isSelectedReligion ? FontWeight.bold : FontWeight.w500,
-                                          color: isSelectedReligion ? const Color(0xFFE43A6A) : Colors.black87,
+                              // Religion Row
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedReligion = religion;
+                                    if (!hasCastes)
+                                      _selectedCaste = '';
+                                    else if (!(_castes[religion]?.contains(
+                                          _selectedCaste,
+                                        ) ??
+                                        false)) {
+                                      _selectedCaste = '';
+                                    }
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          religion,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: isSelectedReligion
+                                                ? FontWeight.bold
+                                                : FontWeight.w500,
+                                            color: isSelectedReligion
+                                                ? const Color(0xFFE43A6A)
+                                                : Colors.black87,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    if (isSelectedReligion)
-                                      const Icon(Icons.check_circle, color: Color(0xFFE43A6A), size: 20),
-                                  ],
+                                      if (isSelectedReligion)
+                                        const Icon(
+                                          Icons.check_circle,
+                                          color: Color(0xFFE43A6A),
+                                          size: 20,
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            
-                            // Accordion / Expanded Caste List
-                            if (isSelectedReligion && hasCastes) ...[
-                              Divider(height: 1, color: const Color(0xFFE43A6A).withOpacity(0.2)),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Select caste · $religion',
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black54,
+
+                              // Accordion / Expanded Caste List
+                              if (isSelectedReligion && hasCastes) ...[
+                                Divider(
+                                  height: 1,
+                                  color: const Color(
+                                    0xFFE43A6A,
+                                  ).withOpacity(0.2),
+                                ),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Select caste · $religion',
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black54,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Wrap(
-                                      spacing: 8,
-                                      runSpacing: 8,
-                                      children: _castes[religion]!.map((caste) {
-                                        final isSelectedCaste = _selectedCaste == caste;
-                                        return GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _selectedCaste = caste;
-                                            });
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                            decoration: BoxDecoration(
-                                              color: isSelectedCaste ? const Color(0xFFE43A6A) : Colors.white,
-                                              borderRadius: BorderRadius.circular(24),
-                                              border: Border.all(
-                                                color: isSelectedCaste ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                                                width: 1,
+                                      const SizedBox(height: 12),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: _castes[religion]!.map((
+                                          caste,
+                                        ) {
+                                          final isSelectedCaste =
+                                              _selectedCaste == caste;
+                                          return GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _selectedCaste = caste;
+                                              });
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 10,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: isSelectedCaste
+                                                    ? const Color(0xFFE43A6A)
+                                                    : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(24),
+                                                border: Border.all(
+                                                  color: isSelectedCaste
+                                                      ? const Color(0xFFE43A6A)
+                                                      : Colors.grey.shade300,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                caste,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: isSelectedCaste
+                                                      ? FontWeight.bold
+                                                      : FontWeight.w500,
+                                                  color: isSelectedCaste
+                                                      ? Colors.white
+                                                      : Colors.black87,
+                                                ),
                                               ),
                                             ),
-                                            child: Text(
-                                              caste,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: isSelectedCaste ? FontWeight.bold : FontWeight.w500,
-                                                color: isSelectedCaste ? Colors.white : Colors.black87,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ],
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
                             ],
                           ),
                         ),
@@ -981,12 +1112,17 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                       backgroundColor: const Color(0xFFE43A6A),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       elevation: 0,
                     ),
                     child: const Text(
                       'Save Changes',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

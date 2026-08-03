@@ -30,6 +30,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       height: '5\'5" • 165 cm',
       religion: 'Hindu • Marathi',
       motherTongue: 'Marathi',
+      dob: '19 Feb 1999',
+      zodiac: 'Scorpio',
+      loveLanguage: 'Words of affirmation • Compliments mean the most',
+      communication: 'Phone calls over texts • I prefer real conversations',
+      prompts: const [
+        {'prompt': 'The way to win me over is…', 'answer': 'A good book rec and a strong chai opinion.'},
+        {'prompt': 'My simple pleasures…', 'answer': 'Roadside chai after a long trek, no signal, good company.'},
+        {'prompt': 'We\'ll get along if…', 'answer': 'You can debate me for an hour and still want dessert after.'},
+      ],
     ),
     const ProfileModel(
       images: const [
@@ -53,6 +62,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       height: '5\'6" • 167 cm',
       religion: 'Hindu • Gujarati',
       motherTongue: 'Gujarati',
+      dob: '12 Aug 2000',
+      zodiac: 'Leo',
+      loveLanguage: 'Quality time • Let\'s just hang out',
+      communication: 'Texting all day • Memes are my language',
+      prompts: const [
+        {'prompt': 'A random fact I love is', 'answer': 'Cows have best friends and get stressed when separated.'},
+        {'prompt': 'The hardest I\'ve ever laughed', 'answer': 'When my dog tried to catch his own tail and fell.'},
+      ],
     ),
     const ProfileModel(
       images: const [
@@ -74,6 +91,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       height: '5\'7" • 170 cm',
       religion: 'Hindu • Punjabi',
       motherTongue: 'Punjabi',
+      dob: '05 Jan 1998',
+      zodiac: 'Aries',
+      loveLanguage: 'Acts of service • Actions speak louder',
+      communication: 'Face to face • Real talk only',
+      prompts: const [
+        {'prompt': 'A life goal of mine', 'answer': 'To design a sustainable home from scratch.'},
+      ],
     ),
   ];
 

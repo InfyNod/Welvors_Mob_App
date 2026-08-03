@@ -452,61 +452,69 @@ class _ProfileDetailsView extends StatelessWidget {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _buildBentoPill(
-                          Icons.calendar_today_outlined,
-                          '${profile.age} years old',
-                          '19 Feb 1999',
-                          itemWidth,
-                          stacked: true,
-                        ),
-                        _buildBentoPill(
-                          Icons.straighten_outlined,
-                          profile.height.split(' • ').first,
-                          profile.height.split(' • ').last,
-                          itemWidth,
-                        ),
-                        _buildBentoPill(
-                          Icons.temple_hindu_outlined,
-                          profile.religion.split(' • ').first,
-                          profile.religion.split(' • ').last,
-                          itemWidth,
-                          stacked: true,
-                        ),
-                        _buildBentoPill(
-                          Icons.location_on_outlined,
-                          profile.location.split(', ').first,
-                          profile.location.split(', ').length > 1
-                              ? profile.location.split(', ')[1]
-                              : '',
-                          itemWidth,
-                          stacked: true,
-                        ),
-                        _buildBentoPill(
-                          Icons.translate,
-                          profile.motherTongue,
-                          '',
-                          itemWidth,
-                        ),
-                        _buildBentoPill(
-                          Icons.nightlight_round,
-                          'Scorpio',
-                          '',
-                          itemWidth,
-                        ),
-                        _buildBentoPill(
-                          Icons.favorite_border,
-                          'Words of affirmation',
-                          'Compliments mean the most',
-                          constraints.maxWidth,
-                          stacked: true,
-                        ),
-                        _buildBentoPill(
-                          Icons.phone_in_talk_outlined,
-                          'Phone calls over texts',
-                          'I prefer real conversations',
-                          constraints.maxWidth,
-                          stacked: true,
-                        ),
+                        if (profile.dob.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.calendar_today_outlined,
+                            '${profile.age} years old',
+                            profile.dob,
+                            itemWidth,
+                            stacked: true,
+                          ),
+                        if (profile.height.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.straighten_outlined,
+                            profile.height.split(RegExp(r'\s*[•·]\s*')).first,
+                            profile.height.split(RegExp(r'\s*[•·]\s*')).last,
+                            itemWidth,
+                          ),
+                        if (profile.religion.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.temple_hindu_outlined,
+                            profile.religion.split(RegExp(r'\s*[•·]\s*')).first,
+                            profile.religion.split(RegExp(r'\s*[•·]\s*')).last,
+                            itemWidth,
+                            stacked: true,
+                          ),
+                        if (profile.location.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.location_on_outlined,
+                            profile.location.split(', ').first,
+                            profile.location.split(', ').length > 1
+                                ? profile.location.split(', ')[1]
+                                : '',
+                            itemWidth,
+                            stacked: true,
+                          ),
+                        if (profile.motherTongue.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.translate,
+                            profile.motherTongue,
+                            '',
+                            itemWidth,
+                          ),
+                        if (profile.zodiac.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.nightlight_round,
+                            profile.zodiac,
+                            '',
+                            itemWidth,
+                          ),
+                        if (profile.loveLanguage.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.favorite_border,
+                            profile.loveLanguage.split(RegExp(r'\s*[•·]\s*')).first,
+                            profile.loveLanguage.split(RegExp(r'\s*[•·]\s*')).length > 1 ? profile.loveLanguage.split(RegExp(r'\s*[•·]\s*')).last : '',
+                            constraints.maxWidth,
+                            stacked: true,
+                          ),
+                        if (profile.communication.isNotEmpty)
+                          _buildBentoPill(
+                            Icons.phone_in_talk_outlined,
+                            profile.communication.split(RegExp(r'\s*[•·]\s*')).first,
+                            profile.communication.split(RegExp(r'\s*[•·]\s*')).length > 1 ? profile.communication.split(RegExp(r'\s*[•·]\s*')).last : '',
+                            constraints.maxWidth,
+                            stacked: true,
+                          ),
                       ],
                     );
                   },
@@ -525,102 +533,14 @@ class _ProfileDetailsView extends StatelessWidget {
           ],
 
           // Prompt Card
-          Container(
-            padding: const EdgeInsets.only(
-              left: 24,
-              right: 15,
-              top: 10,
-              bottom: 24,
+          if (profile.prompts.isNotEmpty) ...[
+            _buildPromptCard(
+              context,
+              profile.prompts[0]['question'] ?? '',
+              profile.prompts[0]['answer'] ?? '',
             ),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      '✦',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: SectionColors.intent.icon,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'THE WAY TO WIN ME OVER IS..?',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: SectionColors.intent.icon,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 60.0, bottom: 0),
-                      child: Text(
-                        'A good book rec and a strong chai opinion.',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.2,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: -18,
-                      right: -13,
-                      child: GestureDetector(
-                        onTap: () => ComplimentingBottomSheet.show(
-                          context,
-                          type: 'Prompt',
-                        ),
-                        child: Container(
-                          width: 65,
-                          height: 65,
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/final.png',
-                              fit: BoxFit.cover,
-                              alignment: const Alignment(0.9, 0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
           // CAREER & AMBITION Section
           Container(
@@ -788,102 +708,14 @@ class _ProfileDetailsView extends StatelessWidget {
           ],
 
           // Second Prompt Card
-          Container(
-            padding: const EdgeInsets.only(
-              left: 24,
-              right: 15,
-              top: 10,
-              bottom: 24,
+          if (profile.prompts.length > 1) ...[
+            _buildPromptCard(
+              context,
+              profile.prompts[1]['question'] ?? '',
+              profile.prompts[1]['answer'] ?? '',
             ),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      '✦',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFFBE185D), // Deep Rose / Magenta
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        'MY SIMPLE PLEASURES..?',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFFBE185D), // Deep Rose / Magenta
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 60.0, bottom: 0),
-                      child: Text(
-                        'Roadside chai after a long trek, no signal, good company.',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.2,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: -18,
-                      right: -13,
-                      child: GestureDetector(
-                        onTap: () => ComplimentingBottomSheet.show(
-                          context,
-                          type: 'Prompt',
-                        ),
-                        child: Container(
-                          width: 65,
-                          height: 65,
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/final.png',
-                              fit: BoxFit.cover,
-                              alignment: const Alignment(0.9, 0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
           // INTERESTS & HOBBIES Section
           Container(
@@ -1330,104 +1162,14 @@ class _ProfileDetailsView extends StatelessWidget {
           ],
 
           // Third Prompt Card
-          Container(
-            padding: const EdgeInsets.only(
-              left: 24,
-              right: 15,
-              top: 10,
-              bottom: 24,
+          if (profile.prompts.length > 2) ...[
+            _buildPromptCard(
+              context,
+              profile.prompts[2]['question'] ?? '',
+              profile.prompts[2]['answer'] ?? '',
             ),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      '✦',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(
-                          0xFFC05621,
-                        ), // Dark terracotta/orange for peach bg
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        'WE\'LL GET ALONG IF..?',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFFC05621),
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 60.0, bottom: 0),
-                      child: Text(
-                        'You can debate me for an hour and still want dessert after.',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.2,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: -18,
-                      right: -13,
-                      child: GestureDetector(
-                        onTap: () => ComplimentingBottomSheet.show(
-                          context,
-                          type: 'Prompt',
-                        ),
-                        child: Container(
-                          width: 65,
-                          height: 65,
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/final.png',
-                              fit: BoxFit.cover,
-                              alignment: const Alignment(0.9, 0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
           // Bottom Slots: Extra photos below "We'll get along if..."
           if (profile.images.length > bottomIndexStart) ...[
@@ -2069,6 +1811,103 @@ class _ProfileDetailsView extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildPromptCard(BuildContext context, String prompt, String answer) {
+    return Container(
+      padding: const EdgeInsets.only(
+        left: 24,
+        right: 15,
+        top: 10,
+        bottom: 24,
+      ),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                '✦',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: SectionColors.intent.icon,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  prompt.toUpperCase() + (prompt.endsWith('?') ? '' : '..?'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: SectionColors.intent.icon,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 60.0, bottom: 0),
+                child: Text(
+                  answer,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.2,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -18,
+                right: -13,
+                child: GestureDetector(
+                  onTap: () => ComplimentingBottomSheet.show(
+                    context,
+                    type: 'Prompt',
+                  ),
+                  child: Container(
+                    width: 65,
+                    height: 65,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/final.png',
+                        fit: BoxFit.cover,
+                        alignment: const Alignment(0.9, 0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
