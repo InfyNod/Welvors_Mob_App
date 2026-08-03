@@ -89,7 +89,7 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                 Text(
                   "EDUCATION & CAREER",
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                     color: Color(0xFFE43A6A),
