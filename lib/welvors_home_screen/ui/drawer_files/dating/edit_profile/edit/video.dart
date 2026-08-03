@@ -43,12 +43,14 @@ class _VideoSectionState extends State<VideoSection> {
       _thumbnailController = VideoPlayerController.file(File(path));
     }
     _thumbnailController!
-      ..initialize().then((_) {
-        if (mounted) setState(() {});
-      }).catchError((e) {
-        debugPrint('Thumbnail Init Error: $e');
-        if (mounted) setState(() {});
-      });
+      ..initialize()
+          .then((_) {
+            if (mounted) setState(() {});
+          })
+          .catchError((e) {
+            debugPrint('Thumbnail Init Error: $e');
+            if (mounted) setState(() {});
+          });
   }
 
   @override
@@ -58,37 +60,41 @@ class _VideoSectionState extends State<VideoSection> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-        const Row(
-          children: [
-            Icon(Icons.videocam_outlined, color: Color(0xFFE43A6A), size: 18),
-            SizedBox(width: 8),
+            const Row(
+              children: [
+                Icon(
+                  Icons.videocam_outlined,
+                  color: Color(0xFFE43A6A),
+                  size: 18,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'VIDEO',
+                  style: TextStyle(
+                    color: Color(0xFFE43A6A),
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            state.videoPath == null
+                ? _buildEmptyCard()
+                : _buildRecordedCard(state.videoPath!),
+            const SizedBox(height: 12),
             Text(
-              'VIDEO',
+              'Record a 30s intro live to keep profiles genuine. A live video gets 2x more matches.',
               style: TextStyle(
-                color: Color(0xFFE43A6A),
+                color: Colors.grey.shade500,
                 fontSize: 11,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
+                height: 1.4,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        state.videoPath == null
-            ? _buildEmptyCard()
-            : _buildRecordedCard(state.videoPath!),
-        const SizedBox(height: 12),
-        Text(
-          'Record a 30s intro live to keep profiles genuine. A live video gets 2x more matches.',
-          style: TextStyle(
-            color: Colors.grey.shade500,
-            fontSize: 11,
-            height: 1.4,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-      );
+        );
       },
     );
   }
@@ -98,9 +104,7 @@ class _VideoSectionState extends State<VideoSection> {
       onTap: () async {
         final result = await Navigator.push<String>(
           context,
-          MaterialPageRoute(
-            builder: (context) => const VideoRecorderScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const VideoRecorderScreen()),
         );
         if (result != null && mounted) {
           context.read<ProfileEditCubit>().updateVideoPath(result);
@@ -178,7 +182,9 @@ class _VideoSectionState extends State<VideoSection> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: _thumbnailController != null && _thumbnailController!.value.isInitialized
+            child:
+                _thumbnailController != null &&
+                    _thumbnailController!.value.isInitialized
                 ? FittedBox(
                     fit: BoxFit.cover,
                     child: SizedBox(
@@ -187,7 +193,9 @@ class _VideoSectionState extends State<VideoSection> {
                       child: VideoPlayer(_thumbnailController!),
                     ),
                   )
-                : const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))),
+                : const Center(
+                    child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                  ),
           ),
           // Dark Gradient overlay at bottom
           Positioned.fill(
@@ -221,10 +229,20 @@ class _VideoSectionState extends State<VideoSection> {
                   Container(
                     width: 6,
                     height: 6,
-                    decoration: const BoxDecoration(color: Color(0xFFE43A6A), shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE43A6A),
+                      shape: BoxShape.circle,
+                    ),
                   ),
                   const SizedBox(width: 4),
-                  const Text('LIVE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'LIVE',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -270,7 +288,8 @@ class _VideoSectionState extends State<VideoSection> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  (_thumbnailController != null && _thumbnailController!.value.isPlaying)
+                  (_thumbnailController != null &&
+                          _thumbnailController!.value.isPlaying)
                       ? Icons.pause
                       : Icons.play_arrow,
                   color: Colors.white,
@@ -289,9 +308,20 @@ class _VideoSectionState extends State<VideoSection> {
               children: [
                 Row(
                   children: const [
-                    Icon(Icons.check_circle, color: Color(0xFFE43A6A), size: 14),
+                    Icon(
+                      Icons.check_circle,
+                      color: Color(0xFFE43A6A),
+                      size: 14,
+                    ),
                     SizedBox(width: 6),
-                    Text('Intro video added', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                    Text(
+                      'Intro video added',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -317,7 +347,14 @@ class _VideoSectionState extends State<VideoSection> {
                       border: Border.all(color: Colors.white.withOpacity(0.3)),
                     ),
                     child: const Center(
-                      child: Text('Retake', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                      child: Text(
+                        'Retake',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -336,7 +373,6 @@ class VideoRecorderScreen extends StatefulWidget {
   @override
   State<VideoRecorderScreen> createState() => _VideoRecorderScreenState();
 }
-
 
 enum RecordState { idle, recording, reviewing }
 
@@ -401,7 +437,8 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   }
 
   void _startRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    if (_cameraController == null || !_cameraController!.value.isInitialized)
+      return;
     if (_cameraController!.value.isRecordingVideo) return;
 
     try {
@@ -426,24 +463,26 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   }
 
   void _stopRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isRecordingVideo) return;
-    
+    if (_cameraController == null || !_cameraController!.value.isRecordingVideo)
+      return;
+
     _timer?.cancel();
-    
+
     try {
       final XFile videoFile = await _cameraController!.stopVideoRecording();
       _recordedFilePath = videoFile.path;
-      
-      _videoPlayerController = VideoPlayerController.file(File(_recordedFilePath!))
-        ..initialize().then((_) {
-          _videoPlayerController!.setLooping(true);
-          _videoPlayerController!.play();
-          if (mounted) {
-            setState(() {
-              _recordState = RecordState.reviewing;
+
+      _videoPlayerController =
+          VideoPlayerController.file(File(_recordedFilePath!))
+            ..initialize().then((_) {
+              _videoPlayerController!.setLooping(true);
+              _videoPlayerController!.play();
+              if (mounted) {
+                setState(() {
+                  _recordState = RecordState.reviewing;
+                });
+              }
             });
-          }
-        });
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -491,12 +530,18 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                             color: Colors.white.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.close, color: Colors.white, size: 20),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
                   Text(
-                    _recordState == RecordState.reviewing ? 'Review your video' : 'Live intro video',
+                    _recordState == RecordState.reviewing
+                        ? 'Review your video'
+                        : 'Live intro video',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -506,7 +551,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                 ],
               ),
             ),
-            
+
             // Camera Preview / Video Review
             Expanded(
               child: Container(
@@ -522,7 +567,8 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                     fit: StackFit.expand,
                     children: [
                       // Video Player or Camera Preview
-                      if (_recordState == RecordState.reviewing && _videoPlayerController != null)
+                      if (_recordState == RecordState.reviewing &&
+                          _videoPlayerController != null)
                         FittedBox(
                           fit: BoxFit.cover,
                           child: SizedBox(
@@ -536,32 +582,52 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
-                              Icon(Icons.videocam_off_outlined, color: Colors.white54, size: 48),
+                              Icon(
+                                Icons.videocam_off_outlined,
+                                color: Colors.white54,
+                                size: 48,
+                              ),
                               SizedBox(height: 16),
                               Text(
                                 'Camera Access Needed',
-                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               SizedBox(height: 8),
                               Text(
                                 'Please allow camera permissions in\nyour settings to record a video.',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white54, fontSize: 13),
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 13,
+                                ),
                               ),
                             ],
                           ),
                         )
-                      else if (_isCameraInitialized && _cameraController != null)
+                      else if (_isCameraInitialized &&
+                          _cameraController != null)
                         FittedBox(
                           fit: BoxFit.cover,
                           child: SizedBox(
-                            width: _cameraController!.value.previewSize?.height ?? 1,
-                            height: _cameraController!.value.previewSize?.width ?? 1,
+                            width:
+                                _cameraController!.value.previewSize?.height ??
+                                1,
+                            height:
+                                _cameraController!.value.previewSize?.width ??
+                                1,
                             child: CameraPreview(_cameraController!),
                           ),
                         )
                       else
-                        const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))),
+                        const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFFE43A6A),
+                          ),
+                        ),
 
                       // Recording Overlays
                       if (_recordState == RecordState.recording) ...[
@@ -579,7 +645,14 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              const Text('REC', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                              const Text(
+                                'REC',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -595,13 +668,19 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                                 child: CircularProgressIndicator(
                                   value: _remainingSeconds / 30,
                                   color: const Color(0xFFE43A6A),
-                                  backgroundColor: Colors.white.withOpacity(0.2),
+                                  backgroundColor: Colors.white.withOpacity(
+                                    0.2,
+                                  ),
                                   strokeWidth: 3,
                                 ),
                               ),
                               Text(
                                 '0:${_remainingSeconds.toString().padLeft(2, '0')}',
-                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -619,8 +698,8 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
               child: _recordState == RecordState.reviewing
                   ? _buildReviewControls()
                   : (_recordState == RecordState.recording
-                      ? _buildRecordingControls()
-                      : _buildIdleControls()),
+                        ? _buildRecordingControls()
+                        : _buildIdleControls()),
             ),
           ],
         ),
@@ -644,7 +723,14 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
               children: const [
                 Icon(Icons.replay, color: Colors.white, size: 16),
                 SizedBox(width: 8),
-                Text('Retake', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                Text(
+                  'Retake',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
@@ -663,7 +749,14 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
               children: const [
                 Icon(Icons.check, color: Colors.white, size: 16),
                 SizedBox(width: 8),
-                Text('Use video', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                Text(
+                  'Use video',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
@@ -704,7 +797,10 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        const Text('Tap to stop', style: TextStyle(color: Colors.white70, fontSize: 12)),
+        const Text(
+          'Tap to stop',
+          style: TextStyle(color: Colors.white70, fontSize: 12),
+        ),
       ],
     );
   }
@@ -715,10 +811,17 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
       children: [
         const Text(
           'Before you start',
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 16),
-        _buildInstructionItem('1', 'Find good light — face a window if you can.'),
+        _buildInstructionItem(
+          '1',
+          'Find good light — face a window if you can.',
+        ),
         const SizedBox(height: 12),
         _buildInstructionItem('2', 'Say hi and share one thing you love.'),
         const SizedBox(height: 12),
@@ -735,12 +838,19 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                   Container(
                     width: 12,
                     height: 12,
-                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Text(
                     'Start recording',
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),

@@ -302,6 +302,32 @@ class ProfileEditState extends Equatable {
     );
   }
 
+  double get completionPercentage {
+    int total = 0;
+    int filled = 0;
+    
+    for (var prop in props) {
+      if (prop is bool) continue; // Ignore boolean toggles like showDistance
+      
+      total++;
+      if (prop is String) {
+        if (prop.trim().isNotEmpty) filled++;
+      } else if (prop is List) {
+        if (prop.isNotEmpty) {
+          if (prop.every((e) => e == null)) {
+            // All null (like empty photos list), don't count
+          } else {
+            filled++;
+          }
+        }
+      } else if (prop != null) {
+        filled++; // For other non-null objects
+      }
+    }
+    
+    return total == 0 ? 0.0 : filled / total;
+  }
+
   @override
   List<Object?> get props => [
         fullName,

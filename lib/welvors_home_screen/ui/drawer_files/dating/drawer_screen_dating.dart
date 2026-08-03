@@ -13,6 +13,9 @@ import 'roses/roses_screen.dart';
 import 'date_plans/date_plan_wallet.dart';
 import 'my_boosts/boost_all_screen/boost_top_nav.dart';
 import 'edit_profile/top_bottom_nav_editscreen.dart';
+import 'dart:io';
+import 'edit_profile/bloc/profile_edit_cubit.dart';
+import 'edit_profile/bloc/profile_edit_state.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({Key? key}) : super(key: key);
@@ -174,9 +177,11 @@ class _DrawerScreenState extends State<DrawerScreen> {
   Widget _buildDatingContent() {
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(), // Re-locking the scroll as requested
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0.0, end: 1.0),
-        duration: const Duration(milliseconds: 1200),
+      child: BlocBuilder<ProfileEditCubit, ProfileEditState>(
+        builder: (context, state) {
+          return TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: state.completionPercentage),
+            duration: const Duration(milliseconds: 1200),
         curve: Curves.easeOutCubic,
         builder: (context, animValue, child) {
           return Column(
@@ -242,8 +247,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
         ],
       );
     },
-  ),
-);
+  );
+},
+      ),
+    );
   }
 
   Widget _buildProfileSection(double animValue) {
@@ -287,7 +294,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     ],
                   ),
                   child: CircularProgressIndicator(
-                    value: 0.75 * animValue,
+                    value: animValue,
                     strokeWidth: 6.5, // Thicker for premium look
                     strokeCap: StrokeCap.round, // Rounded starting and ending points!
                     color: AppColors.pink, 
@@ -295,25 +302,34 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   ),
                 ),
                 // Inner Avatar Image
-                Container(
-                  width: 92, 
-                  height: 92,
-                  margin: const EdgeInsets.all(9), // Center it inside the new 110px ring
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFE5A88B), Color(0xFFC7846B)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                BlocBuilder<ProfileEditCubit, ProfileEditState>(
+                  builder: (context, state) {
+                    final hasPhoto = state.photos.isNotEmpty && state.photos.first != null;
+                    return Container(
+                      width: 92, 
+                      height: 92,
+                      margin: const EdgeInsets.all(9), // Center it inside the new 110px ring
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: hasPhoto ? null : const LinearGradient(
+                          colors: [Color(0xFFE5A88B), Color(0xFFC7846B)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        image: hasPhoto ? DecorationImage(
+                          image: FileImage(File(state.photos.first!.path)),
+                          fit: BoxFit.cover,
+                        ) : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  }
                 ),
                 // Percentage Pill
                 Positioned(
@@ -332,7 +348,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       ), // White border like screenshot
                     ),
                     child: Text(
-                      '${(75 * animValue).toInt()}%',
+                      '${(animValue * 100).toInt()}%',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -348,13 +364,17 @@ class _DrawerScreenState extends State<DrawerScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Tanishka',
-                  style: TextStyle(
-                    fontSize: 24, // slightly larger
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black87,
-                  ),
+                BlocBuilder<ProfileEditCubit, ProfileEditState>(
+                  builder: (context, state) {
+                    return Text(
+                      state.fullName.isNotEmpty ? state.fullName : 'Tanishka',
+                      style: const TextStyle(
+                        fontSize: 24, // slightly larger
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black87,
+                      ),
+                    );
+                  }
                 ),
                 const SizedBox(width: 8),
                 const Text(
@@ -511,7 +531,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 ),
               ),
               Text(
-                '${(75 * animValue).toInt()}%',
+                '${(animValue * 100).toInt()}%',
                 style: const TextStyle(
                   fontSize: 18, // slightly larger
                   fontWeight: FontWeight.w900,
@@ -522,22 +542,26 @@ class _DrawerScreenState extends State<DrawerScreen> {
           ),
           const SizedBox(height: 12),
           Stack(
+            alignment: Alignment.centerLeft,
             children: [
               Container(
                 height: 8,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              Container(
-                height: 8,
-                width: 250 * animValue, // Roughly 75% mapped to width 250
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFF7B466), Color(0xFFE94E78)],
+              FractionallySizedBox(
+                widthFactor: animValue,
+                child: Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFF7B466), Color(0xFFE94E78)],
+                    ),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ],

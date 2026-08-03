@@ -74,16 +74,18 @@ class WhoYouAreSeeingSection extends StatelessWidget {
                       context.read<ProfileEditCubit>().updateInterestedIn(val);
                     },
                   ),
-                  _buildDivider(),
-                  _buildListItem(
-                    context: context,
-                    label: 'SEXUAL ORIENTATION',
-                    value: state.sexualOrientation,
-                    options: _sexualOrientationOptions,
-                    onSelect: (val) {
-                      context.read<ProfileEditCubit>().updateSexualOrientation(val);
-                    },
-                  ),
+                  if (state.interestedIn != 'Everyone') ...[
+                    _buildDivider(),
+                    _buildListItem(
+                      context: context,
+                      label: 'SEXUAL ORIENTATION',
+                      value: state.sexualOrientation,
+                      options: _sexualOrientationOptions,
+                      onSelect: (val) {
+                        context.read<ProfileEditCubit>().updateSexualOrientation(val);
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),

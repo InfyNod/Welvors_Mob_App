@@ -44,7 +44,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildProfileCompletionCard(),
+            _buildProfileCompletionCard(state),
             const SizedBox(height: 32),
             _buildPhotosSection(context, state.photos),
           ],
@@ -53,7 +53,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileCompletionCard() {
+  Widget _buildProfileCompletionCard(ProfileEditState state) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -70,7 +70,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
         ],
       ),
       child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0.0, end: 0.75),
+        tween: Tween<double>(begin: 0.0, end: state.completionPercentage),
         duration: const Duration(milliseconds: 1200),
         curve: Curves.easeOutCubic,
         builder: (context, animValue, child) {

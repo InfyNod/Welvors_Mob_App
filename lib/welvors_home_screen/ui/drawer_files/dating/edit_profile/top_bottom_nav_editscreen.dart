@@ -26,11 +26,28 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   int _selectedTab = 0; // 0 for Edit, 1 for Preview
 
+  void _saveChanges() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 8),
+            Text('Saved Successfully', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        backgroundColor: const Color(0xFFE43A6A),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileEditCubit(),
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -60,9 +77,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                // Action for Done
-              },
+              onPressed: _saveChanges,
               child: const Text(
                 'Done',
                 style: TextStyle(
@@ -106,9 +121,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               width: double.infinity,
               height: 54,
               child: ElevatedButton(
-                onPressed: () {
-                  // Save logic goes here
-                },
+                onPressed: _saveChanges,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE43A6A),
                   shape: RoundedRectangleBorder(
@@ -133,7 +146,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-          ),
         ),
       ),
     );
