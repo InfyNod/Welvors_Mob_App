@@ -135,7 +135,7 @@ class BasicDetailsSection extends StatelessWidget {
                           headerText: 'What\'s your gender?',
                           subHeaderText: 'You can select what appears on your profile.',
                           currentValue: state.gender,
-                          options: ['Woman', 'Man', 'Non-binary', 'Prefer not to say'],
+                          options: ['Woman', 'Man', 'Non binary', 'Prefer not to say', 'Everyone'],
                         ),
                       ),
                     );
@@ -153,7 +153,7 @@ class BasicDetailsSection extends StatelessWidget {
                           headerText: 'What\'s your gender identity?',
                           subHeaderText: 'This helps us find the best matches for you.',
                           currentValue: state.genderIdentity,
-                          options: ['Straight', 'Gay', 'Lesbian', 'Aromatic', 'Asexual', 'Bisexual', 'Demisexual', 'Pansexual', 'Queer', 'Not listed'],
+                          options: ['Straight', 'Gay', 'Lesbian', 'Aromantic', 'Asexual', 'Bisexual', 'Demisexual', 'Pansexual', 'Queer', 'Not listed'],
                         ),
                       ),
                     );

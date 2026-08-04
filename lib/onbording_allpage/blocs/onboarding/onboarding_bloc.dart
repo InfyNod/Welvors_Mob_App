@@ -154,7 +154,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   Future<void> _onSubmitPreferences(SubmitPreferencesEvent event, Emitter<OnboardingState> emit) async {
     emit(OnboardingLoading());
-    final error = await ApiService.submitInterestedIn(event.interestedIn);
+    final error = await ApiService.submitInterestedIn(event.interestedIn, event.sexualOrientation);
     if (error != null) {
       emit(OnboardingFailure(error));
     } else {

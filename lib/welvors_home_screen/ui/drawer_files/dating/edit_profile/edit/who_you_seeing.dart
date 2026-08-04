@@ -10,6 +10,8 @@ class WhoYouAreSeeingSection extends StatelessWidget {
   final List<String> _interestedInOptions = const [
     'Men',
     'Women',
+    'Non binary',
+    'Prefer not to say',
     'Everyone',
   ];
 
@@ -17,13 +19,13 @@ class WhoYouAreSeeingSection extends StatelessWidget {
     'Straight',
     'Gay',
     'Lesbian',
-    'Bisexual',
-    'Pansexual',
-    'Asexual',
     'Aromantic',
+    'Asexual',
+    'Bisexual',
+    'Demisexual',
+    'Pansexual',
     'Queer',
-    'Questioning',
-    'Prefer not to say',
+    'Not listed',
   ];
 
   @override

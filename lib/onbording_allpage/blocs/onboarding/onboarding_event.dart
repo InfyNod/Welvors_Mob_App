@@ -90,11 +90,12 @@ class SubmitBioEvent extends OnboardingEvent {
 
 class SubmitPreferencesEvent extends OnboardingEvent {
   final String interestedIn;
+  final String sexualOrientation;
 
-  const SubmitPreferencesEvent(this.interestedIn);
+  const SubmitPreferencesEvent(this.interestedIn, this.sexualOrientation);
 
   @override
-  List<Object?> get props => [interestedIn];
+  List<Object?> get props => [interestedIn, sexualOrientation];
 }
 
 class SubmitLocationEvent extends OnboardingEvent {

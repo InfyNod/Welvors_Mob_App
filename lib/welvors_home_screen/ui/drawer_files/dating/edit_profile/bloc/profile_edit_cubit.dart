@@ -69,6 +69,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
 
       String formatEnumFromBackend(String? val) {
         if (val == null || val.isEmpty) return '';
+        if (val == 'AROMATIC') return 'Aromantic';
         final parts = val.split('_');
         if (parts.isEmpty) return '';
         String result = parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1).toLowerCase();
@@ -144,8 +145,8 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         father: family['fatherOccupation']?['value'] ?? '',
         mother: family['motherOccupation']?['value'] ?? '',
         
-        interestedIn: profile['interestedIn'] ?? '',
-        sexualOrientation: profile['sexualOrientation'] ?? '',
+        interestedIn: formatEnumFromBackend(profile['interestedIn']),
+        sexualOrientation: formatEnumFromBackend(profile['sexualOrientation']),
         
         photos: parsedPhotos,
       ));
@@ -179,8 +180,42 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   
   void updateVideoPath(String? path) => emit(state.copyWith(videoPath: path));
   
-  void updateInterestedIn(String interested) => emit(state.copyWith(interestedIn: interested));
-  void updateSexualOrientation(String orientation) => emit(state.copyWith(sexualOrientation: orientation));
+  void updateInterestedIn(String interested) {
+    emit(state.copyWith(interestedIn: interested));
+    _saveWhoYouAreSeeing();
+  }
+  
+  void updateSexualOrientation(String orientation) {
+    emit(state.copyWith(sexualOrientation: orientation));
+    _saveWhoYouAreSeeing();
+  }
+  
+  Future<void> _saveWhoYouAreSeeing() async {
+    String mappedInterestedIn = 'EVERYONE';
+    switch (state.interestedIn) {
+      case 'Men': mappedInterestedIn = 'MEN'; break;
+      case 'Women': mappedInterestedIn = 'WOMEN'; break;
+      case 'Non binary': mappedInterestedIn = 'NON_BINARY'; break;
+      case 'Prefer not to say': mappedInterestedIn = 'PREFER_NOT_TO_SAY'; break;
+      case 'Everyone': mappedInterestedIn = 'EVERYONE'; break;
+    }
+
+    String mappedOrientation = 'NOT_LISTED';
+    switch (state.sexualOrientation) {
+      case 'Straight': mappedOrientation = 'STRAIGHT'; break;
+      case 'Gay': mappedOrientation = 'GAY'; break;
+      case 'Lesbian': mappedOrientation = 'LESBIAN'; break;
+      case 'Aromantic': mappedOrientation = 'AROMATIC'; break;
+      case 'Asexual': mappedOrientation = 'ASEXUAL'; break;
+      case 'Bisexual': mappedOrientation = 'BISEXUAL'; break;
+      case 'Demisexual': mappedOrientation = 'DEMISEXUAL'; break;
+      case 'Pansexual': mappedOrientation = 'PANSEXUAL'; break;
+      case 'Queer': mappedOrientation = 'QUEER'; break;
+      case 'Not listed': mappedOrientation = 'NOT_LISTED'; break;
+    }
+
+    await EditProfileApiService.updateInterestedIn(mappedInterestedIn, mappedOrientation);
+  }
   
   void updateDrinking(String val) => emit(state.copyWith(drinking: val));
   void updateSmoking(String val) => emit(state.copyWith(smoking: val));
@@ -217,6 +252,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     }
 
     String formatEnum(String val) {
+      if (val == 'Aromantic') return 'AROMATIC';
       return val.toUpperCase().replaceAll(' ', '_');
     }
 

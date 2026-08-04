@@ -466,8 +466,7 @@ class ApiService {
     }
   }
 
-  /// Submits the interested-in preference to the server.
-  static Future<String?> submitInterestedIn(String interestedIn) async {
+  static Future<String?> submitInterestedIn(String interestedIn, String sexualOrientation) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -478,7 +477,10 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({'interested_in': interestedIn}),
+        body: jsonEncode({
+          'interested_in': interestedIn,
+          'sexual_orientation': sexualOrientation,
+        }),
       );
 
       debugPrint('Interested In Status: ${response.statusCode}');

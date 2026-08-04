@@ -336,7 +336,25 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               String interestedInValue = 'EVERYONE';
               if (_selectedPreference == 'Man') interestedInValue = 'MEN';
               if (_selectedPreference == 'Women') interestedInValue = 'WOMEN';
-              final errorMsg = await ApiService.submitInterestedIn(interestedInValue);
+
+              String sexualOrientationValue = 'NOT_LISTED';
+              if (_selectedSubPreferences.isNotEmpty) {
+                final orientation = _selectedSubPreferences.first;
+                switch (orientation) {
+                  case 'Straight': sexualOrientationValue = 'STRAIGHT'; break;
+                  case 'Gay': sexualOrientationValue = 'GAY'; break;
+                  case 'Lesbian': sexualOrientationValue = 'LESBIAN'; break;
+                  case 'Aromantic': sexualOrientationValue = 'AROMATIC'; break;
+                  case 'Asexual': sexualOrientationValue = 'ASEXUAL'; break;
+                  case 'Bisexual': sexualOrientationValue = 'BISEXUAL'; break;
+                  case 'Demisexual': sexualOrientationValue = 'DEMISEXUAL'; break;
+                  case 'Pansexual': sexualOrientationValue = 'PANSEXUAL'; break;
+                  case 'Queer': sexualOrientationValue = 'QUEER'; break;
+                  case 'Questioning': sexualOrientationValue = 'NOT_LISTED'; break;
+                }
+              }
+
+              final errorMsg = await ApiService.submitInterestedIn(interestedInValue, sexualOrientationValue);
               setState(() => _isLoading = false);
 
               if (errorMsg == null) {

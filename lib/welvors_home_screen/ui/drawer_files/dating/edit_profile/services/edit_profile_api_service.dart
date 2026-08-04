@@ -180,6 +180,38 @@ class EditProfileApiService {
     }
   }
 
+  // Updates Who You Are Seeing (Interested In & Sexual Orientation)
+  static Future<String?> updateInterestedIn(String interestedIn, String sexualOrientation) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/profile/interested-in'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "interested_in": interestedIn,
+          "sexual_orientation": sexualOrientation,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null; // Success
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error updating interested-in: $e');
+      return e.toString();
+    }
+  }
+
   // Fetches the user's full profile details
   static Future<Map<String, dynamic>> getProfileDetails() async {
     try {
