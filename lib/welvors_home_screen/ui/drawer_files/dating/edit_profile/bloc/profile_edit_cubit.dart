@@ -43,6 +43,9 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         gender: basic['gender'] ?? '',
         genderIdentity: basic['genderOption'] ?? '',
         religionCaste: basic['religion']?['name'] ?? '',
+        religionId: basic['religion']?['id'] as int?,
+        communityId: basic['community']?['id'] as int?,
+        languageIds: null, // If backend adds it later
         motherTongue: '', // not in API response
         zodiac: basic['zodiac'] ?? '',
         loveLanguage: basic['loveLanguage'] ?? '',
@@ -78,17 +81,17 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     }
   }
 
-  void updateFullName(String name) => emit(state.copyWith(fullName: name));
-  void updateEmail(String email) => emit(state.copyWith(email: email));
-  void updateDob(String dob) => emit(state.copyWith(dob: dob));
-  void updateHeight(String height) => emit(state.copyWith(height: height));
-  void updateGender(String gender) => emit(state.copyWith(gender: gender));
-  void updateGenderIdentity(String identity) => emit(state.copyWith(genderIdentity: identity));
-  void updateReligionCaste(String religionCaste) => emit(state.copyWith(religionCaste: religionCaste));
-  void updateMotherTongue(String tongue) => emit(state.copyWith(motherTongue: tongue));
-  void updateZodiac(String zodiac) => emit(state.copyWith(zodiac: zodiac));
-  void updateLoveLanguage(String language) => emit(state.copyWith(loveLanguage: language));
-  void updateCommunication(String comms) => emit(state.copyWith(communication: comms));
+  void updateFullName(String name) { emit(state.copyWith(fullName: name)); saveBasicDetails(); }
+  void updateEmail(String email) { emit(state.copyWith(email: email)); saveBasicDetails(); }
+  void updateDob(String dob) { emit(state.copyWith(dob: dob)); saveBasicDetails(); }
+  void updateHeight(String height) { emit(state.copyWith(height: height)); saveBasicDetails(); }
+  void updateGender(String gender) { emit(state.copyWith(gender: gender)); saveBasicDetails(); }
+  void updateGenderIdentity(String identity) { emit(state.copyWith(genderIdentity: identity)); saveBasicDetails(); }
+  void updateReligionCaste(String religionCaste) { emit(state.copyWith(religionCaste: religionCaste)); saveBasicDetails(); }
+  void updateMotherTongue(String tongue) { emit(state.copyWith(motherTongue: tongue)); saveBasicDetails(); }
+  void updateZodiac(String zodiac) { emit(state.copyWith(zodiac: zodiac)); saveBasicDetails(); }
+  void updateLoveLanguage(String language) { emit(state.copyWith(loveLanguage: language)); saveBasicDetails(); }
+  void updateCommunication(String comms) { emit(state.copyWith(communication: comms)); saveBasicDetails(); }
   
   void updateBio(String bio) => emit(state.copyWith(bio: bio));
   void updateIntention(String intention) => emit(state.copyWith(intention: intention));
@@ -107,6 +110,43 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateTravel(String val) => emit(state.copyWith(travel: val));
   void updateSleep(String val) => emit(state.copyWith(sleep: val));
   
+  // API Update for Basic Details
+  Future<String?> saveBasicDetails() async {
+    int? parsedHeight;
+    try {
+      final heightStr = state.height.replaceAll(RegExp(r'[^0-9]'), '');
+      if (heightStr.isNotEmpty) {
+        parsedHeight = int.parse(heightStr);
+      }
+    } catch (_) {}
+
+    String mapGender(String g) {
+      if (g.toLowerCase() == 'man') return 'MEN';
+      if (g.toLowerCase() == 'woman') return 'WOMEN';
+      return g.toUpperCase().replaceAll(' ', '_');
+    }
+
+    String formatEnum(String val) {
+      return val.toUpperCase().replaceAll(' ', '_');
+    }
+
+    final data = {
+      "full_name": state.fullName,
+      "email": state.email,
+      "birth_date": state.dob,
+      if (parsedHeight != null) "height": parsedHeight,
+      if (state.gender.isNotEmpty) "gender": mapGender(state.gender),
+      if (state.religionId != null) "religionId": state.religionId,
+      if (state.communityId != null) "communityId": state.communityId,
+      if (state.languageIds != null) "languageIds": state.languageIds,
+      if (state.zodiac.isNotEmpty) "zodiac": formatEnum(state.zodiac),
+      if (state.loveLanguage.isNotEmpty) "loveLanguage": formatEnum(state.loveLanguage),
+      if (state.communication.isNotEmpty) "communicationStyle": formatEnum(state.communication),
+    };
+
+    return await EditProfileApiService.updateBasicDetails(data);
+  }
+
   // Location
   void updateArea(String val) => emit(state.copyWith(area: val));
   void updateCity(String val) => emit(state.copyWith(city: val));

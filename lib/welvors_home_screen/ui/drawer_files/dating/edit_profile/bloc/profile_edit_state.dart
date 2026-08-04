@@ -9,6 +9,9 @@ class ProfileEditState extends Equatable {
   final String gender;
   final String genderIdentity;
   final String religionCaste;
+  final int? religionId;
+  final int? communityId;
+  final List<int>? languageIds;
   final String motherTongue;
   final String zodiac;
   final String loveLanguage;
@@ -75,6 +78,9 @@ class ProfileEditState extends Equatable {
     required this.gender,
     required this.genderIdentity,
     required this.religionCaste,
+    this.religionId,
+    this.communityId,
+    this.languageIds,
     required this.motherTongue,
     required this.zodiac,
     required this.loveLanguage,
@@ -132,6 +138,9 @@ class ProfileEditState extends Equatable {
       gender: '',
       genderIdentity: '',
       religionCaste: '',
+      religionId: null,
+      communityId: null,
+      languageIds: null,
       motherTongue: '',
       zodiac: '',
       loveLanguage: '',
@@ -189,6 +198,9 @@ class ProfileEditState extends Equatable {
     String? gender,
     String? genderIdentity,
     String? religionCaste,
+    int? religionId,
+    int? communityId,
+    List<int>? languageIds,
     String? motherTongue,
     String? zodiac,
     String? loveLanguage,
@@ -244,6 +256,9 @@ class ProfileEditState extends Equatable {
       gender: gender ?? this.gender,
       genderIdentity: genderIdentity ?? this.genderIdentity,
       religionCaste: religionCaste ?? this.religionCaste,
+      religionId: religionId ?? this.religionId,
+      communityId: communityId ?? this.communityId,
+      languageIds: languageIds ?? this.languageIds,
       motherTongue: motherTongue ?? this.motherTongue,
       zodiac: zodiac ?? this.zodiac,
       loveLanguage: loveLanguage ?? this.loveLanguage,
@@ -328,6 +343,9 @@ class ProfileEditState extends Equatable {
         gender,
         genderIdentity,
         religionCaste,
+        religionId,
+        communityId,
+        languageIds,
         motherTongue,
         zodiac,
         loveLanguage,

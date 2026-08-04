@@ -120,7 +120,7 @@ class EditProfileApiService {
   }
 
   // Updates the user's looking-for intention
-  static Future<String?> updateIntention(String intentionId) async {
+  static Future<String?> updateIntention(String intentionId, String title, String subtitle) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -131,7 +131,11 @@ class EditProfileApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({"intentionId": intentionId}),
+        body: jsonEncode({
+          "intentionId": intentionId,
+          "title": title,
+          "subtitle": subtitle,
+        }),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -173,6 +177,34 @@ class EditProfileApiService {
     } catch (e) {
       debugPrint('Error fetching profile details: $e');
       return {'error': e.toString()};
+    }
+  }
+  // Updates basic details
+  static Future<String?> updateBasicDetails(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/edit-profile/basic-info'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null; // Success
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error updating basic details: $e');
+      return e.toString();
     }
   }
 }
