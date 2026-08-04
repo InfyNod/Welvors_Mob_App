@@ -186,7 +186,7 @@ class EditProfileApiService {
       final token = prefs.getString('auth_token');
 
       final response = await http.patch(
-        Uri.parse('$baseUrl/edit-profile/basic-info'),
+        Uri.parse('$baseUrl/user/profile/basic-info'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',

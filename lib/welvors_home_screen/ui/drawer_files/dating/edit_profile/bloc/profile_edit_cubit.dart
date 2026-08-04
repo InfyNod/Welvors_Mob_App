@@ -24,13 +24,66 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       // Parse photos
       List<ProfilePhoto?> parsedPhotos = List.filled(6, null);
       if (data['photos'] != null && data['photos'] is List) {
-        for (var p in data['photos']) {
-          final int order = p['order'] ?? 1;
-          if (order >= 1 && order <= 6) {
-            parsedPhotos[order - 1] = ProfilePhoto(
+        var backendPhotos = List.from(data['photos']);
+        // Sort by order just in case they are different, but keep original sequence if same
+        backendPhotos.sort((a, b) {
+          int orderA = a['order'] ?? 1;
+          int orderB = b['order'] ?? 1;
+          return orderA.compareTo(orderB);
+        });
+
+        int currentIndex = 0;
+        for (var p in backendPhotos) {
+          if (currentIndex < 6) {
+            parsedPhotos[currentIndex] = ProfilePhoto(
               id: p['id'],
               url: p['url'],
             );
+            currentIndex++;
+          }
+        }
+      }
+
+      String formattedHeight = '';
+      if (basic['height'] != null) {
+        int cm = basic['height'] is int ? basic['height'] : int.tryParse(basic['height'].toString()) ?? 0;
+        if (cm > 0) {
+          int inches = (cm / 2.54).round();
+          int feet = inches ~/ 12;
+          int remainingInches = inches % 12;
+          formattedHeight = '$feet\'$remainingInches" · $cm cm';
+        }
+      }
+
+      String mapGenderFromBackend(String? g) {
+        if (g == null) return '';
+        if (g.toUpperCase() == 'MEN') return 'Man';
+        if (g.toUpperCase() == 'WOMEN') return 'Woman';
+        return g.substring(0, 1).toUpperCase() + g.substring(1).toLowerCase().replaceAll('_', ' ');
+      }
+
+      String formatEnumFromBackend(String? val) {
+        if (val == null || val.isEmpty) return '';
+        final parts = val.split('_');
+        if (parts.isEmpty) return '';
+        String result = parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1).toLowerCase();
+        for (int i = 1; i < parts.length; i++) {
+          result += ' ${parts[i].toLowerCase()}';
+        }
+        return result;
+      }
+
+      String formattedDob = '';
+      if (basic['birthDate'] != null) {
+        final dobStr = basic['birthDate'].toString().split('T').first;
+        final parts = dobStr.split('-');
+        if (parts.length == 3) {
+          if (parts[0].length == 4) {
+            // YYYY-MM-DD
+            formattedDob = '${parts[2]} / ${parts[1]} / ${parts[0]}';
+          } else {
+            // DD-MM-YYYY
+            formattedDob = '${parts[0]} / ${parts[1]} / ${parts[2]}';
           }
         }
       }
@@ -38,18 +91,18 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       emit(state.copyWith(
         fullName: basic['fullName'] ?? '',
         email: basic['email'] ?? '',
-        dob: basic['birthDate'] != null ? basic['birthDate'].toString().split('T').first : '',
-        height: basic['height'] != null ? '${basic['height']} cm' : '',
-        gender: basic['gender'] ?? '',
+        dob: formattedDob,
+        height: formattedHeight,
+        gender: mapGenderFromBackend(basic['gender']),
         genderIdentity: basic['genderOption'] ?? '',
         religionCaste: basic['religion']?['name'] ?? '',
         religionId: basic['religion']?['id'] as int?,
         communityId: basic['community']?['id'] as int?,
         languageIds: null, // If backend adds it later
         motherTongue: '', // not in API response
-        zodiac: basic['zodiac'] ?? '',
-        loveLanguage: basic['loveLanguage'] ?? '',
-        communication: basic['communicationStyle'] ?? '',
+        zodiac: formatEnumFromBackend(basic['zodiac']),
+        loveLanguage: formatEnumFromBackend(basic['loveLanguage']),
+        communication: formatEnumFromBackend(basic['communicationStyle']),
         
         bio: bio,
         intention: lookingFor,
@@ -114,9 +167,20 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   Future<String?> saveBasicDetails() async {
     int? parsedHeight;
     try {
-      final heightStr = state.height.replaceAll(RegExp(r'[^0-9]'), '');
-      if (heightStr.isNotEmpty) {
-        parsedHeight = int.parse(heightStr);
+      if (state.height.contains('cm')) {
+        final parts = state.height.split('·');
+        if (parts.length > 1) {
+          final cmStr = parts[1].replaceAll(RegExp(r'[^0-9]'), '');
+          if (cmStr.isNotEmpty) parsedHeight = int.parse(cmStr);
+        } else {
+          final cmStr = state.height.replaceAll(RegExp(r'[^0-9]'), '');
+          if (cmStr.isNotEmpty) parsedHeight = int.parse(cmStr);
+        }
+      } else {
+        final heightStr = state.height.replaceAll(RegExp(r'[^0-9]'), '');
+        if (heightStr.isNotEmpty) {
+          parsedHeight = int.parse(heightStr);
+        }
       }
     } catch (_) {}
 
@@ -131,11 +195,15 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     }
 
     final data = {
-      "full_name": state.fullName,
+      "fullName": state.fullName,
       "email": state.email,
-      "birth_date": state.dob,
+      "birth_date": state.dob.replaceAll(' ', ''),
       if (parsedHeight != null) "height": parsedHeight,
       if (state.gender.isNotEmpty) "gender": mapGender(state.gender),
+      if (state.sexualOrientation.isNotEmpty)
+        "gender_option": formatEnum(state.sexualOrientation)
+      else if (state.genderIdentity.isNotEmpty)
+        "gender_option": "NOT_LISTED", // Fallback if backend insists on this field
       if (state.religionId != null) "religionId": state.religionId,
       if (state.communityId != null) "communityId": state.communityId,
       if (state.languageIds != null) "languageIds": state.languageIds,
@@ -143,6 +211,11 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       if (state.loveLanguage.isNotEmpty) "loveLanguage": formatEnum(state.loveLanguage),
       if (state.communication.isNotEmpty) "communicationStyle": formatEnum(state.communication),
     };
+
+    // Make sure we have a fallback for gender_option if required
+    if (!data.containsKey("gender_option")) {
+      data["gender_option"] = "NOT_LISTED";
+    }
 
     return await EditProfileApiService.updateBasicDetails(data);
   }
