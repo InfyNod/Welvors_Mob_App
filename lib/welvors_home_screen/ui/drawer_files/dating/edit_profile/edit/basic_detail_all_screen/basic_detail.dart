@@ -153,7 +153,7 @@ class BasicDetailsSection extends StatelessWidget {
                           headerText: 'What\'s your gender identity?',
                           subHeaderText: 'This helps us find the best matches for you.',
                           currentValue: state.genderIdentity,
-                          options: ['Cis woman', 'Trans woman', 'Intersex woman', 'Cis man', 'Trans man', 'Intersex man'],
+                          options: ['Straight', 'Gay', 'Lesbian', 'Aromatic', 'Asexual', 'Bisexual', 'Demisexual', 'Pansexual', 'Queer', 'Not listed'],
                         ),
                       ),
                     );
@@ -163,32 +163,35 @@ class BasicDetailsSection extends StatelessWidget {
                   }),
                   _buildDivider(),
                   _buildEditableField('RELIGION & CASTE', state.religionCaste, () async {
-                    final result = await Navigator.push<String>(
+                    final result = await Navigator.push<dynamic>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => EditReligionCasteScreen(currentValue: state.religionCaste),
                       ),
                     );
                     if (result != null && context.mounted) {
-                      context.read<ProfileEditCubit>().updateReligionCaste(result);
+                      context.read<ProfileEditCubit>().updateReligionCaste(
+                        result['formatted'],
+                        result['religionId'],
+                        result['communityId'],
+                      );
                     }
                   }),
                   _buildDivider(),
                   _buildEditableField('MOTHER TONGUE', state.motherTongue, () async {
-                    final result = await Navigator.push<String>(
+                    final result = await Navigator.push<Map<String, dynamic>>(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => GenericListPickerScreen(
-                          title: 'Mother Tongue',
-                          headerText: 'What\'s your mother tongue?',
-                          subHeaderText: 'The language you grew up speaking.',
-                          currentValue: state.motherTongue,
-                          options: ['Marathi', 'Hindi', 'English', 'Gujarati', 'Tamil', 'Telugu'],
+                        builder: (context) => EditLanguageScreen(
+                          initialLanguageIds: state.languageIds ?? [],
                         ),
                       ),
                     );
                     if (result != null && context.mounted) {
-                      context.read<ProfileEditCubit>().updateMotherTongue(result);
+                      context.read<ProfileEditCubit>().updateMotherTongue(
+                        result['motherTongue'] as String,
+                        result['languageIds'] as List<int>,
+                      );
                     }
                   }),
                   _buildDivider(),

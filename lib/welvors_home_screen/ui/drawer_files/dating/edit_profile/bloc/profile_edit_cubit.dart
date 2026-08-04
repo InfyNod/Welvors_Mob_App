@@ -16,7 +16,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       
       final basic = data['basicDetails'] ?? {};
       final bio = data['bio']?['bio'] ?? '';
-      final lookingFor = data['lookingFor']?['title'] ?? '';
+      
+      String lookingFor = data['lookingFor']?['title'] ?? '';
+      if (lookingFor.startsWith('"') && lookingFor.endsWith('"') && lookingFor.length >= 2) {
+        lookingFor = lookingFor.substring(1, lookingFor.length - 1);
+      }
+      
       final career = data['educationCareer'] ?? {};
       final family = data['family'] ?? {};
       final profile = data['profile'] ?? {};
@@ -88,18 +93,31 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         }
       }
 
+      List<int>? parsedLanguageIds;
+      String parsedMotherTongue = '';
+      if (basic['languages'] != null && basic['languages'] is List) {
+        final langs = basic['languages'] as List;
+        parsedLanguageIds = langs.map((l) => l['id'] as int).toList();
+        parsedMotherTongue = langs.map((l) => l['name'].toString()).join(', ');
+      } else if (basic['languageIds'] != null && basic['languageIds'] is List) {
+        final langIds = basic['languageIds'] as List;
+        parsedLanguageIds = langIds.map((e) => e as int).toList();
+      }
+
       emit(state.copyWith(
         fullName: basic['fullName'] ?? '',
         email: basic['email'] ?? '',
         dob: formattedDob,
         height: formattedHeight,
         gender: mapGenderFromBackend(basic['gender']),
-        genderIdentity: basic['genderOption'] ?? '',
-        religionCaste: basic['religion']?['name'] ?? '',
+        genderIdentity: formatEnumFromBackend(basic['genderOption'] ?? ''),
+        religionCaste: (basic['community'] != null && basic['community']['name'] != null && basic['community']['name'].toString().isNotEmpty)
+            ? '${basic['religion']?['name'] ?? ''} · ${basic['community']?['name'] ?? ''}'
+            : basic['religion']?['name'] ?? '',
         religionId: basic['religion']?['id'] as int?,
         communityId: basic['community']?['id'] as int?,
-        languageIds: null, // If backend adds it later
-        motherTongue: '', // not in API response
+        languageIds: parsedLanguageIds,
+        motherTongue: parsedMotherTongue,
         zodiac: formatEnumFromBackend(basic['zodiac']),
         loveLanguage: formatEnumFromBackend(basic['loveLanguage']),
         communication: formatEnumFromBackend(basic['communicationStyle']),
@@ -140,8 +158,16 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateHeight(String height) { emit(state.copyWith(height: height)); saveBasicDetails(); }
   void updateGender(String gender) { emit(state.copyWith(gender: gender)); saveBasicDetails(); }
   void updateGenderIdentity(String identity) { emit(state.copyWith(genderIdentity: identity)); saveBasicDetails(); }
-  void updateReligionCaste(String religionCaste) { emit(state.copyWith(religionCaste: religionCaste)); saveBasicDetails(); }
-  void updateMotherTongue(String tongue) { emit(state.copyWith(motherTongue: tongue)); saveBasicDetails(); }
+  void updateReligionCaste(String religionCaste, int? religionId, int? communityId) async { 
+    emit(state.copyWith(religionCaste: religionCaste, religionId: religionId, communityId: communityId)); 
+    if (religionId != null) {
+      await EditProfileApiService.updateReligion(religionId, communityId);
+    }
+  }
+  void updateMotherTongue(String tongue, List<int> languageIds) {
+    emit(state.copyWith(motherTongue: tongue, languageIds: languageIds));
+    saveBasicDetails();
+  }
   void updateZodiac(String zodiac) { emit(state.copyWith(zodiac: zodiac)); saveBasicDetails(); }
   void updateLoveLanguage(String language) { emit(state.copyWith(loveLanguage: language)); saveBasicDetails(); }
   void updateCommunication(String comms) { emit(state.copyWith(communication: comms)); saveBasicDetails(); }
@@ -195,17 +221,13 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     }
 
     final data = {
-      "fullName": state.fullName,
+      "full_name": state.fullName,
       "email": state.email,
       "birth_date": state.dob.replaceAll(' ', ''),
       if (parsedHeight != null) "height": parsedHeight,
       if (state.gender.isNotEmpty) "gender": mapGender(state.gender),
-      if (state.sexualOrientation.isNotEmpty)
-        "gender_option": formatEnum(state.sexualOrientation)
-      else if (state.genderIdentity.isNotEmpty)
-        "gender_option": "NOT_LISTED", // Fallback if backend insists on this field
-      if (state.religionId != null) "religionId": state.religionId,
-      if (state.communityId != null) "communityId": state.communityId,
+      if (state.genderIdentity.isNotEmpty)
+        "gender_option": formatEnum(state.genderIdentity),
       if (state.languageIds != null) "languageIds": state.languageIds,
       if (state.zodiac.isNotEmpty) "zodiac": formatEnum(state.zodiac),
       if (state.loveLanguage.isNotEmpty) "loveLanguage": formatEnum(state.loveLanguage),
@@ -260,6 +282,21 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   
   void updatePrompts(List<Map<String, String>> prompts) {
     emit(state.copyWith(prompts: prompts));
+  }
+  
+  Future<void> removePhoto(int index) async {
+    final updatedPhotos = List<ProfilePhoto?>.from(state.photos);
+    final photoToRemove = updatedPhotos[index];
+    
+    // Optimistic UI update
+    updatedPhotos.removeAt(index);
+    updatedPhotos.add(null);
+    emit(state.copyWith(photos: updatedPhotos));
+    
+    // Call API if it exists on backend
+    if (photoToRemove != null && photoToRemove.id != null) {
+      await EditProfileApiService.deletePhoto(photoToRemove.id!);
+    }
   }
   
   Future<void> updateSinglePhoto(int index, XFile? photo) async {

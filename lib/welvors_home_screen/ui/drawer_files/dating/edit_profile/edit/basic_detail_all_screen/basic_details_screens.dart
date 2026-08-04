@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 // Generic unsaved changes popup method
 Future<bool> showUnsavedChangesDialog(BuildContext context) async {
@@ -905,26 +906,14 @@ class EditReligionCasteScreen extends StatefulWidget {
 class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
   late String _selectedReligion;
   late String _selectedCaste;
-
-  final List<String> _religions = [
-    'Hindu',
-    'Muslim',
-    'Christian',
-    'Sikh',
-    'Jain',
-    'Buddhist',
-    'Parsi',
-    'Jewish',
-    'Spiritual but not religious',
-    'Atheist',
-    'Agnostic',
-    'Prefer not to say',
-  ];
-
-  final Map<String, List<String>> _castes = {
-    'Hindu': ['Maratha', 'Brahmin', 'Other'],
-    'Muslim': ['Sunni', 'Shia', 'Other'],
-  };
+  
+  bool _isLoading = true;
+  List<dynamic> _apiReligions = [];
+  List<String> _religions = [];
+  Map<String, List<String>> _castes = {};
+  
+  int? _selectedReligionId;
+  int? _selectedCasteId;
 
   @override
   void initState() {
@@ -937,6 +926,44 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
       _selectedReligion = widget.currentValue.trim();
       _selectedCaste = '';
     }
+    _loadReligions();
+  }
+  
+  Future<void> _loadReligions() async {
+    final response = await EditProfileApiService.getReligions();
+    if (response['error'] == null && response['data'] != null) {
+      _apiReligions = response['data'] as List<dynamic>;
+      _religions = [];
+      _castes = {};
+      
+      for (var r in _apiReligions) {
+        String rName = r['name'] ?? '';
+        if (rName.isNotEmpty) {
+          _religions.add(rName);
+          if (r['name'] == _selectedReligion) {
+            _selectedReligionId = r['id'];
+          }
+          if (r['communities'] != null && r['communities'] is List) {
+            List<String> cList = [];
+            for (var c in r['communities']) {
+               String cName = c['name'] ?? '';
+               if (cName.isNotEmpty) {
+                 cList.add(cName);
+                 if (cName == _selectedCaste && r['name'] == _selectedReligion) {
+                   _selectedCasteId = c['id'];
+                 }
+               }
+            }
+            if (cList.isNotEmpty) {
+              _castes[rName] = cList;
+            }
+          }
+        }
+      }
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   String get _currentFormattedValue {
@@ -952,7 +979,13 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
 
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
-      if (mounted) Navigator.pop(context, _currentFormattedValue);
+      if (mounted) {
+        Navigator.pop(context, {
+          'formatted': _currentFormattedValue,
+          'religionId': _selectedReligionId,
+          'communityId': _selectedCasteId,
+        });
+      }
       return false;
     }
     return result == false;
@@ -969,9 +1002,13 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
           child: buildCustomAppBar(context, 'Religion & Caste', _onWillPop),
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
@@ -1023,13 +1060,17 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                                 onTap: () {
                                   setState(() {
                                     _selectedReligion = religion;
-                                    if (!hasCastes)
+                                    _selectedReligionId = _apiReligions.firstWhere(
+                                      (e) => e['name'] == religion,
+                                      orElse: () => {},
+                                    )['id'];
+
+                                    if (!hasCastes) {
                                       _selectedCaste = '';
-                                    else if (!(_castes[religion]?.contains(
-                                          _selectedCaste,
-                                        ) ??
-                                        false)) {
+                                      _selectedCasteId = null;
+                                    } else if (!(_castes[religion]?.contains(_selectedCaste) ?? false)) {
                                       _selectedCaste = '';
+                                      _selectedCasteId = null;
                                     }
                                   });
                                 },
@@ -1103,6 +1144,10 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                                             onTap: () {
                                               setState(() {
                                                 _selectedCaste = caste;
+                                                var rData = _apiReligions.firstWhere((e) => e['name'] == _selectedReligion, orElse: () => {});
+                                                if (rData['communities'] != null) {
+                                                  _selectedCasteId = (rData['communities'] as List).firstWhere((c) => c['name'] == caste, orElse: () => {})['id'];
+                                                }
                                               });
                                             },
                                             child: Container(
@@ -1156,7 +1201,11 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, _currentFormattedValue);
+                      Navigator.pop(context, {
+                        'formatted': _currentFormattedValue,
+                        'religionId': _selectedReligionId,
+                        'communityId': _selectedCasteId,
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -1184,3 +1233,188 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
     );
   }
 }
+
+class EditLanguageScreen extends StatefulWidget {
+  final List<int> initialLanguageIds;
+  
+  const EditLanguageScreen({Key? key, required this.initialLanguageIds}) : super(key: key);
+
+  @override
+  State<EditLanguageScreen> createState() => _EditLanguageScreenState();
+}
+
+class _EditLanguageScreenState extends State<EditLanguageScreen> {
+  bool isLoading = true;
+  List<dynamic> languages = [];
+  int? selectedLanguageId;
+  int? originalLanguageId;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedLanguageId = widget.initialLanguageIds.isNotEmpty ? widget.initialLanguageIds.first : null;
+    originalLanguageId = selectedLanguageId;
+    _fetchLanguages();
+  }
+
+  Future<void> _fetchLanguages() async {
+    final fetched = await EditProfileApiService.getLanguages();
+    if (mounted) {
+      setState(() {
+        languages = fetched;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<bool> _onWillPop() async {
+    final hasChanges = selectedLanguageId != originalLanguageId;
+    if (!hasChanges) return true;
+
+    final result = await showUnsavedChangesDialog(context);
+    if (result == true) {
+      if (mounted) {
+        _saveAndPop();
+      }
+      return false; 
+    }
+    return result == false; 
+  }
+
+  void _saveAndPop() {
+    final selectedLang = languages.firstWhere(
+      (l) => l['id'] == selectedLanguageId, 
+      orElse: () => null
+    );
+        
+    Navigator.pop(context, {
+      'languageIds': selectedLanguageId != null ? [selectedLanguageId!] : <int>[],
+      'motherTongue': selectedLang != null ? selectedLang['name'].toString() : '',
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: buildCustomAppBar(context, 'Mother Tongue', _onWillPop),
+        ),
+        body: SafeArea(
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+              : Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'What\'s your mother tongue?',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'The language you grew up speaking.',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 32),
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: languages.length,
+                          separatorBuilder: (context, index) => const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final lang = languages[index];
+                            final isSelected = selectedLanguageId == lang['id'];
+                            
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedLanguageId = lang['id'];
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 18,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? const Color(0xFFE43A6A).withOpacity(0.05)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? const Color(0xFFE43A6A)
+                                        : Colors.grey.shade200,
+                                    width: isSelected ? 2 : 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        lang['name'] ?? '',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: isSelected
+                                              ? FontWeight.bold
+                                              : FontWeight.w500,
+                                          color: isSelected
+                                              ? const Color(0xFFE43A6A)
+                                              : Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                    if (isSelected)
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Color(0xFFE43A6A),
+                                        size: 20,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _saveAndPop,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE43A6A),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Save Changes',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
+

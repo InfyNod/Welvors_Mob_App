@@ -42,10 +42,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
   }
 
   void _removePhoto(BuildContext context, List<ProfilePhoto?> currentPhotos, int index) {
-    final updatedPhotos = List<ProfilePhoto?>.from(currentPhotos);
-    updatedPhotos.removeAt(index);
-    updatedPhotos.add(null);
-    context.read<ProfileEditCubit>().updatePhotos(updatedPhotos);
+    context.read<ProfileEditCubit>().removePhoto(index);
   }
 
   @override

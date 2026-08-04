@@ -189,25 +189,18 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
   Future<void> _saveIntention(String intentionTitle) async {
     setState(() => _isSaving = true);
 
-    String intentionId = 'fd2e6cae-2735-4459-8911-2204c632480c';
-    String title = intentionTitle;
-    String subtitle = '';
+    String optionId = '';
 
     try {
       final selectedOption = _intentions.firstWhere(
         (e) => e['title'] == intentionTitle,
       );
-      intentionId = selectedOption['intentionId'] ?? intentionId;
-      subtitle = selectedOption['subtitle'] ?? '';
+      optionId = selectedOption['id'] ?? '';
     } catch (e) {
       // Fallback or handle error
     }
 
-    final error = await EditProfileApiService.updateIntention(
-      intentionId,
-      title,
-      subtitle,
-    );
+    final error = await EditProfileApiService.updateIntention(optionId);
 
     if (!mounted) return;
 

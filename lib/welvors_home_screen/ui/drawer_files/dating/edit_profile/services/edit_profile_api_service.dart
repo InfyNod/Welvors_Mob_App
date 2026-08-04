@@ -90,6 +90,36 @@ class EditProfileApiService {
     }
   }
 
+  /// Deletes a specific photo from the server.
+  static Future<String?> deletePhoto(String photoId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.delete(
+        Uri.parse('$baseUrl/user/profile/photos/$photoId'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('Delete Photo Status: ${response.statusCode}');
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null;
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error deleting photo: $e');
+      return e.toString();
+    }
+  }
+
   // Updates the user's bio
   static Future<String?> updateBio(String bioText) async {
     try {
@@ -120,7 +150,7 @@ class EditProfileApiService {
   }
 
   // Updates the user's looking-for intention
-  static Future<String?> updateIntention(String intentionId, String title, String subtitle) async {
+  static Future<String?> updateIntention(String optionId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -132,9 +162,7 @@ class EditProfileApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
-          "intentionId": intentionId,
-          "title": title,
-          "subtitle": subtitle,
+          "optionId": optionId,
         }),
       );
 
@@ -186,7 +214,7 @@ class EditProfileApiService {
       final token = prefs.getString('auth_token');
 
       final response = await http.patch(
-        Uri.parse('$baseUrl/user/profile/basic-info'),
+        Uri.parse('$baseUrl/user/edit-profile/basic-info'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -205,6 +233,69 @@ class EditProfileApiService {
     } catch (e) {
       debugPrint('Error updating basic details: $e');
       return e.toString();
+    }
+  }
+
+  // Updates Religion
+  static Future<String?> updateReligion(int religionId, int? communityId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final body = <String, dynamic>{'religionId': religionId};
+      if (communityId != null) body['communityId'] = communityId;
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/profile/religion'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null;
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error updating religion: $e');
+      return e.toString();
+    }
+  }
+  static Future<Map<String, dynamic>> getReligions() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/religion/get'));
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return {'error': null, 'data': decoded['data']};
+        }
+        return {'error': 'Failed to parse religion data'};
+      }
+      return {'error': 'Error ${response.statusCode}: ${response.body}'};
+    } catch (e) {
+      debugPrint('Error fetching religions: $e');
+      return {'error': e.toString()};
+    }
+  }
+
+  // Fetches languages
+  static Future<List<dynamic>> getLanguages() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/admin/languages/get'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true) return data['data'] as List<dynamic>;
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching languages: $e');
+      return [];
     }
   }
 }
