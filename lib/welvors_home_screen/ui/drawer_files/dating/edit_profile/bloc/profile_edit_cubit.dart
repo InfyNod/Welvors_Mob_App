@@ -183,6 +183,9 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
             promptId = p['id']?.toString() ?? promptId;
             categoryId = p['categoryId']?.toString() ?? categoryId;
           }
+          if (item['category'] is Map) {
+            categoryId = item['category']['id']?.toString() ?? categoryId;
+          }
 
           parsedPrompts.add({
             'question': question,

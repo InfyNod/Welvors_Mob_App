@@ -61,12 +61,77 @@ class InterestsSection extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            final oldList = List<String>.from(state.interests);
                             final newList = List<String>.from(state.interests)
                               ..remove(interestText);
                             context.read<ProfileEditCubit>().updateInterests(
                               newList,
                             );
+
+                            // API call to persist the deletion
+                            try {
+                              final data = await ApiService.fetchInterests();
+                              final Map<String, List<String>> patches = {};
+                              final allCategoryKeys = <String>{};
+
+                              if (data.isNotEmpty) {
+                                for (var category in data) {
+                                  final questionKey = category['key']?.toString() ?? '';
+                                  if (questionKey.isNotEmpty) {
+                                    allCategoryKeys.add(questionKey);
+                                    patches[questionKey] = [];
+                                  }
+
+                                  final options = category['options'] as List<dynamic>? ?? [];
+                                  for (var option in options) {
+                                    final label = option['label']?.toString() ?? '';
+                                    final id = option['id'].toString();
+                                    
+                                    // Calculate emoji based on category key
+                                    String emoji = '✨';
+                                    switch (questionKey.toLowerCase()) {
+                                      case 'creativity': emoji = '🎨'; break;
+                                      case 'favorites': emoji = '🎬'; break;
+                                      case 'food_drink': emoji = '🍔'; break;
+                                      case 'travel_outdoors': emoji = '✈️'; break;
+                                      case 'gaming': emoji = '🎮'; break;
+                                      case 'wellness': emoji = '🧘'; break;
+                                    }
+                                    
+                                    final formattedStr = '$emoji $label';
+                                    if (newList.contains(formattedStr)) {
+                                      patches[questionKey]!.add(id);
+                                    }
+                                  }
+                                }
+                              }
+
+                              String? firstError;
+                              for (var entry in patches.entries) {
+                                final error = await EditProfileApiService.updateProfileAnswer(
+                                  questionKey: entry.key,
+                                  optionIds: entry.value,
+                                );
+                                if (error != null && firstError == null) {
+                                  firstError = error;
+                                }
+                              }
+
+                              if (firstError != null && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(firstError)),
+                                );
+                                context.read<ProfileEditCubit>().updateInterests(oldList);
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Failed to remove interest')),
+                                );
+                                context.read<ProfileEditCubit>().updateInterests(oldList);
+                              }
+                            }
                           },
                           child: const Icon(
                             Icons.close,

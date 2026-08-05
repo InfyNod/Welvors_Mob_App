@@ -163,8 +163,12 @@ class PromptsSection extends StatelessWidget {
                   const SizedBox(width: 16),
                   GestureDetector(
                     onTap: () async {
-                      final categoryId = prompt['categoryId'] ?? '';
+                      var categoryId = prompt['categoryId'] ?? '';
                       final promptId = prompt['promptId'] ?? '';
+                      
+                      if (categoryId.isEmpty && promptId.isNotEmpty) {
+                        categoryId = await _resolveCategoryId(promptId);
+                      }
                       
                       if (categoryId.isNotEmpty && promptId.isNotEmpty) {
                         final response = await EditProfileApiService.updatePrompt(
@@ -181,7 +185,12 @@ class PromptsSection extends StatelessWidget {
                           return;
                         }
                       } else {
-                        // If no IDs, just remove locally (it was never on backend)
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Debug: Missing IDs! Data: $prompt')),
+                          );
+                        }
+                        return;
                       }
                       
                       if (context.mounted) {
@@ -217,6 +226,25 @@ class PromptsSection extends StatelessWidget {
     );
   }
 
+  Future<String> _resolveCategoryId(String promptId) async {
+    try {
+      final categories = await ApiService.fetchPromptsCategories();
+      for (var cat in categories) {
+        if (cat['prompts'] != null) {
+          for (var p in cat['prompts']) {
+            final pId = p['id']?.toString() ?? p['promptId']?.toString();
+            if (pId == promptId) {
+              return cat['id']?.toString() ?? '';
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Error resolving categoryId: $e");
+    }
+    return '';
+  }
+
   void _editExistingPrompt(
     BuildContext context,
     Map<String, String> prompt,
@@ -233,135 +261,187 @@ class PromptsSection extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 24,
-              right: 24,
-              top: 24,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  prompt['question'] ?? '',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    color: Color(0xFFE43A6A),
-                  ),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            bool isLoading = false;
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  left: 24,
+                  right: 24,
+                  top: 24,
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  maxLines: 4,
-                  cursorColor: const Color(0xFFE43A6A),
-                  decoration: InputDecoration(
-                    hintText: 'Type your answer here...',
-                    hintStyle: TextStyle(color: Colors.grey.shade400),
-                    filled: true,
-                    fillColor: Colors.grey.shade50,
-                    contentPadding: const EdgeInsets.all(16),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade200,
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFE43A6A),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                GestureDetector(
-                  onTap: () async {
-                    final text = controller.text.trim();
-                    final newList = List<Map<String, String>>.from(allPrompts);
-                    
-                    final categoryId = prompt['categoryId'] ?? '';
-                    final promptId = prompt['promptId'] ?? '';
-                    
-                    if (text.isEmpty) {
-                      if (categoryId.isNotEmpty && promptId.isNotEmpty) {
-                        await EditProfileApiService.updatePrompt(
-                          categoryId: categoryId,
-                          promptId: promptId,
-                          answer: '',
-                          displayOrder: index + 1,
-                        );
-                      }
-                      
-                      if (context.mounted) {
-                        newList.removeAt(index);
-                        context.read<ProfileEditCubit>().updatePrompts(newList);
-                        Navigator.pop(context);
-                      }
-                    } else {
-                      if (categoryId.isNotEmpty && promptId.isNotEmpty) {
-                        final response = await EditProfileApiService.updatePrompt(
-                          categoryId: categoryId,
-                          promptId: promptId,
-                          answer: text,
-                          displayOrder: index + 1,
-                        );
-                        if (response['error'] != null && context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(response['error'])),
-                          );
-                          return;
-                        }
-                      }
-                      
-                      if (context.mounted) {
-                        newList[index] = {
-                          'question': prompt['question']!,
-                          'answer': text,
-                          'promptId': promptId,
-                          'categoryId': categoryId,
-                        };
-                        context.read<ProfileEditCubit>().updatePrompts(newList);
-                        Navigator.pop(context);
-                      }
-                    }
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE43A6A),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Edit Prompt',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
                         ),
                       ],
                     ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'Save Answer',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+                    const SizedBox(height: 16),
+                    Text(
+                      prompt['question'] ?? '',
+                      style: const TextStyle(
                         fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: Color(0xFFE43A6A),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      maxLines: 4,
+                      cursorColor: const Color(0xFFE43A6A),
+                      decoration: InputDecoration(
+                        hintText: 'Type your answer here...',
+                        hintStyle: TextStyle(color: Colors.grey.shade400),
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        contentPadding: const EdgeInsets.all(16),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade200,
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE43A6A),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: isLoading ? null : () async {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        
+                        final text = controller.text.trim();
+                        final newList = List<Map<String, String>>.from(allPrompts);
+                        
+                        var categoryId = prompt['categoryId'] ?? '';
+                        final promptId = prompt['promptId'] ?? '';
+                        
+                        if (categoryId.isEmpty && promptId.isNotEmpty) {
+                          categoryId = await _resolveCategoryId(promptId);
+                        }
+                        
+                        if (text.isEmpty) {
+                          if (categoryId.isNotEmpty && promptId.isNotEmpty) {
+                            await EditProfileApiService.updatePrompt(
+                              categoryId: categoryId,
+                              promptId: promptId,
+                              answer: '',
+                              displayOrder: index + 1,
+                            );
+                          }
+                          
+                          if (context.mounted) {
+                            newList.removeAt(index);
+                            context.read<ProfileEditCubit>().updatePrompts(newList);
+                            Navigator.pop(context);
+                          }
+                        } else {
+                          if (categoryId.isNotEmpty && promptId.isNotEmpty) {
+                            final response = await EditProfileApiService.updatePrompt(
+                              categoryId: categoryId,
+                              promptId: promptId,
+                              answer: text,
+                              displayOrder: index + 1,
+                            );
+                            if (response['error'] != null && context.mounted) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(response['error'])),
+                              );
+                              return;
+                            }
+                          } else {
+                            if (context.mounted) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Debug Edit: Missing IDs! Data: $prompt')),
+                              );
+                            }
+                            return;
+                          }
+                          
+                          if (context.mounted) {
+                            newList[index] = {
+                              'question': prompt['question']!,
+                              'answer': text,
+                              'promptId': promptId,
+                              'categoryId': categoryId,
+                            };
+                            context.read<ProfileEditCubit>().updatePrompts(newList);
+                            Navigator.pop(context);
+                          }
+                        }
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: isLoading ? Colors.grey.shade400 : const Color(0xFFE43A6A),
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            if (!isLoading)
+                              BoxShadow(
+                                color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Save changes',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
