@@ -4,6 +4,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/onbording_allpage/services/api_service.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 class PromptsSection extends StatelessWidget {
   const PromptsSection({super.key});
@@ -160,10 +162,33 @@ class PromptsSection extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () {
-                      final newList = List<Map<String, String>>.from(allPrompts)
-                        ..removeAt(index);
-                      context.read<ProfileEditCubit>().updatePrompts(newList);
+                    onTap: () async {
+                      final categoryId = prompt['categoryId'] ?? '';
+                      final promptId = prompt['promptId'] ?? '';
+                      
+                      if (categoryId.isNotEmpty && promptId.isNotEmpty) {
+                        final response = await EditProfileApiService.updatePrompt(
+                          categoryId: categoryId,
+                          promptId: promptId,
+                          answer: '',
+                          displayOrder: index + 1,
+                        );
+                        
+                        if (response['error'] != null && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(response['error'])),
+                          );
+                          return;
+                        }
+                      } else {
+                        // If no IDs, just remove locally (it was never on backend)
+                      }
+                      
+                      if (context.mounted) {
+                        final newList = List<Map<String, String>>.from(allPrompts)
+                          ..removeAt(index);
+                        context.read<ProfileEditCubit>().updatePrompts(newList);
+                      }
                     },
                     child: Icon(
                       Icons.close,
@@ -258,19 +283,55 @@ class PromptsSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     final text = controller.text.trim();
                     final newList = List<Map<String, String>>.from(allPrompts);
+                    
+                    final categoryId = prompt['categoryId'] ?? '';
+                    final promptId = prompt['promptId'] ?? '';
+                    
                     if (text.isEmpty) {
-                      newList.removeAt(index);
+                      if (categoryId.isNotEmpty && promptId.isNotEmpty) {
+                        await EditProfileApiService.updatePrompt(
+                          categoryId: categoryId,
+                          promptId: promptId,
+                          answer: '',
+                          displayOrder: index + 1,
+                        );
+                      }
+                      
+                      if (context.mounted) {
+                        newList.removeAt(index);
+                        context.read<ProfileEditCubit>().updatePrompts(newList);
+                        Navigator.pop(context);
+                      }
                     } else {
-                      newList[index] = {
-                        'question': prompt['question']!,
-                        'answer': text,
-                      };
+                      if (categoryId.isNotEmpty && promptId.isNotEmpty) {
+                        final response = await EditProfileApiService.updatePrompt(
+                          categoryId: categoryId,
+                          promptId: promptId,
+                          answer: text,
+                          displayOrder: index + 1,
+                        );
+                        if (response['error'] != null && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(response['error'])),
+                          );
+                          return;
+                        }
+                      }
+                      
+                      if (context.mounted) {
+                        newList[index] = {
+                          'question': prompt['question']!,
+                          'answer': text,
+                          'promptId': promptId,
+                          'categoryId': categoryId,
+                        };
+                        context.read<ProfileEditCubit>().updatePrompts(newList);
+                        Navigator.pop(context);
+                      }
                     }
-                    context.read<ProfileEditCubit>().updatePrompts(newList);
-                    Navigator.pop(context);
                   },
                   child: Container(
                     width: double.infinity,
@@ -321,39 +382,43 @@ class EditChoosePromptScreen extends StatefulWidget {
 class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
   final Color _pinkDeep = const Color(0xFFE43A6A);
 
-  final List<Map<String, dynamic>> _categories = [
-    {
-      'title': 'About me',
-      'emoji': '👋',
-      'prompts': [
-        'A life goal of mine',
-        'A random fact I love is',
-        'I\'m weirdly attracted to',
-        'The best way to ask me out is',
-      ],
-    },
-    {
-      'title': 'Story time',
-      'emoji': '📖',
-      'prompts': [
-        'A shower thought I recently had',
-        'My most irrational fear',
-        'The hardest I\'ve ever laughed',
-        'Worst idea I\'ve ever had',
-      ],
-    },
-    {
-      'title': 'My type',
-      'emoji': '💘',
-      'prompts': [
-        'We\'ll get along if',
-        'Green flags I look for',
-        'A non-negotiable for me is',
-      ],
-    },
-  ];
-
+  List<dynamic> _categoriesData = [];
+  bool _isLoading = true;
+  String? _selectedCategoryId;
   int _selectedCategoryIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final data = await ApiService.fetchPromptsCategories();
+    if (mounted) {
+      setState(() {
+        _categoriesData = data.where((cat) {
+          final prompts = cat['prompts'] as List?;
+          return prompts != null && prompts.isNotEmpty;
+        }).toList();
+
+        if (_categoriesData.isNotEmpty) {
+          _selectedCategoryId = _categoriesData.first['id'];
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  String _getCategoryEmoji(String categoryName) {
+    final lower = categoryName.toLowerCase();
+    if (lower.contains('about')) return '👋';
+    if (lower.contains('story')) return '📖';
+    if (lower.contains('type')) return '💘';
+    if (lower.contains('food')) return '🍔';
+    if (lower.contains('lifestyle') || lower.contains('love')) return '🧘';
+    return '✨';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -363,171 +428,191 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: buildCustomAppBar(context, 'Choose a prompt', () async => true),
       ),
-      body: Row(
-        children: [
-          // Left Sidebar (Categories)
-          Container(
-            width: 80, // Reduced width to save space
-            color: const Color(0xFFFFF6F8), // Premium soft blush color
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 0),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final isSelected = _selectedCategoryIndex == index;
-                final cat = _categories[index];
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedCategoryIndex = index),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 8,
-                    ),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeOutCubic, // smoother easing
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      decoration: BoxDecoration(
-                        // Fully opaque color to prevent "dark fading" interpolation bug
-                        color: isSelected
-                            ? Colors.white
-                            : const Color(0xFFFFF6F8),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isSelected
-                              ? const Color(0xFFE43A6A).withOpacity(0.2)
-                              : Colors.transparent,
-                          width: 1.5,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFFE43A6A,
-                                  ).withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ]
-                            : [],
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            cat['emoji'],
-                            style: const TextStyle(fontSize: 22),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+            )
+          : _categoriesData.isEmpty
+          ? const Center(child: Text('No prompts available'))
+          : Row(
+              children: [
+                // Left Sidebar (Categories)
+                Container(
+                  width: 80, // Reduced width to save space
+                  color: const Color(0xFFFFF6F8), // Premium soft blush color
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 0),
+                    itemCount: _categoriesData.length,
+                    itemBuilder: (context, index) {
+                      final isSelected = _selectedCategoryIndex == index;
+                      final cat = _categoriesData[index];
+                      final catName = cat['name'] ?? 'Other';
+                      final catEmoji = _getCategoryEmoji(catName);
+                      return GestureDetector(
+                        onTap: () =>
+                            setState(() => _selectedCategoryIndex = index),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 8,
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            cat['title'],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: isSelected
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeOutCubic, // smoother easing
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              // Fully opaque color to prevent "dark fading" interpolation bug
                               color: isSelected
-                                  ? _pinkDeep
-                                  : Colors.grey.shade600,
+                                  ? Colors.white
+                                  : const Color(0xFFFFF6F8),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSelected
+                                    ? const Color(0xFFE43A6A).withOpacity(0.2)
+                                    : Colors.transparent,
+                                width: 1.5,
+                              ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFFE43A6A,
+                                        ).withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ]
+                                  : [],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // Right Side (Prompts List)
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount:
-                    (_categories[_selectedCategoryIndex]['prompts'] as List)
-                        .length,
-                itemBuilder: (context, index) {
-                  final promptText =
-                      _categories[_selectedCategoryIndex]['prompts'][index]
-                          as String;
-                  final isAdded = widget.alreadyAddedQuestions.contains(
-                    promptText,
-                  );
-
-                  return GestureDetector(
-                    onTap: () {
-                      if (!isAdded) {
-                        _showAnswerSheet(context, promptText);
-                      }
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isAdded ? Colors.grey.shade50 : Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isAdded
-                              ? Colors.grey.shade200
-                              : Colors.grey.shade200,
-                          width: 1.5,
-                        ),
-                        boxShadow: isAdded
-                            ? []
-                            : [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.02),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  catEmoji,
+                                  style: const TextStyle(fontSize: 22),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  catName,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
+                                    color: isSelected
+                                        ? _pinkDeep
+                                        : Colors.grey.shade600,
+                                  ),
                                 ),
                               ],
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              promptText,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: isAdded
-                                    ? Colors.grey.shade400
-                                    : Colors.black87,
-                                fontWeight: isAdded
-                                    ? FontWeight.w500
-                                    : FontWeight.w600,
-                              ),
                             ),
                           ),
-                          if (isAdded)
-                            const Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
-                              size: 20,
-                            )
-                          else
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.grey.shade300,
-                              size: 14,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // Right Side (Prompts List)
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount:
+                          (_categoriesData[_selectedCategoryIndex]['prompts']
+                                  as List)
+                              .length,
+                      itemBuilder: (context, index) {
+                        final promptMap =
+                            _categoriesData[_selectedCategoryIndex]['prompts'][index];
+                        final promptText = promptMap['question'] ?? '';
+                        final promptId = promptMap['id'] ?? promptMap['promptId'] ?? '';
+                        final categoryId = _categoriesData[_selectedCategoryIndex]['id'] ?? '';
+                        
+                        final isAdded = widget.alreadyAddedQuestions.contains(
+                          promptText,
+                        );
+
+                        return GestureDetector(
+                          onTap: () {
+                            if (!isAdded) {
+                              _showAnswerSheet(context, promptText, categoryId, promptId);
+                            }
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: isAdded
+                                  ? Colors.grey.shade50
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isAdded
+                                    ? Colors.grey.shade200
+                                    : Colors.grey.shade200,
+                                width: 1.5,
+                              ),
+                              boxShadow: isAdded
+                                  ? []
+                                  : [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.02),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                             ),
-                        ],
-                      ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    promptText,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isAdded
+                                          ? Colors.grey.shade400
+                                          : Colors.black87,
+                                      fontWeight: isAdded
+                                          ? FontWeight.w500
+                                          : FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                if (isAdded)
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 20,
+                                  )
+                                else
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.grey.shade300,
+                                    size: 14,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
-  void _showAnswerSheet(BuildContext context, String question) {
+  void _showAnswerSheet(
+    BuildContext context,
+    String question,
+    String categoryId,
+    String promptId,
+  ) {
     final controller = TextEditingController();
 
     showModalBottomSheet(
@@ -585,16 +670,35 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                 ),
                 const SizedBox(height: 24),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     final answer = controller.text.trim();
                     if (answer.isNotEmpty) {
-                      // Close sheet
-                      Navigator.pop(context);
-                      // Return result to parent
-                      Navigator.pop(context, {
-                        'question': question,
-                        'answer': answer,
-                      });
+                      // Call API
+                      final response = await EditProfileApiService.updatePrompt(
+                        categoryId: categoryId,
+                        promptId: promptId,
+                        answer: answer,
+                        displayOrder: 1, // Will be appended at the end
+                      );
+                      
+                      if (response['error'] != null && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(response['error'])),
+                        );
+                        return;
+                      }
+                      
+                      if (context.mounted) {
+                        // Close sheet
+                        Navigator.pop(context);
+                        // Return full result to parent
+                        Navigator.pop(context, {
+                          'question': question,
+                          'answer': answer,
+                          'categoryId': categoryId,
+                          'promptId': promptId,
+                        });
+                      }
                     }
                   },
                   child: Container(

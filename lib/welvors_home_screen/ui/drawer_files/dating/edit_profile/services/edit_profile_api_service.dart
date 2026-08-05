@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileApiService {
   // Update this baseUrl if it differs for your environment
-  static const String baseUrl = 'https://dating-app-backend-plum.vercel.app/api';
+  static const String baseUrl =
+      'https://dating-app-backend-plum.vercel.app/api';
 
   /// Adds a single new photo to the server.
   static Future<Map<String, dynamic>> addPhoto(String imagePath) async {
@@ -25,7 +26,7 @@ class EditProfileApiService {
 
       request.files.add(
         await http.MultipartFile.fromPath(
-          'images', 
+          'images',
           imagePath,
           filename: 'upload_${DateTime.now().millisecondsSinceEpoch}.jpg',
           contentType: MediaType('image', 'jpeg'),
@@ -38,7 +39,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return {'error': null, 'data': decoded}; // Success
+          return {'error': null, 'data': decoded}; // Success
         }
         return {'error': decoded['message'] ?? 'Failed: ${response.body}'};
       }
@@ -50,7 +51,10 @@ class EditProfileApiService {
   }
 
   /// Updates a specific photo on the server.
-  static Future<String?> updateSpecificPhoto(String photoId, String imagePath) async {
+  static Future<String?> updateSpecificPhoto(
+    String photoId,
+    String imagePath,
+  ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -79,7 +83,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null; // Success
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -105,11 +109,11 @@ class EditProfileApiService {
       );
 
       debugPrint('Delete Photo Status: ${response.statusCode}');
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null;
+          return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -127,7 +131,9 @@ class EditProfileApiService {
       final token = prefs.getString('auth_token');
 
       final response = await http.patch(
-        Uri.parse('$baseUrl/user/edit-profile/bio'), // updated to new URL from backend team
+        Uri.parse(
+          '$baseUrl/user/edit-profile/bio',
+        ), // updated to new URL from backend team
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -138,7 +144,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null; // Success
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -161,15 +167,13 @@ class EditProfileApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "optionId": optionId,
-        }),
+        body: jsonEncode({"optionId": optionId}),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null; // Success
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -181,7 +185,10 @@ class EditProfileApiService {
   }
 
   // Updates Who You Are Seeing (Interested In & Sexual Orientation)
-  static Future<String?> updateInterestedIn(String interestedIn, String sexualOrientation) async {
+  static Future<String?> updateInterestedIn(
+    String interestedIn,
+    String sexualOrientation,
+  ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -201,7 +208,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null; // Success
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -213,7 +220,10 @@ class EditProfileApiService {
   }
 
   // Updates user profile answers for Lifestyle, Interests, Networking (PATCH)
-  static Future<String?> updateProfileAnswer({required String questionKey, required List<String> optionIds}) async {
+  static Future<String?> updateProfileAnswer({
+    required String questionKey,
+    required List<String> optionIds,
+  }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -224,16 +234,13 @@ class EditProfileApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "questionKey": questionKey,
-          "optionIds": optionIds,
-        }),
+        body: jsonEncode({"questionKey": questionKey, "optionIds": optionIds}),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null; // Success
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -241,6 +248,45 @@ class EditProfileApiService {
     } catch (e) {
       debugPrint('Error updating profile answer: $e');
       return e.toString();
+    }
+  }
+
+  // Updates Prompts
+  static Future<Map<String, dynamic>> updatePrompt({
+    required String categoryId,
+    required String promptId,
+    required String answer,
+    required int displayOrder,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/edit-profile/prompts'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "categoryId": categoryId,
+          "promptId": promptId,
+          "answer": answer,
+          "displayOrder": displayOrder,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+          return {'error': null};
+        }
+        return {'error': decoded['message'] ?? 'Failed: ${response.body}'};
+      }
+      return {'error': 'Error ${response.statusCode}: ${response.body}'};
+    } catch (e) {
+      debugPrint('Error updating prompt: $e');
+      return {'error': e.toString()};
     }
   }
 
@@ -271,6 +317,7 @@ class EditProfileApiService {
       return {'error': e.toString()};
     }
   }
+
   // Updates basic details
   static Future<String?> updateBasicDetails(Map<String, dynamic> data) async {
     try {
@@ -289,7 +336,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null; // Success
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -318,7 +365,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null; // Success
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -330,7 +377,10 @@ class EditProfileApiService {
   }
 
   // Updates Religion
-  static Future<String?> updateReligion(int religionId, int? communityId) async {
+  static Future<String?> updateReligion(
+    int religionId,
+    int? communityId,
+  ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -350,7 +400,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           return null;
+          return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -360,6 +410,7 @@ class EditProfileApiService {
       return e.toString();
     }
   }
+
   static Future<Map<String, dynamic>> getReligions() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/religion/get'));
@@ -380,7 +431,9 @@ class EditProfileApiService {
   // Fetches languages
   static Future<List<dynamic>> getLanguages() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/admin/languages/get'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/admin/languages/get'),
+      );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true) return data['data'] as List<dynamic>;

@@ -189,7 +189,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
             }
           }
         }
-        
+
         for (var interest in _allInterests) {
           final formattedStr = '${interest.emoji} ${interest.label}';
           if (widget.initialSelected.contains(formattedStr)) {
@@ -409,7 +409,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
               child: GestureDetector(
                 onTap: () async {
                   setState(() => _isLoading = true);
-                  
+
                   // Group selected interests by questionKey
                   final Map<String, List<String>> patches = {};
                   for (var interest in _selectedInterests) {
@@ -418,32 +418,35 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                     }
                     patches[interest.questionKey]!.add(interest.id);
                   }
-                  
+
                   // Handle empty selections for categories that were unselected
-                  final allCategoryKeys = _allInterests.map((e) => e.questionKey).toSet();
+                  final allCategoryKeys = _allInterests
+                      .map((e) => e.questionKey)
+                      .toSet();
                   for (var key in allCategoryKeys) {
                     if (!patches.containsKey(key)) {
-                      patches[key] = []; 
+                      patches[key] = [];
                     }
                   }
 
                   String? firstError;
                   for (var entry in patches.entries) {
-                    final error = await EditProfileApiService.updateProfileAnswer(
-                      questionKey: entry.key,
-                      optionIds: entry.value,
-                    );
+                    final error =
+                        await EditProfileApiService.updateProfileAnswer(
+                          questionKey: entry.key,
+                          optionIds: entry.value,
+                        );
                     if (error != null && firstError == null) {
                       firstError = error;
                     }
                   }
-                  
+
                   if (mounted) {
                     setState(() => _isLoading = false);
                     if (firstError != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(firstError)),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(firstError)));
                     } else {
                       final result = _selectedInterests
                           .map((i) => '${i.emoji} ${i.label}')
@@ -467,21 +470,24 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                     ],
                   ),
                   alignment: Alignment.center,
-                  child: _isLoading 
-                    ? const SizedBox(
-                        height: 20, 
-                        width: 20, 
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
-                      )
-                    : const Text(
-                        'Save Changes',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'Save Changes',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                      ),
                 ),
               ),
             ),
