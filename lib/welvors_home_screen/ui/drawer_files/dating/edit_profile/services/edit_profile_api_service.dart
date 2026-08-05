@@ -9,6 +9,53 @@ class EditProfileApiService {
   static const String baseUrl =
       'https://dating-app-backend-plum.vercel.app/api';
 
+  /// Updates user location via PATCH
+  static Future<Map<String, dynamic>> updateLocation({
+    required String country,
+    required String state,
+    required String city,
+    required String area,
+    required double latitude,
+    required double longitude,
+    int maxDistanceKm = 25,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final url = Uri.parse('$baseUrl/user/edit-profile/location');
+      final body = {
+        "country": country,
+        "state": state,
+        "city": city,
+        "area": area,
+        "latitude": latitude,
+        "longitude": longitude,
+        "max_distance_km": maxDistanceKm,
+      };
+
+      final response = await http.patch(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      );
+
+      debugPrint('Update Location Status: ${response.statusCode}');
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {'error': null, 'data': jsonDecode(response.body)};
+      } else {
+        return {'error': 'Failed: ${response.body}'};
+      }
+    } catch (e) {
+      debugPrint('Error updating location: $e');
+      return {'error': e.toString()};
+    }
+  }
+
   /// Adds a single new photo to the server.
   static Future<Map<String, dynamic>> addPhoto(String imagePath) async {
     try {

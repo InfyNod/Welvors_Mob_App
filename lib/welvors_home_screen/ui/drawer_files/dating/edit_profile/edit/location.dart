@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 class LocationSection extends StatelessWidget {
   const LocationSection({super.key});
@@ -139,20 +142,72 @@ class LocationSection extends StatelessWidget {
   Widget _buildCurrentLocationButton(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        // Show loading snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Fetching current location...'),
-            duration: Duration(milliseconds: 800),
+            duration: Duration(seconds: 2),
           ),
         );
         
-        await Future.delayed(const Duration(seconds: 1));
-        
-        if (context.mounted) {
-          context.read<ProfileEditCubit>().updateArea('Bandra West');
-          context.read<ProfileEditCubit>().updateCity('Mumbai');
-          context.read<ProfileEditCubit>().updateStateLocation('Maharashtra');
+        try {
+          bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+          if (!serviceEnabled) {
+            throw Exception('Location services are disabled.');
+          }
+
+          LocationPermission permission = await Geolocator.checkPermission();
+          if (permission == LocationPermission.denied) {
+            permission = await Geolocator.requestPermission();
+            if (permission == LocationPermission.denied) {
+              throw Exception('Location permissions are denied');
+            }
+          }
+          
+          if (permission == LocationPermission.deniedForever) {
+            throw Exception('Location permissions are permanently denied');
+          }
+
+          Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+          );
+          
+          List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+          if (placemarks.isNotEmpty && context.mounted) {
+            Placemark place = placemarks[0];
+            String city = place.locality ?? place.subAdministrativeArea ?? place.administrativeArea ?? 'Unknown City';
+            String state = place.administrativeArea ?? 'Unknown State';
+            String area = place.subLocality ?? place.thoroughfare ?? place.name ?? 'Unknown Area';
+            String country = place.country ?? 'India';
+            
+            context.read<ProfileEditCubit>().updateArea(area);
+            context.read<ProfileEditCubit>().updateCity(city);
+            context.read<ProfileEditCubit>().updateStateLocation(state);
+            
+            // Send updated location to backend
+            await EditProfileApiService.updateLocation(
+              country: country,
+              state: state,
+              city: city,
+              area: area,
+              latitude: position.latitude,
+              longitude: position.longitude,
+            );
+            
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Location updated successfully!'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Could not fetch location: $e')),
+            );
+          }
         }
       },
       child: Container(
