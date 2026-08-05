@@ -4,7 +4,9 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/interests_screen.dart'
     show Interest;
+import 'package:velvors/onbording_allpage/services/api_service.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 class InterestsSection extends StatelessWidget {
   const InterestsSection({super.key});
@@ -160,82 +162,34 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
   }
 
   Future<void> _fetchData() async {
+    final data = await ApiService.fetchInterests();
     if (mounted) {
       setState(() {
         _isLoading = false;
-        _allInterests = [
-          Interest(
-            id: '1',
-            questionId: 'q1',
-            label: 'Travel',
-            emoji: '✈️',
-            category: 'Travel & Outdoors',
-          ),
-          Interest(
-            id: '2',
-            questionId: 'q1',
-            label: 'Trekking',
-            emoji: '🥾',
-            category: 'Travel & Outdoors',
-          ),
-          Interest(
-            id: '3',
-            questionId: 'q1',
-            label: 'Coffee',
-            emoji: '☕',
-            category: 'Food & Drink',
-          ),
-          Interest(
-            id: '4',
-            questionId: 'q1',
-            label: 'Books',
-            emoji: '📚',
-            category: 'Creativity',
-          ),
-          Interest(
-            id: '5',
-            questionId: 'q1',
-            label: 'Yoga',
-            emoji: '🧘',
-            category: 'Wellness',
-          ),
-          Interest(
-            id: '6',
-            questionId: 'q1',
-            label: 'Indie music',
-            emoji: '🎧',
-            category: 'Fan Favorites',
-          ),
-          Interest(
-            id: '7',
-            questionId: 'q1',
-            label: 'Gaming',
-            emoji: '🎮',
-            category: 'Gaming',
-          ),
-          Interest(
-            id: '8',
-            questionId: 'q1',
-            label: 'Photography',
-            emoji: '📸',
-            category: 'Creativity',
-          ),
-          Interest(
-            id: '9',
-            questionId: 'q1',
-            label: 'Cooking',
-            emoji: '🍳',
-            category: 'Food & Drink',
-          ),
-          Interest(
-            id: '10',
-            questionId: 'q1',
-            label: 'Movies',
-            emoji: '🎬',
-            category: 'Fan Favorites',
-          ),
-        ];
-
+        if (data.isNotEmpty) {
+          _allInterests = [];
+          for (var category in data) {
+            final catTitle = category['title'] ?? 'Other';
+            final questionId = category['id']?.toString() ?? '';
+            final questionKey = category['key']?.toString() ?? '';
+            final options = category['options'] as List<dynamic>? ?? [];
+            for (var option in options) {
+              _allInterests.add(
+                Interest(
+                  id: option['id'].toString(),
+                  questionId: questionId,
+                  questionKey: questionKey,
+                  label: option['label']?.toString() ?? '',
+                  emoji: _getEmojiForCategoryKey(
+                    category['key']?.toString() ?? '',
+                  ),
+                  category: catTitle,
+                ),
+              );
+            }
+          }
+        }
+        
         for (var interest in _allInterests) {
           final formattedStr = '${interest.emoji} ${interest.label}';
           if (widget.initialSelected.contains(formattedStr)) {
@@ -243,6 +197,25 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
           }
         }
       });
+    }
+  }
+
+  String _getEmojiForCategoryKey(String key) {
+    switch (key.toLowerCase()) {
+      case 'creativity':
+        return '🎨';
+      case 'favorites':
+        return '🎬';
+      case 'food_drink':
+        return '🍔';
+      case 'travel_outdoors':
+        return '✈️';
+      case 'gaming':
+        return '🎮';
+      case 'wellness':
+        return '🧘';
+      default:
+        return '✨';
     }
   }
 
@@ -434,11 +407,50 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
               child: GestureDetector(
-                onTap: () {
-                  final result = _selectedInterests
-                      .map((i) => '${i.emoji} ${i.label}')
-                      .toList();
-                  Navigator.pop(context, result);
+                onTap: () async {
+                  setState(() => _isLoading = true);
+                  
+                  // Group selected interests by questionKey
+                  final Map<String, List<String>> patches = {};
+                  for (var interest in _selectedInterests) {
+                    if (!patches.containsKey(interest.questionKey)) {
+                      patches[interest.questionKey] = [];
+                    }
+                    patches[interest.questionKey]!.add(interest.id);
+                  }
+                  
+                  // Handle empty selections for categories that were unselected
+                  final allCategoryKeys = _allInterests.map((e) => e.questionKey).toSet();
+                  for (var key in allCategoryKeys) {
+                    if (!patches.containsKey(key)) {
+                      patches[key] = []; 
+                    }
+                  }
+
+                  String? firstError;
+                  for (var entry in patches.entries) {
+                    final error = await EditProfileApiService.updateProfileAnswer(
+                      questionKey: entry.key,
+                      optionIds: entry.value,
+                    );
+                    if (error != null && firstError == null) {
+                      firstError = error;
+                    }
+                  }
+                  
+                  if (mounted) {
+                    setState(() => _isLoading = false);
+                    if (firstError != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(firstError)),
+                      );
+                    } else {
+                      final result = _selectedInterests
+                          .map((i) => '${i.emoji} ${i.label}')
+                          .toList();
+                      Navigator.pop(context, result);
+                    }
+                  }
                 },
                 child: Container(
                   width: double.infinity,
@@ -455,15 +467,21 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                     ],
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                  child: _isLoading 
+                    ? const SizedBox(
+                        height: 20, 
+                        width: 20, 
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                      )
+                    : const Text(
+                        'Save Changes',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                 ),
               ),
             ),

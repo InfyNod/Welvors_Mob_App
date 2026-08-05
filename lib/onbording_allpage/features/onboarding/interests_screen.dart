@@ -9,6 +9,7 @@ import 'user_data.dart';
 class Interest {
   final String id;
   final String questionId;
+  final String questionKey;
   final String label;
   final String emoji;
   final String category;
@@ -16,6 +17,7 @@ class Interest {
   Interest({
     required this.id,
     required this.questionId,
+    required this.questionKey,
     required this.label,
     required this.emoji,
     required this.category,
@@ -57,12 +59,14 @@ class _InterestsScreenState extends State<InterestsScreen> {
           for (var category in data) {
             final catTitle = category['title'] ?? 'Other';
             final questionId = category['id']?.toString() ?? '';
+            final questionKey = category['key']?.toString() ?? '';
             final options = category['options'] as List<dynamic>? ?? [];
             for (var option in options) {
               _allInterests.add(
                 Interest(
                   id: option['id'].toString(),
                   questionId: questionId,
+                  questionKey: questionKey,
                   label: option['label']?.toString() ?? '',
                   emoji: _getEmojiForCategoryKey(
                     category['key']?.toString() ?? '',
