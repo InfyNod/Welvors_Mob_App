@@ -300,6 +300,35 @@ class EditProfileApiService {
     }
   }
 
+  // Updates user's career and ambition details
+  static Future<String?> updateCareer(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/edit-profile/education-work'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null; // Success
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error updating career: $e');
+      return e.toString();
+    }
+  }
+
   // Updates Religion
   static Future<String?> updateReligion(int religionId, int? communityId) async {
     try {

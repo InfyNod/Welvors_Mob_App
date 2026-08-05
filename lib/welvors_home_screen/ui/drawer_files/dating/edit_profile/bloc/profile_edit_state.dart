@@ -40,11 +40,16 @@ class ProfileEditState extends Equatable {
   final String degreeCourse;
   final String graduationYear;
   final String profession;
+  final int? professionId;
   final String company;
   final String experience;
+  final int? experienceId;
   final String employmentType;
+  final int? employmentTypeId;
   final String salaryRange;
+  final int? salaryRangeId;
   final String ambitionLevel;
+  final int? ambitionId;
   final String bigDreams;
   final String workStyle;
   
@@ -97,11 +102,16 @@ class ProfileEditState extends Equatable {
     required this.degreeCourse,
     required this.graduationYear,
     required this.profession,
+    this.professionId,
     required this.company,
     required this.experience,
+    this.experienceId,
     required this.employmentType,
+    this.employmentTypeId,
     required this.salaryRange,
+    this.salaryRangeId,
     required this.ambitionLevel,
+    this.ambitionId,
     required this.bigDreams,
     required this.workStyle,
     required this.familyType,
@@ -207,11 +217,16 @@ class ProfileEditState extends Equatable {
     String? degreeCourse,
     String? graduationYear,
     String? profession,
+    int? professionId,
     String? company,
     String? experience,
+    int? experienceId,
     String? employmentType,
+    int? employmentTypeId,
     String? salaryRange,
+    int? salaryRangeId,
     String? ambitionLevel,
+    int? ambitionId,
     String? bigDreams,
     String? workStyle,
     String? familyType,
@@ -260,11 +275,16 @@ class ProfileEditState extends Equatable {
       degreeCourse: degreeCourse ?? this.degreeCourse,
       graduationYear: graduationYear ?? this.graduationYear,
       profession: profession ?? this.profession,
+      professionId: professionId ?? this.professionId,
       company: company ?? this.company,
       experience: experience ?? this.experience,
+      experienceId: experienceId ?? this.experienceId,
       employmentType: employmentType ?? this.employmentType,
+      employmentTypeId: employmentTypeId ?? this.employmentTypeId,
       salaryRange: salaryRange ?? this.salaryRange,
+      salaryRangeId: salaryRangeId ?? this.salaryRangeId,
       ambitionLevel: ambitionLevel ?? this.ambitionLevel,
+      ambitionId: ambitionId ?? this.ambitionId,
       bigDreams: bigDreams ?? this.bigDreams,
       workStyle: workStyle ?? this.workStyle,
       familyType: familyType ?? this.familyType,
@@ -342,11 +362,16 @@ class ProfileEditState extends Equatable {
         degreeCourse,
         graduationYear,
         profession,
+        professionId,
         company,
         experience,
+        experienceId,
         employmentType,
+        employmentTypeId,
         salaryRange,
+        salaryRangeId,
         ambitionLevel,
+        ambitionId,
         bigDreams,
         workStyle,
         familyType,

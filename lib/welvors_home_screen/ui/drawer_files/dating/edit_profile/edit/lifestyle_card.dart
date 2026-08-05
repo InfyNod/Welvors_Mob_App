@@ -42,11 +42,7 @@ class _LifestyleSectionState extends State<LifestyleSection> {
           children: [
             const Row(
               children: [
-                Icon(
-                  Icons.wine_bar,
-                  color: Color(0xFFE43A6A),
-                  size: 16,
-                ),
+                Icon(Icons.wine_bar, color: Color(0xFFE43A6A), size: 16),
                 SizedBox(width: 8),
                 Text(
                   "LIFESTYLE",
@@ -78,8 +74,10 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                   ? const Padding(
                       padding: EdgeInsets.all(24.0),
                       child: Center(
-                          child: CircularProgressIndicator(
-                              color: Color(0xFFE43A6A))),
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFE43A6A),
+                        ),
+                      ),
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,10 +96,14 @@ class _LifestyleSectionState extends State<LifestyleSection> {
   }
 
   Widget _buildDynamicListItem(
-      BuildContext context, ProfileEditState state, Map<String, dynamic> q) {
+    BuildContext context,
+    ProfileEditState state,
+    Map<String, dynamic> q,
+  ) {
     final String qId = q['id'];
     final String title = q['title'] ?? '';
-    final bool isMulti = (q['isMulti'] == true) || (title.toLowerCase() == 'pets');
+    final bool isMulti =
+        (q['isMulti'] == true) || (title.toLowerCase() == 'pets');
     final List<dynamic> options = q['options'] ?? [];
 
     // Find saved answers in state.lifestyle
@@ -114,8 +116,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
       }
     }
 
-    final List<String> optionLabels =
-        options.map((e) => e['label'].toString()).toList();
+    final List<String> optionLabels = options
+        .map((e) => e['label'].toString())
+        .toList();
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -123,7 +126,12 @@ class _LifestyleSectionState extends State<LifestyleSection> {
         if (isMulti) {
           final String qKey = q['key'] ?? '';
           _showMultiSelectBottomSheet(
-              context, qKey, title, options, currentValues);
+            context,
+            qKey,
+            title,
+            options,
+            currentValues,
+          );
         } else {
           final result = await Navigator.push<String>(
             context,
@@ -133,7 +141,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                 headerText: title,
                 subHeaderText: 'Please select one from the list',
                 options: optionLabels,
-                currentValue: currentValues.isNotEmpty ? currentValues.first : '',
+                currentValue: currentValues.isNotEmpty
+                    ? currentValues.first
+                    : '',
               ),
             ),
           );
@@ -147,13 +157,21 @@ class _LifestyleSectionState extends State<LifestyleSection> {
             }
             if (optionId != null) {
               final String qKey = q['key'] ?? '';
+              // Optimistically update UI instantly
+              context.read<ProfileEditCubit>().updateLifestyleAnswer(title, [
+                result,
+              ]);
+
               final error = await EditProfileApiService.updateProfileAnswer(
-                  questionKey: qKey, optionIds: [optionId]);
+                questionKey: qKey,
+                optionIds: [optionId],
+              );
               if (error == null && mounted) {
                 context.read<ProfileEditCubit>().loadProfile();
               } else if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(error ?? 'Failed to save')));
+                  SnackBar(content: Text(error ?? 'Failed to save')),
+                );
               }
             }
           }
@@ -185,7 +203,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                       children: currentValues.map((val) {
                         return Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE43A6A).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
@@ -225,11 +245,12 @@ class _LifestyleSectionState extends State<LifestyleSection> {
   }
 
   void _showMultiSelectBottomSheet(
-      BuildContext context,
-      String qKey,
-      String title,
-      List<dynamic> options,
-      List<String> currentValues) {
+    BuildContext context,
+    String qKey,
+    String title,
+    List<dynamic> options,
+    List<String> currentValues,
+  ) {
     List<String> tempSelectedValues = List.from(currentValues);
     String? errorMsg;
 
@@ -279,7 +300,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                       style: TextStyle(
                         fontSize: 14,
                         color: errorMsg != null ? Colors.red : Colors.black54,
-                        fontWeight: errorMsg != null ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: errorMsg != null
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -293,7 +316,8 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                           onTap: () {
                             if (!isSelected && tempSelectedValues.length >= 3) {
                               setModalState(() {
-                                errorMsg = 'You can only select up to 3 options.';
+                                errorMsg =
+                                    'You can only select up to 3 options.';
                               });
                               return;
                             }
@@ -309,7 +333,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? const Color(0xFFE43A6A)
@@ -324,8 +350,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: const Color(0xFFE43A6A)
-                                            .withOpacity(0.3),
+                                        color: const Color(
+                                          0xFFE43A6A,
+                                        ).withOpacity(0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),
@@ -335,8 +362,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                             child: Text(
                               label,
                               style: TextStyle(
-                                color:
-                                    isSelected ? Colors.white : Colors.black87,
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.black87,
                                 fontWeight: isSelected
                                     ? FontWeight.bold
                                     : FontWeight.w500,
@@ -359,22 +387,31 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                               optionIds.add(opt['id']);
                             }
                           }
-                          final error = await EditProfileApiService.updateProfileAnswer(
-                              questionKey: qKey, optionIds: optionIds);
+                          // Optimistically update UI instantly
+                          this.context
+                              .read<ProfileEditCubit>()
+                              .updateLifestyleAnswer(title, tempSelectedValues);
+
+                          final error =
+                              await EditProfileApiService.updateProfileAnswer(
+                                questionKey: qKey,
+                                optionIds: optionIds,
+                              );
                           if (error == null && mounted) {
                             this.context.read<ProfileEditCubit>().loadProfile();
                           } else if (mounted) {
                             ScaffoldMessenger.of(this.context).showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text(error ?? 'Failed to save')));
+                              SnackBar(
+                                content: Text(error ?? 'Failed to save'),
+                              ),
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE43A6A),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 0,
                         ),
@@ -399,10 +436,6 @@ class _LifestyleSectionState extends State<LifestyleSection> {
   }
 
   Widget _buildDivider() {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      color: Colors.grey.shade100,
-    );
+    return Divider(height: 1, thickness: 1, color: Colors.grey.shade100);
   }
 }

@@ -71,12 +71,24 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         if (val == null || val.isEmpty) return '';
         if (val == 'AROMATIC') return 'Aromantic';
         final parts = val.split('_');
-        if (parts.isEmpty) return '';
-        String result = parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1).toLowerCase();
-        for (int i = 1; i < parts.length; i++) {
-          result += ' ${parts[i].toLowerCase()}';
+        return parts.map((p) {
+          if (p.isEmpty) return '';
+          return p[0].toUpperCase() + p.substring(1).toLowerCase();
+        }).join(' ');
+      }
+
+      String parseHighestEdu(String? val) {
+        if (val == null || val.isEmpty) return '';
+        switch (val) {
+          case 'UNDER_GRADUATE': return 'Undergraduate';
+          case 'POST_GRADUATE': return 'Post Graduate';
+          case 'HIGH_SCHOOL': return 'High School';
+          case 'BACHELOR': return 'Undergraduate';
+          case 'MASTER': return 'Master';
+          case 'PHD': return 'PhD';
+          case 'DIPLOMA': return 'Diploma';
+          default: return formatEnumFromBackend(val);
         }
-        return result;
       }
 
       String formattedDob = '';
@@ -137,16 +149,21 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         bio: bio,
         intention: lookingFor,
         
-        highestEducation: career['highestEducation'] ?? '',
+        highestEducation: parseHighestEdu(career['highestEducation'] ?? career['highestEdu']),
         degreeCourse: career['degree'] ?? '',
         college: career['collegeName'] ?? '',
         graduationYear: career['graduationYear']?.toString() ?? '',
         profession: career['profession']?['name'] ?? '',
+        professionId: career['profession']?['id'] as int?,
         company: career['companyName'] ?? '',
         employmentType: career['employmentType']?['name'] ?? '',
+        employmentTypeId: career['employmentType']?['id'] as int?,
         experience: career['experience']?['title'] ?? '',
+        experienceId: career['experience']?['id'] as int?,
         salaryRange: career['salaryRange']?['title'] ?? '',
+        salaryRangeId: career['salaryRange']?['id'] as int?,
         ambitionLevel: career['ambition']?['title'] ?? '',
+        ambitionId: career['ambition']?['id'] as int?,
         bigDreams: career['bigDreams'] ?? '',
         
         familyType: family['familyType']?['value'] ?? '',
@@ -171,6 +188,20 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateHeight(String height) { emit(state.copyWith(height: height)); saveBasicDetails(); }
   void updateGender(String gender) { emit(state.copyWith(gender: gender)); saveBasicDetails(); }
   void updateGenderIdentity(String identity) { emit(state.copyWith(genderIdentity: identity)); saveBasicDetails(); }
+  
+  void updateLifestyleAnswer(String questionTitle, List<String> optionLabels) {
+    List<Map<String, dynamic>> newLifestyle = List.from(state.lifestyle);
+    newLifestyle.removeWhere((item) => item['question'] == questionTitle);
+    for (var label in optionLabels) {
+      newLifestyle.add({
+        'id': '',
+        'question': questionTitle,
+        'option': label,
+      });
+    }
+    emit(state.copyWith(lifestyle: newLifestyle));
+  }
+
   void updateReligionCaste(String religionCaste, int? religionId, int? communityId) async { 
     emit(state.copyWith(religionCaste: religionCaste, religionId: religionId, communityId: communityId)); 
     if (religionId != null) {
@@ -294,18 +325,41 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   void updateNetworkingInYourWords(String val) => emit(state.copyWith(networkingInYourWords: val));
   
   // Education & Career
-  void updateCollege(String val) => emit(state.copyWith(college: val));
-  void updateHighestEducation(String val) => emit(state.copyWith(highestEducation: val));
-  void updateDegreeCourse(String val) => emit(state.copyWith(degreeCourse: val));
-  void updateGraduationYear(String val) => emit(state.copyWith(graduationYear: val));
-  void updateProfession(String val) => emit(state.copyWith(profession: val));
-  void updateCompany(String val) => emit(state.copyWith(company: val));
-  void updateExperience(String val) => emit(state.copyWith(experience: val));
-  void updateEmploymentType(String val) => emit(state.copyWith(employmentType: val));
-  void updateSalaryRange(String val) => emit(state.copyWith(salaryRange: val));
-  void updateAmbitionLevel(String val) => emit(state.copyWith(ambitionLevel: val));
-  void updateBigDreams(String val) => emit(state.copyWith(bigDreams: val));
-  void updateWorkStyle(String val) => emit(state.copyWith(workStyle: val));
+  void updateCollege(String val) { emit(state.copyWith(college: val)); saveCareerDetails(); }
+  void updateHighestEducation(String val) { emit(state.copyWith(highestEducation: val)); saveCareerDetails(); }
+  void updateDegreeCourse(String val) { emit(state.copyWith(degreeCourse: val)); saveCareerDetails(); }
+  void updateGraduationYear(String val) { emit(state.copyWith(graduationYear: val)); saveCareerDetails(); }
+  void updateProfession(String val, int? id) { emit(state.copyWith(profession: val, professionId: id)); saveCareerDetails(); }
+  void updateCompany(String val) { emit(state.copyWith(company: val)); saveCareerDetails(); }
+  void updateExperience(String val, int? id) { emit(state.copyWith(experience: val, experienceId: id)); saveCareerDetails(); }
+  void updateEmploymentType(String val, int? id) { emit(state.copyWith(employmentType: val, employmentTypeId: id)); saveCareerDetails(); }
+  void updateSalaryRange(String val, int? id) { emit(state.copyWith(salaryRange: val, salaryRangeId: id)); saveCareerDetails(); }
+  void updateAmbitionLevel(String val, int? id) { emit(state.copyWith(ambitionLevel: val, ambitionId: id)); saveCareerDetails(); }
+  void updateBigDreams(String val) { emit(state.copyWith(bigDreams: val)); saveCareerDetails(); }
+  void updateWorkStyle(String val) => emit(state.copyWith(workStyle: val)); // WorkStyle not in save as per user
+
+  void saveCareerDetails() async {
+    String mapHighestEdu(String val) {
+       return val.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_');
+    }
+
+    final data = <String, dynamic>{};
+    if (state.highestEducation.isNotEmpty) data["highestEdu"] = mapHighestEdu(state.highestEducation);
+    if (state.degreeCourse.isNotEmpty) data["degree"] = state.degreeCourse;
+    if (state.college.isNotEmpty) data["collegeName"] = state.college;
+    if (state.graduationYear.isNotEmpty) data["graduationYear"] = int.tryParse(state.graduationYear) ?? 0;
+    if (state.professionId != null) data["professionId"] = state.professionId;
+    if (state.company.isNotEmpty) data["companyName"] = state.company;
+    if (state.employmentTypeId != null) data["employmentTypeId"] = state.employmentTypeId;
+    if (state.experienceId != null) data["experienceId"] = state.experienceId;
+    if (state.ambitionId != null) data["ambitionId"] = state.ambitionId;
+    if (state.salaryRangeId != null) data["salaryRangeId"] = state.salaryRangeId;
+    if (state.bigDreams.isNotEmpty) data["bigDreams"] = state.bigDreams;
+
+    if (data.isNotEmpty) {
+      await EditProfileApiService.updateCareer(data);
+    }
+  }
   
   void togglePet(String pet) {
     final updatedPets = List<String>.from(state.pets);

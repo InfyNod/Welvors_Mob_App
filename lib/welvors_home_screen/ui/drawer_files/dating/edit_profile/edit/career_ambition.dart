@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/onbording_allpage/services/api_service.dart';
 
 class EducationCareerSection extends StatefulWidget {
   const EducationCareerSection({super.key});
@@ -15,77 +16,88 @@ class EducationCareerSection extends StatefulWidget {
 class _EducationCareerSectionState extends State<EducationCareerSection> {
   static const List<String> _highestEducationOptions = [
     'High School',
-    'IIT',
+    'Higher Secondary',
     'Diploma',
-    'Undergraduate',
-    'Post Graduate',
+    'ITI',
+    'Bachelor',
     'Master',
-    'MPhil',
+    'MBA',
+    'CA',
+    'CS',
+    'Doctor',
+    'Engineer',
+    'Law',
     'PhD',
-    'Post-Doctorate',
+    'Post Doctorate',
     'Other',
   ];
 
-  static const List<String> _professionOptions = [
-    'Product Manager',
-    'Designer',
-    'Engineer / Developer',
-    'Doctor / Healthcare',
-    'Founder / Entrepreneur',
-    'Marketing & PR',
-    'Finance & Banking',
-    'Consultant',
-    'Architect',
-    'Lawyer',
-  ];
+  List<String> _professionOptions = [];
+  Map<String, int> _professionsMap = {};
 
-  static const List<String> _experienceOptions = [
-    'Fresher',
-    '<1 yr',
-    '1–2 yrs',
-    '3–5 yrs',
-    '5–10 yrs',
-    '10–15 yrs',
-    '15+ yrs',
-  ];
+  List<String> _experienceOptions = [];
+  Map<String, int> _experiencesMap = {};
 
-  static const List<String> _employmentTypeOptions = [
-    'Full-time',
-    'Freelance',
-    'Self-employed',
-    'Studying',
-    'Between roles',
-  ];
+  List<String> _employmentTypeOptions = [];
+  Map<String, int> _employmentTypesMap = {};
 
-  static const List<String> _workStyleOptions = [
-    'On-site',
-    'Hybrid',
-    'Remote',
-    'Flexible',
-  ];
+  List<String> _salaryRangeOptions = [];
+  Map<String, int> _salaryRangesMap = {};
 
-  static const List<String> _salaryRangeOptions = [
-    'Prefer not to say',
-    'Up to 10 LPA',
-    '10–20 LPA',
-    '20–30 LPA',
-    '30–45 LPA',
-    '45–75 LPA',
-    '75 LPA+',
-    '1 Cr+',
-  ];
+  List<String> _ambitionLevelOptions = [];
+  Map<String, int> _ambitionsMap = {};
 
-  static const List<String> _ambitionLevelOptions = [
-    'Easy-going',
-    'Balanced',
-    'Driven',
-    'Highly driven',
-  ];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final results = await Future.wait([
+      ApiService.fetchProfessions(),
+      ApiService.fetchExperiences(),
+      ApiService.fetchEmploymentTypes(),
+      ApiService.fetchSalaryRanges(),
+      ApiService.fetchAmbitions(),
+    ]);
+
+    if (mounted) {
+      setState(() {
+        _professionsMap = results[0] as Map<String, int>;
+        _professionOptions = _professionsMap.keys.toList();
+
+        _experiencesMap = results[1] as Map<String, int>;
+        _experienceOptions = _experiencesMap.keys.toList();
+
+        _employmentTypesMap = results[2] as Map<String, int>;
+        _employmentTypeOptions = _employmentTypesMap.keys.toList();
+
+        _salaryRangesMap = results[3] as Map<String, int>;
+        _salaryRangeOptions = _salaryRangesMap.keys.toList();
+
+        _ambitionsMap = results[4] as Map<String, int>;
+        _ambitionLevelOptions = _ambitionsMap.keys.toList();
+
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileEditCubit, ProfileEditState>(
       builder: (context, state) {
+        if (_isLoading) {
+          return const Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Center(
+              child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+            ),
+          );
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -147,8 +159,13 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                     label: 'WORK AS',
                     value: state.profession,
                     options: _professionOptions,
-                    onSelect: (val) =>
-                        context.read<ProfileEditCubit>().updateProfession(val),
+                    onSelect: (val) {
+                      final id = _professionsMap[val];
+                      context.read<ProfileEditCubit>().updateProfession(
+                        val,
+                        id,
+                      );
+                    },
                   ),
                   _buildDivider(),
                   _buildTextFieldItem(
@@ -164,8 +181,13 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                     label: 'EXPERIENCE',
                     value: state.experience,
                     options: _experienceOptions,
-                    onSelect: (val) =>
-                        context.read<ProfileEditCubit>().updateExperience(val),
+                    onSelect: (val) {
+                      final id = _experiencesMap[val];
+                      context.read<ProfileEditCubit>().updateExperience(
+                        val,
+                        id,
+                      );
+                    },
                   ),
                   _buildDivider(),
                   _buildListItem(
@@ -173,9 +195,13 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                     label: 'EMPLOYMENT TYPE',
                     value: state.employmentType,
                     options: _employmentTypeOptions,
-                    onSelect: (val) => context
-                        .read<ProfileEditCubit>()
-                        .updateEmploymentType(val),
+                    onSelect: (val) {
+                      final id = _employmentTypesMap[val];
+                      context.read<ProfileEditCubit>().updateEmploymentType(
+                        val,
+                        id,
+                      );
+                    },
                   ),
                   _buildDivider(),
                   _buildListItem(
@@ -183,27 +209,28 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
                     label: 'INCOME',
                     value: state.salaryRange,
                     options: _salaryRangeOptions,
-                    onSelect: (val) =>
-                        context.read<ProfileEditCubit>().updateSalaryRange(val),
+                    onSelect: (val) {
+                      final id = _salaryRangesMap[val];
+                      context.read<ProfileEditCubit>().updateSalaryRange(
+                        val,
+                        id,
+                      );
+                    },
                   ),
-                  _buildDivider(),
-                  _buildListItem(
-                    context: context,
-                    label: 'WORK STYLE',
-                    value: state.workStyle,
-                    options: _workStyleOptions,
-                    onSelect: (val) =>
-                        context.read<ProfileEditCubit>().updateWorkStyle(val),
-                  ),
+
                   _buildDivider(),
                   _buildListItem(
                     context: context,
                     label: 'AMBITION LEVEL',
                     value: state.ambitionLevel,
                     options: _ambitionLevelOptions,
-                    onSelect: (val) => context
-                        .read<ProfileEditCubit>()
-                        .updateAmbitionLevel(val),
+                    onSelect: (val) {
+                      final id = _ambitionsMap[val];
+                      context.read<ProfileEditCubit>().updateAmbitionLevel(
+                        val,
+                        id,
+                      );
+                    },
                   ),
                   _buildDivider(),
                   _buildTextFieldItem(
