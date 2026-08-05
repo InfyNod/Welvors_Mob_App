@@ -128,6 +128,26 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         }
       }
 
+      List<String> parsedInterests = [];
+      if (data['interests'] != null && data['interests'] is List) {
+        for (var item in data['interests']) {
+          final question = item['question']?.toString() ?? '';
+          final option = item['option']?.toString() ?? '';
+          if (option.isNotEmpty) {
+            String emoji = '✨';
+            final lowerQ = question.toLowerCase();
+            if (lowerQ.contains('creativ')) emoji = '🎨';
+            else if (lowerQ.contains('favorite')) emoji = '🎬';
+            else if (lowerQ.contains('food') || lowerQ.contains('drink')) emoji = '🍔';
+            else if (lowerQ.contains('travel') || lowerQ.contains('outdoor')) emoji = '✈️';
+            else if (lowerQ.contains('gam')) emoji = '🎮';
+            else if (lowerQ.contains('well')) emoji = '🧘';
+            
+            parsedInterests.add('$emoji $option');
+          }
+        }
+      }
+
       emit(state.copyWith(
         fullName: basic['fullName'] ?? '',
         email: basic['email'] ?? '',
@@ -142,6 +162,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         communityId: basic['community']?['id'] as int?,
         languageIds: parsedLanguageIds,
         motherTongue: parsedMotherTongue,
+        interests: parsedInterests,
         zodiac: formatEnumFromBackend(basic['zodiac']),
         loveLanguage: formatEnumFromBackend(basic['loveLanguage']),
         communication: formatEnumFromBackend(basic['communicationStyle']),
