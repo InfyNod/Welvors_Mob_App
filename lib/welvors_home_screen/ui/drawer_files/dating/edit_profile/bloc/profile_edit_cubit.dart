@@ -105,6 +105,17 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         parsedLanguageIds = langIds.map((e) => e as int).toList();
       }
 
+      List<Map<String, dynamic>> parsedLifestyle = [];
+      if (data['lifestyle'] != null && data['lifestyle'] is List) {
+        for (var item in data['lifestyle']) {
+          parsedLifestyle.add({
+            'id': item['id'],
+            'question': item['question'],
+            'option': item['option'],
+          });
+        }
+      }
+
       emit(state.copyWith(
         fullName: basic['fullName'] ?? '',
         email: basic['email'] ?? '',
@@ -148,6 +159,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         interestedIn: formatEnumFromBackend(profile['interestedIn']),
         sexualOrientation: formatEnumFromBackend(profile['sexualOrientation']),
         
+        lifestyle: parsedLifestyle,
         photos: parsedPhotos,
       ));
     }
@@ -216,13 +228,6 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
 
     await EditProfileApiService.updateInterestedIn(mappedInterestedIn, mappedOrientation);
   }
-  
-  void updateDrinking(String val) => emit(state.copyWith(drinking: val));
-  void updateSmoking(String val) => emit(state.copyWith(smoking: val));
-  void updateWorkout(String val) => emit(state.copyWith(workout: val));
-  void updateDiet(String val) => emit(state.copyWith(diet: val));
-  void updateTravel(String val) => emit(state.copyWith(travel: val));
-  void updateSleep(String val) => emit(state.copyWith(sleep: val));
   
   // API Update for Basic Details
   Future<String?> saveBasicDetails() async {

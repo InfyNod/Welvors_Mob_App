@@ -212,6 +212,38 @@ class EditProfileApiService {
     }
   }
 
+  // Updates user profile answers for Lifestyle, Interests, Networking (PATCH)
+  static Future<String?> updateProfileAnswer({required String questionKey, required List<String> optionIds}) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/edit-profile/answers'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "questionKey": questionKey,
+          "optionIds": optionIds,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+           return null; // Success
+        }
+        return decoded['message'] ?? 'Failed: ${response.body}';
+      }
+      return 'Error ${response.statusCode}: ${response.body}';
+    } catch (e) {
+      debugPrint('Error updating profile answer: $e');
+      return e.toString();
+    }
+  }
+
   // Fetches the user's full profile details
   static Future<Map<String, dynamic>> getProfileDetails() async {
     try {

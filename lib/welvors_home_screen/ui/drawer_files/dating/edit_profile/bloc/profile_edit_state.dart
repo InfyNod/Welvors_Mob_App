@@ -19,12 +19,7 @@ class ProfileEditState extends Equatable {
   final String interestedIn;
   final String sexualOrientation;
   
-  final String drinking;
-  final String smoking;
-  final String workout;
-  final String diet;
-  final String travel;
-  final String sleep;
+  final List<Map<String, dynamic>> lifestyle;
   final List<String> pets;
   final List<String> interests;
   final List<Map<String, String>> prompts;
@@ -87,12 +82,7 @@ class ProfileEditState extends Equatable {
     required this.communication,
     required this.interestedIn,
     required this.sexualOrientation,
-    required this.drinking,
-    required this.smoking,
-    required this.workout,
-    required this.diet,
-    required this.travel,
-    required this.sleep,
+    required this.lifestyle,
     required this.pets,
     required this.interests,
     required this.prompts,
@@ -147,12 +137,7 @@ class ProfileEditState extends Equatable {
       communication: '',
       interestedIn: '',
       sexualOrientation: '',
-      drinking: '',
-      smoking: '',
-      workout: '',
-      diet: '',
-      travel: '',
-      sleep: '',
+      lifestyle: const [],
       pets: const [],
       interests: const [],
       prompts: const [],
@@ -207,12 +192,7 @@ class ProfileEditState extends Equatable {
     String? communication,
     String? interestedIn,
     String? sexualOrientation,
-    String? drinking,
-    String? smoking,
-    String? workout,
-    String? diet,
-    String? travel,
-    String? sleep,
+    List<Map<String, dynamic>>? lifestyle,
     List<String>? pets,
     List<String>? interests,
     List<Map<String, String>>? prompts,
@@ -265,12 +245,7 @@ class ProfileEditState extends Equatable {
       communication: communication ?? this.communication,
       interestedIn: interestedIn ?? this.interestedIn,
       sexualOrientation: sexualOrientation ?? this.sexualOrientation,
-      drinking: drinking ?? this.drinking,
-      smoking: smoking ?? this.smoking,
-      workout: workout ?? this.workout,
-      diet: diet ?? this.diet,
-      travel: travel ?? this.travel,
-      sleep: sleep ?? this.sleep,
+      lifestyle: lifestyle ?? this.lifestyle,
       pets: pets ?? this.pets,
       interests: interests ?? this.interests,
       prompts: prompts ?? this.prompts,
@@ -352,12 +327,7 @@ class ProfileEditState extends Equatable {
         communication,
         interestedIn,
         sexualOrientation,
-        drinking,
-        smoking,
-        workout,
-        diet,
-        travel,
-        sleep,
+        lifestyle,
         pets,
         interests,
         prompts,
