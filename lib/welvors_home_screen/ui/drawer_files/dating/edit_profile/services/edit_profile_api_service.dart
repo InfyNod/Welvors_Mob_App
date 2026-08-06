@@ -9,6 +9,51 @@ class EditProfileApiService {
   static const String baseUrl =
       'https://dating-app-backend-plum.vercel.app/api';
 
+  /// Fetches family options (e.g. familyType)
+  static Future<List<String>> getFamilyOptions(String type) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final url = Uri.parse('$baseUrl/admin/family/options?type=$type');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['data'] != null) {
+          List data = decoded['data'];
+          return data.map((e) {
+            if (e is String) return e;
+            if (e is Map) {
+              if (e.containsKey('value')) return e['value'].toString();
+              if (e.containsKey('name')) return e['name'].toString();
+            }
+            return e.toString();
+          }).toList();
+        } else if (decoded is List) {
+          return decoded.map((e) {
+            if (e is String) return e;
+            if (e is Map) {
+              if (e.containsKey('value')) return e['value'].toString();
+              if (e.containsKey('name')) return e['name'].toString();
+            }
+            return e.toString();
+          }).toList();
+        }
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching family options for $type: $e');
+      return [];
+    }
+  }
+
   /// Updates user location via PATCH
   static Future<Map<String, dynamic>> updateLocation({
     required String country,

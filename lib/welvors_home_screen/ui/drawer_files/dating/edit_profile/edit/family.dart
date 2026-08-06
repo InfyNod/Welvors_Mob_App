@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 class FamilySection extends StatefulWidget {
   const FamilySection({super.key});
@@ -12,14 +13,22 @@ class FamilySection extends StatefulWidget {
 }
 
 class _FamilySectionState extends State<FamilySection> {
-  static const List<String> _familyTypeOptions = [
-    'Nuclear · Close-knit',
-    'Nuclear',
-    'Joint family',
-    'Close-knit',
-    'Living independently',
-    'Prefer not to say',
-  ];
+  List<String> _familyTypeOptions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFamilyTypeOptions();
+  }
+
+  Future<void> _fetchFamilyTypeOptions() async {
+    final options = await EditProfileApiService.getFamilyOptions('familyType');
+    if (mounted && options.isNotEmpty) {
+      setState(() {
+        _familyTypeOptions = options;
+      });
+    }
+  }
 
   static const List<String> _fatherOptions = [
     'Retired banker',
