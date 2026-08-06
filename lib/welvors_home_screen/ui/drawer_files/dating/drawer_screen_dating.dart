@@ -46,15 +46,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         _selectedTabIndex = 1;
                       });
                     },
-                  ),       // Index 0
-                  _buildDatingContent(),        // Index 1
+                  ), // Index 0
+                  _buildDatingContent(), // Index 1
                   MatureDatingScreen(
                     onNavigateToDating: () {
                       setState(() {
                         _selectedTabIndex = 1;
                       });
                     },
-                  ),   // Index 2
+                  ), // Index 2
                 ],
               ),
             ),
@@ -176,79 +176,82 @@ class _DrawerScreenState extends State<DrawerScreen> {
 
   Widget _buildDatingContent() {
     return SingleChildScrollView(
-      physics: const ClampingScrollPhysics(), // Re-locking the scroll as requested
+      physics:
+          const ClampingScrollPhysics(), // Re-locking the scroll as requested
       child: BlocBuilder<ProfileEditCubit, ProfileEditState>(
         builder: (context, state) {
           return TweenAnimationBuilder<double>(
             tween: Tween<double>(begin: 0.0, end: state.completionPercentage),
             duration: const Duration(milliseconds: 1200),
-        curve: Curves.easeOutCubic,
-        builder: (context, animValue, child) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Premium Top Section (Gradient + White Background)
-              Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFFFFF5EC), Colors.white],
-                    stops: [0.0, 0.6], // Fades from peach to white
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x0A000000), // Very subtle shadow for separation
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
+            curve: Curves.easeOutCubic,
+            builder: (context, animValue, child) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Premium Top Section (Gradient + White Background)
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFFFFF5EC), Colors.white],
+                        stops: [0.0, 0.6], // Fades from peach to white
+                      ),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(24),
+                        bottomRight: Radius.circular(24),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(
+                            0x0A000000,
+                          ), // Very subtle shadow for separation
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                padding: const EdgeInsets.only(
-                  top: 36,
-                  bottom: 24,
-                  left: 20,
-                  right: 20,
-                ),
-                child: Column(
-                  children: [
-                    _buildProfileSection(animValue),
-                    const SizedBox(height: 24),
-                    _buildProfileCompletionCard(animValue),
-                  ],
-                ),
-              ),
+                    padding: const EdgeInsets.only(
+                      top: 36,
+                      bottom: 24,
+                      left: 20,
+                      right: 20,
+                    ),
+                    child: Column(
+                      children: [
+                        _buildProfileSection(animValue),
+                        const SizedBox(height: 24),
+                        _buildProfileCompletionCard(animValue),
+                      ],
+                    ),
+                  ),
 
-          // Bottom Section (Grey Background)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                _buildSectionTitle('MY BALANCES'),
-                const SizedBox(height: 12),
-                _buildBalancesSection(),
-                const SizedBox(height: 24),
-                _buildDatePlansCard(),
-                const SizedBox(height: 24),
-                const PrivacySafetyAndMembership(),
-                const SizedBox(height: 24),
-                const EcosystemHistorySupport(),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
-        ],
-      );
-    },
-  );
-},
+                  // Bottom Section (Grey Background)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 24),
+                        _buildSectionTitle('MY BALANCES'),
+                        const SizedBox(height: 12),
+                        _buildBalancesSection(),
+                        const SizedBox(height: 24),
+                        _buildDatePlansCard(),
+                        const SizedBox(height: 24),
+                        const PrivacySafetyAndMembership(),
+                        const SizedBox(height: 24),
+                        const EcosystemHistorySupport(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -296,41 +299,53 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   child: CircularProgressIndicator(
                     value: animValue,
                     strokeWidth: 6.5, // Thicker for premium look
-                    strokeCap: StrokeCap.round, // Rounded starting and ending points!
-                    color: AppColors.pink, 
-                    backgroundColor: Colors.grey.shade100, // Premium track color
+                    strokeCap:
+                        StrokeCap.round, // Rounded starting and ending points!
+                    color: AppColors.pink,
+                    backgroundColor:
+                        Colors.grey.shade100, // Premium track color
                   ),
                 ),
                 // Inner Avatar Image
                 BlocBuilder<ProfileEditCubit, ProfileEditState>(
                   builder: (context, state) {
-                    final firstPhoto = state.photos.isNotEmpty ? state.photos.first : null;
+                    final firstPhoto = state.photos.isNotEmpty
+                        ? state.photos.first
+                        : null;
                     final hasPhoto = firstPhoto != null && !firstPhoto.isEmpty;
-                    
+
                     ImageProvider? imageProvider;
                     if (hasPhoto) {
                       if (firstPhoto.isNetwork) {
                         imageProvider = NetworkImage(firstPhoto.url!);
                       } else if (firstPhoto.isLocal) {
-                        imageProvider = FileImage(File(firstPhoto.localFile!.path));
+                        imageProvider = FileImage(
+                          File(firstPhoto.localFile!.path),
+                        );
                       }
                     }
 
                     return Container(
-                      width: 92, 
+                      width: 92,
                       height: 92,
-                      margin: const EdgeInsets.all(9), // Center it inside the new 110px ring
+                      margin: const EdgeInsets.all(
+                        9,
+                      ), // Center it inside the new 110px ring
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: hasPhoto ? null : const LinearGradient(
-                          colors: [Color(0xFFE5A88B), Color(0xFFC7846B)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        image: imageProvider != null ? DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.cover,
-                        ) : null,
+                        gradient: hasPhoto
+                            ? null
+                            : const LinearGradient(
+                                colors: [Color(0xFFE5A88B), Color(0xFFC7846B)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                        image: imageProvider != null
+                            ? DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.15),
@@ -340,7 +355,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         ],
                       ),
                     );
-                  }
+                  },
                 ),
                 // Percentage Pill
                 Positioned(
@@ -385,7 +400,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         color: Colors.black87,
                       ),
                     );
-                  }
+                  },
                 ),
                 const SizedBox(width: 8),
                 const Text(
@@ -645,9 +660,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
             onTap: () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const RosesScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const RosesScreen()),
               );
               setState(() {});
             },
@@ -706,9 +719,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const MyWalletScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const MyWalletScreen()),
               );
             },
           ),
@@ -729,70 +740,74 @@ class _DrawerScreenState extends State<DrawerScreen> {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20), // More rounded corners
-        border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05), // Soft elegant shadow
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(emoji, style: const TextStyle(fontSize: 22)),
-              ),
-              if (hasDot)
-                Positioned(
-                  right: -4,
-                  top: -4,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: AppColors.pink, // The pink color from the image
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white, size: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20), // More rounded corners
+          border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05), // Soft elegant shadow
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    shape: BoxShape.circle,
                   ),
+                  child: Text(emoji, style: const TextStyle(fontSize: 22)),
                 ),
-            ],
-          ),
-          const SizedBox(height: 4), // Reduced spacing from image
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: Colors.black87,
+                if (hasDot)
+                  Positioned(
+                    right: -4,
+                    top: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: AppColors.pink, // The pink color from the image
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 10,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ),
-          const SizedBox(height: 0), // Reduced spacing
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey.shade600,
+            const SizedBox(height: 4), // Reduced spacing from image
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87,
+              ),
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 0), // Reduced spacing
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -802,92 +817,93 @@ class _DrawerScreenState extends State<DrawerScreen> {
       onTap: () async {
         await Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const DatePlanWallet(),
-          ),
+          MaterialPageRoute(builder: (context) => const DatePlanWallet()),
         );
         // Refresh the drawer to show the updated plan count
         if (mounted) setState(() {});
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Reduced vertical padding
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 10,
+        ), // Reduced vertical padding
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF0F0F0), width: 1), 
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFF4E0), // Soft cream/orange background
-              shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-            child: const Text('📋', style: TextStyle(fontSize: 22)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Date Plans',
-                  style: TextStyle(
-                    fontSize: 16, // larger
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Post dates on Date Now · any activity type',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${DatePlanWallet.availablePlans}',
-                style: const TextStyle(
-                  fontSize: 22, // larger
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.gold, // premium gold
-                ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFF4E0), // Soft cream/orange background
+                shape: BoxShape.circle,
               ),
-              Row(
+              child: const Text('📋', style: TextStyle(fontSize: 22)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'left',
+                  const Text(
+                    'Date Plans',
                     style: TextStyle(
-                      fontSize: 12, // larger
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16, // larger
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black87,
                     ),
                   ),
-                  Icon(
-                    Icons.chevron_right,
-                    size: 16,
-                    color: Colors.grey.shade600,
+                  const SizedBox(height: 2),
+                  Text(
+                    'Post dates on Date Now · any activity type',
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${DatePlanWallet.availablePlans}',
+                  style: const TextStyle(
+                    fontSize: 22, // larger
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.gold, // premium gold
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'left',
+                      style: TextStyle(
+                        fontSize: 12, // larger
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
