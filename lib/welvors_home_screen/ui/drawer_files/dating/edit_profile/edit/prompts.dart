@@ -163,20 +163,9 @@ class PromptsSection extends StatelessWidget {
                   const SizedBox(width: 16),
                   GestureDetector(
                     onTap: () async {
-                      var categoryId = prompt['categoryId'] ?? '';
                       final promptId = prompt['promptId'] ?? '';
-                      
-                      if (categoryId.isEmpty && promptId.isNotEmpty) {
-                        categoryId = await _resolveCategoryId(promptId);
-                      }
-                      
-                      if (categoryId.isNotEmpty && promptId.isNotEmpty) {
-                        final response = await EditProfileApiService.updatePrompt(
-                          categoryId: categoryId,
-                          promptId: promptId,
-                          answer: '',
-                          displayOrder: index + 1,
-                        );
+                      if (promptId.isNotEmpty) {
+                        final response = await EditProfileApiService.deletePrompt(promptId);
                         
                         if (response['error'] != null && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(

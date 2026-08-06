@@ -17,7 +17,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       final basic = data['basicDetails'] ?? {};
       final bio = data['bio']?['bio'] ?? '';
 
-      String lookingFor = data['lookingFor']?['title'] ?? '';
+      String lookingFor = data['lookingFor']?['option']?.toString() ?? data['lookingFor']?['title']?.toString() ?? '';
       if (lookingFor.startsWith('"') &&
           lookingFor.endsWith('"') &&
           lookingFor.length >= 2) {

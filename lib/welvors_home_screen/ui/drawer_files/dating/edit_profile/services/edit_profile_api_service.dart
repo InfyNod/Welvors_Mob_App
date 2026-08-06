@@ -397,7 +397,31 @@ class EditProfileApiService {
       return {'error': 'Error ${response.statusCode}: ${response.body}'};
     } catch (e) {
       debugPrint('Error updating prompt: $e');
-      return {'error': e.toString()};
+      return {'error': 'Network error occurred'};
+    }
+  }
+
+  static Future<Map<String, dynamic>> deletePrompt(String promptId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      
+      final response = await http.delete(
+        Uri.parse('$baseUrl/user/edit-profile/prompt/$promptId'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        return {'error': 'Failed: ${response.statusCode} - ${response.body}'};
+      }
+    } catch (e) {
+      debugPrint('Error deleting prompt: $e');
+      return {'error': 'Network error occurred'};
     }
   }
 
