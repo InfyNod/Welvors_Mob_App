@@ -14,6 +14,14 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     final response = await EditProfileApiService.getProfileDetails();
     if (response['error'] == null && response['data'] != null) {
       final data = response['data'];
+      debugPrint('PROFILE KEYS: ${data.keys.toList()}');
+      if (data.containsKey('answers')) {
+         debugPrint('PROFILE ANSWERS: ${data['answers']}');
+      }
+      debugPrint('PROFILE KEYS OF profile: ${data['profile']?.keys.toList()}');
+      debugPrint('LIFESTYLE DATA: ${data['lifestyle']}');
+      debugPrint('INTERESTS DATA: ${data['interests']}');
+      debugPrint('PROMPTS DATA: ${data['prompts']}');
 
       final basic = data['basicDetails'] ?? {};
       final bio = data['bio']?['bio'] ?? '';

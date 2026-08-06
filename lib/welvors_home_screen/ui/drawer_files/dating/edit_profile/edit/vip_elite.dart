@@ -254,6 +254,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
   bool _isLoading = true;
 
   List<Map<String, dynamic>> _sections = [];
+  List<Map<String, dynamic>> _rawSectionsData = [];
 
   @override
   void initState() {
@@ -281,6 +282,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
       }
       setState(() {
         _sections = parsedSections;
+        _rawSectionsData = data;
         _isLoading = false;
       });
     } else {
@@ -336,6 +338,37 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
       if (mounted) {
+        // Map selected labels back to option IDs and find questionKey
+        List<String> selectedIds = [];
+        String questionKey = 'favorites'; // fallback
+        
+        for (var section in _rawSectionsData) {
+          if (section['key'] != null) {
+             questionKey = section['key'].toString();
+          } else if (section['questionKey'] != null) {
+             questionKey = section['questionKey'].toString();
+          }
+          final options = section['options'] as List<dynamic>? ?? [];
+          for (var opt in options) {
+            final label = opt['label']?.toString() ?? '';
+            final id = opt['id']?.toString() ?? '';
+            if (_selectedIntents.contains(label) && id.isNotEmpty) {
+              selectedIds.add(id);
+            }
+          }
+        }
+
+        debugPrint('🚀 Sending Networking Intent: questionKey=$questionKey, optionIds=$selectedIds, desc=${_wordsController.text.trim()}');
+
+        // Call the PATCH API
+        await EditProfileApiService.updateAnswers(
+          questionKey: questionKey,
+          optionIds: selectedIds,
+          description: _wordsController.text.trim(),
+        );
+
+        if (!mounted) return false;
+
         context.read<ProfileEditCubit>().updateNetworkingIntents(
           _selectedIntents,
         );

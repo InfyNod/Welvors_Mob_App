@@ -295,6 +295,7 @@ class EditProfileApiService {
       );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
+        debugPrint('GET NETWORKING INTENTS RESPONSE: ${response.body}');
         if (decoded['success'] == true && decoded['data'] != null) {
           return List<Map<String, dynamic>>.from(decoded['data']);
         }
@@ -303,6 +304,43 @@ class EditProfileApiService {
     } catch (e) {
       debugPrint('Error fetching networking intents: $e');
       return null;
+    }
+  }
+
+  // Updates answers (e.g. for VIP Networking Intent, Favorites, etc.)
+  static Future<bool> updateAnswers({
+    required String questionKey,
+    required List<String> optionIds,
+    String? description,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final body = {
+        "questionKey": questionKey,
+        "optionIds": optionIds,
+        if (description != null && description.isNotEmpty) "description": description,
+      };
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/user/edit-profile/answers'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      );
+
+      debugPrint('Update Answers Status: ${response.statusCode}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      }
+      debugPrint('Failed to update answers: ${response.body}');
+      return false;
+    } catch (e) {
+      debugPrint('Error updating answers: $e');
+      return false;
     }
   }
 
