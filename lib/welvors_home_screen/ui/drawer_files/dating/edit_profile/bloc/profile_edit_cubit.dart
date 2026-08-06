@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/edit_profile_api_service.dart';
@@ -257,12 +258,19 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           lifestyle: parsedLifestyle,
           photos: parsedPhotos,
           profileScore: data['profileScore'] ?? 0,
-          videoPath: (data['video'] ?? data['profile']?['video'] ?? data['videoUrl'])?.toString().isNotEmpty == true 
-              ? (data['video'] ?? data['profile']?['video'] ?? data['videoUrl'])?.toString() 
-              : null,
+          videoPath: _extractVideoUrl(data['video'] ?? data['profile']?['video'] ?? data['videoUrl']),
         ),
       );
     }
+  }
+
+  String? _extractVideoUrl(dynamic videoData) {
+    if (videoData == null) return null;
+    if (videoData is Map) {
+      return videoData['url']?.toString();
+    }
+    final str = videoData.toString();
+    return str.isNotEmpty ? str : null;
   }
 
   void updateFullName(String name) {
@@ -466,17 +474,33 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
 
     String formatEnum(String val) {
       if (val == 'Aromantic') return 'AROMATIC';
+      if (val == 'Texts over phone calls') return 'TEXTS_OVER_CALLS';
+      if (val == 'In person only') return 'IN_PERSON_ALWAYS';
       return val.toUpperCase().replaceAll(' ', '_');
+    }
+
+    String formattedDob = state.dob.replaceAll(' ', '');
+    if (formattedDob.contains('/')) {
+      final parts = formattedDob.split('/');
+      if (parts.length == 3) {
+        if (parts[2].length == 4) {
+          formattedDob = '${parts[2]}-${parts[1]}-${parts[0]}';
+        } else {
+          formattedDob = '${parts[0]}-${parts[1]}-${parts[2]}';
+        }
+      }
     }
 
     final data = {
       "full_name": state.fullName,
       "email": state.email,
-      "birth_date": state.dob.replaceAll(' ', ''),
+      "birth_date": formattedDob,
       if (parsedHeight != null) "height": parsedHeight,
       if (state.gender.isNotEmpty) "gender": mapGender(state.gender),
       if (state.genderIdentity.isNotEmpty)
         "gender_option": formatEnum(state.genderIdentity),
+      if (state.religionId != null) "religionId": state.religionId,
+      if (state.communityId != null) "communityId": state.communityId,
       if (state.languageIds != null) "languageIds": state.languageIds,
       if (state.zodiac.isNotEmpty) "zodiac": formatEnum(state.zodiac),
       if (state.loveLanguage.isNotEmpty)
@@ -490,7 +514,14 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       data["gender_option"] = "NOT_LISTED";
     }
 
-    return await EditProfileApiService.updateBasicDetails(data);
+    debugPrint('🚀 Sending basic info payload: $data');
+    final result = await EditProfileApiService.updateBasicDetails(data);
+    if (result != null) {
+      debugPrint('❌ basic-info API Failed: $result');
+    } else {
+      debugPrint('✅ basic-info API Success');
+    }
+    return result;
   }
 
   // Location

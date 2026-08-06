@@ -39,6 +39,8 @@ class _VideoSectionState extends State<VideoSection> {
     _thumbnailController?.dispose();
     _hasError = false;
     
+    debugPrint('🎬 Attempting to load video from: $path');
+
     if (path.startsWith('http')) {
       _thumbnailController = VideoPlayerController.networkUrl(Uri.parse(path));
     } else if (path.startsWith('assets/')) {
