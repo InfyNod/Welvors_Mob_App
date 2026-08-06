@@ -257,6 +257,9 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           lifestyle: parsedLifestyle,
           photos: parsedPhotos,
           profileScore: data['profileScore'] ?? 0,
+          videoPath: (data['video'] ?? data['profile']?['video'] ?? data['videoUrl'])?.toString().isNotEmpty == true 
+              ? (data['video'] ?? data['profile']?['video'] ?? data['videoUrl'])?.toString() 
+              : null,
         ),
       );
     }
@@ -346,6 +349,23 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       emit(state.copyWith(photos: newPhotos));
 
   void updateVideoPath(String? path) => emit(state.copyWith(videoPath: path));
+
+  Future<String?> uploadVideo(String path) async {
+    // Optionally emit a state here if you want an 'isUploadingVideo' state, but since the UI can handle the local state, we'll just return the error string.
+    final response = await EditProfileApiService.uploadVideo(path);
+    final error = response['error'];
+    if (error == null) {
+      // try to extract new video URL from response if possible, else keep the local path to play it
+      String? newVideoUrl;
+      if (response['data'] != null && response['data']['data'] != null) {
+        newVideoUrl = response['data']['data']['video'] ?? response['data']['data']['videoUrl'];
+      }
+      emit(state.copyWith(videoPath: newVideoUrl ?? path));
+      return null; // success
+    } else {
+      return error; // failed
+    }
+  }
 
   void updateInterestedIn(String interested) {
     emit(state.copyWith(interestedIn: interested));

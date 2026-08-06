@@ -16,6 +16,8 @@ class VideoSection extends StatefulWidget {
 
 class _VideoSectionState extends State<VideoSection> {
   VideoPlayerController? _thumbnailController;
+  bool _isUploading = false;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -35,6 +37,8 @@ class _VideoSectionState extends State<VideoSection> {
 
   void _initializeThumbnail(String path) {
     _thumbnailController?.dispose();
+    _hasError = false;
+    
     if (path.startsWith('http')) {
       _thumbnailController = VideoPlayerController.networkUrl(Uri.parse(path));
     } else if (path.startsWith('assets/')) {
@@ -42,6 +46,7 @@ class _VideoSectionState extends State<VideoSection> {
     } else {
       _thumbnailController = VideoPlayerController.file(File(path));
     }
+    
     _thumbnailController!
       ..initialize()
           .then((_) {
@@ -49,13 +54,27 @@ class _VideoSectionState extends State<VideoSection> {
           })
           .catchError((e) {
             debugPrint('Thumbnail Init Error: $e');
-            if (mounted) setState(() {});
+            if (mounted) {
+              setState(() {
+                _hasError = true;
+              });
+            }
           });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProfileEditCubit, ProfileEditState>(
+    return BlocConsumer<ProfileEditCubit, ProfileEditState>(
+      listenWhen: (previous, current) => previous.videoPath != current.videoPath,
+      listener: (context, state) {
+        if (state.videoPath != null && state.videoPath!.isNotEmpty) {
+          _initializeThumbnail(state.videoPath!);
+        } else {
+          _thumbnailController?.dispose();
+          _thumbnailController = null;
+          setState(() {});
+        }
+      },
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,14 +120,36 @@ class _VideoSectionState extends State<VideoSection> {
 
   Widget _buildEmptyCard() {
     return GestureDetector(
-      onTap: () async {
+      onTap: _isUploading ? null : () async {
         final result = await Navigator.push<String>(
           context,
           MaterialPageRoute(builder: (context) => const VideoRecorderScreen()),
         );
         if (result != null && mounted) {
+          setState(() {
+            _isUploading = true;
+          });
+          // Update the UI immediately with local path to play it while uploading
           context.read<ProfileEditCubit>().updateVideoPath(result);
           _initializeThumbnail(result);
+          
+          // Upload to server
+          final error = await context.read<ProfileEditCubit>().uploadVideo(result);
+          
+          if (mounted) {
+            setState(() {
+              _isUploading = false;
+            });
+            if (error != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(error), backgroundColor: Colors.red),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Video uploaded successfully"), backgroundColor: Colors.green),
+              );
+            }
+          }
         }
       },
       child: Container(
@@ -182,20 +223,23 @@ class _VideoSectionState extends State<VideoSection> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child:
-                _thumbnailController != null &&
-                    _thumbnailController!.value.isInitialized
-                ? FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _thumbnailController!.value.size.width,
-                      height: _thumbnailController!.value.size.height,
-                      child: VideoPlayer(_thumbnailController!),
-                    ),
+            child: _hasError
+                ? const Center(
+                    child: Icon(Icons.error_outline, color: Colors.white54, size: 32),
                   )
-                : const Center(
-                    child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
-                  ),
+                : (_thumbnailController != null &&
+                        _thumbnailController!.value.isInitialized)
+                    ? FittedBox(
+                        fit: BoxFit.cover,
+                        child: SizedBox(
+                          width: _thumbnailController!.value.size.width,
+                          height: _thumbnailController!.value.size.height,
+                          child: VideoPlayer(_thumbnailController!),
+                        ),
+                      )
+                    : const Center(
+                        child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                      ),
           ),
           // Dark Gradient overlay at bottom
           Positioned.fill(
@@ -248,29 +292,32 @@ class _VideoSectionState extends State<VideoSection> {
             ),
           ),
           // Cross (Remove) Icon
-          Positioned(
-            top: 12,
-            right: 12,
-            child: GestureDetector(
-              onTap: () {
-                context.read<ProfileEditCubit>().updateVideoPath(null);
-                _thumbnailController?.dispose();
-                _thumbnailController = null;
-              },
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  shape: BoxShape.circle,
+          if (!_isUploading)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: GestureDetector(
+                onTap: () {
+                  context.read<ProfileEditCubit>().updateVideoPath(null);
+                  _thumbnailController?.dispose();
+                  _thumbnailController = null;
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 14),
                 ),
-                child: const Icon(Icons.close, color: Colors.white, size: 14),
               ),
             ),
-          ),
-          // Play Button
+          // Play Button or Loading Indicator
           Center(
-            child: GestureDetector(
-              onTap: () {
+            child: _isUploading
+                ? const CircularProgressIndicator(color: Color(0xFFE43A6A))
+                : GestureDetector(
+                    onTap: () {
                 if (_thumbnailController != null) {
                   setState(() {
                     if (_thumbnailController!.value.isPlaying) {
@@ -325,20 +372,41 @@ class _VideoSectionState extends State<VideoSection> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () async {
-                    final result = await Navigator.push<String>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VideoRecorderScreen(),
-                      ),
-                    );
-                    if (result != null && mounted) {
-                      context.read<ProfileEditCubit>().updateVideoPath(result);
-                      _initializeThumbnail(result);
-                    }
-                  },
-                  child: Container(
+                if (!_isUploading)
+                  GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push<String>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const VideoRecorderScreen(),
+                        ),
+                      );
+                      if (result != null && mounted) {
+                        setState(() {
+                          _isUploading = true;
+                        });
+                        context.read<ProfileEditCubit>().updateVideoPath(result);
+                        _initializeThumbnail(result);
+                        
+                        final error = await context.read<ProfileEditCubit>().uploadVideo(result);
+                        
+                        if (mounted) {
+                          setState(() {
+                            _isUploading = false;
+                          });
+                          if (error != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(error), backgroundColor: Colors.red),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Video uploaded successfully"), backgroundColor: Colors.green),
+                            );
+                          }
+                        }
+                      }
+                    },
+                    child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(

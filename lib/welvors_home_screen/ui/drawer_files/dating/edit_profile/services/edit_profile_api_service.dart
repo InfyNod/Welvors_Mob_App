@@ -142,6 +142,46 @@ class EditProfileApiService {
     }
   }
 
+  /// Uploads or updates a video
+  static Future<Map<String, dynamic>> uploadVideo(String videoPath) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      var request = http.MultipartRequest(
+        'POST', // Both POST and UPDATE use the same endpoint, so POST is typical for file uploads or we can use PATCH if backend prefers. But POST is universally accepted for Multipart. Let's use POST. The user said POST/UPDATE.
+        Uri.parse('$baseUrl/user/profile/video'),
+      );
+
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'video', // Assuming the field name is 'video'
+          videoPath,
+          contentType: MediaType('video', 'mp4'),
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true || decoded['status'] == 200) {
+          return {'error': null, 'data': decoded}; // Success
+        }
+        return {'error': decoded['message'] ?? 'Failed: ${response.body}'};
+      }
+      return {'error': 'Error ${response.statusCode}: ${response.body}'};
+    } catch (e) {
+      debugPrint('Error uploading video: $e');
+      return {'error': e.toString()};
+    }
+  }
+
   /// Updates a specific photo on the server.
   static Future<String?> updateSpecificPhoto(
     String photoId,
