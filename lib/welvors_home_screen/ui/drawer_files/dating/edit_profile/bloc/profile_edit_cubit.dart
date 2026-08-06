@@ -256,6 +256,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
 
           lifestyle: parsedLifestyle,
           photos: parsedPhotos,
+          profileScore: data['profileScore'] ?? 0,
         ),
       );
     }

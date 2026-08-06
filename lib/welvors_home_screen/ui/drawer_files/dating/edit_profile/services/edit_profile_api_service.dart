@@ -247,6 +247,25 @@ class EditProfileApiService {
     }
   }
 
+  // Fetches Networking Intents
+  static Future<List<Map<String, dynamic>>?> getNetworkingIntents() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/question/fetch?category=DATING&screen=NETWORKING_INTENT'),
+      );
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return List<Map<String, dynamic>>.from(decoded['data']);
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching networking intents: $e');
+      return null;
+    }
+  }
+
   // Updates the user's looking-for intention
   static Future<String?> updateIntention(String optionId) async {
     try {

@@ -69,6 +69,8 @@ class ProfileEditState extends Equatable {
   
   final List<ProfilePhoto?> photos;
   final String? videoPath;
+  
+  final int profileScore;
 
   const ProfileEditState({
     required this.fullName,
@@ -127,6 +129,7 @@ class ProfileEditState extends Equatable {
     required this.intention,
     required this.photos,
     this.videoPath,
+    required this.profileScore,
   });
 
   factory ProfileEditState.initial() {
@@ -182,6 +185,7 @@ class ProfileEditState extends Equatable {
       intention: '',
       photos: List.filled(6, null),
       videoPath: null,
+      profileScore: 0,
     );
   }
 
@@ -242,6 +246,7 @@ class ProfileEditState extends Equatable {
     String? intention,
     List<ProfilePhoto?>? photos,
     String? videoPath,
+    int? profileScore,
   }) {
     return ProfileEditState(
       fullName: fullName ?? this.fullName,
@@ -300,33 +305,12 @@ class ProfileEditState extends Equatable {
       intention: intention ?? this.intention,
       photos: photos ?? this.photos,
       videoPath: videoPath ?? this.videoPath,
+      profileScore: profileScore ?? this.profileScore,
     );
   }
 
   double get completionPercentage {
-    int total = 0;
-    int filled = 0;
-    
-    for (var prop in props) {
-      if (prop is bool) continue; // Ignore boolean toggles like showDistance
-      
-      total++;
-      if (prop is String) {
-        if (prop.trim().isNotEmpty) filled++;
-      } else if (prop is List) {
-        if (prop.isNotEmpty) {
-          if (prop.every((e) => e == null || (e is ProfilePhoto && e.isEmpty))) {
-            // All empty (like empty photos list), don't count
-          } else {
-            filled++;
-          }
-        }
-      } else if (prop != null) {
-        filled++; // For other non-null objects
-      }
-    }
-    
-    return total == 0 ? 0.0 : filled / total;
+    return profileScore / 100.0;
   }
 
   @override
@@ -387,5 +371,6 @@ class ProfileEditState extends Equatable {
         intention,
         photos,
         videoPath,
+        profileScore,
       ];
 }

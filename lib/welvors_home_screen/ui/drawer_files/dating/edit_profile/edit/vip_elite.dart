@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 class NetworkingIntentSection extends StatelessWidget {
   const NetworkingIntentSection({super.key});
@@ -250,52 +251,45 @@ class _NetworkingEditorSheet extends StatefulWidget {
 class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
   late List<String> _selectedIntents;
   late TextEditingController _wordsController;
+  bool _isLoading = true;
 
-  final List<Map<String, dynamic>> _sections = [
-    {
-      'title': 'WHAT YOU WANT',
-      'items': [
-        'Mentorship',
-        'Find a mentor',
-        'Career advice',
-        'Co-founder',
-        'Hiring',
-        'Job referrals',
-        'Investor intros',
-        'Fundraising',
-      ],
-    },
-    {
-      'title': 'CIRCLES',
-      'items': [
-        'Founder circles',
-        'Startup ecosystem',
-        'Corporate leaders',
-        'Creators',
-        'Investors / VC',
-        'Consultants',
-        'Doctors',
-        'Legal & finance',
-      ],
-    },
-    {
-      'title': 'HOW YOU CONNECT',
-      'items': [
-        'Coffee chats',
-        'Curated dinners',
-        'Mastermind groups',
-        'Panels & talks',
-        'Conferences',
-        'Only if it clicks',
-      ],
-    },
-  ];
+  List<Map<String, dynamic>> _sections = [];
 
   @override
   void initState() {
     super.initState();
     _selectedIntents = List<String>.from(widget.initialIntents);
     _wordsController = TextEditingController(text: widget.initialWords);
+    _fetchNetworkingIntents();
+  }
+
+  Future<void> _fetchNetworkingIntents() async {
+    final data = await EditProfileApiService.getNetworkingIntents();
+    if (data != null && mounted) {
+      List<Map<String, dynamic>> parsedSections = [];
+      for (var section in data) {
+        final title = section['title']?.toString().toUpperCase() ?? '';
+        final options = section['options'] as List<dynamic>? ?? [];
+        List<String> items = [];
+        for (var opt in options) {
+          items.add(opt['label']?.toString() ?? '');
+        }
+        parsedSections.add({
+          'title': title,
+          'items': items,
+        });
+      }
+      setState(() {
+        _sections = parsedSections;
+        _isLoading = false;
+      });
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -416,7 +410,13 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
           ),
           centerTitle: true,
         ),
-        body: ListView(
+        body: _isLoading 
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFE43A6A),
+                ),
+              )
+            : ListView(
           padding: EdgeInsets.only(
             left: 20,
             right: 20,
