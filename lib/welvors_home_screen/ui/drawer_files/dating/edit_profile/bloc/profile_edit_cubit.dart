@@ -205,6 +205,20 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         }
       }
 
+      List<String> parsedNetworkingIntents = [];
+      String parsedNetworkingInYourWords = '';
+      if (data['networkingIntent'] != null && data['networkingIntent'] is List) {
+        for (var item in data['networkingIntent']) {
+          final opt = item['option']?.toString() ?? '';
+          if (opt.isNotEmpty) {
+            parsedNetworkingIntents.add(opt);
+          }
+          if (item['description'] != null && item['description'].toString().isNotEmpty) {
+            parsedNetworkingInYourWords = item['description'].toString();
+          }
+        }
+      }
+
       emit(
         state.copyWith(
           fullName: basic['fullName'] ?? '',
@@ -267,6 +281,8 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           photos: parsedPhotos,
           profileScore: data['profileScore'] ?? 0,
           videoPath: _extractVideoUrl(data['video'] ?? data['profile']?['video'] ?? data['videoUrl']),
+          networkingIntents: parsedNetworkingIntents,
+          networkingInYourWords: parsedNetworkingInYourWords,
         ),
       );
     }
