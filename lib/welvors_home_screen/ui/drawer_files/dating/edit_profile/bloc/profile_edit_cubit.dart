@@ -208,6 +208,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       List<String> parsedNetworkingIntents = [];
       String parsedNetworkingInYourWords = '';
       if (data['networkingIntent'] != null && data['networkingIntent'] is List) {
+        debugPrint('RAW NETWORKING INTENT FROM BACKEND: ${data['networkingIntent']}');
         for (var item in data['networkingIntent']) {
           final opt = item['option']?.toString() ?? '';
           if (opt.isNotEmpty) {
