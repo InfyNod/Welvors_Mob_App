@@ -850,7 +850,6 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Widget _buildBottomButton() {
     return Container(
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 32, top: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -861,25 +860,30 @@ class _FilterScreenState extends State<FilterScreen> {
           ),
         ],
       ),
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFE43A6A),
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 54),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          elevation: 0,
-        ),
-        child: const Text(
-          'Show 248 profiles',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+      child: SafeArea(
+        bottom: true,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16, top: 16),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE43A6A),
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 54),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            child: const Text(
+              'Show 248 profiles',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
       ),
