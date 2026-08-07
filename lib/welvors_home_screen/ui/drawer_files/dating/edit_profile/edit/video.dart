@@ -62,6 +62,13 @@ class _VideoSectionState extends State<VideoSection> {
               });
             }
           });
+
+    _thumbnailController!.addListener(() {
+      if (!mounted) return;
+      // Rebuild to update play/pause icon when video finishes naturally
+      // or to hide/show buttons during play
+      setState(() {});
+    });
   }
 
   @override
@@ -298,54 +305,69 @@ class _VideoSectionState extends State<VideoSection> {
             Positioned(
               top: 12,
               right: 12,
-              child: GestureDetector(
-                onTap: () {
-                  context.read<ProfileEditCubit>().updateVideoPath(null);
-                  _thumbnailController?.dispose();
-                  _thumbnailController = null;
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    shape: BoxShape.circle,
+              child: IgnorePointer(
+                ignoring: _thumbnailController != null && _thumbnailController!.value.isPlaying,
+                child: AnimatedOpacity(
+                  opacity: (_thumbnailController == null || !_thumbnailController!.value.isPlaying) ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: GestureDetector(
+                    onTap: () {
+                      context.read<ProfileEditCubit>().updateVideoPath(null);
+                      _thumbnailController?.dispose();
+                      _thumbnailController = null;
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close, color: Colors.white, size: 14),
+                    ),
                   ),
-                  child: const Icon(Icons.close, color: Colors.white, size: 14),
                 ),
               ),
             ),
-          // Play Button or Loading Indicator
-          Center(
+          // Play/Pause Overlay or Loading
+          Positioned.fill(
             child: _isUploading
-                ? const CircularProgressIndicator(color: Color(0xFFE43A6A))
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
                 : GestureDetector(
                     onTap: () {
-                if (_thumbnailController != null) {
-                  setState(() {
-                    if (_thumbnailController!.value.isPlaying) {
-                      _thumbnailController!.pause();
-                    } else {
-                      _thumbnailController!.play();
-                    }
-                  });
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  (_thumbnailController != null &&
-                          _thumbnailController!.value.isPlaying)
-                      ? Icons.pause
-                      : Icons.play_arrow,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-            ),
+                      if (_thumbnailController != null) {
+                        setState(() {
+                          if (_thumbnailController!.value.isPlaying) {
+                            _thumbnailController!.pause();
+                          } else {
+                            if (_thumbnailController!.value.position >= _thumbnailController!.value.duration) {
+                              _thumbnailController!.seekTo(Duration.zero);
+                            }
+                            _thumbnailController!.play();
+                          }
+                        });
+                      }
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      alignment: Alignment.center,
+                      child: AnimatedOpacity(
+                        opacity: (_thumbnailController == null || !_thumbnailController!.value.isPlaying) ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 300),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
           // Bottom Actions
           Positioned(
@@ -375,8 +397,13 @@ class _VideoSectionState extends State<VideoSection> {
                 ),
                 const SizedBox(height: 12),
                 if (!_isUploading)
-                  GestureDetector(
-                    onTap: () async {
+                  IgnorePointer(
+                    ignoring: _thumbnailController != null && _thumbnailController!.value.isPlaying,
+                    child: AnimatedOpacity(
+                      opacity: (_thumbnailController == null || !_thumbnailController!.value.isPlaying) ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 300),
+                      child: GestureDetector(
+                        onTap: () async {
                       final result = await Navigator.push<String>(
                         context,
                         MaterialPageRoute(
@@ -428,6 +455,8 @@ class _VideoSectionState extends State<VideoSection> {
                     ),
                   ),
                 ),
+              ),
+            ),
               ],
             ),
           ),
