@@ -183,13 +183,15 @@ class EditProfileApiService {
   }
 
   /// Deletes the user's video from the server
-  static Future<String?> deleteVideo() async {
+  static Future<String?> deleteVideo(String videoId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
+      final url = Uri.parse('$baseUrl/user/profile/video/$videoId');
+      debugPrint('Deleting video with URL: $url');
       final response = await http.delete(
-        Uri.parse('$baseUrl/user/profile/video'),
+        url,
         headers: {
           if (token != null) 'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -199,7 +201,7 @@ class EditProfileApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return null; // Success
       }
-      return 'Failed to delete video: ${response.statusCode}';
+      return 'Failed to delete video: ${response.statusCode} - ${response.body}';
     } catch (e) {
       debugPrint('Error deleting video: $e');
       return e.toString();

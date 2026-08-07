@@ -69,6 +69,7 @@ class ProfileEditState extends Equatable {
   
   final List<ProfilePhoto?> photos;
   final String? videoPath;
+  final String? videoId;
   
   final int profileScore;
 
@@ -129,6 +130,7 @@ class ProfileEditState extends Equatable {
     required this.intention,
     required this.photos,
     this.videoPath,
+    this.videoId,
     required this.profileScore,
   });
 
@@ -183,8 +185,9 @@ class ProfileEditState extends Equatable {
       familyDynamic: '',
       bio: '',
       intention: '',
-      photos: List.filled(6, null),
+      photos: const [null, null, null, null, null, null],
       videoPath: null,
+      videoId: null,
       profileScore: 0,
     );
   }
@@ -246,6 +249,7 @@ class ProfileEditState extends Equatable {
     String? intention,
     List<ProfilePhoto?>? photos,
     String? videoPath,
+    String? videoId,
     int? profileScore,
   }) {
     return ProfileEditState(
@@ -305,6 +309,7 @@ class ProfileEditState extends Equatable {
       intention: intention ?? this.intention,
       photos: photos ?? this.photos,
       videoPath: videoPath ?? this.videoPath,
+      videoId: videoId ?? this.videoId,
       profileScore: profileScore ?? this.profileScore,
     );
   }
@@ -371,6 +376,7 @@ class ProfileEditState extends Equatable {
         intention,
         photos,
         videoPath,
+        videoId,
         profileScore,
       ];
 }

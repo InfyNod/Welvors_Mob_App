@@ -282,6 +282,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           photos: parsedPhotos,
           profileScore: data['profileScore'] ?? 0,
           videoPath: _extractVideoUrl(data['video'] ?? data['profile']?['video'] ?? data['videoUrl']),
+          videoId: _extractVideoId(data['video'] ?? data['profile']?['video'] ?? data['videoUrl']),
           networkingIntents: parsedNetworkingIntents,
           networkingInYourWords: parsedNetworkingInYourWords,
         ),
@@ -296,6 +297,17 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     }
     final str = videoData.toString();
     return str.isNotEmpty ? str : null;
+  }
+
+  String? _extractVideoId(dynamic videoData) {
+    debugPrint('EXTRACTION VIDEO DATA: $videoData');
+    if (videoData == null) return null;
+    if (videoData is Map) {
+      final id = videoData['id']?.toString() ?? videoData['_id']?.toString();
+      debugPrint('EXTRACTED VIDEO ID: $id');
+      return id;
+    }
+    return null;
   }
 
   void updateFullName(String name) {
@@ -390,10 +402,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     if (error == null) {
       // try to extract new video URL from response if possible, else keep the local path to play it
       String? newVideoUrl;
+      String? newVideoId;
       if (response['data'] != null && response['data']['data'] != null) {
         newVideoUrl = response['data']['data']['video'] ?? response['data']['data']['videoUrl'];
+        newVideoId = response['data']['data']['id']?.toString() ?? response['data']['data']['_id']?.toString();
       }
-      emit(state.copyWith(videoPath: newVideoUrl ?? path));
+      emit(state.copyWith(videoPath: newVideoUrl ?? path, videoId: newVideoId));
       return null; // success
     } else {
       return error; // failed
@@ -401,9 +415,17 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   }
 
   Future<String?> deleteVideo() async {
-    final error = await EditProfileApiService.deleteVideo();
+    if (state.videoId == null) {
+      // If we don't have an ID, we can't call the API. Just remove locally.
+      updateVideoPath(null);
+      emit(state.copyWith(videoId: null)); // Also clear ID locally
+      return null;
+    }
+
+    final error = await EditProfileApiService.deleteVideo(state.videoId!);
     if (error == null) {
       updateVideoPath(null);
+      emit(state.copyWith(videoId: null)); // Also clear ID locally
       return null;
     }
     return error;
