@@ -67,8 +67,6 @@ class LocationSection extends StatelessWidget {
                   }),
                   _buildDivider(),
                   _buildCurrentLocationButton(context),
-                  _buildDivider(),
-                  _buildShowDistanceToggle(context, state.showDistance),
                 ],
               ),
             ),
@@ -236,36 +234,6 @@ class LocationSection extends StatelessWidget {
     );
   }
 
-  Widget _buildShowDistanceToggle(BuildContext context, bool showDistance) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4), // Reduced padding
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Expanded(
-            child: Text(
-              'Show distance to matches',
-              style: TextStyle(
-                color: Colors.black87,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Switch(
-            value: showDistance,
-            activeColor: Colors.white,
-            activeTrackColor: const Color(0xFFE43A6A),
-            inactiveThumbColor: Colors.grey.shade400,
-            inactiveTrackColor: Colors.grey.shade200,
-            onChanged: (val) {
-              context.read<ProfileEditCubit>().updateShowDistance(val);
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildDivider() {
     return Divider(

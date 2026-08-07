@@ -299,6 +299,9 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           motherTongue: parsedMotherTongue,
           interests: parsedInterests,
           prompts: parsedPrompts,
+          area: data['location']?['area'] ?? basic['area'] ?? '',
+          city: data['location']?['city'] ?? basic['city'] ?? '',
+          stateLocation: data['location']?['state'] ?? basic['state'] ?? '',
           zodiac: formatEnumFromBackend(basic['zodiac']),
           loveLanguage: formatEnumFromBackend(basic['loveLanguage']),
           communication: formatEnumFromBackend(basic['communicationStyle']),
@@ -670,10 +673,34 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   }
 
   // Location
-  void updateArea(String val) => emit(state.copyWith(area: val));
-  void updateCity(String val) => emit(state.copyWith(city: val));
-  void updateStateLocation(String val) =>
-      emit(state.copyWith(stateLocation: val));
+  void updateArea(String val) {
+    emit(state.copyWith(area: val));
+    _saveLocation();
+  }
+  
+  void updateCity(String val) {
+    emit(state.copyWith(city: val));
+    _saveLocation();
+  }
+  
+  void updateStateLocation(String val) {
+    emit(state.copyWith(stateLocation: val));
+    _saveLocation();
+  }
+  
+  void _saveLocation() async {
+    // If they manually edit, we might not have lat/lng, so we send 0.0 or keep what backend has if we could.
+    // For now we send 0.0, the most important part is saving the text fields.
+    await EditProfileApiService.updateLocation(
+      country: 'India',
+      state: state.stateLocation,
+      city: state.city,
+      area: state.area,
+      latitude: 0.0,
+      longitude: 0.0,
+    );
+  }
+
   void updateShowDistance(bool val) => emit(state.copyWith(showDistance: val));
 
   // VIP Networking Intent
