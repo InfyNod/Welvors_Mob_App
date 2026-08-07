@@ -11,7 +11,7 @@ class _FilterScreenState extends State<FilterScreen> {
   bool _isOnlineNow = false;
   bool _showWhoLikedMe = false;
   bool _membersOnly = false;
-  
+
   String _activeBrowsePool = 'Premium+ only';
   final Set<String> _selectedLookingFor = {'New friends'};
 
@@ -41,8 +41,8 @@ class _FilterScreenState extends State<FilterScreen> {
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
@@ -58,7 +58,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 child: const Icon(
                   Icons.arrow_back_ios_new,
                   color: Colors.black87,
-                  size: 14,
+                  size: 18,
                 ),
               ),
             ),
@@ -230,19 +230,34 @@ class _FilterScreenState extends State<FilterScreen> {
     required Color backgroundColor,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: borderColor,
+          width: backgroundColor == Colors.white ? 1 : 1.5,
+        ),
+        boxShadow: backgroundColor == Colors.white
+            ? []
+            : [
+                BoxShadow(
+                  color: borderColor.withOpacity(0.15),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontSize: 12,
+            style: TextStyle(
+              color: backgroundColor == Colors.white
+                  ? Colors.black87
+                  : borderColor,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -252,7 +267,7 @@ class _FilterScreenState extends State<FilterScreen> {
             style: TextStyle(
               color: subtitleColor,
               fontSize: 10,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
@@ -286,7 +301,9 @@ class _FilterScreenState extends State<FilterScreen> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE43A6A).withOpacity(0.04), // subtle pinkish glow
+                color: const Color(
+                  0xFFE43A6A,
+                ).withOpacity(0.04), // subtle pinkish glow
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
@@ -380,7 +397,9 @@ class _FilterScreenState extends State<FilterScreen> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF9C27B0).withOpacity(0.04), // subtle purple glow
+                color: const Color(
+                  0xFF9C27B0,
+                ).withOpacity(0.04), // subtle purple glow
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
@@ -401,7 +420,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.purple.shade50.withOpacity(0.5),
                         border: Border.all(color: Colors.purple.shade100),
@@ -418,7 +440,10 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [Color(0xFF4A4A4A), Color(0xFF1A1A1A)],
@@ -515,10 +540,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     'Exclusive companionship',
                     disabled: true,
                   ),
-                  _buildSelectableWrapChip(
-                    'Travel companion',
-                    disabled: true,
-                  ),
+                  _buildSelectableWrapChip('Travel companion', disabled: true),
                   _buildSelectableWrapChip('Networking', disabled: true),
                 ],
               ),
@@ -585,7 +607,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         color: Colors.black.withOpacity(0.06),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -596,16 +618,21 @@ class _FilterScreenState extends State<FilterScreen> {
                   return Expanded(
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: () => setState(() => _activeBrowsePool = options[index]),
+                      onTap: () =>
+                          setState(() => _activeBrowsePool = options[index]),
                       child: Center(
                         child: AnimatedDefaultTextStyle(
                           duration: const Duration(milliseconds: 250),
                           curve: Curves.easeOutCubic,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: isSelected ? const Color(0xFFE43A6A) : Colors.black87,
+                            color: isSelected
+                                ? const Color(0xFFE43A6A)
+                                : Colors.black87,
                             fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w600,
                           ),
                           child: Text(options[index]),
                         ),
@@ -626,7 +653,8 @@ class _FilterScreenState extends State<FilterScreen> {
     bool? isSelectedParam,
     bool disabled = false,
   }) {
-    final isSelected = isSelectedParam ?? (!disabled && _selectedLookingFor.contains(label));
+    final isSelected =
+        isSelectedParam ?? (!disabled && _selectedLookingFor.contains(label));
     return GestureDetector(
       onTap: disabled ? null : () => _toggleLookingFor(label),
       child: AnimatedContainer(
