@@ -16,7 +16,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       final data = response['data'];
       debugPrint('PROFILE KEYS: ${data.keys.toList()}');
       if (data.containsKey('answers')) {
-         debugPrint('PROFILE ANSWERS: ${data['answers']}');
+        debugPrint('PROFILE ANSWERS: ${data['answers']}');
       }
       debugPrint('PROFILE KEYS OF profile: ${data['profile']?.keys.toList()}');
       debugPrint('LIFESTYLE DATA: ${data['lifestyle']}');
@@ -26,7 +26,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       final basic = data['basicDetails'] ?? {};
       final bio = data['bio']?['bio'] ?? '';
 
-      String lookingFor = data['lookingFor']?['option']?.toString() ?? data['lookingFor']?['title']?.toString() ?? '';
+      String lookingFor =
+          data['lookingFor']?['option']?.toString() ??
+          data['lookingFor']?['title']?.toString() ??
+          '';
       if (lookingFor.startsWith('"') &&
           lookingFor.endsWith('"') &&
           lookingFor.length >= 2) {
@@ -181,11 +184,16 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       List<Map<String, String>> parsedPrompts = [];
       if (data['prompts'] != null && data['prompts'] is List) {
         for (var item in data['prompts']) {
-          String question = item['question']?.toString() ?? item['prompt']?.toString() ?? '';
+          String question =
+              item['question']?.toString() ?? item['prompt']?.toString() ?? '';
           String answer = item['answer']?.toString() ?? '';
-          String promptId = item['promptId']?.toString() ?? item['id']?.toString() ?? item['questionId']?.toString() ?? '';
+          String promptId =
+              item['promptId']?.toString() ??
+              item['id']?.toString() ??
+              item['questionId']?.toString() ??
+              '';
           String categoryId = item['categoryId']?.toString() ?? '';
-          
+
           if (item['prompt'] is Map) {
             final p = item['prompt'];
             question = p['question']?.toString() ?? question;
@@ -207,15 +215,65 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
 
       List<String> parsedNetworkingIntents = [];
       String parsedNetworkingInYourWords = '';
-      if (data['networkingIntent'] != null && data['networkingIntent'] is List) {
-        debugPrint('RAW NETWORKING INTENT FROM BACKEND: ${data['networkingIntent']}');
+      if (data['networkingIntent'] != null &&
+          data['networkingIntent'] is List) {
+        debugPrint(
+          'RAW NETWORKING INTENT FROM BACKEND: ${data['networkingIntent']}',
+        );
         for (var item in data['networkingIntent']) {
           final opt = item['option']?.toString() ?? '';
           if (opt.isNotEmpty) {
             parsedNetworkingIntents.add(opt);
           }
-          if (item['description'] != null && item['description'].toString().isNotEmpty) {
+          if (item['description'] != null &&
+              item['description'].toString().isNotEmpty) {
             parsedNetworkingInYourWords = item['description'].toString();
+          }
+        }
+      }
+
+      String formattedBrothers = '';
+      String formattedSisters = '';
+      Map<String, dynamic>? brothersData;
+      Map<String, dynamic>? sistersData;
+      
+      if (family['siblings'] != null) {
+        final sibs = family['siblings'];
+        if (sibs['brothers'] != null) {
+          brothersData = Map<String, dynamic>.from(sibs['brothers']);
+          final count = brothersData['count'] ?? 0;
+          if (count > 0) {
+            formattedBrothers = '$count';
+            final details = brothersData['details'] as List<dynamic>? ?? [];
+            for (int i = 0; i < details.length; i++) {
+              final d = details[i];
+              final ms = d['maritalStatus']?['value'] ?? '';
+              final occ = d['occupation']?['value'] ?? '';
+              formattedBrothers += '\n${i + 1}: $ms, $occ';
+              // Also map it correctly for patching
+              d['maritalId'] = d['maritalStatus']?['id'];
+              d['occupationId'] = d['occupation']?['id'];
+            }
+          } else {
+            formattedBrothers = 'BROTHERS · None';
+          }
+        }
+        if (sibs['sisters'] != null) {
+          sistersData = Map<String, dynamic>.from(sibs['sisters']);
+          final count = sistersData['count'] ?? 0;
+          if (count > 0) {
+            formattedSisters = '$count';
+            final details = sistersData['details'] as List<dynamic>? ?? [];
+            for (int i = 0; i < details.length; i++) {
+              final d = details[i];
+              final ms = d['maritalStatus']?['value'] ?? '';
+              final occ = d['occupation']?['value'] ?? '';
+              formattedSisters += '\n${i + 1}: $ms, $occ';
+              d['maritalId'] = d['maritalStatus']?['id'];
+              d['occupationId'] = d['occupation']?['id'];
+            }
+          } else {
+            formattedSisters = 'SISTERS · None';
           }
         }
       }
@@ -272,6 +330,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           familyIncome: family['familyIncome']?['title'] ?? '',
           father: family['fatherOccupation']?['value'] ?? '',
           mother: family['motherOccupation']?['value'] ?? '',
+          brothers: formattedBrothers,
+          sisters: formattedSisters,
+          brothersData: brothersData,
+          sistersData: sistersData,
 
           interestedIn: formatEnumFromBackend(profile['interestedIn']),
           sexualOrientation: formatEnumFromBackend(
@@ -281,8 +343,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           lifestyle: parsedLifestyle,
           photos: parsedPhotos,
           profileScore: data['profileScore'] ?? 0,
-          videoPath: _extractVideoUrl(data['video'] ?? data['profile']?['video'] ?? data['videoUrl']),
-          videoId: _extractVideoId(data['video'] ?? data['profile']?['video'] ?? data['videoUrl']),
+          videoPath: _extractVideoUrl(
+            data['video'] ?? data['profile']?['video'] ?? data['videoUrl'],
+          ),
+          videoId: _extractVideoId(
+            data['video'] ?? data['profile']?['video'] ?? data['videoUrl'],
+          ),
           networkingIntents: parsedNetworkingIntents,
           networkingInYourWords: parsedNetworkingInYourWords,
         ),
@@ -404,8 +470,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       String? newVideoUrl;
       String? newVideoId;
       if (response['data'] != null && response['data']['data'] != null) {
-        newVideoUrl = response['data']['data']['video'] ?? response['data']['data']['videoUrl'];
-        newVideoId = response['data']['data']['id']?.toString() ?? response['data']['data']['_id']?.toString();
+        newVideoUrl =
+            response['data']['data']['video'] ??
+            response['data']['data']['videoUrl'];
+        newVideoId =
+            response['data']['data']['id']?.toString() ??
+            response['data']['data']['_id']?.toString();
       }
       emit(state.copyWith(videoPath: newVideoUrl ?? path, videoId: newVideoId));
       return null; // success

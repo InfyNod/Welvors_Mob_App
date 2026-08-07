@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
@@ -13,14 +16,26 @@ class FamilySection extends StatefulWidget {
 }
 
 class _FamilySectionState extends State<FamilySection> {
-  List<String> _familyTypeOptions = [];
-  List<String> _fatherOccupationOptions = [];
-  List<String> _fatherOrganizationOptions = [];
-  List<String> _motherOptions = ['Employed', 'Business', 'Retired', 'Housewife'];
-  List<String> _organizationOptions = ['Government', 'Private', 'Self Employed', 'NGO'];
-  List<String> _familyHomeOptions = [];
-  List<String> _nativePlaceOptions = [];
-  List<String> _familyIncomeOptions = [];
+  List<Map<String, dynamic>> _familyTypeOptionsMap = [];
+  List<Map<String, dynamic>> _fatherOccupationOptionsMap = [];
+  List<Map<String, dynamic>> _fatherOrganizationOptionsMap = [];
+  List<Map<String, dynamic>> _motherOptionsMap = [];
+  List<Map<String, dynamic>> _organizationOptionsMap = [];
+  List<Map<String, dynamic>> _familyHomeOptionsMap = [];
+  List<Map<String, dynamic>> _nativePlaceOptionsMap = [];
+  List<Map<String, dynamic>> _familyIncomeOptionsMap = [];
+
+  int? _familyTypeId;
+  int? _fatherOccupationId;
+  int? _fatherOrganisationId;
+  int? _motherOccupationId;
+  int? _motherOrganisationId;
+  int? _familyHomeId;
+  int? _nativePlaceId;
+  int? _familyIncomeId;
+  
+  Map<String, dynamic> _brothersData = {'count': 0, 'details': []};
+  Map<String, dynamic> _sistersData = {'count': 0, 'details': []};
 
   bool _isLoading = true;
 
@@ -30,69 +45,100 @@ class _FamilySectionState extends State<FamilySection> {
     _fetchOptions();
   }
 
+  Future<List<Map<String, dynamic>>> _fetchOptionsWithId(String type) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final url = Uri.parse('https://dating-app-backend-plum.vercel.app/api/admin/family/options?type=$type');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        List dataList = decoded['data'] ?? (decoded is List ? decoded : []);
+        return dataList.map((e) {
+          if (e is Map) {
+            final id = e['id'] ?? e['_id'];
+            final value = e['value'] ?? e['name'];
+            return {'id': id, 'value': value?.toString() ?? ''};
+          }
+          return {'id': null, 'value': e.toString()};
+        }).toList();
+      }
+    } catch (e) {
+      debugPrint('Error fetching $type: $e');
+    }
+    return [];
+  }
+
+  Future<void> _patchFamilyData(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final response = await http.patch(
+        Uri.parse('https://dating-app-backend-plum.vercel.app/api/user/profile/family'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(data),
+      );
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        debugPrint('Failed to patch family data: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error patching family data: $e');
+    }
+  }
+
+  int? _getIdFor(String value, List<Map<String, dynamic>> mapList) {
+    for (var map in mapList) {
+      if (map['value'] == value) return map['id'];
+    }
+    return null;
+  }
+
   Future<void> _fetchOptions() async {
-    final familyTypeOptions = await EditProfileApiService.getFamilyOptions('familyType');
-    final fatherOcc = await EditProfileApiService.getFamilyOptions('fatherOccupation');
-    final fatherOrg = await EditProfileApiService.getFamilyOptions('fatherOrganisation');
-    final motherOcc = await EditProfileApiService.getFamilyOptions('motherOccupation');
-    final motherOrg = await EditProfileApiService.getFamilyOptions('motherOrganisation');
-    final familyHome = await EditProfileApiService.getFamilyOptions('familyHome');
-    final nativePlace = await EditProfileApiService.getFamilyOptions('nativePlace');
-    final familyIncome = await EditProfileApiService.getFamilyOptions('familyIncome');
+    final familyTypeOptions = await _fetchOptionsWithId('familyType');
+    final fatherOcc = await _fetchOptionsWithId('fatherOccupation');
+    final fatherOrg = await _fetchOptionsWithId('fatherOrganisation');
+    final motherOcc = await _fetchOptionsWithId('motherOccupation');
+    final motherOrg = await _fetchOptionsWithId('motherOrganisation');
+    final familyHome = await _fetchOptionsWithId('familyHome');
+    final nativePlace = await _fetchOptionsWithId('nativePlace');
+    final familyIncome = await _fetchOptionsWithId('familyIncome');
 
     if (mounted) {
       setState(() {
-        if (familyTypeOptions.isNotEmpty) {
-          _familyTypeOptions = familyTypeOptions;
-        }
-        if (fatherOcc.isNotEmpty) {
-          _fatherOccupationOptions = fatherOcc;
-        }
-        if (fatherOrg.isNotEmpty) {
-          _fatherOrganizationOptions = fatherOrg;
-        }
-        if (motherOcc.isNotEmpty) {
-          _motherOptions = motherOcc;
-        }
-        if (motherOrg.isNotEmpty) {
-          _organizationOptions = motherOrg;
-        }
-        if (familyHome.isNotEmpty) {
-          _familyHomeOptions = familyHome;
-        }
-        if (nativePlace.isNotEmpty) {
-          _nativePlaceOptions = nativePlace;
-        }
-        if (familyIncome.isNotEmpty) {
-          _familyIncomeOptions = familyIncome;
-        }
+        _familyTypeOptionsMap = familyTypeOptions;
+        _fatherOccupationOptionsMap = fatherOcc;
+        _fatherOrganizationOptionsMap = fatherOrg;
+        _motherOptionsMap = motherOcc;
+        _organizationOptionsMap = motherOrg;
+        _familyHomeOptionsMap = familyHome;
+        _nativePlaceOptionsMap = nativePlace;
+        _familyIncomeOptionsMap = familyIncome;
+        
+        final state = context.read<ProfileEditCubit>().state;
+        _familyTypeId = _getIdFor(state.familyType, _familyTypeOptionsMap);
+        _fatherOccupationId = _getIdFor(state.father, _fatherOccupationOptionsMap);
+        // Father organisation is normally embedded in state.father if formatted, but let's just rely on state if it's there.
+        // For simple fields:
+        _familyHomeId = _getIdFor(state.familyHome, _familyHomeOptionsMap);
+        _nativePlaceId = _getIdFor(state.nativePlace, _nativePlaceOptionsMap);
+        _familyIncomeId = _getIdFor(state.familyIncome, _familyIncomeOptionsMap);
+        
+        _brothersData = state.brothersData ?? {};
+        _sistersData = state.sistersData ?? {};
+
         _isLoading = false;
       });
     }
   }
- static const List<String> _cityOptions = [
-    'Pune',
-    'Mumbai',
-    'Nashik',
-    'Nagpur',
-    'Kolhapur',
-    'Bengaluru',
-    'Delhi',
-    'Hyderabad',
-    'Satara',
-    'Sangli',
-    'Other',
-  ];
-
-  static const List<String> _incomeOptions = [
-    'Prefer not to say',
-    'Up to ₹10 L / year',
-    '₹10–25 L / year',
-    '₹25–40 L / year',
-    '₹40–75 L / year',
-    '₹75 L–1 Cr / year',
-    '₹1 Cr+ / year',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -138,64 +184,154 @@ class _FamilySectionState extends State<FamilySection> {
                     context: context,
                     label: 'FAMILY TYPE',
                     value: state.familyType,
-                    options: _familyTypeOptions,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateFamilyType(val),
+                    options: _familyTypeOptionsMap.isNotEmpty ? _familyTypeOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    onSelect: (val) {
+                      context.read<ProfileEditCubit>().updateFamilyType(val);
+                      final id = _getIdFor(val, _familyTypeOptionsMap);
+                      if (id != null) _patchFamilyData({'familyTypeId': id});
+                    },
                   ),
                   _buildDivider(),
                   _buildParentItem(
                     context: context,
                     label: 'FATHER',
                     value: state.father,
-                    occupationOptions: _fatherOccupationOptions,
-                    organizationOptions: _fatherOrganizationOptions,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateFather(val),
+                    occupationOptions: _fatherOccupationOptionsMap.isNotEmpty ? _fatherOccupationOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    organizationOptions: _fatherOrganizationOptionsMap.isNotEmpty ? _fatherOrganizationOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    onSelect: (val) {
+                      context.read<ProfileEditCubit>().updateFather(val);
+                      if (val.contains('·')) {
+                        final parts = val.split('·').map((e) => e.trim()).toList();
+                        final occId = _getIdFor(parts[0], _fatherOccupationOptionsMap);
+                        final orgId = parts.length > 1 ? _getIdFor(parts[1], _fatherOrganizationOptionsMap) : null;
+                        if (occId != null) {
+                          final data = <String, dynamic>{'fatherOccupationId': occId};
+                          if (orgId != null) data['fatherOrganisationId'] = orgId;
+                          _patchFamilyData(data);
+                        }
+                      }
+                    },
                   ),
                   _buildDivider(),
                   _buildParentItem(
                     context: context,
                     label: 'MOTHER',
                     value: state.mother,
-                    occupationOptions: _motherOptions,
-                    organizationOptions: _organizationOptions,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateMother(val),
+                    occupationOptions: _motherOptionsMap.isNotEmpty ? _motherOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    organizationOptions: _organizationOptionsMap.isNotEmpty ? _organizationOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    onSelect: (val) {
+                      context.read<ProfileEditCubit>().updateMother(val);
+                      if (val.contains('·')) {
+                        final parts = val.split('·').map((e) => e.trim()).toList();
+                        final occId = _getIdFor(parts[0], _motherOptionsMap);
+                        final orgId = parts.length > 1 ? _getIdFor(parts[1], _organizationOptionsMap) : null;
+                        if (occId != null) {
+                          final data = <String, dynamic>{'motherOccupationId': occId};
+                          if (orgId != null) data['motherOrganisationId'] = orgId;
+                          _patchFamilyData(data);
+                        }
+                      }
+                    },
                   ),
                   _buildDivider(),
                   _buildSiblingItem(
                     context: context,
                     label: 'SISTERS',
                     value: state.sisters,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateSisters(val),
+                    onSelect: (val, data) {
+                      context.read<ProfileEditCubit>().updateSisters(val);
+                      if (data != null) {
+                        _sistersData = data;
+                        
+                        final List<Map<String, dynamic>> siblingsArray = [];
+                        final brothersDetails = _brothersData['details'] as List<dynamic>? ?? [];
+                        for (var d in brothersDetails) {
+                          siblingsArray.add({
+                            'siblingTypeId': 55, // 55 for Brother
+                            'occupationId': d['occupationId'],
+                            'maritalId': d['maritalId'],
+                          });
+                        }
+                        final sistersDetails = _sistersData['details'] as List<dynamic>? ?? [];
+                        for (var d in sistersDetails) {
+                          siblingsArray.add({
+                            'siblingTypeId': 56, // 56 for Sister
+                            'occupationId': d['occupationId'],
+                            'maritalId': d['maritalId'],
+                          });
+                        }
+
+                        _patchFamilyData({'siblings': siblingsArray});
+                      }
+                    },
                   ),
                   _buildDivider(),
                   _buildSiblingItem(
                     context: context,
                     label: 'BROTHERS',
                     value: state.brothers,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateBrothers(val),
+                    onSelect: (val, data) {
+                      context.read<ProfileEditCubit>().updateBrothers(val);
+                      if (data != null) {
+                        _brothersData = data;
+                        
+                        final List<Map<String, dynamic>> siblingsArray = [];
+                        final brothersDetails = _brothersData['details'] as List<dynamic>? ?? [];
+                        for (var d in brothersDetails) {
+                          siblingsArray.add({
+                            'siblingTypeId': 55, // 55 for Brother
+                            'occupationId': d['occupationId'],
+                            'maritalId': d['maritalId'],
+                          });
+                        }
+                        final sistersDetails = _sistersData['details'] as List<dynamic>? ?? [];
+                        for (var d in sistersDetails) {
+                          siblingsArray.add({
+                            'siblingTypeId': 56, // 56 for Sister
+                            'occupationId': d['occupationId'],
+                            'maritalId': d['maritalId'],
+                          });
+                        }
+
+                        _patchFamilyData({'siblings': siblingsArray});
+                      }
+                    },
                   ),
                   _buildDivider(),
                   _buildListItem(
                     context: context,
                     label: 'FAMILY HOME',
                     value: state.familyHome,
-                    options: _familyHomeOptions.isNotEmpty ? _familyHomeOptions : _cityOptions,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateFamilyHome(val),
+                    options: _familyHomeOptionsMap.isNotEmpty ? _familyHomeOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    onSelect: (val) {
+                      context.read<ProfileEditCubit>().updateFamilyHome(val);
+                      final id = _getIdFor(val, _familyHomeOptionsMap);
+                      if (id != null) _patchFamilyData({'familyHomeId': id});
+                    },
                   ),
                   _buildDivider(),
                   _buildListItem(
                     context: context,
                     label: 'NATIVE PLACE',
                     value: state.nativePlace,
-                    options: _nativePlaceOptions.isNotEmpty ? _nativePlaceOptions : _cityOptions,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateNativePlace(val),
+                    options: _nativePlaceOptionsMap.isNotEmpty ? _nativePlaceOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    onSelect: (val) {
+                      context.read<ProfileEditCubit>().updateNativePlace(val);
+                      final id = _getIdFor(val, _nativePlaceOptionsMap);
+                      if (id != null) _patchFamilyData({'nativePlaceId': id});
+                    },
                   ),
                   _buildDivider(),
                   _buildListItem(
                     context: context,
                     label: 'FAMILY INCOME',
                     value: state.familyIncome,
-                    options: _familyIncomeOptions.isNotEmpty ? _familyIncomeOptions : _incomeOptions,
-                    onSelect: (val) => context.read<ProfileEditCubit>().updateFamilyIncome(val),
+                    options: _familyIncomeOptionsMap.isNotEmpty ? _familyIncomeOptionsMap.map((e) => e['value'].toString()).toList() : [],
+                    onSelect: (val) {
+                      context.read<ProfileEditCubit>().updateFamilyIncome(val);
+                      final id = _getIdFor(val, _familyIncomeOptionsMap);
+                      if (id != null) _patchFamilyData({'familyIncomeId': id});
+                    },
                   ),
 
                 ],
@@ -349,11 +485,11 @@ class _FamilySectionState extends State<FamilySection> {
     required BuildContext context,
     required String label,
     required String value,
-    required Function(String) onSelect,
+    required Function(String, Map<String, dynamic>?) onSelect,
   }) {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push<String>(
+        final result = await Navigator.push<Map<String, dynamic>>(
           context,
           MaterialPageRoute(
             builder: (context) => SiblingFlowScreen(
@@ -363,7 +499,7 @@ class _FamilySectionState extends State<FamilySection> {
           ),
         );
         if (result != null) {
-          onSelect(result);
+          onSelect(result['formatted'] as String, result['data'] as Map<String, dynamic>);
         }
       },
       child: Padding(
@@ -596,7 +732,10 @@ class _SiblingFlowScreenState extends State<SiblingFlowScreen> {
 
   void _startDetailsFlow() async {
     if (_siblingCount == null || _siblingCount == 0) {
-      Navigator.pop(context, '${widget.title} · None');
+      Navigator.pop(context, {
+        'formatted': '${widget.title} · None',
+        'data': {'count': 0, 'details': []},
+      });
       return;
     }
 
@@ -622,12 +761,23 @@ class _SiblingFlowScreenState extends State<SiblingFlowScreen> {
 
     // Once all siblings are processed, compile the result and pop
     String formattedResult = '$_siblingCount';
+    List<Map<String, dynamic>> detailsList = [];
     for (int i = 0; i < _siblingCount!; i++) {
       formattedResult += '\n${i + 1}: ${_siblingDetails[i].maritalStatus}, ${_siblingDetails[i].occupation}';
+      detailsList.add({
+        'occupationId': _siblingDetails[i].occupationId,
+        'maritalId': _siblingDetails[i].maritalId,
+      });
     }
 
     if (mounted) {
-      Navigator.pop(context, formattedResult);
+      Navigator.pop(context, {
+        'formatted': formattedResult,
+        'data': {
+          'count': _siblingCount,
+          'details': detailsList,
+        },
+      });
     }
   }
 }
@@ -635,6 +785,8 @@ class _SiblingFlowScreenState extends State<SiblingFlowScreen> {
 class SiblingDetail {
   String maritalStatus = '';
   String occupation = '';
+  int? maritalId;
+  int? occupationId;
 }
 
 class SiblingDetailScreen extends StatefulWidget {
@@ -657,14 +809,73 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
   int _currentStep = 1; // 1: Marital Status, 2: Occupation
   String _maritalStatus = '';
   
-  final List<String> _maritalOptions = ['Unmarried', 'Married', 'Engaged'];
-  final List<String> _occupationOptions = [
-    'Studying',
-    'Working',
-    'Business',
-    'Homemaker',
-    'Not working'
-  ];
+  List<Map<String, dynamic>> _maritalOptionsMap = [];
+  List<Map<String, dynamic>> _occupationOptionsMap = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchOptions();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchOptionsWithId(String type) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final url = Uri.parse('https://dating-app-backend-plum.vercel.app/api/admin/family/options?type=$type');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        List dataList = decoded['data'] ?? (decoded is List ? decoded : []);
+        return dataList.map((e) {
+          if (e is Map) {
+            final id = e['id'] ?? e['_id'];
+            final value = e['value'] ?? e['name'];
+            return {'id': id, 'value': value?.toString() ?? ''};
+          }
+          return {'id': null, 'value': e.toString()};
+        }).toList();
+      }
+    } catch (e) {
+      debugPrint('Error fetching $type: $e');
+    }
+    return [];
+  }
+
+  Future<void> _fetchOptions() async {
+    try {
+      final marital = await _fetchOptionsWithId('siblingMarital');
+      final occupation = await _fetchOptionsWithId('siblingOccupation');
+      
+      if (mounted) {
+        setState(() {
+          _maritalOptionsMap = marital;
+          _occupationOptionsMap = occupation;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  int? _getIdFor(String value, List<Map<String, dynamic>> mapList) {
+    for (var map in mapList) {
+      if (map['value'] == value) return map['id'];
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -746,11 +957,13 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
                     ],
                     const SizedBox(height: 40),
                     Expanded(
-                      child: ListView.separated(
-                        itemCount: _currentStep == 1 ? _maritalOptions.length : _occupationOptions.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 16),
-                        itemBuilder: (context, index) {
-                          final text = _currentStep == 1 ? _maritalOptions[index] : _occupationOptions[index];
+                      child: _isLoading 
+                          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+                          : ListView.separated(
+                              itemCount: _currentStep == 1 ? _maritalOptionsMap.length : _occupationOptionsMap.length,
+                              separatorBuilder: (context, index) => const SizedBox(height: 16),
+                              itemBuilder: (context, index) {
+                                final text = _currentStep == 1 ? _maritalOptionsMap[index]['value'].toString() : _occupationOptionsMap[index]['value'].toString();
                           return InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
@@ -763,7 +976,9 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
                                 // Complete
                                 final detail = SiblingDetail()
                                   ..maritalStatus = _maritalStatus
-                                  ..occupation = text;
+                                  ..occupation = text
+                                  ..maritalId = _getIdFor(_maritalStatus, _maritalOptionsMap)
+                                  ..occupationId = _getIdFor(text, _occupationOptionsMap);
                                 Navigator.pop(context, detail);
                               }
                             },

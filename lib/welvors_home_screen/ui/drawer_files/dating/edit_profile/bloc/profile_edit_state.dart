@@ -18,22 +18,22 @@ class ProfileEditState extends Equatable {
   final String communication;
   final String interestedIn;
   final String sexualOrientation;
-  
+
   final List<Map<String, dynamic>> lifestyle;
   final List<String> pets;
   final List<String> interests;
   final List<Map<String, String>> prompts;
-  
+
   // Location
   final String area;
   final String city;
   final String stateLocation;
   final bool showDistance;
-  
+
   // VIP Networking Intent
   final List<String> networkingIntents;
   final String networkingInYourWords;
-  
+
   // Education & Career
   final String college;
   final String highestEducation;
@@ -52,25 +52,27 @@ class ProfileEditState extends Equatable {
   final int? ambitionId;
   final String bigDreams;
   final String workStyle;
-  
+
   // Family
   final String familyType;
   final String father;
   final String mother;
   final String sisters;
   final String brothers;
+  final Map<String, dynamic>? brothersData;
+  final Map<String, dynamic>? sistersData;
   final String familyHome;
   final String nativePlace;
   final String familyIncome;
   final String familyDynamic;
-  
+
   final String bio;
   final String intention;
-  
+
   final List<ProfilePhoto?> photos;
   final String? videoPath;
   final String? videoId;
-  
+
   final int profileScore;
 
   const ProfileEditState({
@@ -122,6 +124,8 @@ class ProfileEditState extends Equatable {
     required this.mother,
     required this.sisters,
     required this.brothers,
+    this.brothersData,
+    this.sistersData,
     required this.familyHome,
     required this.nativePlace,
     required this.familyIncome,
@@ -179,6 +183,8 @@ class ProfileEditState extends Equatable {
       mother: '',
       sisters: '',
       brothers: '',
+      brothersData: null,
+      sistersData: null,
       familyHome: '',
       nativePlace: '',
       familyIncome: '',
@@ -241,6 +247,8 @@ class ProfileEditState extends Equatable {
     String? mother,
     String? sisters,
     String? brothers,
+    Map<String, dynamic>? brothersData,
+    Map<String, dynamic>? sistersData,
     String? familyHome,
     String? nativePlace,
     String? familyIncome,
@@ -278,7 +286,8 @@ class ProfileEditState extends Equatable {
       stateLocation: stateLocation ?? this.stateLocation,
       showDistance: showDistance ?? this.showDistance,
       networkingIntents: networkingIntents ?? this.networkingIntents,
-      networkingInYourWords: networkingInYourWords ?? this.networkingInYourWords,
+      networkingInYourWords:
+      networkingInYourWords ?? this.networkingInYourWords,
       college: college ?? this.college,
       highestEducation: highestEducation ?? this.highestEducation,
       degreeCourse: degreeCourse ?? this.degreeCourse,
@@ -301,6 +310,8 @@ class ProfileEditState extends Equatable {
       mother: mother ?? this.mother,
       sisters: sisters ?? this.sisters,
       brothers: brothers ?? this.brothers,
+      brothersData: brothersData ?? this.brothersData,
+      sistersData: sistersData ?? this.sistersData,
       familyHome: familyHome ?? this.familyHome,
       nativePlace: nativePlace ?? this.nativePlace,
       familyIncome: familyIncome ?? this.familyIncome,
@@ -320,63 +331,65 @@ class ProfileEditState extends Equatable {
 
   @override
   List<Object?> get props => [
-        fullName,
-        email,
-        dob,
-        height,
-        gender,
-        genderIdentity,
-        religionCaste,
-        religionId,
-        communityId,
-        languageIds,
-        motherTongue,
-        zodiac,
-        loveLanguage,
-        communication,
-        interestedIn,
-        sexualOrientation,
-        lifestyle,
-        pets,
-        interests,
-        prompts,
-        area,
-        city,
-        stateLocation,
-        showDistance,
-        networkingIntents,
-        networkingInYourWords,
-        college,
-        highestEducation,
-        degreeCourse,
-        graduationYear,
-        profession,
-        professionId,
-        company,
-        experience,
-        experienceId,
-        employmentType,
-        employmentTypeId,
-        salaryRange,
-        salaryRangeId,
-        ambitionLevel,
-        ambitionId,
-        bigDreams,
-        workStyle,
-        familyType,
-        father,
-        mother,
-        sisters,
-        brothers,
-        familyHome,
-        nativePlace,
-        familyIncome,
-        familyDynamic,
-        bio,
-        intention,
-        photos,
-        videoPath,
-        videoId,
-        profileScore,
-      ];
+    fullName,
+    email,
+    dob,
+    height,
+    gender,
+    genderIdentity,
+    religionCaste,
+    religionId,
+    communityId,
+    languageIds,
+    motherTongue,
+    zodiac,
+    loveLanguage,
+    communication,
+    interestedIn,
+    sexualOrientation,
+    lifestyle,
+    pets,
+    interests,
+    prompts,
+    area,
+    city,
+    stateLocation,
+    showDistance,
+    networkingIntents,
+    networkingInYourWords,
+    college,
+    highestEducation,
+    degreeCourse,
+    graduationYear,
+    profession,
+    professionId,
+    company,
+    experience,
+    experienceId,
+    employmentType,
+    employmentTypeId,
+    salaryRange,
+    salaryRangeId,
+    ambitionLevel,
+    ambitionId,
+    bigDreams,
+    workStyle,
+    familyType,
+    father,
+    mother,
+    sisters,
+    brothers,
+    brothersData,
+    sistersData,
+    familyHome,
+    nativePlace,
+    familyIncome,
+    familyDynamic,
+    bio,
+    intention,
+    photos,
+    videoPath,
+    videoId,
+    profileScore,
+  ];
 }

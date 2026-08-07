@@ -205,14 +205,6 @@ class NetworkingIntentSection extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(width: 6),
-          GestureDetector(
-            onTap: () {
-              final newList = List<String>.from(currentIntents)..remove(title);
-              context.read<ProfileEditCubit>().updateNetworkingIntents(newList);
-            },
-            child: const Icon(Icons.close, color: Color(0xFFE43A6A), size: 14),
-          ),
         ],
       ),
     );
@@ -332,62 +324,65 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
     return false;
   }
 
+  Future<bool> _saveChangesToBackend() async {
+    // Map selected labels back to option IDs and find questionKey
+    List<String> selectedIds = [];
+    String questionKey = 'networkingIntent'; // fallback
+    
+    for (var section in _rawSectionsData) {
+      if (section['key'] != null) {
+         questionKey = section['key'].toString();
+      } else if (section['questionKey'] != null) {
+         questionKey = section['questionKey'].toString();
+      }
+      final options = section['options'] as List<dynamic>? ?? [];
+      for (var opt in options) {
+        final label = opt['label']?.toString() ?? '';
+        final id = opt['id']?.toString() ?? '';
+        if (_selectedIntents.contains(label) && id.isNotEmpty) {
+          selectedIds.add(id);
+        }
+      }
+    }
+
+    debugPrint('🚀 Sending Networking Intent: questionKey=$questionKey, optionIds=$selectedIds, desc=${_wordsController.text.trim()}');
+
+    // Call the PATCH API
+    final success = await EditProfileApiService.updateAnswers(
+      questionKey: questionKey,
+      optionIds: selectedIds,
+      description: _wordsController.text.trim(),
+    );
+
+    if (success && mounted) {
+      context.read<ProfileEditCubit>().updateNetworkingIntents(
+        _selectedIntents,
+      );
+      context.read<ProfileEditCubit>().updateNetworkingInYourWords(
+        _wordsController.text.trim(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Changes saved successfully!'),
+          backgroundColor: Color(0xFFE43A6A),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return true;
+    }
+    return false;
+  }
+
   Future<bool> _onWillPop() async {
     if (!_hasChanges()) return true;
 
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
-      if (mounted) {
-        // Map selected labels back to option IDs and find questionKey
-        List<String> selectedIds = [];
-        String questionKey = 'favorites'; // fallback
-        
-        for (var section in _rawSectionsData) {
-          if (section['key'] != null) {
-             questionKey = section['key'].toString();
-          } else if (section['questionKey'] != null) {
-             questionKey = section['questionKey'].toString();
-          }
-          final options = section['options'] as List<dynamic>? ?? [];
-          for (var opt in options) {
-            final label = opt['label']?.toString() ?? '';
-            final id = opt['id']?.toString() ?? '';
-            if (_selectedIntents.contains(label) && id.isNotEmpty) {
-              selectedIds.add(id);
-            }
-          }
-        }
-
-        debugPrint('🚀 Sending Networking Intent: questionKey=$questionKey, optionIds=$selectedIds, desc=${_wordsController.text.trim()}');
-
-        // Call the PATCH API
-        await EditProfileApiService.updateAnswers(
-          questionKey: questionKey,
-          optionIds: selectedIds,
-          description: _wordsController.text.trim(),
-        );
-
-        if (!mounted) return false;
-
-        context.read<ProfileEditCubit>().updateNetworkingIntents(
-          _selectedIntents,
-        );
-        context.read<ProfileEditCubit>().updateNetworkingInYourWords(
-          _wordsController.text.trim(),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Changes saved successfully!'),
-            backgroundColor: Color(0xFFE43A6A),
-            behavior: SnackBarBehavior.floating,
-            duration: Duration(seconds: 2),
-          ),
-        );
-        Navigator.pop(context);
-      }
-      return false; // Already handled pop
+      final success = await _saveChangesToBackend();
+      return success; // Allow pop if saved successfully
     }
-    return result == false; // Pop without saving
+    return result == false; // Pop without saving if user clicked discard
   }
 
   @override
@@ -573,16 +568,14 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  context.read<ProfileEditCubit>().updateNetworkingIntents(
-                    _selectedIntents,
-                  );
-                  context.read<ProfileEditCubit>().updateNetworkingInYourWords(
-                    _wordsController.text.trim(),
-                  );
-
-
-                  Navigator.pop(context);
+                onPressed: () async {
+                  setState(() => _isLoading = true);
+                  final success = await _saveChangesToBackend();
+                  if (success && mounted) {
+                    Navigator.pop(context);
+                  } else if (mounted) {
+                    setState(() => _isLoading = false);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE43A6A),

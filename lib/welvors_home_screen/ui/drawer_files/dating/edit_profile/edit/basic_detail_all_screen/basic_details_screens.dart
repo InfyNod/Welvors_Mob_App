@@ -279,7 +279,9 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Color(0xFFE43A6A)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE43A6A),
+                          ),
                         ),
                       ),
                     ),
@@ -474,13 +476,18 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                                             : Colors.black87,
                                       ),
                                     ),
-                                    if (subtitle != null && subtitle.isNotEmpty) ...[
+                                    if (subtitle != null &&
+                                        subtitle.isNotEmpty) ...[
                                       const SizedBox(height: 4),
                                       Text(
                                         subtitle,
                                         style: TextStyle(
                                           fontSize: 13,
-                                          color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.8) : Colors.black54,
+                                          color: isSelected
+                                              ? const Color(
+                                                  0xFFE43A6A,
+                                                ).withOpacity(0.8)
+                                              : Colors.black54,
                                         ),
                                       ),
                                     ],
@@ -906,12 +913,12 @@ class EditReligionCasteScreen extends StatefulWidget {
 class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
   late String _selectedReligion;
   late String _selectedCaste;
-  
+
   bool _isLoading = true;
   List<dynamic> _apiReligions = [];
   List<String> _religions = [];
   Map<String, List<String>> _castes = {};
-  
+
   int? _selectedReligionId;
   int? _selectedCasteId;
 
@@ -928,14 +935,14 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
     }
     _loadReligions();
   }
-  
+
   Future<void> _loadReligions() async {
     final response = await EditProfileApiService.getReligions();
     if (response['error'] == null && response['data'] != null) {
       _apiReligions = response['data'] as List<dynamic>;
       _religions = [];
       _castes = {};
-      
+
       for (var r in _apiReligions) {
         String rName = r['name'] ?? '';
         if (rName.isNotEmpty) {
@@ -946,13 +953,13 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
           if (r['communities'] != null && r['communities'] is List) {
             List<String> cList = [];
             for (var c in r['communities']) {
-               String cName = c['name'] ?? '';
-               if (cName.isNotEmpty) {
-                 cList.add(cName);
-                 if (cName == _selectedCaste && r['name'] == _selectedReligion) {
-                   _selectedCasteId = c['id'];
-                 }
-               }
+              String cName = c['name'] ?? '';
+              if (cName.isNotEmpty) {
+                cList.add(cName);
+                if (cName == _selectedCaste && r['name'] == _selectedReligion) {
+                  _selectedCasteId = c['id'];
+                }
+              }
             }
             if (cList.isNotEmpty) {
               _castes[rName] = cList;
@@ -1009,225 +1016,254 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
               : Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'What\'s your religion?',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Add your religion and caste.',
-                  style: TextStyle(fontSize: 14, color: Colors.black54),
-                ),
-                const SizedBox(height: 32),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: _religions.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final religion = _religions[index];
-                      final isSelectedReligion = _selectedReligion == religion;
-                      final hasCastes = _castes.containsKey(religion);
-
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: isSelectedReligion
-                              ? const Color(0xFFE43A6A).withOpacity(0.03)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelectedReligion
-                                ? const Color(0xFFE43A6A)
-                                : Colors.grey.shade200,
-                            width: isSelectedReligion ? 2 : 1,
-                          ),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'What\'s your religion?',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        child: AnimatedSize(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            children: [
-                              // Religion Row
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  setState(() {
-                                    _selectedReligion = religion;
-                                    _selectedReligionId = _apiReligions.firstWhere(
-                                      (e) => e['name'] == religion,
-                                      orElse: () => {},
-                                    )['id'];
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Add your religion and caste.',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 32),
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: _religions.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final religion = _religions[index];
+                            final isSelectedReligion =
+                                _selectedReligion == religion;
+                            final hasCastes = _castes.containsKey(religion);
 
-                                    if (!hasCastes) {
-                                      _selectedCaste = '';
-                                      _selectedCasteId = null;
-                                    } else if (!(_castes[religion]?.contains(_selectedCaste) ?? false)) {
-                                      _selectedCaste = '';
-                                      _selectedCasteId = null;
-                                    }
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 16,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          religion,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: isSelectedReligion
-                                                ? FontWeight.bold
-                                                : FontWeight.w500,
-                                            color: isSelectedReligion
-                                                ? const Color(0xFFE43A6A)
-                                                : Colors.black87,
-                                          ),
-                                        ),
-                                      ),
-                                      if (isSelectedReligion)
-                                        const Icon(
-                                          Icons.check_circle,
-                                          color: Color(0xFFE43A6A),
-                                          size: 20,
-                                        ),
-                                    ],
-                                  ),
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: isSelectedReligion
+                                    ? const Color(0xFFE43A6A).withOpacity(0.03)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: isSelectedReligion
+                                      ? const Color(0xFFE43A6A)
+                                      : Colors.grey.shade200,
+                                  width: isSelectedReligion ? 2 : 1,
                                 ),
                               ),
+                              child: AnimatedSize(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                alignment: Alignment.topCenter,
+                                child: Column(
+                                  children: [
+                                    // Religion Row
+                                    GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedReligion = religion;
+                                          _selectedReligionId = _apiReligions
+                                              .firstWhere(
+                                                (e) => e['name'] == religion,
+                                                orElse: () => {},
+                                              )['id'];
 
-                              // Accordion / Expanded Caste List
-                              if (isSelectedReligion && hasCastes) ...[
-                                Divider(
-                                  height: 1,
-                                  color: const Color(
-                                    0xFFE43A6A,
-                                  ).withOpacity(0.2),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Select caste · $religion',
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black54,
+                                          if (!hasCastes) {
+                                            _selectedCaste = '';
+                                            _selectedCasteId = null;
+                                          } else if (!(_castes[religion]
+                                                  ?.contains(_selectedCaste) ??
+                                              false)) {
+                                            _selectedCaste = '';
+                                            _selectedCasteId = null;
+                                          }
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 16,
                                         ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: _castes[religion]!.map((
-                                          caste,
-                                        ) {
-                                          final isSelectedCaste =
-                                              _selectedCaste == caste;
-                                          return GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _selectedCaste = caste;
-                                                var rData = _apiReligions.firstWhere((e) => e['name'] == _selectedReligion, orElse: () => {});
-                                                if (rData['communities'] != null) {
-                                                  _selectedCasteId = (rData['communities'] as List).firstWhere((c) => c['name'] == caste, orElse: () => {})['id'];
-                                                }
-                                              });
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                    vertical: 10,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: isSelectedCaste
-                                                    ? const Color(0xFFE43A6A)
-                                                    : Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(24),
-                                                border: Border.all(
-                                                  color: isSelectedCaste
-                                                      ? const Color(0xFFE43A6A)
-                                                      : Colors.grey.shade300,
-                                                  width: 1,
-                                                ),
-                                              ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
                                               child: Text(
-                                                caste,
+                                                religion,
                                                 style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: isSelectedCaste
+                                                  fontSize: 15,
+                                                  fontWeight: isSelectedReligion
                                                       ? FontWeight.bold
                                                       : FontWeight.w500,
-                                                  color: isSelectedCaste
-                                                      ? Colors.white
+                                                  color: isSelectedReligion
+                                                      ? const Color(0xFFE43A6A)
                                                       : Colors.black87,
                                                 ),
                                               ),
                                             ),
-                                          );
-                                        }).toList(),
+                                            if (isSelectedReligion)
+                                              const Icon(
+                                                Icons.check_circle,
+                                                color: Color(0xFFE43A6A),
+                                                size: 20,
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Accordion / Expanded Caste List
+                                    if (isSelectedReligion && hasCastes) ...[
+                                      Divider(
+                                        height: 1,
+                                        color: const Color(
+                                          0xFFE43A6A,
+                                        ).withOpacity(0.2),
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Select caste · $religion',
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Wrap(
+                                              spacing: 8,
+                                              runSpacing: 8,
+                                              children: _castes[religion]!.map((
+                                                caste,
+                                              ) {
+                                                final isSelectedCaste =
+                                                    _selectedCaste == caste;
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _selectedCaste = caste;
+                                                      var rData = _apiReligions
+                                                          .firstWhere(
+                                                            (e) =>
+                                                                e['name'] ==
+                                                                _selectedReligion,
+                                                            orElse: () => {},
+                                                          );
+                                                      if (rData['communities'] !=
+                                                          null) {
+                                                        _selectedCasteId =
+                                                            (rData['communities']
+                                                                    as List)
+                                                                .firstWhere(
+                                                                  (c) =>
+                                                                      c['name'] ==
+                                                                      caste,
+                                                                  orElse: () =>
+                                                                      {},
+                                                                )['id'];
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 16,
+                                                          vertical: 10,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: isSelectedCaste
+                                                          ? const Color(
+                                                              0xFFE43A6A,
+                                                            )
+                                                          : Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            24,
+                                                          ),
+                                                      border: Border.all(
+                                                        color: isSelectedCaste
+                                                            ? const Color(
+                                                                0xFFE43A6A,
+                                                              )
+                                                            : Colors
+                                                                  .grey
+                                                                  .shade300,
+                                                        width: 1,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      caste,
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            isSelectedCaste
+                                                            ? FontWeight.bold
+                                                            : FontWeight.w500,
+                                                        color: isSelectedCaste
+                                                            ? Colors.white
+                                                            : Colors.black87,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context, {
+                              'formatted': _currentFormattedValue,
+                              'religionId': _selectedReligionId,
+                              'communityId': _selectedCasteId,
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE43A6A),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Save Changes',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context, {
-                        'formatted': _currentFormattedValue,
-                        'religionId': _selectedReligionId,
-                        'communityId': _selectedCasteId,
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE43A6A),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Save Changes',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
@@ -1236,8 +1272,9 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
 
 class EditLanguageScreen extends StatefulWidget {
   final List<int> initialLanguageIds;
-  
-  const EditLanguageScreen({Key? key, required this.initialLanguageIds}) : super(key: key);
+
+  const EditLanguageScreen({Key? key, required this.initialLanguageIds})
+    : super(key: key);
 
   @override
   State<EditLanguageScreen> createState() => _EditLanguageScreenState();
@@ -1252,7 +1289,9 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
   @override
   void initState() {
     super.initState();
-    selectedLanguageId = widget.initialLanguageIds.isNotEmpty ? widget.initialLanguageIds.first : null;
+    selectedLanguageId = widget.initialLanguageIds.isNotEmpty
+        ? widget.initialLanguageIds.first
+        : null;
     originalLanguageId = selectedLanguageId;
     _fetchLanguages();
   }
@@ -1276,20 +1315,24 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
       if (mounted) {
         _saveAndPop();
       }
-      return false; 
+      return false;
     }
-    return result == false; 
+    return result == false;
   }
 
   void _saveAndPop() {
     final selectedLang = languages.firstWhere(
-      (l) => l['id'] == selectedLanguageId, 
-      orElse: () => null
+      (l) => l['id'] == selectedLanguageId,
+      orElse: () => null,
     );
-        
+
     Navigator.pop(context, {
-      'languageIds': selectedLanguageId != null ? [selectedLanguageId!] : <int>[],
-      'motherTongue': selectedLang != null ? selectedLang['name'].toString() : '',
+      'languageIds': selectedLanguageId != null
+          ? [selectedLanguageId!]
+          : <int>[],
+      'motherTongue': selectedLang != null
+          ? selectedLang['name'].toString()
+          : '',
     });
   }
 
@@ -1305,7 +1348,9 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
         ),
         body: SafeArea(
           child: isLoading
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                )
               : Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
@@ -1328,11 +1373,12 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
                       Expanded(
                         child: ListView.separated(
                           itemCount: languages.length,
-                          separatorBuilder: (context, index) => const SizedBox(height: 12),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             final lang = languages[index];
                             final isSelected = selectedLanguageId == lang['id'];
-                            
+
                             return GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -1346,7 +1392,9 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? const Color(0xFFE43A6A).withOpacity(0.05)
+                                      ? const Color(
+                                          0xFFE43A6A,
+                                        ).withOpacity(0.05)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
@@ -1357,7 +1405,8 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
                                   ),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Text(
@@ -1417,4 +1466,3 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
     );
   }
 }
-
