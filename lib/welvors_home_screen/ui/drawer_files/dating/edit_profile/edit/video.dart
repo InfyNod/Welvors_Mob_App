@@ -18,6 +18,8 @@ class _VideoSectionState extends State<VideoSection> {
   VideoPlayerController? _thumbnailController;
   bool _isUploading = false;
   bool _hasError = false;
+  bool _showControls = true;
+  Timer? _controlsTimer;
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _VideoSectionState extends State<VideoSection> {
 
   @override
   void dispose() {
+    _controlsTimer?.cancel();
     _thumbnailController?.dispose();
     super.dispose();
   }
@@ -65,9 +68,16 @@ class _VideoSectionState extends State<VideoSection> {
 
     _thumbnailController!.addListener(() {
       if (!mounted) return;
-      // Rebuild to update play/pause icon when video finishes naturally
-      // or to hide/show buttons during play
-      setState(() {});
+      
+      // If the video stops playing (either paused manually or reached the end naturally),
+      // we must show the controls.
+      if (_thumbnailController!.value.isInitialized && 
+          !_thumbnailController!.value.isPlaying && 
+          !_showControls) {
+        setState(() {
+          _showControls = true;
+        });
+      }
     });
   }
 
@@ -306,9 +316,9 @@ class _VideoSectionState extends State<VideoSection> {
               top: 12,
               right: 12,
               child: IgnorePointer(
-                ignoring: _thumbnailController != null && _thumbnailController!.value.isPlaying,
+                ignoring: !_showControls,
                 child: AnimatedOpacity(
-                  opacity: (_thumbnailController == null || !_thumbnailController!.value.isPlaying) ? 1.0 : 0.0,
+                  opacity: _showControls ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 300),
                   child: GestureDetector(
                     onTap: () {
@@ -338,11 +348,23 @@ class _VideoSectionState extends State<VideoSection> {
                         setState(() {
                           if (_thumbnailController!.value.isPlaying) {
                             _thumbnailController!.pause();
+                            _showControls = true;
+                            _controlsTimer?.cancel();
                           } else {
                             if (_thumbnailController!.value.position >= _thumbnailController!.value.duration) {
                               _thumbnailController!.seekTo(Duration.zero);
                             }
                             _thumbnailController!.play();
+                            _showControls = true;
+                            
+                            _controlsTimer?.cancel();
+                            _controlsTimer = Timer(const Duration(seconds: 1), () {
+                              if (mounted && _thumbnailController!.value.isPlaying) {
+                                setState(() {
+                                  _showControls = false;
+                                });
+                              }
+                            });
                           }
                         });
                       }
@@ -351,7 +373,7 @@ class _VideoSectionState extends State<VideoSection> {
                       color: Colors.transparent,
                       alignment: Alignment.center,
                       child: AnimatedOpacity(
-                        opacity: (_thumbnailController == null || !_thumbnailController!.value.isPlaying) ? 1.0 : 0.0,
+                        opacity: _showControls ? 1.0 : 0.0,
                         duration: const Duration(milliseconds: 300),
                         child: Container(
                           padding: const EdgeInsets.all(12),
@@ -359,8 +381,10 @@ class _VideoSectionState extends State<VideoSection> {
                             color: Colors.black.withOpacity(0.5),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.play_arrow,
+                          child: Icon(
+                            (_thumbnailController != null && _thumbnailController!.value.isPlaying)
+                                ? Icons.pause
+                                : Icons.play_arrow,
                             color: Colors.white,
                             size: 28,
                           ),
@@ -398,9 +422,9 @@ class _VideoSectionState extends State<VideoSection> {
                 const SizedBox(height: 12),
                 if (!_isUploading)
                   IgnorePointer(
-                    ignoring: _thumbnailController != null && _thumbnailController!.value.isPlaying,
+                    ignoring: !_showControls,
                     child: AnimatedOpacity(
-                      opacity: (_thumbnailController == null || !_thumbnailController!.value.isPlaying) ? 1.0 : 0.0,
+                      opacity: _showControls ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 300),
                       child: GestureDetector(
                         onTap: () async {
