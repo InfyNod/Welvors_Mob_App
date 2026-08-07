@@ -401,23 +401,27 @@ class _VideoSectionState extends State<VideoSection> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: const [
-                    Icon(
-                      Icons.check_circle,
-                      color: Color(0xFFE43A6A),
-                      size: 14,
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      'Intro video added',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
+                AnimatedOpacity(
+                  opacity: _showControls ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Row(
+                    children: const [
+                      Icon(
+                        Icons.check_circle,
+                        color: Color(0xFFE43A6A),
+                        size: 14,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 6),
+                      Text(
+                        'Intro video added',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 if (!_isUploading)
