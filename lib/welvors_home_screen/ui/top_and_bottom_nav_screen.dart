@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
 import '../home_bloc/home_bloc.dart';
 import 'home/home_screen.dart';
 import 'date_now/date_now_screen.dart';
@@ -365,10 +366,20 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                         },
                       ),
                       const SizedBox(width: 8),
-                      _buildTopIcon(
-                        Icons.tune,
-                        color: Colors.black54,
-                        iconSize: 24,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FilterScreen(),
+                            ),
+                          );
+                        },
+                        child: _buildTopIcon(
+                          Icons.tune,
+                          color: Colors.black54,
+                          iconSize: 24,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       _buildNotificationIcon(),
