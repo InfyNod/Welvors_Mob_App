@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/edit_profile_api_service.dart';
 import '../models/profile_photo.dart';
 import 'profile_edit_state.dart';
+import 'package:video_compress/video_compress.dart';
 
 class ProfileEditCubit extends Cubit<ProfileEditState> {
   ProfileEditCubit() : super(ProfileEditState.initial()) {
@@ -461,9 +462,29 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
 
   void updateVideoPath(String? path) => emit(state.copyWith(videoPath: path));
 
-  Future<String?> uploadVideo(String path) async {
-    // Optionally emit a state here if you want an 'isUploadingVideo' state, but since the UI can handle the local state, we'll just return the error string.
-    final response = await EditProfileApiService.uploadVideo(path);
+  Future<Map<String, dynamic>> uploadVideo(String path) async {
+    // Compress video first
+    String? finalPath = path;
+    String sizeStr = '';
+    try {
+      final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
+        path,
+        quality: VideoQuality.MediumQuality,
+        deleteOrigin: false,
+        includeAudio: true,
+      );
+      if (mediaInfo != null && mediaInfo.file != null) {
+        finalPath = mediaInfo.file!.path;
+        final bytes = mediaInfo.file!.lengthSync();
+        final mb = bytes / (1024 * 1024);
+        sizeStr = '${mb.toStringAsFixed(2)} MB';
+        debugPrint('✅ Video compressed from ${mediaInfo.filesize} to new file');
+      }
+    } catch (e) {
+      debugPrint('❌ Video compression failed: $e, using original');
+    }
+
+    final response = await EditProfileApiService.uploadVideo(finalPath!);
     final error = response['error'];
     if (error == null) {
       // try to extract new video URL from response if possible, else keep the local path to play it
@@ -478,24 +499,22 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
             response['data']['data']['_id']?.toString();
       }
       emit(state.copyWith(videoPath: newVideoUrl ?? path, videoId: newVideoId));
-      return null; // success
+      return {'error': null, 'size': sizeStr}; // success
     } else {
-      return error; // failed
+      return {'error': error}; // failed
     }
   }
 
   Future<String?> deleteVideo() async {
     if (state.videoId == null) {
       // If we don't have an ID, we can't call the API. Just remove locally.
-      updateVideoPath(null);
-      emit(state.copyWith(videoId: null)); // Also clear ID locally
+      emit(state.clearVideo()); // Clears both videoPath and videoId
       return null;
     }
 
     final error = await EditProfileApiService.deleteVideo(state.videoId!);
     if (error == null) {
-      updateVideoPath(null);
-      emit(state.copyWith(videoId: null)); // Also clear ID locally
+      emit(state.clearVideo()); // Clears both videoPath and videoId
       return null;
     }
     return error;

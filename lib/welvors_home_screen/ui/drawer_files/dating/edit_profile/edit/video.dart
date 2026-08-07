@@ -123,7 +123,7 @@ class _VideoSectionState extends State<VideoSection> {
                 : _buildRecordedCard(state.videoPath!),
             const SizedBox(height: 12),
             Text(
-              'Record a 30s intro live to keep profiles genuine. A live video gets 2x more matches.',
+              'Record a 15s intro live to keep profiles genuine. A live video gets 2x more matches.',
               style: TextStyle(
                 color: Colors.grey.shade500,
                 fontSize: 11,
@@ -153,7 +153,9 @@ class _VideoSectionState extends State<VideoSection> {
           _initializeThumbnail(result);
           
           // Upload to server
-          final error = await context.read<ProfileEditCubit>().uploadVideo(result);
+          final res = await context.read<ProfileEditCubit>().uploadVideo(result);
+          final error = res['error'];
+          final sizeStr = res['size'];
           
           if (mounted) {
             setState(() {
@@ -164,8 +166,12 @@ class _VideoSectionState extends State<VideoSection> {
                 SnackBar(content: Text(error), backgroundColor: Colors.red),
               );
             } else {
+              String msg = "Video uploaded successfully";
+              if (sizeStr != null && sizeStr.toString().isNotEmpty) {
+                msg += " ($sizeStr)";
+              }
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Video uploaded successfully"), backgroundColor: Colors.green),
+                SnackBar(content: Text(msg), backgroundColor: Colors.green),
               );
             }
           }
@@ -455,21 +461,21 @@ class _VideoSectionState extends State<VideoSection> {
                         });
                         context.read<ProfileEditCubit>().updateVideoPath(result);
                         _initializeThumbnail(result);
-                        
-                        final error = await context.read<ProfileEditCubit>().uploadVideo(result);
-                        
+                                            final res = await context.read<ProfileEditCubit>().uploadVideo(result);
+                        final error = res['error'];
+                        final sizeStr = res['size'];
                         if (mounted) {
                           setState(() {
                             _isUploading = false;
                           });
                           if (error != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(error), backgroundColor: Colors.red),
-                            );
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.red));
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Video uploaded successfully"), backgroundColor: Colors.green),
-                            );
+                            String msg = "Video uploaded successfully";
+                            if (sizeStr != null && sizeStr.toString().isNotEmpty) {
+                              msg += " ($sizeStr)";
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.green));
                           }
                         }
                       }
@@ -520,7 +526,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   bool _cameraError = false;
 
   RecordState _recordState = RecordState.idle;
-  int _remainingSeconds = 30;
+  int _remainingSeconds = 15;
   Timer? _timer;
   String? _recordedFilePath;
   VideoPlayerController? _videoPlayerController;
@@ -583,7 +589,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
       await _cameraController!.startVideoRecording();
       setState(() {
         _recordState = RecordState.recording;
-        _remainingSeconds = 30;
+        _remainingSeconds = 15;
       });
 
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -632,7 +638,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
     _recordedFilePath = null;
     setState(() {
       _recordState = RecordState.idle;
-      _remainingSeconds = 30;
+      _remainingSeconds = 15;
     });
   }
 
@@ -804,7 +810,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                                 width: 40,
                                 height: 40,
                                 child: CircularProgressIndicator(
-                                  value: _remainingSeconds / 30,
+                                  value: _remainingSeconds / 15,
                                   color: const Color(0xFFE43A6A),
                                   backgroundColor: Colors.white.withOpacity(
                                     0.2,
@@ -963,7 +969,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
         const SizedBox(height: 12),
         _buildInstructionItem('2', 'Say hi and share one thing you love.'),
         const SizedBox(height: 12),
-        _buildInstructionItem('3', 'You get 30 seconds. Be yourself!'),
+        _buildInstructionItem('3', 'You get 15 seconds. Be yourself!'),
         const SizedBox(height: 32),
         Center(
           child: GestureDetector(

@@ -325,6 +325,71 @@ class ProfileEditState extends Equatable {
     );
   }
 
+  ProfileEditState clearVideo() {
+    return ProfileEditState(
+      fullName: fullName,
+      email: email,
+      dob: dob,
+      height: height,
+      gender: gender,
+      genderIdentity: genderIdentity,
+      religionCaste: religionCaste,
+      religionId: religionId,
+      communityId: communityId,
+      languageIds: languageIds,
+      motherTongue: motherTongue,
+      zodiac: zodiac,
+      loveLanguage: loveLanguage,
+      communication: communication,
+      interestedIn: interestedIn,
+      sexualOrientation: sexualOrientation,
+      lifestyle: lifestyle,
+      pets: pets,
+      interests: interests,
+      prompts: prompts,
+      area: area,
+      city: city,
+      stateLocation: stateLocation,
+      showDistance: showDistance,
+      networkingIntents: networkingIntents,
+      networkingInYourWords: networkingInYourWords,
+      college: college,
+      highestEducation: highestEducation,
+      degreeCourse: degreeCourse,
+      graduationYear: graduationYear,
+      profession: profession,
+      professionId: professionId,
+      company: company,
+      experience: experience,
+      experienceId: experienceId,
+      employmentType: employmentType,
+      employmentTypeId: employmentTypeId,
+      salaryRange: salaryRange,
+      salaryRangeId: salaryRangeId,
+      ambitionLevel: ambitionLevel,
+      ambitionId: ambitionId,
+      bigDreams: bigDreams,
+      workStyle: workStyle,
+      familyType: familyType,
+      father: father,
+      mother: mother,
+      sisters: sisters,
+      brothers: brothers,
+      brothersData: brothersData,
+      sistersData: sistersData,
+      familyHome: familyHome,
+      nativePlace: nativePlace,
+      familyIncome: familyIncome,
+      familyDynamic: familyDynamic,
+      bio: bio,
+      intention: intention,
+      photos: photos,
+      videoPath: null, // Clear video path
+      videoId: null, // Clear video id
+      profileScore: profileScore,
+    );
+  }
+
   double get completionPercentage {
     return profileScore / 100.0;
   }
