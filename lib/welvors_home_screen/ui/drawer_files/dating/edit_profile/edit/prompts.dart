@@ -165,8 +165,9 @@ class PromptsSection extends StatelessWidget {
                     onTap: () async {
                       final promptId = prompt['promptId'] ?? '';
                       if (promptId.isNotEmpty) {
-                        final response = await EditProfileApiService.deletePrompt(promptId);
-                        
+                        final response =
+                            await EditProfileApiService.deletePrompt(promptId);
+
                         if (response['error'] != null && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(response['error'])),
@@ -176,15 +177,20 @@ class PromptsSection extends StatelessWidget {
                       } else {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Debug: Missing IDs! Data: $prompt')),
+                            SnackBar(
+                              content: Text(
+                                'Debug: Missing IDs! Data: $prompt',
+                              ),
+                            ),
                           );
                         }
                         return;
                       }
-                      
+
                       if (context.mounted) {
-                        final newList = List<Map<String, String>>.from(allPrompts)
-                          ..removeAt(index);
+                        final newList = List<Map<String, String>>.from(
+                          allPrompts,
+                        )..removeAt(index);
                         context.read<ProfileEditCubit>().updatePrompts(newList);
                       }
                     },
@@ -256,7 +262,7 @@ class PromptsSection extends StatelessWidget {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 24,
                   left: 24,
                   right: 24,
                   top: 24,
@@ -320,82 +326,102 @@ class PromptsSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     GestureDetector(
-                      onTap: isLoading ? null : () async {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        
-                        final text = controller.text.trim();
-                        final newList = List<Map<String, String>>.from(allPrompts);
-                        
-                        var categoryId = prompt['categoryId'] ?? '';
-                        final promptId = prompt['promptId'] ?? '';
-                        
-                        if (categoryId.isEmpty && promptId.isNotEmpty) {
-                          categoryId = await _resolveCategoryId(promptId);
-                        }
-                        
-                        if (text.isEmpty) {
-                          if (categoryId.isNotEmpty && promptId.isNotEmpty) {
-                            await EditProfileApiService.updatePrompt(
-                              categoryId: categoryId,
-                              promptId: promptId,
-                              answer: '',
-                              displayOrder: index + 1,
-                            );
-                          }
-                          
-                          if (context.mounted) {
-                            newList.removeAt(index);
-                            context.read<ProfileEditCubit>().updatePrompts(newList);
-                            Navigator.pop(context);
-                          }
-                        } else {
-                          if (categoryId.isNotEmpty && promptId.isNotEmpty) {
-                            final response = await EditProfileApiService.updatePrompt(
-                              categoryId: categoryId,
-                              promptId: promptId,
-                              answer: text,
-                              displayOrder: index + 1,
-                            );
-                            if (response['error'] != null && context.mounted) {
+                      onTap: isLoading
+                          ? null
+                          : () async {
                               setState(() {
-                                isLoading = false;
+                                isLoading = true;
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(response['error'])),
+
+                              final text = controller.text.trim();
+                              final newList = List<Map<String, String>>.from(
+                                allPrompts,
                               );
-                              return;
-                            }
-                          } else {
-                            if (context.mounted) {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Debug Edit: Missing IDs! Data: $prompt')),
-                              );
-                            }
-                            return;
-                          }
-                          
-                          if (context.mounted) {
-                            newList[index] = {
-                              'question': prompt['question']!,
-                              'answer': text,
-                              'promptId': promptId,
-                              'categoryId': categoryId,
-                            };
-                            context.read<ProfileEditCubit>().updatePrompts(newList);
-                            Navigator.pop(context);
-                          }
-                        }
-                      },
+
+                              var categoryId = prompt['categoryId'] ?? '';
+                              final promptId = prompt['promptId'] ?? '';
+
+                              if (categoryId.isEmpty && promptId.isNotEmpty) {
+                                categoryId = await _resolveCategoryId(promptId);
+                              }
+
+                              if (text.isEmpty) {
+                                if (categoryId.isNotEmpty &&
+                                    promptId.isNotEmpty) {
+                                  await EditProfileApiService.updatePrompt(
+                                    categoryId: categoryId,
+                                    promptId: promptId,
+                                    answer: '',
+                                    displayOrder: index + 1,
+                                  );
+                                }
+
+                                if (context.mounted) {
+                                  newList.removeAt(index);
+                                  context
+                                      .read<ProfileEditCubit>()
+                                      .updatePrompts(newList);
+                                  Navigator.pop(context);
+                                }
+                              } else {
+                                if (categoryId.isNotEmpty &&
+                                    promptId.isNotEmpty) {
+                                  final response =
+                                      await EditProfileApiService.updatePrompt(
+                                        categoryId: categoryId,
+                                        promptId: promptId,
+                                        answer: text,
+                                        displayOrder: index + 1,
+                                      );
+                                  if (response['error'] != null &&
+                                      context.mounted) {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(response['error']),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                } else {
+                                  if (context.mounted) {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Debug Edit: Missing IDs! Data: $prompt',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return;
+                                }
+
+                                if (context.mounted) {
+                                  newList[index] = {
+                                    'question': prompt['question']!,
+                                    'answer': text,
+                                    'promptId': promptId,
+                                    'categoryId': categoryId,
+                                  };
+                                  context
+                                      .read<ProfileEditCubit>()
+                                      .updatePrompts(newList);
+                                  Navigator.pop(context);
+                                }
+                              }
+                            },
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: isLoading ? Colors.grey.shade400 : const Color(0xFFE43A6A),
+                          color: isLoading
+                              ? Colors.grey.shade400
+                              : const Color(0xFFE43A6A),
                           borderRadius: BorderRadius.circular(15),
                           boxShadow: [
                             if (!isLoading)
@@ -597,9 +623,11 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                         final promptMap =
                             _categoriesData[_selectedCategoryIndex]['prompts'][index];
                         final promptText = promptMap['question'] ?? '';
-                        final promptId = promptMap['id'] ?? promptMap['promptId'] ?? '';
-                        final categoryId = _categoriesData[_selectedCategoryIndex]['id'] ?? '';
-                        
+                        final promptId =
+                            promptMap['id'] ?? promptMap['promptId'] ?? '';
+                        final categoryId =
+                            _categoriesData[_selectedCategoryIndex]['id'] ?? '';
+
                         final isAdded = widget.alreadyAddedQuestions.contains(
                           promptText,
                         );
@@ -607,7 +635,12 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                         return GestureDetector(
                           onTap: () {
                             if (!isAdded) {
-                              _showAnswerSheet(context, promptText, categoryId, promptId);
+                              _showAnswerSheet(
+                                context,
+                                promptText,
+                                categoryId,
+                                promptId,
+                              );
                             }
                           },
                           child: AnimatedContainer(
@@ -749,14 +782,14 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                         answer: answer,
                         displayOrder: 1, // Will be appended at the end
                       );
-                      
+
                       if (response['error'] != null && context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(response['error'])),
                         );
                         return;
                       }
-                      
+
                       if (context.mounted) {
                         // Close sheet
                         Navigator.pop(context);

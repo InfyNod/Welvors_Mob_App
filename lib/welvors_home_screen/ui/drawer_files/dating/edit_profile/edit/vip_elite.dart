@@ -151,23 +151,46 @@ class NetworkingIntentSection extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
 
-                  // Add Button
+                  // Add / Edit Button
                   GestureDetector(
                     onTap: () => _openNetworkingEditor(context, state),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.add, color: Colors.grey.shade700, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Add',
-                          style: TextStyle(
-                            color: Colors.grey.shade800,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: const Color(0xFFE43A6A),
+                          width: 1.2,
                         ),
-                      ],
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFE43A6A).withOpacity(0.15),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            state.networkingIntents.isEmpty ? Icons.add : Icons.edit_rounded, 
+                            color: const Color(0xFFE43A6A), 
+                            size: 16
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            state.networkingIntents.isEmpty ? 'Add' : 'Edit',
+                            style: const TextStyle(
+                              color: Color(0xFFE43A6A),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
