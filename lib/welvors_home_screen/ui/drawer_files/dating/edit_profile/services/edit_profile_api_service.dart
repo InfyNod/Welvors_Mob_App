@@ -182,6 +182,30 @@ class EditProfileApiService {
     }
   }
 
+  /// Deletes the user's video from the server
+  static Future<String?> deleteVideo() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.delete(
+        Uri.parse('$baseUrl/user/profile/video'),
+        headers: {
+          if (token != null) 'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return null; // Success
+      }
+      return 'Failed to delete video: ${response.statusCode}';
+    } catch (e) {
+      debugPrint('Error deleting video: $e');
+      return e.toString();
+    }
+  }
+
   /// Updates a specific photo on the server.
   static Future<String?> updateSpecificPhoto(
     String photoId,

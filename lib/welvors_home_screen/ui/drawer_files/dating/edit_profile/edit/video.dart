@@ -310,34 +310,6 @@ class _VideoSectionState extends State<VideoSection> {
               ),
             ),
           ),
-          // Cross (Remove) Icon
-          if (!_isUploading)
-            Positioned(
-              top: 12,
-              right: 12,
-              child: IgnorePointer(
-                ignoring: !_showControls,
-                child: AnimatedOpacity(
-                  opacity: _showControls ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: GestureDetector(
-                    onTap: () {
-                      context.read<ProfileEditCubit>().updateVideoPath(null);
-                      _thumbnailController?.dispose();
-                      _thumbnailController = null;
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.close, color: Colors.white, size: 14),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           // Play/Pause Overlay or Loading
           Positioned.fill(
             child: _isUploading
@@ -393,6 +365,45 @@ class _VideoSectionState extends State<VideoSection> {
                     ),
                   ),
           ),
+          // Cross (Remove) Icon
+          if (!_isUploading)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: IgnorePointer(
+                ignoring: !_showControls,
+                child: AnimatedOpacity(
+                  opacity: _showControls ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: GestureDetector(
+                    onTap: () async {
+                      setState(() {
+                        _isUploading = true;
+                      });
+                      final error = await context.read<ProfileEditCubit>().deleteVideo();
+                      if (mounted) {
+                        setState(() {
+                          _isUploading = false;
+                        });
+                        if (error != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.red));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Video deleted successfully'), backgroundColor: Colors.green));
+                        }
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close, color: Colors.white, size: 14),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           // Bottom Actions
           Positioned(
             bottom: 12,

@@ -400,6 +400,15 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     }
   }
 
+  Future<String?> deleteVideo() async {
+    final error = await EditProfileApiService.deleteVideo();
+    if (error == null) {
+      updateVideoPath(null);
+      return null;
+    }
+    return error;
+  }
+
   void updateInterestedIn(String interested) {
     emit(state.copyWith(interestedIn: interested));
     _saveWhoYouAreSeeing();
