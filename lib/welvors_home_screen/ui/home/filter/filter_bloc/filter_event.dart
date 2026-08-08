@@ -25,3 +25,13 @@ class UpdateDistance extends FilterEvent {
   @override
   List<Object?> get props => [distance];
 }
+
+class UpdateShowMe extends FilterEvent {
+  final String showMe;
+  final String showMePreference;
+
+  const UpdateShowMe(this.showMe, this.showMePreference);
+
+  @override
+  List<Object?> get props => [showMe, showMePreference];
+}

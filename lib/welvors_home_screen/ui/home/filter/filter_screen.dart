@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'all_screen/age.dart';
 import 'all_screen/distance.dart';
+import 'all_screen/show_me.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_state.dart';
 
@@ -155,8 +156,23 @@ class _FilterScreenState extends State<FilterScreen> {
                       },
                     ),
                     _buildDivider(),
-                _buildPreferenceRow('Show me', 'Women'),
-                _buildDivider(),
+                    _buildPreferenceRow(
+                      'Show me', 
+                      state.showMe,
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const ShowMeScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
                 _buildOnlineNowRow(),
                 _buildDivider(),
                 _buildPreferenceRow('Looking for', 'Any'),

@@ -16,5 +16,12 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         distance: event.distance,
       ));
     });
+
+    on<UpdateShowMe>((event, emit) {
+      emit(state.copyWith(
+        showMe: event.showMe,
+        showMePreference: event.showMePreference,
+      ));
+    });
   }
 }
