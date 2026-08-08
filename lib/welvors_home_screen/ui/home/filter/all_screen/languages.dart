@@ -3,55 +3,42 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
 
-class EducationScreen extends StatefulWidget {
-  const EducationScreen({super.key});
+class LanguagesScreen extends StatefulWidget {
+  const LanguagesScreen({super.key});
 
   @override
-  State<EducationScreen> createState() => _EducationScreenState();
+  State<LanguagesScreen> createState() => _LanguagesScreenState();
 }
 
-class _EducationScreenState extends State<EducationScreen> {
-  final List<String> _selectedEducation = [];
+class _LanguagesScreenState extends State<LanguagesScreen> {
+  final List<String> _selectedLanguages = [];
 
-  final List<String> _educationOptions = [
-    'High school',
-    'Diploma',
-    'Undergraduate',
-    'Bachelors',
-    'Postgraduate',
-    'Masters',
-    'MPhil',
-    'PhD',
-    'Post-doctorate',
-    'CA / CS / CFA',
-    'MBBS / MD',
-    'LLB / LLM',
-    'MBA',
-    'IIT / NIT / BITS',
-    'IIM / ISB',
-    'NIFT / NID',
-    'Currently studying',
-    'Other',
-  ];
+  final Map<String, List<String>> _languageCategories = {
+    'MOST SPOKEN': ['English', 'Hindi'],
+    'NORTH & WEST': ['Marathi', 'Gujarati', 'Punjabi', 'Rajasthani', 'Haryanvi', 'Sindhi', 'Kashmiri', 'Urdu'],
+    'SOUTH': ['Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Tulu', 'Konkani'],
+    'EAST & NORTH-EAST': ['Bengali', 'Odia', 'Assamese', 'Bhojpuri', 'Nepali', 'Manipuri'],
+    'INTERNATIONAL': ['French', 'Spanish', 'German', 'Arabic', 'Japanese', 'Mandarin'],
+  };
 
   @override
   void initState() {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
-    _selectedEducation.addAll(currentState.education);
+    _selectedLanguages.addAll(currentState.languages);
   }
 
   void _onDone() {
-    context.read<FilterBloc>().add(UpdateEducation(_selectedEducation.toList()));
+    context.read<FilterBloc>().add(UpdateLanguages(_selectedLanguages.toList()));
     Navigator.pop(context);
   }
 
-  void _toggleEducation(String option) {
+  void _toggleLanguage(String language) {
     setState(() {
-      if (_selectedEducation.contains(option)) {
-        _selectedEducation.remove(option);
+      if (_selectedLanguages.contains(language)) {
+        _selectedLanguages.remove(language);
       } else {
-        _selectedEducation.add(option);
+        _selectedLanguages.add(language);
       }
     });
   }
@@ -71,16 +58,16 @@ class _EducationScreenState extends State<EducationScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          if (_selectedEducation.isNotEmpty)
+          if (_selectedLanguages.isNotEmpty)
             Container(
-              margin: const EdgeInsets.only(top: 2), // slightly push down for visual alignment
+              margin: const EdgeInsets.only(top: 2), // visually align with text
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF9E6), // Soft gold bg for badge
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                '${_selectedEducation.length} SELECTED',
+                '${_selectedLanguages.length} SELECTED',
                 style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
@@ -94,79 +81,99 @@ class _EducationScreenState extends State<EducationScreen> {
     );
   }
 
-  Widget _buildChips() {
-    return Wrap(
-      spacing: 8.0,
-      runSpacing: 12.0,
-      children: _educationOptions.map((option) {
-        final isSelected = _selectedEducation.contains(option);
-        return GestureDetector(
-          onTap: () => _toggleEducation(option),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                width: 1,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.3),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      )
-                    ]
-                  : null,
-            ),
-            child: Text(
-              option,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black87,
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-              ),
+  Widget _buildCategory(String categoryName, List<String> languages) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8, bottom: 12, top: 12),
+          child: Text(
+            categoryName,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey,
+              letterSpacing: 0.8,
             ),
           ),
-        );
-      }).toList(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Wrap(
+            spacing: 8.0,
+            runSpacing: 12.0,
+            children: languages.map((language) {
+              final isSelected = _selectedLanguages.contains(language);
+              return GestureDetector(
+                onTap: () => _toggleLanguage(language),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                      width: 1,
+                    ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: const Color(0xFFE43A6A).withOpacity(0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            )
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    language,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black87,
+                      fontSize: 13,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildInfoCard() {
+  Widget _buildInfoCard(String icon, String title, String subtitle) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10, top: 40),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200, width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 2, right: 12),
-            child: Text('🎓', style: TextStyle(fontSize: 18)),
+          Padding(
+            padding: const EdgeInsets.only(top: 2, right: 12),
+            child: Text(icon, style: const TextStyle(fontSize: 18)),
           ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Verified degrees carry a badge',
-                  style: TextStyle(
+                Text(
+                  title,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  'Education verification adds +7 to a member\'s trust score.',
+                  subtitle,
                   style: TextStyle(
                     fontSize: 11,
                     color: Colors.grey.shade500,
@@ -221,7 +228,7 @@ class _EducationScreenState extends State<EducationScreen> {
           ),
         ),
         title: const Text(
-          'Education',
+          'Languages',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 18,
@@ -261,8 +268,18 @@ class _EducationScreenState extends State<EducationScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildSectionHeader(),
-              _buildChips(),
-              _buildInfoCard(),
+              ..._languageCategories.entries.map((entry) => _buildCategory(entry.key, entry.value)),
+              const SizedBox(height: 12),
+              _buildInfoCard(
+                '🗣️',
+                'Shared language, easier start',
+                'Members who share a mother tongue reply noticeably more often.',
+              ),
+              _buildInfoCard(
+                '✨',
+                'Pick two or three',
+                'Too many selections makes the filter meaningless — too few narrows the pool.',
+              ),
               const SizedBox(height: 40),
             ],
           ),

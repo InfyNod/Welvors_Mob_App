@@ -6,6 +6,7 @@ import 'all_screen/show_me.dart';
 import 'all_screen/looking_for.dart';
 import 'all_screen/height.dart';
 import 'all_screen/education.dart';
+import 'all_screen/languages.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_state.dart';
 
@@ -238,7 +239,22 @@ class _FilterScreenState extends State<FilterScreen> {
                   },
                 ),
                 _buildDivider(),
-                _buildPreferenceRow('Languages', 'Any'),
+                _buildPreferenceRow(
+                  'Languages', 
+                  state.languages.isEmpty ? 'Any' : state.languages.join(', '),
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const LanguagesScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
                 _buildPreferenceRow('Lifestyle', 'Any'),
                 _buildDivider(),

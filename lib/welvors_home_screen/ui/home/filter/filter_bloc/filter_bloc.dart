@@ -42,5 +42,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         education: event.education,
       ));
     });
+
+    on<UpdateLanguages>((event, emit) {
+      emit(state.copyWith(
+        languages: event.languages,
+      ));
+    });
   }
 }

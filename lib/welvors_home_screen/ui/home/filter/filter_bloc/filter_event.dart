@@ -63,3 +63,12 @@ class UpdateEducation extends FilterEvent {
   @override
   List<Object?> get props => [education];
 }
+
+class UpdateLanguages extends FilterEvent {
+  final List<String> languages;
+
+  const UpdateLanguages(this.languages);
+
+  @override
+  List<Object?> get props => [languages];
+}
