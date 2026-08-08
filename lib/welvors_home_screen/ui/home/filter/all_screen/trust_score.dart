@@ -70,7 +70,9 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
                       strokeWidth: 4,
                       strokeCap: StrokeCap.round,
                       backgroundColor: Colors.white.withOpacity(0.2),
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
                     ),
                     Center(
                       child: Text(
@@ -155,14 +157,14 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
           child: Text(
             '${_currentRangeValues.start.round()} – ${_currentRangeValues.end.round()}',
             style: const TextStyle(
-              fontSize: 32,
+              fontSize: 35,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
               fontFamily: 'Times New Roman', // matching premium numbers
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 0),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: const Color(0xFFE43A6A),
