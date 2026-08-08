@@ -23,5 +23,18 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         showMePreference: event.showMePreference,
       ));
     });
+
+    on<UpdateLookingFor>((event, emit) {
+      emit(state.copyWith(
+        lookingFor: event.lookingFor,
+      ));
+    });
+
+    on<UpdateHeightRange>((event, emit) {
+      emit(state.copyWith(
+        minHeight: event.minHeight,
+        maxHeight: event.maxHeight,
+      ));
+    });
   }
 }

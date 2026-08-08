@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'all_screen/age.dart';
 import 'all_screen/distance.dart';
 import 'all_screen/show_me.dart';
+import 'all_screen/looking_for.dart';
+import 'all_screen/height.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_state.dart';
 
@@ -31,6 +33,13 @@ class _FilterScreenState extends State<FilterScreen> {
         _selectedLookingFor.add(label);
       }
     });
+  }
+
+  String _formatHeight(double cm) {
+    int totalInches = (cm / 2.54).round();
+    int feet = totalInches ~/ 12;
+    int inches = totalInches % 12;
+    return "$feet'$inches\"";
   }
 
   @override
@@ -175,9 +184,39 @@ class _FilterScreenState extends State<FilterScreen> {
                     _buildDivider(),
                 _buildOnlineNowRow(),
                 _buildDivider(),
-                _buildPreferenceRow('Looking for', 'Any'),
+                _buildPreferenceRow(
+                  'Looking for', 
+                  state.lookingFor.isEmpty ? 'Any' : state.lookingFor.join(', '),
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const LookingForScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
-                _buildPreferenceRow('Height', 'Any'),
+                _buildPreferenceRow(
+                  'Height', 
+                  '${_formatHeight(state.minHeight)} - ${_formatHeight(state.maxHeight)}',
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const HeightScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
                 _buildPreferenceRow('Education', 'Any'),
                 _buildDivider(),
@@ -950,23 +989,31 @@ class _FilterScreenState extends State<FilterScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Row(
-              children: [
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: Color(0xFFE43A6A),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Flexible(
+                    child: Text(
+                      value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFFE43A6A),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.grey.shade300,
-                  size: 14,
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey.shade300,
+                    size: 14,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

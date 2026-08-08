@@ -35,3 +35,22 @@ class UpdateShowMe extends FilterEvent {
   @override
   List<Object?> get props => [showMe, showMePreference];
 }
+
+class UpdateLookingFor extends FilterEvent {
+  final List<String> lookingFor;
+
+  const UpdateLookingFor(this.lookingFor);
+
+  @override
+  List<Object?> get props => [lookingFor];
+}
+
+class UpdateHeightRange extends FilterEvent {
+  final double minHeight;
+  final double maxHeight;
+
+  const UpdateHeightRange(this.minHeight, this.maxHeight);
+
+  @override
+  List<Object?> get props => [minHeight, maxHeight];
+}
