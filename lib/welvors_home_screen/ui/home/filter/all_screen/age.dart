@@ -20,12 +20,19 @@ class _AgeScreenState extends State<AgeScreen> {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
     _currentRangeValues = RangeValues(currentState.minAge, currentState.maxAge);
+
+    final matchingRange =
+        '${currentState.minAge.round()}-${currentState.maxAge.round()}';
+    if (_predefinedRanges.contains(matchingRange)) {
+      _selectedRange = matchingRange;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Or a very light grey if preferred, looks white in mockup
+      backgroundColor: Colors
+          .white, // Or a very light grey if preferred, looks white in mockup
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -76,7 +83,10 @@ class _AgeScreenState extends State<AgeScreen> {
             child: ElevatedButton(
               onPressed: () {
                 context.read<FilterBloc>().add(
-                  UpdateAgeRange(_currentRangeValues.start, _currentRangeValues.end),
+                  UpdateAgeRange(
+                    _currentRangeValues.start,
+                    _currentRangeValues.end,
+                  ),
                 );
                 Navigator.pop(context);
               },
@@ -135,10 +145,7 @@ class _AgeScreenState extends State<AgeScreen> {
                   const SizedBox(height: 8),
                   Text(
                     '${(_currentRangeValues.end - _currentRangeValues.start).round()}-year window · same life stage',
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                   ),
                 ],
               ),
@@ -146,17 +153,19 @@ class _AgeScreenState extends State<AgeScreen> {
             const SizedBox(height: 32),
 
             // Slider
+            // Premium Slider
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: const Color(0xFFE43A6A),
-                inactiveTrackColor: Colors.grey.shade200,
-                trackHeight: 4.0,
+                inactiveTrackColor: Colors.grey.shade100,
+                trackHeight: 6.0, // Thicker premium track
                 thumbColor: Colors.white,
-                overlayColor: const Color(0xFFE43A6A).withOpacity(0.1),
+                overlayColor: const Color(0xFFE43A6A).withOpacity(0.15),
+                rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
                 rangeThumbShape: const RoundRangeSliderThumbShape(
-                  enabledThumbRadius: 10,
-                  elevation: 2,
-                  pressedElevation: 4,
+                  enabledThumbRadius: 11, // Smaller premium thumb
+                  elevation: 4,
+                  pressedElevation: 8,
                 ),
               ),
               child: RangeSlider(
@@ -167,87 +176,133 @@ class _AgeScreenState extends State<AgeScreen> {
                 onChanged: (RangeValues values) {
                   setState(() {
                     _currentRangeValues = values;
-                    _selectedRange = ''; // Clear predefined selection when custom sliding
+                    _selectedRange =
+                        ''; // Clear predefined selection when custom sliding
                   });
                 },
               ),
             ),
-            
+
             // Slider Labels
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('18', style: TextStyle(color: Colors.grey.shade400, fontSize: 10)),
-                  Text('40', style: TextStyle(color: Colors.grey.shade400, fontSize: 10)),
-                  Text('60+', style: TextStyle(color: Colors.grey.shade400, fontSize: 10)),
+                  Text(
+                    '18',
+                    style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+                  ),
+                  Text(
+                    '40',
+                    style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+                  ),
+                  Text(
+                    '60+',
+                    style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Predefined Chips
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
-              child: Row(
-                children: _predefinedRanges.map((range) {
-                  final isSelected = _selectedRange == range;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedRange = range;
-                          final parts = range.split('-');
-                          _currentRangeValues = RangeValues(
-                            double.parse(parts[0]),
-                            double.parse(parts[1]),
-                          );
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
-                          ),
-                          boxShadow: isSelected
-                              ? [
+            // Premium Snake-Effect Segmented Chips
+            Container(
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final itemWidth =
+                      constraints.maxWidth / _predefinedRanges.length;
+                  final selectedIndex = _predefinedRanges.indexOf(
+                    _selectedRange,
+                  );
+
+                  return Stack(
+                    children: [
+                      // Sliding background (Snake effect)
+                      if (selectedIndex != -1)
+                        AnimatedPositioned(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOutCubic,
+                          left: selectedIndex * itemWidth,
+                          top: 0,
+                          bottom: 0,
+                          width: itemWidth,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE43A6A),
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFE43A6A).withOpacity(0.2),
+                                    color: const Color(
+                                      0xFFE43A6A,
+                                    ).withOpacity(0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
-                                  )
-                                ]
-                              : [],
-                        ),
-                        child: Text(
-                          range,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black87,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            fontSize: 13,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
+                      // Text Labels
+                      Row(
+                        children: _predefinedRanges.map((range) {
+                          final isSelected = _selectedRange == range;
+                          return Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                setState(() {
+                                  _selectedRange = range;
+                                  final parts = range.split('-');
+                                  _currentRangeValues = RangeValues(
+                                    double.parse(parts[0]),
+                                    double.parse(parts[1]),
+                                  );
+                                });
+                              },
+                              child: Center(
+                                child: AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 200),
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
+                                    fontSize: 13,
+                                  ),
+                                  child: Text(range),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    ),
+                    ],
                   );
-                }).toList(),
+                },
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
 
             // Info Card 1
             _buildInfoCard(
               icon: Icons.auto_awesome,
               iconColor: Colors.amber.shade600,
               title: 'Most matches happen within 4 years',
-              subtitle: 'Members with a similar age window reply far more often.',
+              subtitle:
+                  'Members with a similar age window reply far more often.',
             ),
             const SizedBox(height: 12),
 
@@ -256,7 +311,8 @@ class _AgeScreenState extends State<AgeScreen> {
               icon: Icons.lock,
               iconColor: Colors.grey.shade500,
               title: 'Your exact birth date stays private',
-              subtitle: 'Only your age shows on your profile — never the full date.',
+              subtitle:
+                  'Only your age shows on your profile — never the full date.',
             ),
           ],
         ),
