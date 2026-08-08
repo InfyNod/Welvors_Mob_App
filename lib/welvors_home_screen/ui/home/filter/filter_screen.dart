@@ -121,6 +121,16 @@ class _FilterScreenState extends State<FilterScreen> {
                 _buildDivider(),
                 _buildOnlineNowRow(),
                 _buildDivider(),
+                _buildPreferenceRow('Looking for', 'Any'),
+                _buildDivider(),
+                _buildPreferenceRow('Height', 'Any'),
+                _buildDivider(),
+                _buildPreferenceRow('Education', 'Any'),
+                _buildDivider(),
+                _buildPreferenceRow('Languages', 'Any'),
+                _buildDivider(),
+                _buildPreferenceRow('Lifestyle', 'Any'),
+                _buildDivider(),
                 _buildPreferenceRow('Religion & community', 'Any'),
                 _buildDivider(),
                 _buildPreferenceRow('Profession', 'Any'),
@@ -132,54 +142,68 @@ class _FilterScreenState extends State<FilterScreen> {
                 const SizedBox(height: 24),
                 _buildBrowsePoolFreePremium(),
                 const SizedBox(height: 24),
-                
+
                 _buildLockedPremiumBox(
-                  Opacity(
-                    opacity: (_selectedTier == 'VIP' || _selectedTier == 'Elite') ? 1.0 : 0.4,
-                    child: Column(
-                      children: [
-                        _buildLockHeader('VIP Filters', Colors.amber.shade700, 'VIP'),
-                        _buildPreferenceRow('Income range', 'Any'),
-                        _buildDivider(),
-                        _buildPreferenceRow('Networking intent', 'Any'),
-                        _buildDivider(),
-                        _buildPreferenceRow('Ambition', 'Any'),
-                      ],
+                  IgnorePointer(
+                    ignoring:
+                        _selectedTier != 'VIP' && _selectedTier != 'Elite',
+                    child: Opacity(
+                      opacity:
+                          (_selectedTier == 'VIP' || _selectedTier == 'Elite')
+                          ? 1.0
+                          : 0.4,
+                      child: Column(
+                        children: [
+                          _buildLockHeader(
+                            'VIP Filters',
+                            Colors.amber.shade700,
+                            'VIP',
+                          ),
+                          _buildPreferenceRow('Income range', 'Any'),
+                          _buildDivider(),
+                          _buildPreferenceRow('Networking intent', 'Any'),
+                          _buildDivider(),
+                          _buildPreferenceRow('Ambition', 'Any'),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
                 _buildLockedPremiumBox(
-                  Opacity(
-                    opacity: _selectedTier == 'Elite' ? 1.0 : 0.4,
-                    child: Column(
-                      children: [
-                        _buildLockHeader(
-                          'Elite Filters',
-                          Colors.purple.shade300,
-                          'Elite',
-                        ),
-                        _buildToggleRow(
-                          'Show who liked me first',
-                          'Elite priority ordering',
-                          _showWhoLikedMe,
-                          (val) {
-                            setState(() => _showWhoLikedMe = val);
-                          },
-                          activeColor: Colors.black,
-                        ),
-                        _buildDivider(),
-                        _buildToggleRow(
-                          'Members-only gatherings',
-                          'Open to private Elite events',
-                          _membersOnly,
-                          (val) {
-                            setState(() => _membersOnly = val);
-                          },
-                          activeColor: Colors.black,
-                        ),
-                      ],
+                  IgnorePointer(
+                    ignoring: _selectedTier != 'Elite',
+                    child: Opacity(
+                      opacity: _selectedTier == 'Elite' ? 1.0 : 0.4,
+                      child: Column(
+                        children: [
+                          _buildLockHeader(
+                            'Elite Filters',
+                            Colors.purple.shade300,
+                            'Elite',
+                          ),
+                          _buildToggleRow(
+                            'Show who liked me first',
+                            'Elite priority ordering',
+                            _showWhoLikedMe,
+                            (val) {
+                              setState(() => _showWhoLikedMe = val);
+                            },
+                            isElite: true,
+                          ),
+                          _buildDivider(),
+                          _buildToggleRow(
+                            'Members-only gatherings',
+                            'Open to private Elite events',
+                            _membersOnly,
+                            (val) {
+                              setState(() => _membersOnly = val);
+                            },
+                            isElite: true,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -210,14 +234,14 @@ class _FilterScreenState extends State<FilterScreen> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final itemWidth = constraints.maxWidth / 3;
-          
+
           Color activeBorderColor = Colors.transparent;
           if (_selectedTier == 'Premium+') {
-             activeBorderColor = const Color(0xFFE43A6A).withOpacity(0.3);
+            activeBorderColor = const Color(0xFFE43A6A).withOpacity(0.3);
           } else if (_selectedTier == 'VIP') {
-             activeBorderColor = const Color(0xFF9C27B0).withOpacity(0.3);
+            activeBorderColor = const Color(0xFF9C27B0).withOpacity(0.3);
           } else if (_selectedTier == 'Elite') {
-             activeBorderColor = Colors.black.withOpacity(0.2);
+            activeBorderColor = Colors.black.withOpacity(0.2);
           }
 
           return Stack(
@@ -248,23 +272,35 @@ class _FilterScreenState extends State<FilterScreen> {
                 children: List.generate(tiers.length, (index) {
                   final title = tiers[index];
                   final isSelected = _selectedTier == title;
-                  
+
                   String subtitle = '';
                   Color subtitleColor = Colors.grey.shade400;
                   Color titleColor = Colors.grey.shade700;
-                  
+
                   if (title == 'Premium+') {
-                     subtitle = isSelected ? '✓ Active' : '○ Other world';
-                     subtitleColor = isSelected ? const Color(0xFF00C853) : Colors.grey.shade400;
-                     titleColor = isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade700;
+                    subtitle = isSelected ? '✓ Active' : '○ Other world';
+                    subtitleColor = isSelected
+                        ? const Color(0xFF00C853)
+                        : Colors.grey.shade400;
+                    titleColor = isSelected
+                        ? const Color(0xFFE43A6A)
+                        : Colors.grey.shade700;
                   } else if (title == 'VIP') {
-                     subtitle = isSelected ? '✓ Active' : '⊘ Other world';
-                     subtitleColor = isSelected ? const Color(0xFF00C853) : Colors.grey.shade400;
-                     titleColor = isSelected ? const Color(0xFF9C27B0) : Colors.grey.shade700;
+                    subtitle = isSelected ? '✓ Active' : '⊘ Other world';
+                    subtitleColor = isSelected
+                        ? const Color(0xFF00C853)
+                        : Colors.grey.shade400;
+                    titleColor = isSelected
+                        ? const Color(0xFF9C27B0)
+                        : Colors.grey.shade700;
                   } else if (title == 'Elite') {
-                     subtitle = isSelected ? '✓ Active' : '⊘ Other world';
-                     subtitleColor = isSelected ? const Color(0xFF00C853) : Colors.grey.shade400;
-                     titleColor = isSelected ? Colors.black87 : Colors.grey.shade700;
+                    subtitle = isSelected ? '✓ Active' : '⊘ Other world';
+                    subtitleColor = isSelected
+                        ? const Color(0xFF00C853)
+                        : Colors.grey.shade400;
+                    titleColor = isSelected
+                        ? Colors.black87
+                        : Colors.grey.shade700;
                   }
 
                   return Expanded(
@@ -317,7 +353,9 @@ class _FilterScreenState extends State<FilterScreen> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: _selectedTier == 'Premium+' ? Colors.black87 : Colors.grey.shade400,
+            color: _selectedTier == 'Premium+'
+                ? Colors.black87
+                : Colors.grey.shade400,
             letterSpacing: 0.5,
           ),
         ),
@@ -326,7 +364,9 @@ class _FilterScreenState extends State<FilterScreen> {
           'The two worlds run separately — members of one never see the other.',
           style: TextStyle(
             fontSize: 12,
-            color: _selectedTier == 'Premium+' ? Colors.grey.shade700 : Colors.grey.shade400,
+            color: _selectedTier == 'Premium+'
+                ? Colors.grey.shade700
+                : Colors.grey.shade400,
           ),
         ),
         const SizedBox(height: 16),
@@ -402,11 +442,26 @@ class _FilterScreenState extends State<FilterScreen> {
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      _buildSelectableWrapChip('Any', disabled: _selectedTier != 'Premium+'),
-                      _buildSelectableWrapChip('Long-term relationship', disabled: _selectedTier != 'Premium+'),
-                      _buildSelectableWrapChip('Marriage', disabled: _selectedTier != 'Premium+'),
-                      _buildSelectableWrapChip('Open-minded', disabled: _selectedTier != 'Premium+'),
-                      _buildSelectableWrapChip('New friends', disabled: _selectedTier != 'Premium+'),
+                      _buildSelectableWrapChip(
+                        'Any',
+                        disabled: _selectedTier != 'Premium+',
+                      ),
+                      _buildSelectableWrapChip(
+                        'Long-term relationship',
+                        disabled: _selectedTier != 'Premium+',
+                      ),
+                      _buildSelectableWrapChip(
+                        'Marriage',
+                        disabled: _selectedTier != 'Premium+',
+                      ),
+                      _buildSelectableWrapChip(
+                        'Open-minded',
+                        disabled: _selectedTier != 'Premium+',
+                      ),
+                      _buildSelectableWrapChip(
+                        'New friends',
+                        disabled: _selectedTier != 'Premium+',
+                      ),
                     ],
                   ),
                 ],
@@ -427,7 +482,9 @@ class _FilterScreenState extends State<FilterScreen> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: _selectedTier != 'Premium+' ? Colors.black87 : Colors.grey.shade400,
+            color: _selectedTier != 'Premium+'
+                ? Colors.black87
+                : Colors.grey.shade400,
             letterSpacing: 0.5,
           ),
         ),
@@ -455,7 +512,9 @@ class _FilterScreenState extends State<FilterScreen> {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Opacity(
-            opacity: _selectedTier != 'Premium+' ? 1.0 : 0.4, // Unfaded if VIP or Elite
+            opacity: _selectedTier != 'Premium+'
+                ? 1.0
+                : 0.4, // Unfaded if VIP or Elite
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -571,21 +630,36 @@ class _FilterScreenState extends State<FilterScreen> {
                   spacing: 6,
                   runSpacing: 6,
                   children: [
-                    _buildSelectableWrapChip('Any', disabled: _selectedTier == 'Premium+'),
+                    _buildSelectableWrapChip(
+                      'Any',
+                      disabled: _selectedTier == 'Premium+',
+                      isElite: true,
+                    ),
                     _buildSelectableWrapChip(
                       'Long-term relationship',
                       disabled: _selectedTier == 'Premium+',
+                      isElite: true,
                     ),
-                    _buildSelectableWrapChip('Marriage', disabled: _selectedTier == 'Premium+'),
+                    _buildSelectableWrapChip(
+                      'Marriage',
+                      disabled: _selectedTier == 'Premium+',
+                      isElite: true,
+                    ),
                     _buildSelectableWrapChip(
                       'Exclusive companionship',
                       disabled: _selectedTier == 'Premium+',
+                      isElite: true,
                     ),
                     _buildSelectableWrapChip(
                       'Travel companion',
                       disabled: _selectedTier == 'Premium+',
+                      isElite: true,
                     ),
-                    _buildSelectableWrapChip('Networking', disabled: _selectedTier == 'Premium+'),
+                    _buildSelectableWrapChip(
+                      'Networking',
+                      disabled: _selectedTier == 'Premium+',
+                      isElite: true,
+                    ),
                   ],
                 ),
               ],
@@ -697,6 +771,7 @@ class _FilterScreenState extends State<FilterScreen> {
     String label, {
     bool? isSelectedParam,
     bool disabled = false,
+    bool isElite = false,
   }) {
     final isSelected =
         isSelectedParam ?? (!disabled && _selectedLookingFor.contains(label));
@@ -707,11 +782,24 @@ class _FilterScreenState extends State<FilterScreen> {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isElite ? null : Colors.white,
+          gradient: isElite
+              ? LinearGradient(
+                  colors: isSelected
+                      ? [const Color(0xFFBA68C8), const Color(0xFF424242)] // Lighter purple to charcoal grey
+                      : [Colors.white, Colors.white],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFFE43A6A)
-                : (disabled ? Colors.grey.shade100 : Colors.grey.shade300),
+            color: isElite
+                ? (isSelected
+                    ? Colors.transparent
+                    : (disabled ? Colors.grey.shade100 : Colors.grey.shade300))
+                : (isSelected
+                    ? const Color(0xFFE43A6A)
+                    : (disabled ? Colors.grey.shade100 : Colors.grey.shade300)),
           ),
           borderRadius: BorderRadius.circular(18),
         ),
@@ -719,9 +807,11 @@ class _FilterScreenState extends State<FilterScreen> {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           style: TextStyle(
-            color: isSelected
-                ? const Color(0xFFE43A6A)
-                : (disabled ? Colors.grey.shade300 : Colors.grey.shade700),
+            color: (isSelected && isElite)
+                ? Colors.white
+                : (isSelected
+                    ? const Color(0xFFE43A6A)
+                    : (disabled ? Colors.grey.shade300 : Colors.grey.shade700)),
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
             fontFamily: 'Inter', // Assuming standard font
@@ -826,43 +916,15 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget _buildOnlineNowRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Online now',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Active in the last 15 min',
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
-              ),
-            ],
-          ),
-          Switch(
-            value: _isOnlineNow,
-            onChanged: (val) {
-              setState(() {
-                _isOnlineNow = val;
-              });
-            },
-            activeColor: Colors.white,
-            activeTrackColor: const Color(0xFFE43A6A),
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: Colors.grey.shade300,
-          ),
-        ],
-      ),
+    return _buildToggleRow(
+      'Online now',
+      'Active in the last 15 min',
+      _isOnlineNow,
+      (val) {
+        setState(() {
+          _isOnlineNow = val;
+        });
+      },
     );
   }
 
@@ -871,7 +933,7 @@ class _FilterScreenState extends State<FilterScreen> {
     String subtitle,
     bool value,
     Function(bool) onChanged, {
-    Color? activeColor,
+    bool isElite = false,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -896,13 +958,53 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ],
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: Colors.white,
-            activeTrackColor: activeColor ?? const Color(0xFFE43A6A),
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: Colors.grey.shade300,
+          GestureDetector(
+            onTap: () => onChanged(!value),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              width: 50,
+              height: 30,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                gradient: isElite
+                    ? LinearGradient(
+                        colors: value
+                            ? [
+                                const Color.fromARGB(255, 209, 114, 223),
+                                const Color(0xFF1A1A1A),
+                              ]
+                            : [Colors.grey.shade300, Colors.grey.shade300],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                color: isElite
+                    ? null
+                    : (value ? const Color(0xFFE43A6A) : Colors.grey.shade300),
+              ),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
