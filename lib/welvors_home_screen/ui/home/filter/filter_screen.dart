@@ -11,6 +11,7 @@ import 'all_screen/lifestyle.dart';
 import 'all_screen/religion_community.dart';
 import 'all_screen/profession.dart';
 import 'all_screen/zodiac.dart';
+import 'all_screen/trust_score.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_state.dart';
 
@@ -328,7 +329,22 @@ class _FilterScreenState extends State<FilterScreen> {
                   },
                 ),
                 _buildDivider(),
-                _buildPreferenceRow('Trust score', '0 – 20'),
+                _buildPreferenceRow(
+                  'Trust score', 
+                  '${state.minTrustScore.round()} – ${state.maxTrustScore.round()}',
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const TrustScoreScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
                 const SizedBox(height: 24),
                 _buildBrowsePoolFreePremium(),

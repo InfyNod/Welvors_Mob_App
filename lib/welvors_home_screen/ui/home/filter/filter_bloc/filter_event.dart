@@ -108,3 +108,13 @@ class UpdateZodiac extends FilterEvent {
   @override
   List<Object?> get props => [zodiac];
 }
+
+class UpdateTrustScore extends FilterEvent {
+  final double minTrustScore;
+  final double maxTrustScore;
+
+  const UpdateTrustScore({required this.minTrustScore, required this.maxTrustScore});
+
+  @override
+  List<Object?> get props => [minTrustScore, maxTrustScore];
+}

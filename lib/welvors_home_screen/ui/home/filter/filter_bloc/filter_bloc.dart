@@ -72,5 +72,12 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         zodiac: event.zodiac,
       ));
     });
+
+    on<UpdateTrustScore>((event, emit) {
+      emit(state.copyWith(
+        minTrustScore: event.minTrustScore,
+        maxTrustScore: event.maxTrustScore,
+      ));
+    });
   }
 }
