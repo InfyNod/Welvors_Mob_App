@@ -5,6 +5,7 @@ import 'all_screen/distance.dart';
 import 'all_screen/show_me.dart';
 import 'all_screen/looking_for.dart';
 import 'all_screen/height.dart';
+import 'all_screen/education.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_state.dart';
 
@@ -203,7 +204,9 @@ class _FilterScreenState extends State<FilterScreen> {
                 _buildDivider(),
                 _buildPreferenceRow(
                   'Height', 
-                  '${_formatHeight(state.minHeight)} - ${_formatHeight(state.maxHeight)}',
+                  state.minHeight == null || state.maxHeight == null
+                      ? 'Any'
+                      : '${_formatHeight(state.minHeight!)} - ${_formatHeight(state.maxHeight!)}',
                   onTap: () {
                     final filterBloc = context.read<FilterBloc>();
                     Navigator.push(
@@ -218,7 +221,22 @@ class _FilterScreenState extends State<FilterScreen> {
                   },
                 ),
                 _buildDivider(),
-                _buildPreferenceRow('Education', 'Any'),
+                _buildPreferenceRow(
+                  'Education', 
+                  state.education.isEmpty ? 'Any' : state.education.join(', '),
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const EducationScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
                 _buildPreferenceRow('Languages', 'Any'),
                 _buildDivider(),

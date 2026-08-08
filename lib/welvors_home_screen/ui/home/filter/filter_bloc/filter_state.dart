@@ -7,8 +7,9 @@ class FilterState extends Equatable {
   final String showMe;
   final String showMePreference;
   final List<String> lookingFor;
-  final double minHeight;
-  final double maxHeight;
+  final double? minHeight;
+  final double? maxHeight;
+  final List<String> education;
 
   const FilterState({
     this.minAge = 19.0,
@@ -17,8 +18,9 @@ class FilterState extends Equatable {
     this.showMe = 'Women',
     this.showMePreference = '',
     this.lookingFor = const [],
-    this.minHeight = 152.0, // 5'0" default
-    this.maxHeight = 183.0, // 6'0" default
+    this.minHeight,
+    this.maxHeight,
+    this.education = const [],
   });
 
   FilterState copyWith({
@@ -30,6 +32,7 @@ class FilterState extends Equatable {
     List<String>? lookingFor,
     double? minHeight,
     double? maxHeight,
+    List<String>? education,
   }) {
     return FilterState(
       minAge: minAge ?? this.minAge,
@@ -40,9 +43,10 @@ class FilterState extends Equatable {
       lookingFor: lookingFor ?? this.lookingFor,
       minHeight: minHeight ?? this.minHeight,
       maxHeight: maxHeight ?? this.maxHeight,
+      education: education ?? this.education,
     );
   }
 
   @override
-  List<Object?> get props => [minAge, maxAge, distance, showMe, showMePreference, lookingFor, minHeight, maxHeight];
+  List<Object?> get props => [minAge, maxAge, distance, showMe, showMePreference, lookingFor, minHeight, maxHeight, education];
 }

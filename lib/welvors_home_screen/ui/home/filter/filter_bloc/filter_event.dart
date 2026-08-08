@@ -54,3 +54,12 @@ class UpdateHeightRange extends FilterEvent {
   @override
   List<Object?> get props => [minHeight, maxHeight];
 }
+
+class UpdateEducation extends FilterEvent {
+  final List<String> education;
+
+  const UpdateEducation(this.education);
+
+  @override
+  List<Object?> get props => [education];
+}

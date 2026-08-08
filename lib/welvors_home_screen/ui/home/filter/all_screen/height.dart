@@ -18,8 +18,8 @@ class _HeightScreenState extends State<HeightScreen> {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
     _currentRangeValues = RangeValues(
-      currentState.minHeight.clamp(150.0, 201.0), 
-      currentState.maxHeight.clamp(150.0, 201.0)
+      (currentState.minHeight ?? 152.0).clamp(91.0, 244.0),
+      (currentState.maxHeight ?? 183.0).clamp(91.0, 244.0),
     );
   }
 
@@ -32,7 +32,7 @@ class _HeightScreenState extends State<HeightScreen> {
 
   void _onUseThisRange() {
     context.read<FilterBloc>().add(
-      UpdateHeightRange(_currentRangeValues.start, _currentRangeValues.end)
+      UpdateHeightRange(_currentRangeValues.start, _currentRangeValues.end),
     );
     Navigator.pop(context);
   }
@@ -76,10 +76,10 @@ class _HeightScreenState extends State<HeightScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF6F8), // Soft pink background
+        color: const Color(0xFFFDF6F4), // Light peach/pink background
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFFCE9EE), // Lighter pink border
+          color: const Color(0xFFF3D7DF), // Pink border
           width: 1,
         ),
       ),
@@ -88,38 +88,40 @@ class _HeightScreenState extends State<HeightScreen> {
           Text(
             '${_formatHeight(_currentRangeValues.start)} – ${_formatHeight(_currentRangeValues.end)}',
             style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
+              fontSize: 48,
+              fontWeight: FontWeight.w600,
               color: Colors.black87,
-              fontFamily: 'serif', // Gives that elegant look from the image
+              fontFamily: 'Times New Roman',
+              height: 1.1,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(
             '${_currentRangeValues.start.round()} - ${_currentRangeValues.end.round()} cm',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
-          const SizedBox(height: 32),
-          
+          const SizedBox(height: 0),
+
           // Slider
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: const Color(0xFFE43A6A),
-              inactiveTrackColor: const Color(0xFFE43A6A).withOpacity(0.2),
-              trackHeight: 4.0,
+              inactiveTrackColor: Colors.grey.shade300,
+              trackHeight: 6.0,
               thumbColor: Colors.white,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10.0, elevation: 2),
-              overlayColor: const Color(0xFFE43A6A).withOpacity(0.1),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 20.0),
+              overlayColor: const Color(0xFFE43A6A).withOpacity(0.15),
+              rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
+              rangeThumbShape: const RoundRangeSliderThumbShape(
+                enabledThumbRadius: 11,
+                elevation: 4,
+                pressedElevation: 8,
+              ),
             ),
             child: RangeSlider(
               values: _currentRangeValues,
-              min: 150.0,
-              max: 201.0,
-              divisions: 51, // 201 - 150
+              min: 91.0,
+              max: 244.0,
+              divisions: 153, // 244 - 91
               onChanged: (RangeValues values) {
                 setState(() {
                   _currentRangeValues = values;
@@ -127,21 +129,30 @@ class _HeightScreenState extends State<HeightScreen> {
               },
             ),
           ),
-          
+
           // Slider Labels
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('4\'11"', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
-                Text('5\'7"', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
-                Text('6\'7"', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                Text(
+                  '3\'0"',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                ),
+                Text(
+                  '5\'6"',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                ),
+                Text(
+                  '8\'0"',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 32),
-          
+          const SizedBox(height: 24),
+
           // Button
           SizedBox(
             width: double.infinity,
@@ -151,12 +162,15 @@ class _HeightScreenState extends State<HeightScreen> {
                 backgroundColor: const Color(0xFFE43A6A),
                 foregroundColor: Colors.white,
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Use this range', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              child: const Text(
+                'Use this range',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -166,15 +180,12 @@ class _HeightScreenState extends State<HeightScreen> {
 
   Widget _buildInfoCard(String icon, String title, String subtitle) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,16 +201,16 @@ class _HeightScreenState extends State<HeightScreen> {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     color: Colors.grey.shade500,
                     height: 1.4,
                   ),
@@ -270,10 +281,22 @@ class _HeightScreenState extends State<HeightScreen> {
               _buildSectionHeader(),
               _buildMainCard(),
               const SizedBox(height: 24),
-              _buildInfoCard('📏', 'Drag both ends', 'Set the shortest and tallest height you are open to — in feet or cm.'),
-              _buildInfoCard('✨', 'Keep it a little wide', 'A 6-8 inch window shows far more profiles than an exact height.'),
-              _buildInfoCard('🔒', 'Self-reported', 'Height is not verified, so treat it as a guide, not a rule.'),
-              const SizedBox(height: 40),
+              _buildInfoCard(
+                '📏',
+                'Drag both ends',
+                'Set the shortest and tallest height you are open to — in feet or cm.',
+              ),
+              _buildInfoCard(
+                '✨',
+                'Keep it a little wide',
+                'A 6-8 inch window shows far more profiles than an exact height.',
+              ),
+              _buildInfoCard(
+                '🔒',
+                'Self-reported',
+                'Height is not verified, so treat it as a guide, not a rule.',
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

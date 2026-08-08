@@ -36,5 +36,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         maxHeight: event.maxHeight,
       ));
     });
+
+    on<UpdateEducation>((event, emit) {
+      emit(state.copyWith(
+        education: event.education,
+      ));
+    });
   }
 }
