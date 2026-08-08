@@ -140,12 +140,16 @@ class _FilterScreenState extends State<FilterScreen> {
                     _buildDivider(),
                     _buildPreferenceRow(
                       'Distance', 
-                      '26 km',
+                      '${state.distance.round()} km',
                       onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const DistanceScreen(),
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const DistanceScreen(),
+                            ),
                           ),
                         );
                       },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
+import '../filter_bloc/filter_event.dart';
 
 class DistanceScreen extends StatefulWidget {
   const DistanceScreen({super.key});
@@ -17,9 +18,8 @@ class _DistanceScreenState extends State<DistanceScreen> {
   @override
   void initState() {
     super.initState();
-    // Assuming distance will be added to FilterBloc later. For now local state.
-    // final currentState = context.read<FilterBloc>().state;
-    // _currentDistance = currentState.distance;
+    final currentState = context.read<FilterBloc>().state;
+    _currentDistance = currentState.distance;
     if (_predefinedDistances.contains(_currentDistance)) {
       _selectedDistanceChip = _currentDistance;
     } else {
@@ -80,7 +80,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
             padding: const EdgeInsets.only(right: 20, top: 10, bottom: 10),
             child: ElevatedButton(
               onPressed: () {
-                // context.read<FilterBloc>().add(UpdateDistance(_currentDistance));
+                context.read<FilterBloc>().add(UpdateDistance(_currentDistance));
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
@@ -92,7 +92,10 @@ class _DistanceScreenState extends State<DistanceScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text('Done', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              child: const Text(
+                'Done',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
             ),
           ),
         ],
@@ -106,7 +109,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
               // Radar UI
               _buildRadarUI(),
               const SizedBox(height: 10),
-              
+
               // Premium Slider
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
@@ -130,7 +133,9 @@ class _DistanceScreenState extends State<DistanceScreen> {
                     setState(() {
                       _currentDistance = value;
                       // Sync slider with chips
-                      if (_predefinedDistances.contains(value.roundToDouble())) {
+                      if (_predefinedDistances.contains(
+                        value.roundToDouble(),
+                      )) {
                         _selectedDistanceChip = value.roundToDouble();
                       } else {
                         _selectedDistanceChip = -1;
@@ -139,16 +144,37 @@ class _DistanceScreenState extends State<DistanceScreen> {
                   },
                 ),
               ),
-              
+
               // Slider Labels
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('1 km', style: TextStyle(color: Colors.grey.shade400, fontSize: 10, fontWeight: FontWeight.bold)),
-                    Text('50 km', style: TextStyle(color: Colors.grey.shade400, fontSize: 10, fontWeight: FontWeight.bold)),
-                    Text('100+ km', style: TextStyle(color: Colors.grey.shade400, fontSize: 10, fontWeight: FontWeight.bold)),
+                    Text(
+                      '1 km',
+                      style: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '50 km',
+                      style: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '100+ km',
+                      style: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -164,8 +190,11 @@ class _DistanceScreenState extends State<DistanceScreen> {
                 ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final itemWidth = constraints.maxWidth / _predefinedDistances.length;
-                    final selectedIndex = _predefinedDistances.indexOf(_selectedDistanceChip);
+                    final itemWidth =
+                        constraints.maxWidth / _predefinedDistances.length;
+                    final selectedIndex = _predefinedDistances.indexOf(
+                      _selectedDistanceChip,
+                    );
 
                     return Stack(
                       children: [
@@ -181,11 +210,15 @@ class _DistanceScreenState extends State<DistanceScreen> {
                               padding: const EdgeInsets.all(4.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFE43A6A), // Pink background
+                                  color: const Color(
+                                    0xFFE43A6A,
+                                  ), // Pink background
                                   borderRadius: BorderRadius.circular(8),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                      color: const Color(
+                                        0xFFE43A6A,
+                                      ).withOpacity(0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -210,8 +243,12 @@ class _DistanceScreenState extends State<DistanceScreen> {
                                   child: AnimatedDefaultTextStyle(
                                     duration: const Duration(milliseconds: 200),
                                     style: TextStyle(
-                                      color: isSelected ? Colors.white : Colors.black87,
-                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.black87,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
                                       fontSize: 13,
                                     ),
                                     child: Text('${dist.round()} km'),
@@ -233,7 +270,8 @@ class _DistanceScreenState extends State<DistanceScreen> {
                 icon: Icons.location_on,
                 iconColor: const Color(0xFFE43A6A),
                 title: 'Only your area is shown',
-                subtitle: 'Members see "Koregaon Park" — never your exact location.',
+                subtitle:
+                    'Members see "Koregaon Park" — never your exact location.',
               ),
               const SizedBox(height: 12),
 
@@ -242,7 +280,8 @@ class _DistanceScreenState extends State<DistanceScreen> {
                 icon: Icons.auto_awesome,
                 iconColor: Colors.amber.shade600,
                 title: 'Wider radius, more matches',
-                subtitle: 'Under 10 km narrows the pool a lot in smaller cities.',
+                subtitle:
+                    'Under 10 km narrows the pool a lot in smaller cities.',
               ),
             ],
           ),
@@ -284,12 +323,12 @@ class _DistanceScreenState extends State<DistanceScreen> {
               final scale = 0.3 + (_currentDistance / 100.0) * 1.2;
               final baseSize = 400.0 * scale;
               final size = baseSize - (index * (baseSize / 5));
-              
+
               // Inner rings are brighter, outer rings fade out
               final opacity = (1.0 - (index * 0.15)).clamp(0.0, 1.0);
               final thickness = index == 0 ? 2.0 : 1.0;
-              final ringColor = const Color(0xFFE43A6A);
-              
+              final ringColor = const Color.fromARGB(255, 227, 158, 176);
+
               return Positioned(
                 bottom: -size / 2 + 10,
                 child: AnimatedContainer(
@@ -304,7 +343,8 @@ class _DistanceScreenState extends State<DistanceScreen> {
                       width: thickness,
                     ),
                     boxShadow: [
-                      if (index == 0) // Soft glowing effect on the innermost ring
+                      if (index ==
+                          0) // Soft glowing effect on the innermost ring
                         BoxShadow(
                           color: ringColor.withOpacity(0.15),
                           blurRadius: 20,
@@ -315,7 +355,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
                 ),
               );
             }),
-            
+
             // Text Content
             Align(
               alignment: Alignment.center,
@@ -361,7 +401,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Across Pune',
+                    _getDistanceDescription(_currentDistance),
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 12,
@@ -429,5 +469,19 @@ class _DistanceScreenState extends State<DistanceScreen> {
         ],
       ),
     );
+  }
+
+  String _getDistanceDescription(double distance) {
+    if (distance <= 5) {
+      return 'Walking distance';
+    } else if (distance <= 10) {
+      return 'Nearby neighborhoods';
+    } else if (distance <= 25) {
+      return 'Your side of the city';
+    } else if (distance <= 50) {
+      return 'Across the city';
+    } else {
+      return 'Anywhere / Out of town';
+    }
   }
 }

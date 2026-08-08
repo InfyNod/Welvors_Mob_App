@@ -16,3 +16,12 @@ class UpdateAgeRange extends FilterEvent {
   @override
   List<Object?> get props => [startAge, endAge];
 }
+
+class UpdateDistance extends FilterEvent {
+  final double distance;
+
+  const UpdateDistance(this.distance);
+
+  @override
+  List<Object?> get props => [distance];
+}

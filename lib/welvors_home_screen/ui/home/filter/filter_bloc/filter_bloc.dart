@@ -10,5 +10,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         maxAge: event.endAge,
       ));
     });
+
+    on<UpdateDistance>((event, emit) {
+      emit(state.copyWith(
+        distance: event.distance,
+      ));
+    });
   }
 }
