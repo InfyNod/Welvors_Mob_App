@@ -86,7 +86,7 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 12, top: 12),
+          padding: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
           child: Text(
             categoryName,
             style: const TextStyle(
@@ -98,7 +98,7 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 24),
+          padding: const EdgeInsets.only(bottom: 16),
           child: Wrap(
             spacing: 8.0,
             runSpacing: 12.0,
