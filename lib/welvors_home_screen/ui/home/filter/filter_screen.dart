@@ -167,6 +167,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           (val) {
                             setState(() => _showWhoLikedMe = val);
                           },
+                          activeColor: Colors.black,
                         ),
                         _buildDivider(),
                         _buildToggleRow(
@@ -176,6 +177,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           (val) {
                             setState(() => _membersOnly = val);
                           },
+                          activeColor: Colors.black,
                         ),
                       ],
                     ),
@@ -194,98 +196,115 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget _buildTierSelection() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildTierCard(
-            title: 'Premium+',
-            subtitle: _selectedTier == 'Premium+' ? '✓ Active' : '○ Other world',
-            subtitleColor: _selectedTier == 'Premium+' ? const Color(0xFF00C853) : Colors.grey.shade400,
-            borderColor: _selectedTier == 'Premium+' ? const Color(0xFFE43A6A) : Colors.grey.shade200,
-            backgroundColor: _selectedTier == 'Premium+' ? const Color(0xFFFCEEED) : Colors.white,
-            onTap: () => setState(() => _selectedTier = 'Premium+'),
-          ),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: _buildTierCard(
-            title: 'VIP',
-            subtitle: _selectedTier == 'VIP' ? '✓ Active' : '⊘ Other world',
-            subtitleColor: _selectedTier == 'VIP' ? const Color(0xFF00C853) : Colors.grey.shade400,
-            borderColor: _selectedTier == 'VIP' ? const Color(0xFF9C27B0) : Colors.grey.shade200,
-            backgroundColor: _selectedTier == 'VIP' ? Colors.purple.shade50 : Colors.white,
-            onTap: () => setState(() => _selectedTier = 'VIP'),
-          ),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: _buildTierCard(
-            title: 'Elite',
-            subtitle: _selectedTier == 'Elite' ? '✓ Active' : '⊘ Other world',
-            subtitleColor: _selectedTier == 'Elite' ? const Color(0xFF00C853) : Colors.grey.shade400,
-            borderColor: _selectedTier == 'Elite' ? Colors.black : Colors.grey.shade200,
-            backgroundColor: _selectedTier == 'Elite' ? Colors.grey.shade100 : Colors.white,
-            onTap: () => setState(() => _selectedTier = 'Elite'),
-          ),
-        ),
-      ],
-    );
-  }
+    final tiers = ['Premium+', 'VIP', 'Elite'];
+    int selectedIndex = tiers.indexOf(_selectedTier);
+    if (selectedIndex == -1) selectedIndex = 0;
 
-  Widget _buildTierCard({
-    required String title,
-    required String subtitle,
-    required Color subtitleColor,
-    required Color borderColor,
-    required Color backgroundColor,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: borderColor,
-          width: backgroundColor == Colors.white ? 1 : 1.5,
-        ),
-        boxShadow: backgroundColor == Colors.white
-            ? []
-            : [
-                BoxShadow(
-                  color: borderColor.withOpacity(0.15),
-                  blurRadius: 12,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 4),
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final itemWidth = constraints.maxWidth / 3;
+          
+          Color activeBorderColor = Colors.transparent;
+          if (_selectedTier == 'Premium+') {
+             activeBorderColor = const Color(0xFFE43A6A).withOpacity(0.3);
+          } else if (_selectedTier == 'VIP') {
+             activeBorderColor = const Color(0xFF9C27B0).withOpacity(0.3);
+          } else if (_selectedTier == 'Elite') {
+             activeBorderColor = Colors.black.withOpacity(0.2);
+          }
+
+          return Stack(
+            children: [
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                left: selectedIndex * itemWidth,
+                top: 0,
+                bottom: 0,
+                width: itemWidth,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: activeBorderColor, width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
+              Row(
+                children: List.generate(tiers.length, (index) {
+                  final title = tiers[index];
+                  final isSelected = _selectedTier == title;
+                  
+                  String subtitle = '';
+                  Color subtitleColor = Colors.grey.shade400;
+                  Color titleColor = Colors.grey.shade700;
+                  
+                  if (title == 'Premium+') {
+                     subtitle = isSelected ? '✓ Active' : '○ Other world';
+                     subtitleColor = isSelected ? const Color(0xFF00C853) : Colors.grey.shade400;
+                     titleColor = isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade700;
+                  } else if (title == 'VIP') {
+                     subtitle = isSelected ? '✓ Active' : '⊘ Other world';
+                     subtitleColor = isSelected ? const Color(0xFF00C853) : Colors.grey.shade400;
+                     titleColor = isSelected ? const Color(0xFF9C27B0) : Colors.grey.shade700;
+                  } else if (title == 'Elite') {
+                     subtitle = isSelected ? '✓ Active' : '⊘ Other world';
+                     subtitleColor = isSelected ? const Color(0xFF00C853) : Colors.grey.shade400;
+                     titleColor = isSelected ? Colors.black87 : Colors.grey.shade700;
+                  }
+
+                  return Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => setState(() => _selectedTier = title),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedDefaultTextStyle(
+                            duration: const Duration(milliseconds: 250),
+                            style: TextStyle(
+                              color: titleColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Inter',
+                            ),
+                            child: Text(title),
+                          ),
+                          const SizedBox(height: 2),
+                          AnimatedDefaultTextStyle(
+                            duration: const Duration(milliseconds: 250),
+                            style: TextStyle(
+                              color: subtitleColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Inter',
+                            ),
+                            child: Text(subtitle),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          );
+        },
       ),
-      child: Column(
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: backgroundColor == Colors.white
-                  ? Colors.black87
-                  : borderColor,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: subtitleColor,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    ),
     );
   }
 
@@ -298,14 +317,17 @@ class _FilterScreenState extends State<FilterScreen> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: Colors.grey.shade500,
+            color: _selectedTier == 'Premium+' ? Colors.black87 : Colors.grey.shade400,
             letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 6),
         Text(
           'The two worlds run separately — members of one never see the other.',
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          style: TextStyle(
+            fontSize: 12,
+            color: _selectedTier == 'Premium+' ? Colors.grey.shade700 : Colors.grey.shade400,
+          ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -330,60 +352,66 @@ class _FilterScreenState extends State<FilterScreen> {
             ],
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+          child: IgnorePointer(
+            ignoring: _selectedTier != 'Premium+',
+            child: Opacity(
+              opacity: _selectedTier == 'Premium+' ? 1.0 : 0.4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSmallBadge('Free', Colors.pinkAccent),
-                  const SizedBox(width: 8),
-                  _buildSmallBadge('Premium+', Colors.orangeAccent),
-                  const Spacer(),
+                  Row(
+                    children: [
+                      _buildSmallBadge('Free', Colors.pinkAccent),
+                      const SizedBox(width: 8),
+                      _buildSmallBadge('Premium+', Colors.orangeAccent),
+                      const Spacer(),
+                      const Text(
+                        '• Your world',
+                        style: TextStyle(
+                          color: Color(0xFF00C853),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
                   const Text(
-                    '• Your world',
+                    'Free & Premium',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Free and Premium+ members share one pool.',
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildSlidingSegmentedControl(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'LOOKING FOR',
                     style: TextStyle(
-                      color: Color(0xFF00C853),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade400,
+                      letterSpacing: 0.5,
                     ),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _buildSelectableWrapChip('Any', disabled: _selectedTier != 'Premium+'),
+                      _buildSelectableWrapChip('Long-term relationship', disabled: _selectedTier != 'Premium+'),
+                      _buildSelectableWrapChip('Marriage', disabled: _selectedTier != 'Premium+'),
+                      _buildSelectableWrapChip('Open-minded', disabled: _selectedTier != 'Premium+'),
+                      _buildSelectableWrapChip('New friends', disabled: _selectedTier != 'Premium+'),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              const Text(
-                'Free & Premium',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'Free and Premium+ members share one pool.',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-              ),
-              const SizedBox(height: 12),
-              _buildSlidingSegmentedControl(),
-              const SizedBox(height: 16),
-              Text(
-                'LOOKING FOR',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade400,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  _buildSelectableWrapChip('Any'),
-                  _buildSelectableWrapChip('Long-term relationship'),
-                  _buildSelectableWrapChip('Marriage'),
-                  _buildSelectableWrapChip('Open-minded'),
-                  _buildSelectableWrapChip('New friends'),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ],
@@ -399,7 +427,7 @@ class _FilterScreenState extends State<FilterScreen> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: Colors.grey.shade500,
+            color: _selectedTier != 'Premium+' ? Colors.black87 : Colors.grey.shade400,
             letterSpacing: 0.5,
           ),
         ),
@@ -842,8 +870,9 @@ class _FilterScreenState extends State<FilterScreen> {
     String title,
     String subtitle,
     bool value,
-    Function(bool) onChanged,
-  ) {
+    Function(bool) onChanged, {
+    Color? activeColor,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -871,7 +900,7 @@ class _FilterScreenState extends State<FilterScreen> {
             value: value,
             onChanged: onChanged,
             activeColor: Colors.white,
-            activeTrackColor: const Color(0xFFE43A6A),
+            activeTrackColor: activeColor ?? const Color(0xFFE43A6A),
             inactiveThumbColor: Colors.white,
             inactiveTrackColor: Colors.grey.shade300,
           ),
