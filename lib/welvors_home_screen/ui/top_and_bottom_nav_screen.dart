@@ -2,6 +2,8 @@ import 'dart:async';
 // import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'home/filter/filter_bloc/filter_bloc.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
@@ -371,7 +373,10 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const FilterScreen(),
+                              builder: (context) => BlocProvider(
+                                create: (_) => FilterBloc(),
+                                child: const FilterScreen(),
+                              ),
                             ),
                           );
                         },

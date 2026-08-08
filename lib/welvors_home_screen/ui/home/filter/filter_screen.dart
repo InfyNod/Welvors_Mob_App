@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'all_screen/age.dart';
+import 'filter_bloc/filter_bloc.dart';
+import 'filter_bloc/filter_state.dart';
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -110,12 +114,30 @@ class _FilterScreenState extends State<FilterScreen> {
             child: _buildTierSelection(),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              children: [
-                _buildPreferenceRow('Age', '19 – 32'),
-                _buildDivider(),
-                _buildPreferenceRow('Distance', '25 km'),
+            child: BlocBuilder<FilterBloc, FilterState>(
+              builder: (context, state) {
+                return ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  children: [
+                    _buildPreferenceRow(
+                      'Age', 
+                      '${state.minAge.round()} – ${state.maxAge.round()}', 
+                      onTap: () {
+                        // Pass the existing FilterBloc instance to the new route
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const AgeScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow('Distance', '25 km'),
                 _buildDivider(),
                 _buildPreferenceRow('Show me', 'Women'),
                 _buildDivider(),
@@ -211,9 +233,11 @@ class _FilterScreenState extends State<FilterScreen> {
                 _buildBrowsePoolVipWorld(),
                 const SizedBox(height: 40),
               ],
-            ),
-          ),
-          _buildBottomButton(),
+            ); // Closes ListView
+          }, // Closes builder
+        ), // Closes BlocBuilder
+      ), // Closes Expanded
+      _buildBottomButton(),
         ],
       ),
     );
@@ -786,7 +810,7 @@ class _FilterScreenState extends State<FilterScreen> {
           gradient: isElite
               ? LinearGradient(
                   colors: isSelected
-                      ? [const Color(0xFFBA68C8), const Color(0xFF424242)] // Lighter purple to charcoal grey
+                      ? [const Color(0xFFAB47BC), const Color(0xFF2C2C2C)] // Richer purple to dark charcoal grey for better text contrast
                       : [Colors.white, Colors.white],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -878,39 +902,42 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Widget _buildPreferenceRow(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 18),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
+  Widget _buildPreferenceRow(String title, String value, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          Row(
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Color(0xFFE43A6A),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+            Row(
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: Color(0xFFE43A6A),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey.shade300,
-                size: 14,
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.grey.shade300,
+                  size: 14,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
