@@ -12,6 +12,8 @@ class _FilterScreenState extends State<FilterScreen> {
   bool _showWhoLikedMe = false;
   bool _membersOnly = false;
 
+  String _selectedTier = 'Premium+';
+
   String _activeBrowsePool = 'Premium+ only';
   final Set<String> _selectedLookingFor = {'New friends'};
 
@@ -41,8 +43,8 @@ class _FilterScreenState extends State<FilterScreen> {
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
@@ -104,12 +106,12 @@ class _FilterScreenState extends State<FilterScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             child: _buildTierSelection(),
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               children: [
                 _buildPreferenceRow('Age', '19 – 32'),
                 _buildDivider(),
@@ -119,15 +121,6 @@ class _FilterScreenState extends State<FilterScreen> {
                 _buildDivider(),
                 _buildOnlineNowRow(),
                 _buildDivider(),
-
-                _buildPreferenceRow('Height', 'Any'),
-                _buildDivider(),
-                _buildPreferenceRow('Education', 'Any'),
-                _buildDivider(),
-                _buildPreferenceRow('Languages', 'Any'),
-                _buildDivider(),
-                _buildPreferenceRow('Lifestyle', 'Any'),
-                _buildDivider(),
                 _buildPreferenceRow('Religion & community', 'Any'),
                 _buildDivider(),
                 _buildPreferenceRow('Profession', 'Any'),
@@ -136,44 +129,58 @@ class _FilterScreenState extends State<FilterScreen> {
                 _buildDivider(),
                 _buildPreferenceRow('Trust score', '0 – 20'),
                 _buildDivider(),
-
                 const SizedBox(height: 24),
                 _buildBrowsePoolFreePremium(),
-
                 const SizedBox(height: 24),
-                _buildLockHeader('VIP Filters', Colors.amber.shade700, 'VIP'),
-                _buildPreferenceRow('Income range', 'Any'),
-                _buildDivider(),
-                _buildPreferenceRow('Networking intent', 'Any'),
-                _buildDivider(),
-                _buildPreferenceRow('Ambition', 'Any'),
-                _buildDivider(),
-
+                
+                _buildLockedPremiumBox(
+                  Opacity(
+                    opacity: (_selectedTier == 'VIP' || _selectedTier == 'Elite') ? 1.0 : 0.4,
+                    child: Column(
+                      children: [
+                        _buildLockHeader('VIP Filters', Colors.amber.shade700, 'VIP'),
+                        _buildPreferenceRow('Income range', 'Any'),
+                        _buildDivider(),
+                        _buildPreferenceRow('Networking intent', 'Any'),
+                        _buildDivider(),
+                        _buildPreferenceRow('Ambition', 'Any'),
+                      ],
+                    ),
+                  ),
+                ),
+                
                 const SizedBox(height: 24),
-                _buildLockHeader(
-                  'Elite Filters',
-                  Colors.purple.shade300,
-                  'Elite',
+                _buildLockedPremiumBox(
+                  Opacity(
+                    opacity: _selectedTier == 'Elite' ? 1.0 : 0.4,
+                    child: Column(
+                      children: [
+                        _buildLockHeader(
+                          'Elite Filters',
+                          Colors.purple.shade300,
+                          'Elite',
+                        ),
+                        _buildToggleRow(
+                          'Show who liked me first',
+                          'Elite priority ordering',
+                          _showWhoLikedMe,
+                          (val) {
+                            setState(() => _showWhoLikedMe = val);
+                          },
+                        ),
+                        _buildDivider(),
+                        _buildToggleRow(
+                          'Members-only gatherings',
+                          'Open to private Elite events',
+                          _membersOnly,
+                          (val) {
+                            setState(() => _membersOnly = val);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                _buildToggleRow(
-                  'Show who liked me first',
-                  'Elite priority ordering',
-                  _showWhoLikedMe,
-                  (val) {
-                    setState(() => _showWhoLikedMe = val);
-                  },
-                ),
-                _buildDivider(),
-                _buildToggleRow(
-                  'Members-only gatherings',
-                  'Open to private Elite events',
-                  _membersOnly,
-                  (val) {
-                    setState(() => _membersOnly = val);
-                  },
-                ),
-                _buildDivider(),
-
                 const SizedBox(height: 24),
                 _buildBrowsePoolVipWorld(),
                 const SizedBox(height: 40),
@@ -192,30 +199,33 @@ class _FilterScreenState extends State<FilterScreen> {
         Expanded(
           child: _buildTierCard(
             title: 'Premium+',
-            subtitle: '✓ Active',
-            subtitleColor: const Color(0xFF00C853),
-            borderColor: const Color(0xFFE43A6A),
-            backgroundColor: const Color(0xFFFCEEED),
+            subtitle: _selectedTier == 'Premium+' ? '✓ Active' : '○ Other world',
+            subtitleColor: _selectedTier == 'Premium+' ? const Color(0xFF00C853) : Colors.grey.shade400,
+            borderColor: _selectedTier == 'Premium+' ? const Color(0xFFE43A6A) : Colors.grey.shade200,
+            backgroundColor: _selectedTier == 'Premium+' ? const Color(0xFFFCEEED) : Colors.white,
+            onTap: () => setState(() => _selectedTier = 'Premium+'),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         Expanded(
           child: _buildTierCard(
             title: 'VIP',
-            subtitle: '○ Other world',
-            subtitleColor: Colors.grey.shade400,
-            borderColor: Colors.grey.shade200,
-            backgroundColor: Colors.white,
+            subtitle: _selectedTier == 'VIP' ? '✓ Active' : '⊘ Other world',
+            subtitleColor: _selectedTier == 'VIP' ? const Color(0xFF00C853) : Colors.grey.shade400,
+            borderColor: _selectedTier == 'VIP' ? const Color(0xFF9C27B0) : Colors.grey.shade200,
+            backgroundColor: _selectedTier == 'VIP' ? Colors.purple.shade50 : Colors.white,
+            onTap: () => setState(() => _selectedTier = 'VIP'),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         Expanded(
           child: _buildTierCard(
             title: 'Elite',
-            subtitle: '○ Other world',
-            subtitleColor: Colors.grey.shade400,
-            borderColor: Colors.grey.shade200,
-            backgroundColor: Colors.white,
+            subtitle: _selectedTier == 'Elite' ? '✓ Active' : '⊘ Other world',
+            subtitleColor: _selectedTier == 'Elite' ? const Color(0xFF00C853) : Colors.grey.shade400,
+            borderColor: _selectedTier == 'Elite' ? Colors.black : Colors.grey.shade200,
+            backgroundColor: _selectedTier == 'Elite' ? Colors.grey.shade100 : Colors.white,
+            onTap: () => setState(() => _selectedTier = 'Elite'),
           ),
         ),
       ],
@@ -228,8 +238,11 @@ class _FilterScreenState extends State<FilterScreen> {
     required Color subtitleColor,
     required Color borderColor,
     required Color backgroundColor,
+    required VoidCallback onTap,
   }) {
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -272,6 +285,7 @@ class _FilterScreenState extends State<FilterScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -412,12 +426,12 @@ class _FilterScreenState extends State<FilterScreen> {
             ],
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Opacity(
-                opacity: 0.4, // Faded because it's locked
-                child: Row(
+          child: Opacity(
+            opacity: _selectedTier != 'Premium+' ? 1.0 : 0.4, // Unfaded if VIP or Elite
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -471,80 +485,83 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'VIP & VIP Elite',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: Colors.grey.shade400,
+                const SizedBox(height: 10),
+                const Text(
+                  'VIP & VIP Elite',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'VIP and VIP Elite members share one private pool.',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.purple.shade50.withOpacity(0.5),
-                  border: Border.all(color: Colors.purple.shade100, width: 1),
-                  borderRadius: BorderRadius.circular(20),
+                const SizedBox(height: 2),
+                Text(
+                  'VIP and VIP Elite members share one private pool.',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.lock_outline,
-                      size: 14,
-                      color: Colors.purple.shade300,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Upgrade to VIP to enter',
-                      style: TextStyle(
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50.withOpacity(0.5),
+                    border: Border.all(color: Colors.purple.shade100, width: 1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.lock_outline,
+                        size: 14,
                         color: Colors.purple.shade300,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
                       ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Upgrade to VIP to enter',
+                        style: TextStyle(
+                          color: Colors.purple.shade400,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'LOOKING FOR',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    _buildSelectableWrapChip('Any', disabled: _selectedTier == 'Premium+'),
+                    _buildSelectableWrapChip(
+                      'Long-term relationship',
+                      disabled: _selectedTier == 'Premium+',
                     ),
+                    _buildSelectableWrapChip('Marriage', disabled: _selectedTier == 'Premium+'),
+                    _buildSelectableWrapChip(
+                      'Exclusive companionship',
+                      disabled: _selectedTier == 'Premium+',
+                    ),
+                    _buildSelectableWrapChip(
+                      'Travel companion',
+                      disabled: _selectedTier == 'Premium+',
+                    ),
+                    _buildSelectableWrapChip('Networking', disabled: _selectedTier == 'Premium+'),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'LOOKING FOR',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade300,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  _buildSelectableWrapChip('Any', disabled: true),
-                  _buildSelectableWrapChip(
-                    'Long-term relationship',
-                    disabled: true,
-                  ),
-                  _buildSelectableWrapChip('Marriage', disabled: true),
-                  _buildSelectableWrapChip(
-                    'Exclusive companionship',
-                    disabled: true,
-                  ),
-                  _buildSelectableWrapChip('Travel companion', disabled: true),
-                  _buildSelectableWrapChip('Networking', disabled: true),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -684,6 +701,25 @@ class _FilterScreenState extends State<FilterScreen> {
           child: Text(label),
         ),
       ),
+    );
+  }
+
+  Widget _buildLockedPremiumBox(Widget child) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey.shade200, width: 1.5),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: child,
     );
   }
 
@@ -863,7 +899,12 @@ class _FilterScreenState extends State<FilterScreen> {
       child: SafeArea(
         bottom: true,
         child: Padding(
-          padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16, top: 16),
+          padding: const EdgeInsets.only(
+            left: 24,
+            right: 24,
+            bottom: 16,
+            top: 16,
+          ),
           child: ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
@@ -879,10 +920,7 @@ class _FilterScreenState extends State<FilterScreen> {
             ),
             child: const Text(
               'Show 248 profiles',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
         ),
