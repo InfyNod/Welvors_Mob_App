@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'all_screen/age.dart';
+import 'all_screen/distance.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_state.dart';
 
@@ -137,8 +138,19 @@ class _FilterScreenState extends State<FilterScreen> {
                       },
                     ),
                     _buildDivider(),
-                    _buildPreferenceRow('Distance', '25 km'),
-                _buildDivider(),
+                    _buildPreferenceRow(
+                      'Distance', 
+                      '26 km',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DistanceScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
                 _buildPreferenceRow('Show me', 'Women'),
                 _buildDivider(),
                 _buildOnlineNowRow(),

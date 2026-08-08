@@ -150,7 +150,7 @@ class _AgeScreenState extends State<AgeScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 10),
 
             // Slider
             // Premium Slider
@@ -176,8 +176,12 @@ class _AgeScreenState extends State<AgeScreen> {
                 onChanged: (RangeValues values) {
                   setState(() {
                     _currentRangeValues = values;
-                    _selectedRange =
-                        ''; // Clear predefined selection when custom sliding
+                    final matchingRange = '${values.start.round()}-${values.end.round()}';
+                    if (_predefinedRanges.contains(matchingRange)) {
+                      _selectedRange = matchingRange;
+                    } else {
+                      _selectedRange = '';
+                    }
                   });
                 },
               ),
