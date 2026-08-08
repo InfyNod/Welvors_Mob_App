@@ -48,5 +48,29 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         languages: event.languages,
       ));
     });
+
+    on<UpdateLifestyle>((event, emit) {
+      emit(state.copyWith(
+        lifestyle: event.lifestyle,
+      ));
+    });
+
+    on<UpdateReligion>((event, emit) {
+      emit(state.copyWith(
+        religion: event.religion,
+      ));
+    });
+
+    on<UpdateProfession>((event, emit) {
+      emit(state.copyWith(
+        profession: event.profession,
+      ));
+    });
+
+    on<UpdateZodiac>((event, emit) {
+      emit(state.copyWith(
+        zodiac: event.zodiac,
+      ));
+    });
   }
 }

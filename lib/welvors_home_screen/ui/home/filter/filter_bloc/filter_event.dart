@@ -72,3 +72,39 @@ class UpdateLanguages extends FilterEvent {
   @override
   List<Object?> get props => [languages];
 }
+
+class UpdateLifestyle extends FilterEvent {
+  final List<String> lifestyle;
+
+  const UpdateLifestyle(this.lifestyle);
+
+  @override
+  List<Object?> get props => [lifestyle];
+}
+
+class UpdateReligion extends FilterEvent {
+  final List<String> religion;
+
+  const UpdateReligion(this.religion);
+
+  @override
+  List<Object?> get props => [religion];
+}
+
+class UpdateProfession extends FilterEvent {
+  final List<String> profession;
+
+  const UpdateProfession(this.profession);
+
+  @override
+  List<Object?> get props => [profession];
+}
+
+class UpdateZodiac extends FilterEvent {
+  final String zodiac;
+
+  const UpdateZodiac(this.zodiac);
+
+  @override
+  List<Object?> get props => [zodiac];
+}

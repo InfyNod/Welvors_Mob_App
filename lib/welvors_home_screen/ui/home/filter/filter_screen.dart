@@ -7,6 +7,10 @@ import 'all_screen/looking_for.dart';
 import 'all_screen/height.dart';
 import 'all_screen/education.dart';
 import 'all_screen/languages.dart';
+import 'all_screen/lifestyle.dart';
+import 'all_screen/religion_community.dart';
+import 'all_screen/profession.dart';
+import 'all_screen/zodiac.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_state.dart';
 
@@ -256,13 +260,73 @@ class _FilterScreenState extends State<FilterScreen> {
                   },
                 ),
                 _buildDivider(),
-                _buildPreferenceRow('Lifestyle', 'Any'),
+                _buildPreferenceRow(
+                  'Lifestyle', 
+                  state.lifestyle.isEmpty ? 'Any' : state.lifestyle.map((e) => e.split(':').last).join(', '),
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const LifestyleScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
-                _buildPreferenceRow('Religion & community', 'Any'),
+                _buildPreferenceRow(
+                  'Religion & community', 
+                  state.religion.isEmpty ? 'Any' : state.religion.join(', '),
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const ReligionCommunityScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
-                _buildPreferenceRow('Profession', 'Any'),
+                _buildPreferenceRow(
+                  'Profession', 
+                  state.profession.isEmpty ? 'Any' : state.profession.join(', '),
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const ProfessionScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
-                _buildPreferenceRow('Zodiac', 'Any'),
+                _buildPreferenceRow(
+                  'Zodiac', 
+                  state.zodiac,
+                  onTap: () {
+                    final filterBloc = context.read<FilterBloc>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: filterBloc,
+                          child: const ZodiacScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildDivider(),
                 _buildPreferenceRow('Trust score', '0 – 20'),
                 _buildDivider(),
