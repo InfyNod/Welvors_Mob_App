@@ -7,6 +7,8 @@ abstract class FilterEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class ResetFilter extends FilterEvent {}
+
 class UpdateAgeRange extends FilterEvent {
   final double startAge;
   final double endAge;

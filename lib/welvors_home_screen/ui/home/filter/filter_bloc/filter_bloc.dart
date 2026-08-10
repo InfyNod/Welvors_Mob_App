@@ -4,6 +4,10 @@ import 'filter_state.dart';
 
 class FilterBloc extends Bloc<FilterEvent, FilterState> {
   FilterBloc() : super(const FilterState()) {
+    on<ResetFilter>((event, emit) {
+      emit(const FilterState()); // Reset to default state
+    });
+
     on<UpdateAgeRange>((event, emit) {
       emit(state.copyWith(
         minAge: event.startAge,

@@ -13,6 +13,7 @@ import 'all_screen/profession.dart';
 import 'all_screen/zodiac.dart';
 import 'all_screen/trust_score.dart';
 import 'filter_bloc/filter_bloc.dart';
+import 'filter_bloc/filter_event.dart';
 import 'filter_bloc/filter_state.dart';
 
 class FilterScreen extends StatefulWidget {
@@ -100,7 +101,17 @@ class _FilterScreenState extends State<FilterScreen> {
         actions: [
           Center(
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                context.read<FilterBloc>().add(ResetFilter());
+                setState(() {
+                  _isOnlineNow = false;
+                  _showWhoLikedMe = false;
+                  _membersOnly = false;
+                  _selectedTier = 'Premium+';
+                  _selectedLookingFor.clear();
+                  _selectedLookingFor.add('New friends');
+                });
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
