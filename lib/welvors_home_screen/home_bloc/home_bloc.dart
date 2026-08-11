@@ -147,16 +147,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final detailsResponse = await HomeApiService.fetchUserDetails(event.userId);
         
         if (detailsResponse != null) {
-          final updatedProfile = profile.copyWithDetails(detailsResponse);
-          
-          final updatedProfiles = List<ProfileModel>.from(currentState.profiles);
-          updatedProfiles[profileIndex] = updatedProfile;
-          
-          emit(HomeLoaded(
-            profiles: updatedProfiles,
-            remainingSwipes: currentState.remainingSwipes,
-            cursor: currentState.cursor,
-          ));
+          // Refetch state after await to prevent race conditions from concurrent prefetching
+          if (state is HomeLoaded) {
+            final latestState = state as HomeLoaded;
+            final latestProfileIndex = latestState.profiles.indexWhere((p) => p.id == event.userId);
+            
+            if (latestProfileIndex != -1) {
+              final updatedProfile = latestState.profiles[latestProfileIndex].copyWithDetails(detailsResponse);
+              
+              final updatedProfiles = List<ProfileModel>.from(latestState.profiles);
+              updatedProfiles[latestProfileIndex] = updatedProfile;
+              
+              emit(HomeLoaded(
+                profiles: updatedProfiles,
+                remainingSwipes: latestState.remainingSwipes,
+                cursor: latestState.cursor,
+              ));
+            }
+          }
         }
       }
     }
