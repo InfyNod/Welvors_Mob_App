@@ -33,8 +33,15 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
     if (widget.isPreview) {
       return _TopAndBottomNavView(isPreview: widget.isPreview);
     }
-    return BlocProvider(
-      create: (context) => HomeBloc()..add(LoadHomeDataEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => HomeBloc()..add(LoadHomeDataEvent()),
+        ),
+        BlocProvider(
+          create: (context) => FilterBloc(),
+        ),
+      ],
       child: _TopAndBottomNavView(isPreview: widget.isPreview),
     );
   }
@@ -370,11 +377,12 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () {
+                          final filterBloc = context.read<FilterBloc>();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => BlocProvider(
-                                create: (_) => FilterBloc(),
+                              builder: (context) => BlocProvider.value(
+                                value: filterBloc,
                                 child: const FilterScreen(),
                               ),
                             ),
