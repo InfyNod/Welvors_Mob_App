@@ -759,7 +759,7 @@ class _ProfileDetailsView extends StatelessWidget {
                     children: profile.interests!.map<Widget>((interest) {
                       String label = interest is String ? interest : (interest['answer']?.toString() ?? interest['name']?.toString() ?? 'Interest');
                       return _buildInterestPill(
-                        Icons.star_outline, // default icon
+                        _getInterestIcon(label),
                         label,
                         isMatch: false,
                       );
@@ -821,9 +821,9 @@ class _ProfileDetailsView extends StatelessWidget {
                         runSpacing: 12,
                         children: profile.lifestyle!.map<Widget>((item) {
                           String question = item['question']?.toString() ?? 'Lifestyle';
-                          String option = item['option']?.toString() ?? '';
+                          String option = item['answer']?.toString() ?? item['option']?.toString() ?? '';
                           return _buildBentoPill(
-                            Icons.check_circle_outline, // Default icon since we don't have mapping
+                            _getLifestyleIcon(question),
                             question,
                             option,
                             itemWidth,
@@ -1493,6 +1493,58 @@ class _ProfileDetailsView extends StatelessWidget {
       if (word.isEmpty) return '';
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
     }).join(' ');
+  }
+
+  IconData _getLifestyleIcon(String question) {
+    switch (question.toLowerCase().trim()) {
+      case 'diet':
+        return Icons.restaurant_menu_rounded;
+      case 'drinking':
+        return Icons.wine_bar_rounded;
+      case 'smoking':
+        return Icons.smoking_rooms_rounded;
+      case 'travel':
+        return Icons.flight_takeoff_rounded;
+      case 'pets':
+        return Icons.pets_rounded;
+      case 'sleep':
+        return Icons.nights_stay_rounded;
+      case 'workout':
+      case 'gym':
+        return Icons.fitness_center_rounded;
+      case 'social media':
+        return Icons.tag_rounded;
+      case 'hobbies':
+        return Icons.palette_rounded;
+      case 'weekend':
+        return Icons.weekend_rounded;
+      default:
+        return Icons.check_circle_outline_rounded;
+    }
+  }
+
+  IconData _getInterestIcon(String interest) {
+    final lower = interest.toLowerCase();
+    if (lower.contains('nba') || lower.contains('basketball') || lower.contains('sports')) return Icons.sports_basketball_rounded;
+    if (lower.contains('soccer') || lower.contains('football')) return Icons.sports_soccer_rounded;
+    if (lower.contains('cricket')) return Icons.sports_cricket_rounded;
+    if (lower.contains('tennis')) return Icons.sports_tennis_rounded;
+    if (lower.contains('music') || lower.contains('singing') || lower.contains('guitar')) return Icons.music_note_rounded;
+    if (lower.contains('art') || lower.contains('painting') || lower.contains('drawing')) return Icons.palette_rounded;
+    if (lower.contains('reading') || lower.contains('book')) return Icons.menu_book_rounded;
+    if (lower.contains('movie') || lower.contains('cinema') || lower.contains('film') || lower.contains('netflix')) return Icons.movie_filter_rounded;
+    if (lower.contains('travel') || lower.contains('trip')) return Icons.flight_rounded;
+    if (lower.contains('food') || lower.contains('cooking') || lower.contains('baking')) return Icons.restaurant_rounded;
+    if (lower.contains('coffee')) return Icons.local_cafe_rounded;
+    if (lower.contains('photo') || lower.contains('camera')) return Icons.camera_alt_rounded;
+    if (lower.contains('game') || lower.contains('gaming')) return Icons.videogame_asset_rounded;
+    if (lower.contains('gym') || lower.contains('fitness') || lower.contains('workout')) return Icons.fitness_center_rounded;
+    if (lower.contains('nature') || lower.contains('hiking') || lower.contains('mountain')) return Icons.landscape_rounded;
+    if (lower.contains('tech') || lower.contains('coding') || lower.contains('program')) return Icons.computer_rounded;
+    if (lower.contains('dance') || lower.contains('dancing')) return Icons.music_video_rounded;
+    if (lower.contains('pet') || lower.contains('dog') || lower.contains('cat')) return Icons.pets_rounded;
+    
+    return Icons.star_border_rounded;
   }
 
   Widget _buildBasicRow(
