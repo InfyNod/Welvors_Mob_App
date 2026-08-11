@@ -34,7 +34,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       currentCursor = (state as HomeLoaded).cursor;
     }
 
-    final response = await HomeApiService.fetchFeed(limit: 5, cursor: currentCursor);
+    final response = await HomeApiService.fetchFeed(limit: 10, cursor: currentCursor);
     
     if (response != null && response['users'] != null) {
       final List<dynamic> usersJson = response['users'];
@@ -99,8 +99,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             }
           }
 
-          // Pre-fetch if running low
-          if (updatedProfiles.length <= 2 && !_isLoadingMore && currentState.cursor != null) {
+          // Pre-fetch if running low (e.g. 4 profiles left)
+          if (updatedProfiles.length <= 4 && !_isLoadingMore && currentState.cursor != null) {
             _isLoadingMore = true;
             add(const LoadHomeDataEvent());
           }
