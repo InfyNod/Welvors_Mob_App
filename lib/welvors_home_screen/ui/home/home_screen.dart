@@ -239,591 +239,188 @@ class _ProfileDetailsView extends StatelessWidget {
               ),
             )
           else ...[
-          // ABOUT Section
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Text(
-                      '✦',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF831843), // Unique elegant burgundy
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'ABOUT',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF831843),
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Divider(
-                        color: const Color(0xFF831843).withOpacity(0.3),
-                        height: 1,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                // The paragraph
-                _ExpandableText(
-                  text: profile.about,
-                  maxLines: 3,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                    height: 1.5,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // The elegant divider
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: const Text('✦', style: TextStyle(fontSize: 14)),
-                    ),
-                    const Expanded(
-                      child: Divider(color: Colors.black12, height: 1),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // LOOKING FOR Container
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFFE5E5E5),
-                    ), // Opaque grey border
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: 60,
-                        child: Container(color: SectionColors.intent.bg),
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 60,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Center(
-                                child: Icon(
-                                  Icons.favorite_border_rounded,
-                                  color: SectionColors.intent.icon,
-                                  size: 28,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    profile.lookingFor,
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    profile.lookingForSubtitle.isNotEmpty
-                                        ? profile.lookingForSubtitle
-                                        : _getLookingForSubtitle(profile.lookingFor),
-                                    style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 13,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // THE BASICS Section
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '✦',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: SectionColors.basics.icon,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'THE BASICS',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: SectionColors.basics.icon,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(
-                          color: SectionColors.basics.icon.withOpacity(0.3),
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final double itemWidth = (constraints.maxWidth - 12) / 2;
-                    return Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        if (profile.dob.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.calendar_today_outlined,
-                            '${profile.age} years old',
-                            profile.dob,
-                            itemWidth,
-                            stacked: true,
-                          ),
-                        if (profile.height.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.straighten_outlined,
-                            profile.height.split(RegExp(r'\s*[•·]\s*')).first,
-                            profile.height.split(RegExp(r'\s*[•·]\s*')).last,
-                            itemWidth,
-                          ),
-                        if (profile.religion.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.temple_hindu_outlined,
-                            profile.religion,
-                            profile.community,
-                            itemWidth,
-                            stacked: true,
-                          ),
-                        if (profile.location.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.location_on_outlined,
-                            profile.location.split(', ').first,
-                            profile.location.split(', ').length > 1
-                                ? profile.location.split(', ')[1]
-                                : '',
-                            itemWidth,
-                            stacked: true,
-                          ),
-                        if (profile.motherTongue.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.translate,
-                            profile.motherTongue,
-                            '',
-                            itemWidth,
-                          ),
-                        if (profile.zodiac.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.nightlight_round,
-                            profile.zodiac,
-                            '',
-                            itemWidth,
-                          ),
-                        if (profile.loveLanguage.isNotEmpty)
-                          Builder(builder: (context) {
-                            final data = _getLoveLanguageData(profile.loveLanguage);
-                            return _buildBentoPill(
-                              Icons.favorite_border,
-                              data['title']!,
-                              data['subtitle']!,
-                              constraints.maxWidth,
-                              stacked: true,
-                            );
-                          }),
-                        if (profile.communication.isNotEmpty)
-                          Builder(builder: (context) {
-                            final data = _getCommunicationData(profile.communication);
-                            return _buildBentoPill(
-                              Icons.phone_in_talk_outlined,
-                              data['title']!,
-                              data['subtitle']!,
-                              constraints.maxWidth,
-                              stacked: true,
-                            );
-                          }),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Slot 1: After THE BASICS
-          if (hasVideo) ...[
-            ProfileVideoPlayer(videoPath: profile.videoUrl!),
-            const SizedBox(height: 16),
-          ] else if (profile.images.length > 1) ...[
-            _buildImageWithRose(context, profile.images[1]),
-            const SizedBox(height: 16),
-          ],
-
-          // Prompt Card
-          if (profile.prompts.isNotEmpty) ...[
-            _buildPromptCard(
-              context,
-              profile.prompts[0]['prompt'] ?? '',
-              profile.prompts[0]['answer'] ?? '',
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // CAREER & AMBITION Section
-          if (profile.career != null && profile.career!.isNotEmpty) ...[
+            // ABOUT Section
             Container(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 16,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 2),
+                  ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.career.icon)),
-                          const SizedBox(width: 8),
-                          Text(
-                            'CAREER & AMBITION',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: SectionColors.career.icon,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ],
+                      const Text(
+                        '✦',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF831843), // Unique elegant burgundy
+                        ),
                       ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'ABOUT',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF831843),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Divider(color: SectionColors.career.icon.withOpacity(0.3), height: 1),
+                        child: Divider(
+                          color: const Color(0xFF831843).withOpacity(0.3),
+                          height: 1,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  if (profile.career?['highestEducation'] != null || profile.career?['collegeName'] != null) ...[
-                    _buildBasicRow(
-                      Icons.school_outlined,
-                      'Education',
-                      _formatEnumText(profile.career?['highestEducation']?.toString()) ?? profile.career?['collegeName']?.toString() ?? '',
-                      profile.career?['degree']?.toString() ?? '',
-                      color: SectionColors.career,
+                  const SizedBox(height: 5),
+                  // The paragraph
+                  _ExpandableText(
+                    text: profile.about,
+                    maxLines: 3,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      height: 1.5,
+                      fontWeight: FontWeight.w400,
                     ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.career?['profession'] != null || profile.career?['companyName'] != null) ...[
-                    _buildBasicRow(
-                      Icons.work_outline_rounded,
-                      'Work as',
-                      profile.career?['profession']?.toString() ?? '',
-                      (profile.career?['companyName']?.toString() ?? '') +
-                          (profile.career?['experience'] != null && profile.career!['experience'].toString().isNotEmpty ? ' · ${profile.career!['experience']}' : ''),
-                      color: SectionColors.career,
+                  ),
+                  const SizedBox(height: 8),
+                  // The elegant divider
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Divider(color: Colors.black12, height: 1),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: const Text('✦', style: TextStyle(fontSize: 14)),
+                      ),
+                      const Expanded(
+                        child: Divider(color: Colors.black12, height: 1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // LOOKING FOR Container
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xFFE5E5E5),
+                      ), // Opaque grey border
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.career?['salaryRange'] != null) ...[
-                    _buildBasicRow(
-                      Icons.attach_money_rounded,
-                      'Income',
-                      profile.career!['salaryRange'].toString(),
-                      '',
-                      color: SectionColors.career,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.career?['employmentType'] != null) ...[
-                    _buildBasicRow(
-                      Icons.computer_rounded,
-                      'Work style',
-                      _formatEnumText(profile.career!['employmentType'].toString())!,
-                      '',
-                      color: SectionColors.career,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.career?['ambition'] != null) ...[
-                    _buildBasicRow(
-                      Icons.trending_up_rounded,
-                      'Ambition level',
-                      profile.career!['ambition'].toString().toUpperCase(),
-                      '',
-                      color: SectionColors.career,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.career?['bigDreams'] != null && profile.career!['bigDreams'].toString().isNotEmpty) ...[
-                    Row(
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
                       children: [
-                        Expanded(child: Divider(color: SectionColors.career.icon.withOpacity(0.3), height: 1)),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text('✦', style: TextStyle(fontSize: 14, color: SectionColors.career.icon)),
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 60,
+                          child: Container(color: SectionColors.intent.bg),
                         ),
-                        Expanded(child: Divider(color: SectionColors.career.icon.withOpacity(0.3), height: 1)),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.favorite_border_rounded,
+                                    color: SectionColors.intent.icon,
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      profile.lookingFor,
+                                      style: const TextStyle(
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      profile.lookingForSubtitle.isNotEmpty
+                                          ? profile.lookingForSubtitle
+                                          : _getLookingForSubtitle(
+                                              profile.lookingFor,
+                                            ),
+                                      style: const TextStyle(
+                                        color: Colors.black54,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                          ],
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    const Center(
-                      child: Text(
-                        'HER BIG DREAM',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.black87,
-                          letterSpacing: 2.5,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Center(
-                      child: Text(
-                        profile.career!['bigDreams'].toString(),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.black87,
-                          height: 1.5,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Slot 2: After CAREER
-          if (profile.images.length > slot2Index) ...[
-            _buildImageWithRose(context, profile.images[slot2Index]),
-            const SizedBox(height: 16),
-          ],
-
-          // Second Prompt Card
-          if (profile.prompts.length > 1) ...[
-            _buildPromptCard(
-              context,
-              profile.prompts[1]['prompt'] ?? '',
-              profile.prompts[1]['answer'] ?? '',
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // INTERESTS & HOBBIES Section
-          if (profile.interests != null && profile.interests!.isNotEmpty) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Builder(
-                    builder: (context) {
-                      final currentUserInterests = context.watch<ProfileEditCubit>().state.interests;
-                      
-                      bool isMatch(String label) {
-                        final cleanLabel = label.toLowerCase().trim();
-                        return currentUserInterests.any((item) {
-                          final parts = item.split(' ');
-                          final textPart = parts.length > 1 ? parts.sublist(1).join(' ') : item;
-                          return textPart.toLowerCase().trim() == cleanLabel;
-                        });
-                      }
-
-                      int commonCount = 0;
-                      for (var interest in profile.interests!) {
-                        String label = interest is String ? interest : (interest['answer']?.toString() ?? interest['name']?.toString() ?? 'Interest');
-                        if (isMatch(label)) commonCount++;
-                      }
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.interests.icon)),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'INTERESTS & HOBBIES',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                      color: SectionColors.interests.icon,
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(color: SectionColors.interests.icon.withOpacity(0.3), height: 1),
-                                ),
-                              ),
-                              if (commonCount > 0)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: SectionColors.interests.bg,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    '$commonCount in common',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: SectionColors.interests.icon,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 12,
-                            children: profile.interests!.map<Widget>((interest) {
-                              String label = interest is String ? interest : (interest['answer']?.toString() ?? interest['name']?.toString() ?? 'Interest');
-                              return _buildInterestPill(
-                                _getInterestIcon(label),
-                                label,
-                                isMatch: isMatch(label),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      );
-                    },
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-          ],
 
-          // LIFESTYLE Section
-          if (profile.lifestyle != null && profile.lifestyle!.isNotEmpty) ...[
+            // THE BASICS Section
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 16,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 2),
+                  ),
                 ],
               ),
               child: Column(
@@ -834,14 +431,20 @@ class _ProfileDetailsView extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.lifestyle.icon)),
+                          Text(
+                            '✦',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: SectionColors.basics.icon,
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            'LIFESTYLE',
+                            'THE BASICS',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: SectionColors.lifestyle.icon,
+                              color: SectionColors.basics.icon,
                               letterSpacing: 1.5,
                             ),
                           ),
@@ -850,7 +453,10 @@ class _ProfileDetailsView extends StatelessWidget {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Divider(color: SectionColors.lifestyle.icon.withOpacity(0.3), height: 1),
+                          child: Divider(
+                            color: SectionColors.basics.icon.withOpacity(0.3),
+                            height: 1,
+                          ),
                         ),
                       ),
                     ],
@@ -862,18 +468,85 @@ class _ProfileDetailsView extends StatelessWidget {
                       return Wrap(
                         spacing: 12,
                         runSpacing: 12,
-                        children: profile.lifestyle!.map<Widget>((item) {
-                          String question = item['question']?.toString() ?? 'Lifestyle';
-                          String option = item['answer']?.toString() ?? item['option']?.toString() ?? '';
-                          return _buildBentoPill(
-                            _getLifestyleIcon(question),
-                            question,
-                            option,
-                            itemWidth,
-                            stacked: true,
-                            color: SectionColors.lifestyle,
-                          );
-                        }).toList(),
+                        children: [
+                          if (profile.dob.isNotEmpty)
+                            _buildBentoPill(
+                              Icons.calendar_today_outlined,
+                              '${profile.age} years old',
+                              profile.dob,
+                              itemWidth,
+                              stacked: true,
+                            ),
+                          if (profile.height.isNotEmpty)
+                            _buildBentoPill(
+                              Icons.straighten_outlined,
+                              profile.height.split(RegExp(r'\s*[•·]\s*')).first,
+                              profile.height.split(RegExp(r'\s*[•·]\s*')).last,
+                              itemWidth,
+                            ),
+                          if (profile.religion.isNotEmpty)
+                            _buildBentoPill(
+                              Icons.temple_hindu_outlined,
+                              profile.religion,
+                              profile.community,
+                              itemWidth,
+                              stacked: true,
+                            ),
+                          if (profile.location.isNotEmpty)
+                            _buildBentoPill(
+                              Icons.location_on_outlined,
+                              profile.location.split(', ').first,
+                              profile.location.split(', ').length > 1
+                                  ? profile.location.split(', ')[1]
+                                  : '',
+                              itemWidth,
+                              stacked: true,
+                            ),
+                          if (profile.motherTongue.isNotEmpty)
+                            _buildBentoPill(
+                              Icons.translate,
+                              profile.motherTongue,
+                              '',
+                              itemWidth,
+                            ),
+                          if (profile.zodiac.isNotEmpty)
+                            _buildBentoPill(
+                              Icons.nightlight_round,
+                              profile.zodiac,
+                              '',
+                              itemWidth,
+                            ),
+                          if (profile.loveLanguage.isNotEmpty)
+                            Builder(
+                              builder: (context) {
+                                final data = _getLoveLanguageData(
+                                  profile.loveLanguage,
+                                );
+                                return _buildBentoPill(
+                                  Icons.favorite_border,
+                                  data['title']!,
+                                  data['subtitle']!,
+                                  constraints.maxWidth,
+                                  stacked: true,
+                                );
+                              },
+                            ),
+                          if (profile.communication.isNotEmpty)
+                            Builder(
+                              builder: (context) {
+                                final data = _getCommunicationData(
+                                  profile.communication,
+                                );
+                                return _buildBentoPill(
+                                  Icons.phone_in_talk_outlined,
+                                  data['title']!,
+                                  data['subtitle']!,
+                                  constraints.maxWidth,
+                                  stacked: true,
+                                );
+                              },
+                            ),
+                        ],
                       );
                     },
                   ),
@@ -881,154 +554,640 @@ class _ProfileDetailsView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-          ],
-          const SizedBox(height: 16),
+            // Slot 1: After THE BASICS
+            if (hasVideo) ...[
+              ProfileVideoPlayer(videoPath: profile.videoUrl!),
+              const SizedBox(height: 16),
+            ] else if (profile.images.length > 1) ...[
+              _buildImageWithRose(context, profile.images[1]),
+              const SizedBox(height: 16),
+            ],
 
-          // Slot 3: After LIFESTYLE
-          if (profile.images.length > slot3Index) ...[
-            _buildImageWithRose(context, profile.images[slot3Index]),
-            const SizedBox(height: 16),
-          ],
-
-          // NETWORKING INTENT Section
-          if (profile.networkingIntent != null && profile.networkingIntent!.isNotEmpty) ...[
-            _buildNetworkingIntentSection(profile.networkingIntent!),
-            const SizedBox(height: 16),
-          ],
-          // FAMILY Section
-          if (profile.family != null && profile.family!.isNotEmpty) ...[
-            Container(
-              padding: const EdgeInsets.all(20),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
-                ],
+            // Prompt Card
+            if (profile.prompts.isNotEmpty) ...[
+              _buildPromptCard(
+                context,
+                profile.prompts[0]['prompt'] ?? '',
+                profile.prompts[0]['answer'] ?? '',
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+              const SizedBox(height: 16),
+            ],
+
+            // CAREER & AMBITION Section
+            if (profile.career != null && profile.career!.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 20,
+                  bottom: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              '✦',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: SectionColors.career.icon,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'CAREER & AMBITION',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: SectionColors.career.icon,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Divider(
+                              color: SectionColors.career.icon.withOpacity(0.3),
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    if (profile.career?['highestEducation'] != null ||
+                        profile.career?['collegeName'] != null) ...[
+                      _buildBasicRow(
+                        Icons.school_outlined,
+                        'Education',
+                        _formatEnumText(
+                              profile.career?['highestEducation']?.toString(),
+                            ) ??
+                            profile.career?['collegeName']?.toString() ??
+                            '',
+                        profile.career?['degree']?.toString() ?? '',
+                        color: SectionColors.career,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.career?['profession'] != null ||
+                        profile.career?['companyName'] != null) ...[
+                      _buildBasicRow(
+                        Icons.work_outline_rounded,
+                        'Work as',
+                        profile.career?['profession']?.toString() ?? '',
+                        (profile.career?['companyName']?.toString() ?? '') +
+                            (profile.career?['experience'] != null &&
+                                    profile.career!['experience']
+                                        .toString()
+                                        .isNotEmpty
+                                ? ' · ${profile.career!['experience']}'
+                                : ''),
+                        color: SectionColors.career,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.career?['salaryRange'] != null) ...[
+                      _buildBasicRow(
+                        Icons.attach_money_rounded,
+                        'Income',
+                        profile.career!['salaryRange'].toString(),
+                        '',
+                        color: SectionColors.career,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.career?['employmentType'] != null) ...[
+                      _buildBasicRow(
+                        Icons.computer_rounded,
+                        'Work style',
+                        _formatEnumText(
+                          profile.career!['employmentType'].toString(),
+                        )!,
+                        '',
+                        color: SectionColors.career,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.career?['ambition'] != null) ...[
+                      _buildBasicRow(
+                        Icons.trending_up_rounded,
+                        'Ambition level',
+                        profile.career!['ambition'].toString().toUpperCase(),
+                        '',
+                        color: SectionColors.career,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.career?['bigDreams'] != null &&
+                        profile.career!['bigDreams'].toString().isNotEmpty) ...[
                       Row(
                         children: [
-                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.family.icon)),
-                          const SizedBox(width: 8),
-                          Text(
-                            'FAMILY',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: SectionColors.family.icon,
-                              letterSpacing: 1.5,
+                          Expanded(
+                            child: Divider(
+                              color: SectionColors.career.icon.withOpacity(0.3),
+                              height: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              '✦',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: SectionColors.career.icon,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: SectionColors.career.icon.withOpacity(0.3),
+                              height: 1,
                             ),
                           ),
                         ],
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Divider(color: SectionColors.family.icon.withOpacity(0.3), height: 1),
+                      const SizedBox(height: 8),
+                      const Center(
+                        child: Text(
+                          'HER BIG DREAM',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black87,
+                            letterSpacing: 2.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Center(
+                        child: Text(
+                          profile.career!['bigDreams'].toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.black87,
+                            height: 1.5,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 10),
-                  if (profile.family?['familyType'] != null || profile.family?['familyStatus'] != null) ...[
-                    _buildBasicRow(
-                      Icons.people_alt_outlined,
-                      'Family type',
-                      profile.family?['familyType']?.toString() ?? '',
-                      profile.family?['familyStatus']?.toString() ?? '',
-                      color: SectionColors.family,
-                    ),
-                    const SizedBox(height: 8),
                   ],
-                  if (profile.family?['fatherOccupation'] != null || profile.family?['fatherOrganisation'] != null) ...[
-                    _buildBasicRow(
-                      Icons.person_outline,
-                      'Father',
-                      profile.family?['fatherOccupation']?.toString() ?? '',
-                      profile.family?['fatherOrganisation']?.toString() ?? '',
-                      color: SectionColors.family,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.family?['motherOccupation'] != null || profile.family?['motherOrganisation'] != null) ...[
-                    _buildBasicRow(
-                      Icons.woman_outlined,
-                      'Mother',
-                      profile.family?['motherOccupation']?.toString() ?? '',
-                      profile.family?['motherOrganisation']?.toString() ?? '',
-                      color: SectionColors.family,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.family?['siblings'] != null && (profile.family?['siblings'] as List).isNotEmpty) ...[
-                    _buildBasicRow(
-                      Icons.people_alt_outlined,
-                      'Siblings',
-                      _formatSiblings(profile.family!['siblings'] as List<dynamic>),
-                      '',
-                      color: SectionColors.family,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.family?['familyHome'] != null || profile.family?['nativePlace'] != null) ...[
-                    _buildBasicRow(
-                      Icons.location_on_outlined,
-                      'Family home',
-                      profile.family?['familyHome']?.toString() ?? '',
-                      profile.family?['nativePlace'] != null ? 'Native: ${profile.family!['nativePlace']}' : '',
-                      color: SectionColors.family,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (profile.family?['familyIncome'] != null) ...[
-                    _buildBasicRow(
-                      Icons.account_balance_wallet_outlined,
-                      'Family income',
-                      profile.family!['familyIncome'].toString(),
-                      '',
-                      color: SectionColors.family,
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
-          
-          const SizedBox(height: 16),
-
-          // Slot 4: After FAMILY
-          if (profile.images.length > slot4Index) ...[
-            _buildImageWithRose(context, profile.images[slot4Index]),
-            const SizedBox(height: 16),
-          ],
-
-          // Third Prompt Card
-          if (profile.prompts.length > 2) ...[
-            _buildPromptCard(
-              context,
-              profile.prompts[2]['prompt'] ?? '',
-              profile.prompts[2]['answer'] ?? '',
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Bottom Slots: Extra photos below "We'll get along if..."
-          if (profile.images.length > bottomIndexStart) ...[
-            for (int i = bottomIndexStart; i < profile.images.length; i++) ...[
-              _buildImageWithRose(context, profile.images[i]),
               const SizedBox(height: 16),
             ],
-          ],
+
+            // Slot 2: After CAREER
+            if (profile.images.length > slot2Index) ...[
+              _buildImageWithRose(context, profile.images[slot2Index]),
+              const SizedBox(height: 16),
+            ],
+
+            // Second Prompt Card
+            if (profile.prompts.length > 1) ...[
+              _buildPromptCard(
+                context,
+                profile.prompts[1]['prompt'] ?? '',
+                profile.prompts[1]['answer'] ?? '',
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // INTERESTS & HOBBIES Section
+            if (profile.interests != null && profile.interests!.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Builder(
+                      builder: (context) {
+                        final currentUserInterests = context
+                            .watch<ProfileEditCubit>()
+                            .state
+                            .interests;
+
+                        bool isMatch(String label) {
+                          final cleanLabel = label.toLowerCase().trim();
+                          return currentUserInterests.any((item) {
+                            final parts = item.split(' ');
+                            final textPart = parts.length > 1
+                                ? parts.sublist(1).join(' ')
+                                : item;
+                            return textPart.toLowerCase().trim() == cleanLabel;
+                          });
+                        }
+
+                        int commonCount = 0;
+                        for (var interest in profile.interests!) {
+                          String label = interest is String
+                              ? interest
+                              : (interest['answer']?.toString() ??
+                                    interest['name']?.toString() ??
+                                    'Interest');
+                          if (isMatch(label)) commonCount++;
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      '✦',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: SectionColors.interests.icon,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'INTERESTS & HOBBIES',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: SectionColors.interests.icon,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: Divider(
+                                      color: SectionColors.interests.icon
+                                          .withOpacity(0.3),
+                                      height: 1,
+                                    ),
+                                  ),
+                                ),
+                                if (commonCount > 0)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: SectionColors.interests.bg,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      '$commonCount in common',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: SectionColors.interests.icon,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 12,
+                              children: profile.interests!.map<Widget>((
+                                interest,
+                              ) {
+                                String label = interest is String
+                                    ? interest
+                                    : (interest['answer']?.toString() ??
+                                          interest['name']?.toString() ??
+                                          'Interest');
+                                return _buildInterestPill(
+                                  _getInterestIcon(label),
+                                  label,
+                                  isMatch: isMatch(label),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // LIFESTYLE Section
+            if (profile.lifestyle != null && profile.lifestyle!.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              '✦',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: SectionColors.lifestyle.icon,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'LIFESTYLE',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: SectionColors.lifestyle.icon,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Divider(
+                              color: SectionColors.lifestyle.icon.withOpacity(
+                                0.3,
+                              ),
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final double itemWidth =
+                            (constraints.maxWidth - 12) / 2;
+                        return Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: profile.lifestyle!.map<Widget>((item) {
+                            String question =
+                                item['question']?.toString() ?? 'Lifestyle';
+                            String option =
+                                item['answer']?.toString() ??
+                                item['option']?.toString() ??
+                                '';
+                            return _buildBentoPill(
+                              _getLifestyleIcon(question),
+                              question,
+                              option,
+                              itemWidth,
+                              stacked: true,
+                              color: SectionColors.lifestyle,
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            const SizedBox(height: 16),
+
+            // Slot 3: After LIFESTYLE
+            if (profile.images.length > slot3Index) ...[
+              _buildImageWithRose(context, profile.images[slot3Index]),
+              const SizedBox(height: 16),
+            ],
+
+            // NETWORKING INTENT Section
+            if (profile.networkingIntent != null &&
+                profile.networkingIntent!.isNotEmpty) ...[
+              _buildNetworkingIntentSection(profile.networkingIntent!),
+              const SizedBox(height: 16),
+            ],
+            // FAMILY Section
+            if (profile.family != null && profile.family!.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.all(20),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              '✦',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: SectionColors.family.icon,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'FAMILY',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: SectionColors.family.icon,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Divider(
+                              color: SectionColors.family.icon.withOpacity(0.3),
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    if (profile.family?['familyType'] != null ||
+                        profile.family?['familyStatus'] != null) ...[
+                      _buildBasicRow(
+                        Icons.people_alt_outlined,
+                        'Family type',
+                        profile.family?['familyType']?.toString() ?? '',
+                        profile.family?['familyStatus']?.toString() ?? '',
+                        color: SectionColors.family,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.family?['fatherOccupation'] != null ||
+                        profile.family?['fatherOrganisation'] != null) ...[
+                      _buildBasicRow(
+                        Icons.person_outline,
+                        'Father',
+                        profile.family?['fatherOccupation']?.toString() ?? '',
+                        profile.family?['fatherOrganisation']?.toString() ?? '',
+                        color: SectionColors.family,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.family?['motherOccupation'] != null ||
+                        profile.family?['motherOrganisation'] != null) ...[
+                      _buildBasicRow(
+                        Icons.woman_outlined,
+                        'Mother',
+                        profile.family?['motherOccupation']?.toString() ?? '',
+                        profile.family?['motherOrganisation']?.toString() ?? '',
+                        color: SectionColors.family,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.family?['siblings'] != null &&
+                        (profile.family?['siblings'] as List).isNotEmpty) ...[
+                      _buildBasicRow(
+                        Icons.people_alt_outlined,
+                        'Siblings',
+                        _formatSiblings(
+                          profile.family!['siblings'] as List<dynamic>,
+                        ),
+                        '',
+                        color: SectionColors.family,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.family?['familyHome'] != null ||
+                        profile.family?['nativePlace'] != null) ...[
+                      _buildBasicRow(
+                        Icons.location_on_outlined,
+                        'Family home',
+                        profile.family?['familyHome']?.toString() ?? '',
+                        profile.family?['nativePlace'] != null
+                            ? 'Native: ${profile.family!['nativePlace']}'
+                            : '',
+                        color: SectionColors.family,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (profile.family?['familyIncome'] != null) ...[
+                      _buildBasicRow(
+                        Icons.account_balance_wallet_outlined,
+                        'Family income',
+                        profile.family!['familyIncome'].toString(),
+                        '',
+                        color: SectionColors.family,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            const SizedBox(height: 16),
+
+            // Slot 4: After FAMILY
+            if (profile.images.length > slot4Index) ...[
+              _buildImageWithRose(context, profile.images[slot4Index]),
+              const SizedBox(height: 16),
+            ],
+
+            // Third Prompt Card
+            if (profile.prompts.length > 2) ...[
+              _buildPromptCard(
+                context,
+                profile.prompts[2]['prompt'] ?? '',
+                profile.prompts[2]['answer'] ?? '',
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // Bottom Slots: Extra photos below "We'll get along if..."
+            if (profile.images.length > bottomIndexStart) ...[
+              for (
+                int i = bottomIndexStart;
+                i < profile.images.length;
+                i++
+              ) ...[
+                _buildImageWithRose(context, profile.images[i]),
+                const SizedBox(height: 16),
+              ],
+            ],
           ], // Closes the else block for details
         ],
       ),
@@ -1148,15 +1307,17 @@ class _ProfileDetailsView extends StatelessWidget {
     // Group intents by question
     Map<String, List<String>> categories = {};
     String? inHerWords;
-    
+
     for (var intent in networkingIntent) {
       String q = intent['question']?.toString() ?? 'OTHER';
-      String a = intent['answer']?.toString() ?? intent['option']?.toString() ?? '';
-      
-      if (intent['description'] != null && intent['description'].toString().isNotEmpty) {
+      String a =
+          intent['answer']?.toString() ?? intent['option']?.toString() ?? '';
+
+      if (intent['description'] != null &&
+          intent['description'].toString().isNotEmpty) {
         inHerWords ??= intent['description'].toString();
       }
-      
+
       if (!categories.containsKey(q)) {
         categories[q] = [];
       }
@@ -1235,7 +1396,10 @@ class _ProfileDetailsView extends StatelessWidget {
           const SizedBox(height: 20),
 
           ...categories.entries.map((entry) {
-            return _buildNetworkingCategory(entry.key.toUpperCase(), entry.value);
+            return _buildNetworkingCategory(
+              entry.key.toUpperCase(),
+              entry.value,
+            );
           }).toList(),
 
           if (inHerWords != null) ...[
@@ -1418,6 +1582,7 @@ class _ProfileDetailsView extends StatelessWidget {
               ? NetworkImage(imageUrl) as ImageProvider
               : FileImage(File(imageUrl)),
           fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
         ),
         boxShadow: [
           BoxShadow(
@@ -1520,41 +1685,77 @@ class _ProfileDetailsView extends StatelessWidget {
   Map<String, String> _getLoveLanguageData(String enumValue) {
     switch (enumValue.toUpperCase()) {
       case 'WORDS_OF_AFFIRMATION':
-        return {'title': 'Words of affirmation', 'subtitle': 'Compliments and encouragement mean the world to you.'};
+        return {
+          'title': 'Words of affirmation',
+          'subtitle': 'Compliments and encouragement mean the world to you.',
+        };
       case 'QUALITY_TIME':
-        return {'title': 'Quality time', 'subtitle': 'Undivided attention and spending time together.'};
+        return {
+          'title': 'Quality time',
+          'subtitle': 'Undivided attention and spending time together.',
+        };
       case 'RECEIVING_GIFTS':
-        return {'title': 'Receiving gifts', 'subtitle': 'Thoughtful gifts make you feel truly special.'};
+        return {
+          'title': 'Receiving gifts',
+          'subtitle': 'Thoughtful gifts make you feel truly special.',
+        };
       case 'ACTS_OF_SERVICE':
-        return {'title': 'Acts of service', 'subtitle': 'Actions speak louder than words for you.'};
+        return {
+          'title': 'Acts of service',
+          'subtitle': 'Actions speak louder than words for you.',
+        };
       case 'PHYSICAL_TOUCH':
-        return {'title': 'Physical touch', 'subtitle': 'Hugs, holding hands, and physical closeness.'};
+        return {
+          'title': 'Physical touch',
+          'subtitle': 'Hugs, holding hands, and physical closeness.',
+        };
       default:
-        return {'title': enumValue.replaceAll('_', ' ').toLowerCase(), 'subtitle': ''};
+        return {
+          'title': enumValue.replaceAll('_', ' ').toLowerCase(),
+          'subtitle': '',
+        };
     }
   }
 
   Map<String, String> _getCommunicationData(String enumValue) {
     switch (enumValue.toUpperCase()) {
       case 'PHONE_CALLS_OVER_TEXTS':
-        return {'title': 'Phone calls over texts', 'subtitle': 'You prefer hearing their voice over reading messages.'};
+        return {
+          'title': 'Phone calls over texts',
+          'subtitle': 'You prefer hearing their voice over reading messages.',
+        };
       case 'TEXTS_OVER_PHONE_CALLS':
-        return {'title': 'Texts over phone calls', 'subtitle': 'You prefer quick messages throughout the day.'};
+        return {
+          'title': 'Texts over phone calls',
+          'subtitle': 'You prefer quick messages throughout the day.',
+        };
       case 'IN_PERSON_ONLY':
-        return {'title': 'In person only', 'subtitle': 'You prefer face-to-face conversations above all.'};
+        return {
+          'title': 'In person only',
+          'subtitle': 'You prefer face-to-face conversations above all.',
+        };
       case 'VIDEO_CALLS':
-        return {'title': 'Video calls', 'subtitle': 'You prefer seeing their face when talking.'};
+        return {
+          'title': 'Video calls',
+          'subtitle': 'You prefer seeing their face when talking.',
+        };
       default:
-        return {'title': enumValue.replaceAll('_', ' ').toLowerCase(), 'subtitle': ''};
+        return {
+          'title': enumValue.replaceAll('_', ' ').toLowerCase(),
+          'subtitle': '',
+        };
     }
   }
 
   String? _formatEnumText(String? text) {
     if (text == null || text.isEmpty) return text;
-    return text.split('_').map((word) {
-      if (word.isEmpty) return '';
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    return text
+        .split('_')
+        .map((word) {
+          if (word.isEmpty) return '';
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   IconData _getLifestyleIcon(String question) {
@@ -1587,25 +1788,57 @@ class _ProfileDetailsView extends StatelessWidget {
 
   IconData _getInterestIcon(String interest) {
     final lower = interest.toLowerCase();
-    if (lower.contains('nba') || lower.contains('basketball') || lower.contains('sports')) return Icons.sports_basketball_rounded;
-    if (lower.contains('soccer') || lower.contains('football')) return Icons.sports_soccer_rounded;
+    if (lower.contains('nba') ||
+        lower.contains('basketball') ||
+        lower.contains('sports'))
+      return Icons.sports_basketball_rounded;
+    if (lower.contains('soccer') || lower.contains('football'))
+      return Icons.sports_soccer_rounded;
     if (lower.contains('cricket')) return Icons.sports_cricket_rounded;
     if (lower.contains('tennis')) return Icons.sports_tennis_rounded;
-    if (lower.contains('music') || lower.contains('singing') || lower.contains('guitar')) return Icons.music_note_rounded;
-    if (lower.contains('art') || lower.contains('painting') || lower.contains('drawing')) return Icons.palette_rounded;
-    if (lower.contains('reading') || lower.contains('book')) return Icons.menu_book_rounded;
-    if (lower.contains('movie') || lower.contains('cinema') || lower.contains('film') || lower.contains('netflix')) return Icons.movie_filter_rounded;
-    if (lower.contains('travel') || lower.contains('trip')) return Icons.flight_rounded;
-    if (lower.contains('food') || lower.contains('cooking') || lower.contains('baking')) return Icons.restaurant_rounded;
+    if (lower.contains('music') ||
+        lower.contains('singing') ||
+        lower.contains('guitar'))
+      return Icons.music_note_rounded;
+    if (lower.contains('art') ||
+        lower.contains('painting') ||
+        lower.contains('drawing'))
+      return Icons.palette_rounded;
+    if (lower.contains('reading') || lower.contains('book'))
+      return Icons.menu_book_rounded;
+    if (lower.contains('movie') ||
+        lower.contains('cinema') ||
+        lower.contains('film') ||
+        lower.contains('netflix'))
+      return Icons.movie_filter_rounded;
+    if (lower.contains('travel') || lower.contains('trip'))
+      return Icons.flight_rounded;
+    if (lower.contains('food') ||
+        lower.contains('cooking') ||
+        lower.contains('baking'))
+      return Icons.restaurant_rounded;
     if (lower.contains('coffee')) return Icons.local_cafe_rounded;
-    if (lower.contains('photo') || lower.contains('camera')) return Icons.camera_alt_rounded;
-    if (lower.contains('game') || lower.contains('gaming')) return Icons.videogame_asset_rounded;
-    if (lower.contains('gym') || lower.contains('fitness') || lower.contains('workout')) return Icons.fitness_center_rounded;
-    if (lower.contains('nature') || lower.contains('hiking') || lower.contains('mountain')) return Icons.landscape_rounded;
-    if (lower.contains('tech') || lower.contains('coding') || lower.contains('program')) return Icons.computer_rounded;
-    if (lower.contains('dance') || lower.contains('dancing')) return Icons.music_video_rounded;
-    if (lower.contains('pet') || lower.contains('dog') || lower.contains('cat')) return Icons.pets_rounded;
-    
+    if (lower.contains('photo') || lower.contains('camera'))
+      return Icons.camera_alt_rounded;
+    if (lower.contains('game') || lower.contains('gaming'))
+      return Icons.videogame_asset_rounded;
+    if (lower.contains('gym') ||
+        lower.contains('fitness') ||
+        lower.contains('workout'))
+      return Icons.fitness_center_rounded;
+    if (lower.contains('nature') ||
+        lower.contains('hiking') ||
+        lower.contains('mountain'))
+      return Icons.landscape_rounded;
+    if (lower.contains('tech') ||
+        lower.contains('coding') ||
+        lower.contains('program'))
+      return Icons.computer_rounded;
+    if (lower.contains('dance') || lower.contains('dancing'))
+      return Icons.music_video_rounded;
+    if (lower.contains('pet') || lower.contains('dog') || lower.contains('cat'))
+      return Icons.pets_rounded;
+
     return Icons.star_border_rounded;
   }
 
@@ -1628,11 +1861,11 @@ class _ProfileDetailsView extends StatelessWidget {
       if (s['relation']?.toString().toLowerCase() == 'brother') brothers++;
       if (s['relation']?.toString().toLowerCase() == 'sister') sisters++;
     }
-    
+
     List<String> parts = [];
     if (brothers > 0) parts.add('$brothers Brother${brothers > 1 ? 's' : ''}');
     if (sisters > 0) parts.add('$sisters Sister${sisters > 1 ? 's' : ''}');
-    
+
     if (parts.isEmpty) return '${siblings.length} Siblings';
     return parts.join(', ');
   }
@@ -2133,6 +2366,7 @@ class _ProfileCardUI extends StatelessWidget {
               ? NetworkImage(profile.images.first) as ImageProvider
               : FileImage(File(profile.images.first)),
           fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
         ),
         boxShadow: [
           BoxShadow(
@@ -2231,15 +2465,9 @@ class _ProfileCardUI extends StatelessWidget {
                     children: [
                       _buildTag(profile.matchPercentage, Colors.blue),
                       const SizedBox(width: 8),
-                      _buildTag(
-                        profile.trustPercentage,
-                        Colors.green,
-                      ),
+                      _buildTag(profile.trustPercentage, Colors.green),
                       const SizedBox(width: 8),
-                      _buildTag(
-                        profile.replyTime,
-                        Colors.orange,
-                      ),
+                      _buildTag(profile.replyTime, Colors.orange),
                     ],
                   ),
                   const SizedBox(height: 12),
