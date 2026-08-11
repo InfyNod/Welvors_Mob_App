@@ -72,7 +72,7 @@ class HomeScreen extends StatelessWidget {
 
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HomeBloc>().add(LoadHomeDataEvent());
+                  context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
                   await Future.delayed(const Duration(milliseconds: 800));
                 },
                 child: child,
@@ -84,7 +84,7 @@ class HomeScreen extends StatelessWidget {
             builder: (context, constraints) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HomeBloc>().add(LoadHomeDataEvent());
+                  context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
                   await Future.delayed(const Duration(milliseconds: 800));
                 },
                 child: SingleChildScrollView(
@@ -150,7 +150,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () {
-              context.read<HomeBloc>().add(LoadHomeDataEvent());
+              context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
             },
             icon: const Icon(Icons.refresh, color: Colors.white),
             label: const Text(
