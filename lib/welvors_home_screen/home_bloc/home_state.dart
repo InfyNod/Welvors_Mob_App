@@ -179,7 +179,7 @@ class ProfileModel extends Equatable {
       lifestyle: details['lifestyle'],
       interests: details['interests'],
       family: details['family'],
-      networkingIntent: details['networkingIntent'],
+      networkingIntent: details['networkingAnswers'] ?? details['networkingIntent'],
     );
   }
 

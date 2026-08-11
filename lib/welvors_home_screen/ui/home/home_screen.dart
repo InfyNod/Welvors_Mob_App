@@ -12,6 +12,7 @@ import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import '../../home_bloc/home_bloc.dart';
 import '../../../onbording_allpage/theme/app_colors.dart';
+import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
 class SectionColor {
   final Color bg;
@@ -726,44 +727,86 @@ class _ProfileDetailsView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
+                  Builder(
+                    builder: (context) {
+                      final currentUserInterests = context.watch<ProfileEditCubit>().state.interests;
+                      
+                      bool isMatch(String label) {
+                        final cleanLabel = label.toLowerCase().trim();
+                        return currentUserInterests.any((item) {
+                          final parts = item.split(' ');
+                          final textPart = parts.length > 1 ? parts.sublist(1).join(' ') : item;
+                          return textPart.toLowerCase().trim() == cleanLabel;
+                        });
+                      }
+
+                      int commonCount = 0;
+                      for (var interest in profile.interests!) {
+                        String label = interest is String ? interest : (interest['answer']?.toString() ?? interest['name']?.toString() ?? 'Interest');
+                        if (isMatch(label)) commonCount++;
+                      }
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.interests.icon)),
-                          const SizedBox(width: 8),
-                          Text(
-                            'INTERESTS & HOBBIES',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: SectionColors.interests.icon,
-                              letterSpacing: 1.5,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.interests.icon)),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'INTERESTS & HOBBIES',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      color: SectionColors.interests.icon,
+                                      letterSpacing: 1.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(color: SectionColors.interests.icon.withOpacity(0.3), height: 1),
+                                ),
+                              ),
+                              if (commonCount > 0)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: SectionColors.interests.bg,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    '$commonCount in common',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: SectionColors.interests.icon,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 12,
+                            children: profile.interests!.map<Widget>((interest) {
+                              String label = interest is String ? interest : (interest['answer']?.toString() ?? interest['name']?.toString() ?? 'Interest');
+                              return _buildInterestPill(
+                                _getInterestIcon(label),
+                                label,
+                                isMatch: isMatch(label),
+                              );
+                            }).toList(),
                           ),
                         ],
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Divider(color: SectionColors.interests.icon.withOpacity(0.3), height: 1),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 12,
-                    children: profile.interests!.map<Widget>((interest) {
-                      String label = interest is String ? interest : (interest['answer']?.toString() ?? interest['name']?.toString() ?? 'Interest');
-                      return _buildInterestPill(
-                        _getInterestIcon(label),
-                        label,
-                        isMatch: false,
                       );
-                    }).toList(),
+                    },
                   ),
                 ],
               ),
@@ -921,6 +964,16 @@ class _ProfileDetailsView extends StatelessWidget {
                       'Mother',
                       profile.family?['motherOccupation']?.toString() ?? '',
                       profile.family?['motherOrganisation']?.toString() ?? '',
+                      color: SectionColors.family,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.family?['siblings'] != null && (profile.family?['siblings'] as List).isNotEmpty) ...[
+                    _buildBasicRow(
+                      Icons.people_alt_outlined,
+                      'Siblings',
+                      _formatSiblings(profile.family!['siblings'] as List<dynamic>),
+                      '',
                       color: SectionColors.family,
                     ),
                     const SizedBox(height: 8),
@@ -1094,9 +1147,16 @@ class _ProfileDetailsView extends StatelessWidget {
   Widget _buildNetworkingIntentSection(List<dynamic> networkingIntent) {
     // Group intents by question
     Map<String, List<String>> categories = {};
+    String? inHerWords;
+    
     for (var intent in networkingIntent) {
       String q = intent['question']?.toString() ?? 'OTHER';
-      String a = intent['option']?.toString() ?? '';
+      String a = intent['answer']?.toString() ?? intent['option']?.toString() ?? '';
+      
+      if (intent['description'] != null && intent['description'].toString().isNotEmpty) {
+        inHerWords ??= intent['description'].toString();
+      }
+      
       if (!categories.containsKey(q)) {
         categories[q] = [];
       }
@@ -1178,56 +1238,58 @@ class _ProfileDetailsView extends StatelessWidget {
             return _buildNetworkingCategory(entry.key.toUpperCase(), entry.value);
           }).toList(),
 
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(
-                child: Divider(
-                  color: const Color(0xFF956630).withOpacity(0.5),
-                  height: 1,
-                ), // antiqueGold
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  '✦',
-                  style: TextStyle(fontSize: 14, color: Color(0xFFD4A85F)),
-                ), // luxuryGold
-              ),
-              Expanded(
-                child: Divider(
-                  color: const Color(0xFF956630).withOpacity(0.5),
-                  height: 1,
-                ), // antiqueGold
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // IN HER WORDS
-          const Center(
-            child: Text(
-              'IN HER WORDS',
-              style: TextStyle(
-                color: Color(0xFFD4A85F), // luxuryGold
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.5,
+          if (inHerWords != null) ...[
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: Divider(
+                    color: const Color(0xFF956630).withOpacity(0.5),
+                    height: 1,
+                  ), // antiqueGold
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    '✦',
+                    style: TextStyle(fontSize: 14, color: Color(0xFFD4A85F)),
+                  ), // luxuryGold
+                ),
+                Expanded(
+                  child: Divider(
+                    color: const Color(0xFF956630).withOpacity(0.5),
+                    height: 1,
+                  ), // antiqueGold
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Center(
+              child: Text(
+                'IN HER WORDS',
+                style: TextStyle(
+                  color: Color(0xFFD4A85F), // luxuryGold
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.5,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'Happy to swap notes on building a brand — coffee over pitch decks. Dating first, network second.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFFFBF5D2), // ivoryGlow
-              fontSize: 13,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w400,
-              height: 1.4,
+            const SizedBox(height: 6),
+            Center(
+              child: Text(
+                inHerWords,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFFFBF5D2), // ivoryGlow
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w400,
+                  height: 1.4,
+                ),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -1545,6 +1607,34 @@ class _ProfileDetailsView extends StatelessWidget {
     if (lower.contains('pet') || lower.contains('dog') || lower.contains('cat')) return Icons.pets_rounded;
     
     return Icons.star_border_rounded;
+  }
+
+  String _formatSiblings(List<dynamic> siblings) {
+    if (siblings.isEmpty) return 'No siblings';
+    if (siblings.length == 1) {
+      final s = siblings.first;
+      String relation = s['relation']?.toString() ?? 'Sibling';
+      String marital = s['marital']?.toString() ?? '';
+      String occupation = s['occupation']?.toString() ?? '';
+      List<String> details = [];
+      if (marital.isNotEmpty) details.add(marital);
+      if (occupation.isNotEmpty) details.add(occupation);
+      return details.isEmpty ? relation : '$relation — ${details.join(', ')}';
+    }
+
+    int brothers = 0;
+    int sisters = 0;
+    for (var s in siblings) {
+      if (s['relation']?.toString().toLowerCase() == 'brother') brothers++;
+      if (s['relation']?.toString().toLowerCase() == 'sister') sisters++;
+    }
+    
+    List<String> parts = [];
+    if (brothers > 0) parts.add('$brothers Brother${brothers > 1 ? 's' : ''}');
+    if (sisters > 0) parts.add('$sisters Sister${sisters > 1 ? 's' : ''}');
+    
+    if (parts.isEmpty) return '${siblings.length} Siblings';
+    return parts.join(', ');
   }
 
   Widget _buildBasicRow(
