@@ -49,7 +49,7 @@ class _FamilySectionState extends State<FamilySection> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      final url = Uri.parse('https://dating-app-backend-plum.vercel.app/api/admin/family/options?type=$type');
+      final url = Uri.parse('https://api.welvors.com/api/admin/family/options?type=$type');
       final response = await http.get(
         url,
         headers: {
@@ -80,7 +80,7 @@ class _FamilySectionState extends State<FamilySection> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
       final response = await http.patch(
-        Uri.parse('https://dating-app-backend-plum.vercel.app/api/user/profile/family'),
+        Uri.parse('https://api.welvors.com/api/user/profile/family'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -823,7 +823,7 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      final url = Uri.parse('https://dating-app-backend-plum.vercel.app/api/admin/family/options?type=$type');
+      final url = Uri.parse('https://api.welvors.com/api/admin/family/options?type=$type');
       final response = await http.get(
         url,
         headers: {

@@ -6,8 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileApiService {
   // Update this baseUrl if it differs for your environment
-  static const String baseUrl =
-      'https://dating-app-backend-plum.vercel.app/api';
+  static const String baseUrl = 'https://api.welvors.com/api';
 
   /// Fetches family options (e.g. familyType)
   static Future<List<String>> getFamilyOptions(String type) async {

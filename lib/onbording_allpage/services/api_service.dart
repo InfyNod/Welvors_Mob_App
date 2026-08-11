@@ -5,7 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://dating-app-backend-plum.vercel.app/api';
+  static const String baseUrl = 'https://api.welvors.com/api';
 
   /// Fetches onboarding intentions from the server.
   /// Returns a map containing 'title', 'description', and 'options' list.
