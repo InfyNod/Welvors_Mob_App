@@ -69,7 +69,14 @@ class ProfileModel extends Equatable {
     List<String> parsedImages = [];
     String? parsedVideo;
     if (json['photos'] != null) {
-      for (var photo in json['photos']) {
+      List<dynamic> photosList = List.from(json['photos']);
+      // Try to sort by order if available to prevent initial mismatched images
+      photosList.sort((a, b) {
+        int orderA = a['order'] ?? a['order_index'] ?? a['position'] ?? 99;
+        int orderB = b['order'] ?? b['order_index'] ?? b['position'] ?? 99;
+        return orderA.compareTo(orderB);
+      });
+      for (var photo in photosList) {
         final url = photo['media_url'] ?? photo['url'];
         final type = photo['media_type'] ?? photo['mediaType'];
         if (type == 'VIDEO' && parsedVideo == null) {
@@ -113,7 +120,13 @@ class ProfileModel extends Equatable {
     String? parsedVideo = this.videoUrl;
     if (details['photos'] != null) {
       parsedImages = [];
-      for (var photo in details['photos']) {
+      List<dynamic> photosList = List.from(details['photos']);
+      photosList.sort((a, b) {
+        int orderA = a['order'] ?? a['order_index'] ?? a['position'] ?? 99;
+        int orderB = b['order'] ?? b['order_index'] ?? b['position'] ?? 99;
+        return orderA.compareTo(orderB);
+      });
+      for (var photo in photosList) {
         final url = photo['url'] ?? photo['media_url'];
         final type = photo['mediaType'] ?? photo['media_type'];
         if (type == 'VIDEO' && parsedVideo == null) {

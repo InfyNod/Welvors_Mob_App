@@ -53,9 +53,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           cursor: nextCursor,
         ));
         
-        // Auto-fetch details for the first profile if not loaded
-        if (!updatedProfiles.first.detailsLoaded) {
-          add(FetchProfileDetailsEvent(updatedProfiles.first.id));
+        // Auto-fetch details for the first few profiles if not loaded
+        for (int i = 0; i < updatedProfiles.length && i < 3; i++) {
+          if (!updatedProfiles[i].detailsLoaded) {
+            add(FetchProfileDetailsEvent(updatedProfiles[i].id));
+          }
         }
       }
     } else {
@@ -90,9 +92,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         } else {
           emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes, cursor: currentState.cursor));
           
-          // Auto-fetch details for the new first profile
-          if (!updatedProfiles.first.detailsLoaded) {
-            add(FetchProfileDetailsEvent(updatedProfiles.first.id));
+          // Auto-fetch details for the new top profiles
+          for (int i = 0; i < updatedProfiles.length && i < 3; i++) {
+            if (!updatedProfiles[i].detailsLoaded) {
+              add(FetchProfileDetailsEvent(updatedProfiles[i].id));
+            }
           }
 
           // Pre-fetch if running low

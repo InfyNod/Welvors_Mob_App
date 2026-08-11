@@ -2153,7 +2153,7 @@ class _CardsStack extends StatelessWidget {
                   final profile = entry.value;
                   final isFront = index == 0;
 
-                  final widgetKey = ValueKey(profile.images.first);
+                  final widgetKey = ValueKey(profile.id); // Stable key instead of images.first
 
                   return isFront
                       ? _DraggableCard(key: widgetKey, profile: profile)
