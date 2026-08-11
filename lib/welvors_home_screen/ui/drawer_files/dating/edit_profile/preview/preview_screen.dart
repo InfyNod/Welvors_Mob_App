@@ -38,6 +38,7 @@ class PreviewScreen extends StatelessWidget {
         }
 
         final profile = ProfileModel(
+          id: 'preview_id',
           images: images,
           videoUrl: state.videoPath,
           name: state.fullName.isNotEmpty ? state.fullName : 'Your Name',

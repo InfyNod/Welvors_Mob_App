@@ -230,7 +230,14 @@ class _ProfileDetailsView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-
+          if (!profile.detailsLoaded)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: CircularProgressIndicator(color: AppColors.pink),
+              ),
+            )
+          else ...[
           // ABOUT Section
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -363,7 +370,9 @@ class _ProfileDetailsView extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    _getLookingForSubtitle(profile.lookingFor),
+                                    profile.lookingForSubtitle.isNotEmpty
+                                        ? profile.lookingForSubtitle
+                                        : _getLookingForSubtitle(profile.lookingFor),
                                     style: const TextStyle(
                                       color: Colors.black54,
                                       fontWeight: FontWeight.w500,
@@ -471,8 +480,8 @@ class _ProfileDetailsView extends StatelessWidget {
                         if (profile.religion.isNotEmpty)
                           _buildBentoPill(
                             Icons.temple_hindu_outlined,
-                            profile.religion.split(RegExp(r'\s*[•·]\s*')).first,
-                            profile.religion.split(RegExp(r'\s*[•·]\s*')).last,
+                            profile.religion,
+                            profile.community,
                             itemWidth,
                             stacked: true,
                           ),
@@ -501,39 +510,27 @@ class _ProfileDetailsView extends StatelessWidget {
                             itemWidth,
                           ),
                         if (profile.loveLanguage.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.favorite_border,
-                            profile.loveLanguage
-                                .split(RegExp(r'\s*[•·]\s*'))
-                                .first,
-                            profile.loveLanguage
-                                        .split(RegExp(r'\s*[•·]\s*'))
-                                        .length >
-                                    1
-                                ? profile.loveLanguage
-                                      .split(RegExp(r'\s*[•·]\s*'))
-                                      .last
-                                : '',
-                            constraints.maxWidth,
-                            stacked: true,
-                          ),
+                          Builder(builder: (context) {
+                            final data = _getLoveLanguageData(profile.loveLanguage);
+                            return _buildBentoPill(
+                              Icons.favorite_border,
+                              data['title']!,
+                              data['subtitle']!,
+                              constraints.maxWidth,
+                              stacked: true,
+                            );
+                          }),
                         if (profile.communication.isNotEmpty)
-                          _buildBentoPill(
-                            Icons.phone_in_talk_outlined,
-                            profile.communication
-                                .split(RegExp(r'\s*[•·]\s*'))
-                                .first,
-                            profile.communication
-                                        .split(RegExp(r'\s*[•·]\s*'))
-                                        .length >
-                                    1
-                                ? profile.communication
-                                      .split(RegExp(r'\s*[•·]\s*'))
-                                      .last
-                                : '',
-                            constraints.maxWidth,
-                            stacked: true,
-                          ),
+                          Builder(builder: (context) {
+                            final data = _getCommunicationData(profile.communication);
+                            return _buildBentoPill(
+                              Icons.phone_in_talk_outlined,
+                              data['title']!,
+                              data['subtitle']!,
+                              constraints.maxWidth,
+                              stacked: true,
+                            );
+                          }),
                       ],
                     );
                   },
@@ -562,163 +559,140 @@ class _ProfileDetailsView extends StatelessWidget {
           ],
 
           // CAREER & AMBITION Section
-          Container(
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 20,
-              bottom: 12,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+          if (profile.career != null && profile.career!.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.career.icon)),
+                          const SizedBox(width: 8),
+                          Text(
+                            'CAREER & AMBITION',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: SectionColors.career.icon,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(color: SectionColors.career.icon.withOpacity(0.3), height: 1),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  if (profile.career?['highestEducation'] != null || profile.career?['collegeName'] != null) ...[
+                    _buildBasicRow(
+                      Icons.school_outlined,
+                      'Education',
+                      _formatEnumText(profile.career?['highestEducation']?.toString()) ?? profile.career?['collegeName']?.toString() ?? '',
+                      profile.career?['degree']?.toString() ?? '',
+                      color: SectionColors.career,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.career?['profession'] != null || profile.career?['companyName'] != null) ...[
+                    _buildBasicRow(
+                      Icons.work_outline_rounded,
+                      'Work as',
+                      profile.career?['profession']?.toString() ?? '',
+                      (profile.career?['companyName']?.toString() ?? '') +
+                          (profile.career?['experience'] != null && profile.career!['experience'].toString().isNotEmpty ? ' · ${profile.career!['experience']}' : ''),
+                      color: SectionColors.career,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.career?['salaryRange'] != null) ...[
+                    _buildBasicRow(
+                      Icons.attach_money_rounded,
+                      'Income',
+                      profile.career!['salaryRange'].toString(),
+                      '',
+                      color: SectionColors.career,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.career?['employmentType'] != null) ...[
+                    _buildBasicRow(
+                      Icons.computer_rounded,
+                      'Work style',
+                      _formatEnumText(profile.career!['employmentType'].toString())!,
+                      '',
+                      color: SectionColors.career,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.career?['ambition'] != null) ...[
+                    _buildBasicRow(
+                      Icons.trending_up_rounded,
+                      'Ambition level',
+                      profile.career!['ambition'].toString().toUpperCase(),
+                      '',
+                      color: SectionColors.career,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.career?['bigDreams'] != null && profile.career!['bigDreams'].toString().isNotEmpty) ...[
                     Row(
                       children: [
-                        Text(
-                          '✦',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: SectionColors.career.icon,
-                          ),
+                        Expanded(child: Divider(color: SectionColors.career.icon.withOpacity(0.3), height: 1)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text('✦', style: TextStyle(fontSize: 14, color: SectionColors.career.icon)),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'CAREER & AMBITION',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: SectionColors.career.icon,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
+                        Expanded(child: Divider(color: SectionColors.career.icon.withOpacity(0.3), height: 1)),
                       ],
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(
-                          color: SectionColors.career.icon.withOpacity(0.3),
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                _buildBasicRow(
-                  Icons.school_outlined,
-                  'Education',
-                  'NIFT Pune',
-                  'Fashion Design · 3rd year',
-                  color: SectionColors.career,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.work_outline_rounded,
-                  'Work as',
-                  'Fashion Design',
-                  'Freelance · 2 yrs exp',
-                  color: SectionColors.career,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.attach_money_rounded,
-                  'Income',
-                  '₹8-12 L / year',
-                  'Growing steadily',
-                  color: SectionColors.career,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.computer_rounded,
-                  'Work style',
-                  'Creative · Hybrid',
-                  '',
-                  color: SectionColors.career,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.trending_up_rounded,
-                  'Ambition level',
-                  'HIGHLY DRIVEN',
-                  '',
-                  color: SectionColors.career,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: SectionColors.career.icon.withOpacity(0.3),
-                        height: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    const SizedBox(height: 8),
+                    const Center(
                       child: Text(
-                        '✦',
+                        'HER BIG DREAM',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: SectionColors.career.icon,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black87,
+                          letterSpacing: 2.5,
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Divider(
-                        color: SectionColors.career.icon.withOpacity(0.3),
-                        height: 1,
+                    const SizedBox(height: 6),
+                    Center(
+                      child: Text(
+                        profile.career!['bigDreams'].toString(),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.black87,
+                          height: 1.5,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 8),
-                const Center(
-                  child: Text(
-                    'HER BIG DREAM',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black87,
-                      letterSpacing: 2.5,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Launch her own sustainable Indian fashion label — handcrafted, slow fashion made with heart. Also wants to travel every fashion capital before 30.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black87,
-                    height: 1.5,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
           // Slot 2: After CAREER
           if (profile.images.length > slot2Index) ...[
@@ -737,268 +711,134 @@ class _ProfileDetailsView extends StatelessWidget {
           ],
 
           // INTERESTS & HOBBIES Section
-          Container(
-            padding: const EdgeInsets.all(16),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              // border removed to match benefits drawer design
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '✦',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: SectionColors.interests.icon,
+          if (profile.interests != null && profile.interests!.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.interests.icon)),
+                          const SizedBox(width: 8),
+                          Text(
+                            'INTERESTS & HOBBIES',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: SectionColors.interests.icon,
+                              letterSpacing: 1.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'INTERESTS & HOBBIES',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: SectionColors.interests.icon,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(
-                          color: SectionColors.interests.icon.withOpacity(0.3),
-                          height: 1,
+                        ],
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(color: SectionColors.interests.icon.withOpacity(0.3), height: 1),
                         ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: SectionColors.interests.bg, // Faint smooth tint
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '4 in common',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: SectionColors
-                              .interests
-                              .icon, // Dark text on faint bg
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 12,
-                  children: [
-                    _buildInterestPill(
-                      Icons.flight_takeoff_outlined,
-                      'Travel',
-                      isMatch: true,
-                    ),
-                    _buildInterestPill(
-                      Icons.coffee_outlined,
-                      'Coffee',
-                      isMatch: true,
-                    ),
-                    _buildInterestPill(
-                      Icons.landscape_outlined,
-                      'Trekking',
-                      isMatch: true,
-                    ),
-                    _buildInterestPill(
-                      Icons.menu_book_outlined,
-                      'Books',
-                      isMatch: false,
-                    ),
-                    _buildInterestPill(
-                      Icons.self_improvement_outlined,
-                      'Yoga',
-                      isMatch: false,
-                    ),
-                    _buildInterestPill(
-                      Icons.music_note_outlined,
-                      'Indie music',
-                      isMatch: true,
-                    ),
-                    _buildInterestPill(
-                      Icons.restaurant_outlined,
-                      'Cooking',
-                      isMatch: false,
-                    ),
-                    _buildInterestPill(
-                      Icons.camera_alt_outlined,
-                      'Photography',
-                      isMatch: false,
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 12,
+                    children: profile.interests!.map<Widget>((interest) {
+                      String label = interest is String ? interest : (interest['answer']?.toString() ?? interest['name']?.toString() ?? 'Interest');
+                      return _buildInterestPill(
+                        Icons.star_outline, // default icon
+                        label,
+                        isMatch: false,
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
           // LIFESTYLE Section
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '✦',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: SectionColors.lifestyle.icon,
+          if (profile.lifestyle != null && profile.lifestyle!.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.lifestyle.icon)),
+                          const SizedBox(width: 8),
+                          Text(
+                            'LIFESTYLE',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: SectionColors.lifestyle.icon,
+                              letterSpacing: 1.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'LIFESTYLE',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: SectionColors.lifestyle.icon,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(
-                          color: SectionColors.lifestyle.icon.withOpacity(0.3),
-                          height: 1,
+                        ],
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(color: SectionColors.lifestyle.icon.withOpacity(0.3), height: 1),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final double itemWidth = (constraints.maxWidth - 12) / 2;
-                    return Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        _buildBentoPill(
-                          Icons.restaurant_outlined,
-                          'Diet',
-                          'Vegetarian',
-                          itemWidth,
-                          stacked: true,
-                          color: SectionColors.lifestyle,
-                        ),
-                        _buildBentoPill(
-                          Icons.wine_bar_outlined,
-                          'Drinking',
-                          'Socially',
-                          itemWidth,
-                          stacked: true,
-                          color: SectionColors.lifestyle,
-                        ),
-                        _buildBentoPill(
-                          Icons.smoking_rooms_outlined,
-                          'Smoking',
-                          'Non-smoker',
-                          itemWidth,
-                          stacked: true,
-                          color: SectionColors.lifestyle,
-                        ),
-                        _buildBentoPill(
-                          Icons.flight_takeoff_outlined,
-                          'Travel',
-                          '4–5 trips/year',
-                          itemWidth,
-                          stacked: true,
-                          color: SectionColors.lifestyle,
-                        ),
-                        _buildBentoPill(
-                          Icons.pets_outlined,
-                          'Pets',
-                          'Cat parent',
-                          itemWidth,
-                          stacked: true,
-                          color: SectionColors.lifestyle,
-                        ),
-                        _buildBentoPill(
-                          Icons.dark_mode_outlined,
-                          'Sleep',
-                          'Night Owl',
-                          itemWidth,
-                          stacked: true,
-                          color: SectionColors.lifestyle,
-                        ),
-                        _buildBentoPill(
-                          Icons.fitness_center_outlined,
-                          'Gym 4×/week',
-                          'Yoga · Trekking',
-                          constraints.maxWidth,
-                          stacked: true,
-                          color: SectionColors.lifestyle,
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final double itemWidth = (constraints.maxWidth - 12) / 2;
+                      return Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: profile.lifestyle!.map<Widget>((item) {
+                          String question = item['question']?.toString() ?? 'Lifestyle';
+                          String option = item['option']?.toString() ?? '';
+                          return _buildBentoPill(
+                            Icons.check_circle_outline, // Default icon since we don't have mapping
+                            question,
+                            option,
+                            itemWidth,
+                            stacked: true,
+                            color: SectionColors.lifestyle,
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+          ],
           const SizedBox(height: 16),
 
           // Slot 3: After LIFESTYLE
@@ -1008,170 +848,109 @@ class _ProfileDetailsView extends StatelessWidget {
           ],
 
           // NETWORKING INTENT Section
-          _buildNetworkingIntentSection(),
-          const SizedBox(height: 16),
-
+          if (profile.networkingIntent != null && profile.networkingIntent!.isNotEmpty) ...[
+            _buildNetworkingIntentSection(profile.networkingIntent!),
+            const SizedBox(height: 16),
+          ],
           // FAMILY Section
-          Container(
-            padding: const EdgeInsets.all(20),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 16,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '✦',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: SectionColors.family.icon,
+          if (profile.family != null && profile.family!.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.all(20),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 16, offset: const Offset(0, 8)),
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text('✦', style: TextStyle(fontSize: 16, color: SectionColors.family.icon)),
+                          const SizedBox(width: 8),
+                          Text(
+                            'FAMILY',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: SectionColors.family.icon,
+                              letterSpacing: 1.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'FAMILY',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: SectionColors.family.icon,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(
-                          color: SectionColors.family.icon.withOpacity(0.3),
-                          height: 1,
+                        ],
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(color: SectionColors.family.icon.withOpacity(0.3), height: 1),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                _buildBasicRow(
-                  Icons.people_alt_outlined,
-                  'Family type',
-                  'Nuclear',
-                  'Close-knit',
-                  color: SectionColors.family,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.person_outline,
-                  'Father',
-                  'Retired banker',
-                  'Bank of Maharashtra',
-                  color: SectionColors.family,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.woman_outlined,
-                  'Mother',
-                  'Homemaker',
-                  'Former school teacher',
-                  color: SectionColors.family,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.group_outlined,
-                  'Siblings',
-                  'Sister—unmarried, studying\nBrother—married, working',
-                  '',
-                  color: SectionColors.family,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.location_on_outlined,
-                  'Family home',
-                  'Pune',
-                  'Native: Nashik',
-                  color: SectionColors.family,
-                ),
-                const SizedBox(height: 8),
-                _buildBasicRow(
-                  Icons.account_balance_wallet_outlined,
-                  'Family income',
-                  '₹25–40 L / year',
-                  'Household, approx',
-                  color: SectionColors.family,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: SectionColors.family.icon.withOpacity(0.3),
-                        height: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        '✦',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: SectionColors.family.icon,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: SectionColors.family.icon.withOpacity(0.3),
-                        height: 1,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                const Center(
-                  child: Text(
-                    'THE FAMILY DYNAMIC',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black87,
-                      letterSpacing: 2.5,
-                    ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Grew up in a close, easy-going Marathi family that values ambition as much togetherness. My parents married for love and never made it about timelines — they\'d want the same warmth for me.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black87,
-                    height: 1.5,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  if (profile.family?['familyType'] != null || profile.family?['familyStatus'] != null) ...[
+                    _buildBasicRow(
+                      Icons.people_alt_outlined,
+                      'Family type',
+                      profile.family?['familyType']?.toString() ?? '',
+                      profile.family?['familyStatus']?.toString() ?? '',
+                      color: SectionColors.family,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.family?['fatherOccupation'] != null || profile.family?['fatherOrganisation'] != null) ...[
+                    _buildBasicRow(
+                      Icons.person_outline,
+                      'Father',
+                      profile.family?['fatherOccupation']?.toString() ?? '',
+                      profile.family?['fatherOrganisation']?.toString() ?? '',
+                      color: SectionColors.family,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.family?['motherOccupation'] != null || profile.family?['motherOrganisation'] != null) ...[
+                    _buildBasicRow(
+                      Icons.woman_outlined,
+                      'Mother',
+                      profile.family?['motherOccupation']?.toString() ?? '',
+                      profile.family?['motherOrganisation']?.toString() ?? '',
+                      color: SectionColors.family,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.family?['familyHome'] != null || profile.family?['nativePlace'] != null) ...[
+                    _buildBasicRow(
+                      Icons.location_on_outlined,
+                      'Family home',
+                      profile.family?['familyHome']?.toString() ?? '',
+                      profile.family?['nativePlace'] != null ? 'Native: ${profile.family!['nativePlace']}' : '',
+                      color: SectionColors.family,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  if (profile.family?['familyIncome'] != null) ...[
+                    _buildBasicRow(
+                      Icons.account_balance_wallet_outlined,
+                      'Family income',
+                      profile.family!['familyIncome'].toString(),
+                      '',
+                      color: SectionColors.family,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ],
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+          ],
+          
           const SizedBox(height: 16),
 
           // Slot 4: After FAMILY
@@ -1197,6 +976,7 @@ class _ProfileDetailsView extends StatelessWidget {
               const SizedBox(height: 16),
             ],
           ],
+          ], // Closes the else block for details
         ],
       ),
     );
@@ -1311,7 +1091,20 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildNetworkingIntentSection() {
+  Widget _buildNetworkingIntentSection(List<dynamic> networkingIntent) {
+    // Group intents by question
+    Map<String, List<String>> categories = {};
+    for (var intent in networkingIntent) {
+      String q = intent['question']?.toString() ?? 'OTHER';
+      String a = intent['option']?.toString() ?? '';
+      if (!categories.containsKey(q)) {
+        categories[q] = [];
+      }
+      if (a.isNotEmpty) {
+        categories[q]!.add(a);
+      }
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       width: double.infinity,
@@ -1381,20 +1174,9 @@ class _ProfileDetailsView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // LOOKING FOR
-          _buildNetworkingCategory('LOOKING FOR', [
-            'Mentorship',
-            'Career advice',
-          ]),
-
-          // CIRCLES
-          _buildNetworkingCategory('CIRCLES', ['Founder circles', 'Creators']),
-
-          // MEETS OVER
-          _buildNetworkingCategory('MEETS OVER', [
-            'Coffee chats',
-            'Curated dinners',
-          ]),
+          ...categories.entries.map((entry) {
+            return _buildNetworkingCategory(entry.key.toUpperCase(), entry.value);
+          }).toList(),
 
           const SizedBox(height: 4),
           Row(
@@ -1673,6 +1455,46 @@ class _ProfileDetailsView extends StatelessWidget {
     }
   }
 
+  Map<String, String> _getLoveLanguageData(String enumValue) {
+    switch (enumValue.toUpperCase()) {
+      case 'WORDS_OF_AFFIRMATION':
+        return {'title': 'Words of affirmation', 'subtitle': 'Compliments and encouragement mean the world to you.'};
+      case 'QUALITY_TIME':
+        return {'title': 'Quality time', 'subtitle': 'Undivided attention and spending time together.'};
+      case 'RECEIVING_GIFTS':
+        return {'title': 'Receiving gifts', 'subtitle': 'Thoughtful gifts make you feel truly special.'};
+      case 'ACTS_OF_SERVICE':
+        return {'title': 'Acts of service', 'subtitle': 'Actions speak louder than words for you.'};
+      case 'PHYSICAL_TOUCH':
+        return {'title': 'Physical touch', 'subtitle': 'Hugs, holding hands, and physical closeness.'};
+      default:
+        return {'title': enumValue.replaceAll('_', ' ').toLowerCase(), 'subtitle': ''};
+    }
+  }
+
+  Map<String, String> _getCommunicationData(String enumValue) {
+    switch (enumValue.toUpperCase()) {
+      case 'PHONE_CALLS_OVER_TEXTS':
+        return {'title': 'Phone calls over texts', 'subtitle': 'You prefer hearing their voice over reading messages.'};
+      case 'TEXTS_OVER_PHONE_CALLS':
+        return {'title': 'Texts over phone calls', 'subtitle': 'You prefer quick messages throughout the day.'};
+      case 'IN_PERSON_ONLY':
+        return {'title': 'In person only', 'subtitle': 'You prefer face-to-face conversations above all.'};
+      case 'VIDEO_CALLS':
+        return {'title': 'Video calls', 'subtitle': 'You prefer seeing their face when talking.'};
+      default:
+        return {'title': enumValue.replaceAll('_', ' ').toLowerCase(), 'subtitle': ''};
+    }
+  }
+
+  String? _formatEnumText(String? text) {
+    if (text == null || text.isEmpty) return text;
+    return text.split('_').map((word) {
+      if (word.isEmpty) return '';
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
+  }
+
   Widget _buildBasicRow(
     IconData icon,
     String title,
@@ -1888,7 +1710,8 @@ class _ProfileDetailsView extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Padding(
+              Container(
+                width: double.infinity,
                 padding: const EdgeInsets.only(right: 60.0, bottom: 0),
                 child: Text(
                   answer,
@@ -2318,10 +2141,8 @@ class _ProfileCardUI extends StatelessWidget {
                   const SizedBox(height: 8),
                   // Location
                   _buildInfoRow(Icons.location_on, profile.location),
-                  const SizedBox(height: 4),
                   // Job
                   _buildInfoRow(Icons.work, profile.job),
-                  const SizedBox(height: 4),
                   // Intent
                   _buildInfoRow(Icons.favorite, profile.intent),
                 ],
@@ -2373,19 +2194,27 @@ class _ProfileCardUI extends StatelessWidget {
   }
 
   Widget _buildInfoRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.white.withOpacity(0.9), size: 16),
-        const SizedBox(width: 8),
-        Text(
-          text,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.9),
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
+    if (text.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white.withOpacity(0.9), size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

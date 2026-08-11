@@ -1,142 +1,160 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../services/home_api_service.dart';
+
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final List<ProfileModel> _dummyProfiles = [
-    const ProfileModel(
-      images: const [
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=800&q=80',
-      ],
-      videoUrl: 'assets/video.mp4',
-      name: 'Shraddha',
-      age: 21,
-      location: 'Hadapsar, Pune, Maharashtra',
-      job: "Fashion Designer",
-      intent: 'Serious relationship',
-      matchPercentage: '92% Match',
-      trustPercentage: '98% Trust',
-      replyTime: '~5m Replies',
-      about:
-          'Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious. Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious. Building products by day, planning my next trek by night. Looking for someone equally driven and equally curious.',
-      lookingFor: 'Long-term, marriage-open',
-      height: '5\'5" • 165 cm',
-      religion: 'Hindu • Marathi',
-      motherTongue: 'Marathi',
-      dob: '19 Feb 1999',
-      zodiac: 'Scorpio',
-      loveLanguage: 'Words of affirmation • Compliments mean the most',
-      communication: 'Phone calls over texts • I prefer real conversations',
-      prompts: const [
-        {'prompt': 'The way to win me over is…', 'answer': 'A good book rec and a strong chai opinion.'},
-        {'prompt': 'My simple pleasures…', 'answer': 'Roadside chai after a long trek, no signal, good company.'},
-        {'prompt': 'We\'ll get along if…', 'answer': 'You can debate me for an hour and still want dessert after.'},
-      ],
-    ),
-    const ProfileModel(
-      images: const [
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
-      ],
-      // No videoUrl
-      name: 'Priya',
-      age: 23,
-      location: 'Bandra, Mumbai, Maharashtra',
-      job: "Software Engineer",
-      intent: 'Casual dating',
-      matchPercentage: '85% Match',
-      trustPercentage: '90% Trust',
-      replyTime: '~2m Replies',
-      about:
-          'Coffee addict and weekend painter. Always down for a late-night drive.',
-      lookingFor: 'Short-term, open to long',
-      height: '5\'6" • 167 cm',
-      religion: 'Hindu • Gujarati',
-      motherTongue: 'Gujarati',
-      dob: '12 Aug 2000',
-      zodiac: 'Leo',
-      loveLanguage: 'Quality time • Let\'s just hang out',
-      communication: 'Texting all day • Memes are my language',
-      prompts: const [
-        {'prompt': 'A random fact I love is', 'answer': 'Cows have best friends and get stressed when separated.'},
-        {'prompt': 'The hardest I\'ve ever laughed', 'answer': 'When my dog tried to catch his own tail and fell.'},
-      ],
-    ),
-    const ProfileModel(
-      images: const [
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=800&q=80',
-      ],
-      // No videoUrl
-      name: 'Ananya',
-      age: 25,
-      location: 'Delhi, India',
-      job: "Architect",
-      intent: 'Serious relationship',
-      matchPercentage: '95% Match',
-      trustPercentage: '99% Trust',
-      replyTime: '~1m Replies',
-      about:
-          'Designing spaces and chasing sunsets. Let\'s explore the city together.',
-      lookingFor: 'Life partner',
-      height: '5\'7" • 170 cm',
-      religion: 'Hindu • Punjabi',
-      motherTongue: 'Punjabi',
-      dob: '05 Jan 1998',
-      zodiac: 'Aries',
-      loveLanguage: 'Acts of service • Actions speak louder',
-      communication: 'Face to face • Real talk only',
-      prompts: const [
-        {'prompt': 'A life goal of mine', 'answer': 'To design a sustainable home from scratch.'},
-      ],
-    ),
-  ];
-
   final List<ProfileModel> _swipedProfiles = [];
+  bool _isLoadingMore = false;
 
-  HomeBloc() : super(HomeInitial()) {
-    on<LoadHomeDataEvent>((event, emit) {
-      emit(HomeLoaded(profiles: List.from(_dummyProfiles), remainingSwipes: 25));
-    });
+  HomeBloc() : super(const HomeInitial()) {
+    on<LoadHomeDataEvent>(_onLoadHomeData);
+    on<SwipeProfileEvent>(_onSwipeProfile);
+    on<UndoSwipeEvent>(_onUndoSwipe);
+    on<FetchProfileDetailsEvent>(_onFetchProfileDetails);
+  }
 
-    on<SwipeProfileEvent>((event, emit) {
-      if (state is HomeLoaded) {
-        final currentState = state as HomeLoaded;
-        if (currentState.profiles.isNotEmpty) {
-          _swipedProfiles.add(currentState.profiles.first);
-          final updatedProfiles = List<ProfileModel>.from(currentState.profiles)
-            ..removeAt(0);
-          final newSwipes = currentState.remainingSwipes > 0 ? currentState.remainingSwipes - 1 : 0;
-          if (updatedProfiles.isEmpty) {
-            emit(HomeEmpty(remainingSwipes: newSwipes));
-          } else {
-            emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes));
+  Future<void> _onLoadHomeData(LoadHomeDataEvent event, Emitter<HomeState> emit) async {
+    if (event.isRefresh) {
+      _swipedProfiles.clear();
+      _isLoadingMore = false;
+      emit(const HomeLoading());
+    } else if (state is HomeInitial) {
+      emit(const HomeLoading());
+    }
+
+    String? currentCursor;
+    List<ProfileModel> currentProfiles = [];
+    
+    if (state is HomeLoaded && !event.isRefresh) {
+      currentProfiles = (state as HomeLoaded).profiles;
+      currentCursor = (state as HomeLoaded).cursor;
+    }
+
+    final response = await HomeApiService.fetchFeed(limit: 5, cursor: currentCursor);
+    
+    if (response != null && response['users'] != null) {
+      final List<dynamic> usersJson = response['users'];
+      final String? nextCursor = response['nextCursor'];
+      
+      final List<ProfileModel> newProfiles = usersJson.map((json) => ProfileModel.fromFeedJson(json)).toList();
+      
+      final updatedProfiles = [...currentProfiles, ...newProfiles];
+      
+      if (updatedProfiles.isEmpty) {
+        emit(HomeEmpty(remainingSwipes: state.remainingSwipes, cursor: nextCursor));
+      } else {
+        emit(HomeLoaded(
+          profiles: updatedProfiles,
+          remainingSwipes: state.remainingSwipes,
+          cursor: nextCursor,
+        ));
+        
+        // Auto-fetch details for the first profile if not loaded
+        if (!updatedProfiles.first.detailsLoaded) {
+          add(FetchProfileDetailsEvent(updatedProfiles.first.id));
+        }
+      }
+    } else {
+      if (currentProfiles.isEmpty) {
+        emit(HomeEmpty(remainingSwipes: state.remainingSwipes, cursor: currentCursor));
+      } else {
+        emit(HomeLoaded(
+          profiles: currentProfiles,
+          remainingSwipes: state.remainingSwipes,
+          cursor: currentCursor,
+        ));
+      }
+    }
+    _isLoadingMore = false;
+  }
+
+  Future<void> _onSwipeProfile(SwipeProfileEvent event, Emitter<HomeState> emit) async {
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      if (currentState.profiles.isNotEmpty) {
+        _swipedProfiles.add(currentState.profiles.first);
+        
+        final updatedProfiles = List<ProfileModel>.from(currentState.profiles)..removeAt(0);
+        final newSwipes = currentState.remainingSwipes > 0 ? currentState.remainingSwipes - 1 : 0;
+        
+        if (updatedProfiles.isEmpty) {
+          emit(HomeEmpty(remainingSwipes: newSwipes, cursor: currentState.cursor));
+          if (!_isLoadingMore && currentState.cursor != null) {
+            _isLoadingMore = true;
+            add(const LoadHomeDataEvent());
+          }
+        } else {
+          emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes, cursor: currentState.cursor));
+          
+          // Auto-fetch details for the new first profile
+          if (!updatedProfiles.first.detailsLoaded) {
+            add(FetchProfileDetailsEvent(updatedProfiles.first.id));
+          }
+
+          // Pre-fetch if running low
+          if (updatedProfiles.length <= 2 && !_isLoadingMore && currentState.cursor != null) {
+            _isLoadingMore = true;
+            add(const LoadHomeDataEvent());
           }
         }
       }
-    });
+    }
+  }
 
-    on<UndoSwipeEvent>((event, emit) {
-      if (_swipedProfiles.isNotEmpty) {
-        final lastSwiped = _swipedProfiles.removeLast();
-        final newSwipes = state.remainingSwipes < 25 ? state.remainingSwipes + 1 : 25;
-        if (state is HomeLoaded) {
-          final currentState = state as HomeLoaded;
-          final updatedProfiles = [lastSwiped, ...currentState.profiles];
-          emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes));
-        } else if (state is HomeEmpty) {
-          emit(HomeLoaded(profiles: [lastSwiped], remainingSwipes: newSwipes));
+  void _onUndoSwipe(UndoSwipeEvent event, Emitter<HomeState> emit) {
+    if (_swipedProfiles.isNotEmpty) {
+      final lastSwiped = _swipedProfiles.removeLast();
+      final newSwipes = state.remainingSwipes < 25 ? state.remainingSwipes + 1 : 25;
+      
+      if (state is HomeLoaded) {
+        final currentState = state as HomeLoaded;
+        final updatedProfiles = [lastSwiped, ...currentState.profiles];
+        emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes, cursor: currentState.cursor));
+        
+        if (!lastSwiped.detailsLoaded) {
+          add(FetchProfileDetailsEvent(lastSwiped.id));
+        }
+      } else if (state is HomeEmpty) {
+        final currentState = state as HomeEmpty;
+        emit(HomeLoaded(profiles: [lastSwiped], remainingSwipes: newSwipes, cursor: currentState.cursor));
+        
+        if (!lastSwiped.detailsLoaded) {
+          add(FetchProfileDetailsEvent(lastSwiped.id));
         }
       }
-    });
+    }
+  }
+
+  Future<void> _onFetchProfileDetails(FetchProfileDetailsEvent event, Emitter<HomeState> emit) async {
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      
+      final profileIndex = currentState.profiles.indexWhere((p) => p.id == event.userId);
+      if (profileIndex != -1) {
+        final profile = currentState.profiles[profileIndex];
+        
+        // Don't fetch if already loaded
+        if (profile.detailsLoaded) return;
+        
+        final detailsResponse = await HomeApiService.fetchUserDetails(event.userId);
+        
+        if (detailsResponse != null) {
+          final updatedProfile = profile.copyWithDetails(detailsResponse);
+          
+          final updatedProfiles = List<ProfileModel>.from(currentState.profiles);
+          updatedProfiles[profileIndex] = updatedProfile;
+          
+          emit(HomeLoaded(
+            profiles: updatedProfiles,
+            remainingSwipes: currentState.remainingSwipes,
+            cursor: currentState.cursor,
+          ));
+        }
+      }
+    }
   }
 }
