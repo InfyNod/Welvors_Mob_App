@@ -83,36 +83,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-          child: InkWell(
-            onTap: () {},
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.question_mark_rounded,
-                color: Colors.black87,
-                size: 16,
-              ),
-            ),
-          ),
-        ),
-      ],
+
     );
   }
 
@@ -317,85 +288,85 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFFE9F6ED), // rgba(233, 246, 237)
-            Color.fromARGB(255, 248, 255, 250),
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFFCDEBD8), // rgba(205, 235, 216)
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFFE9F6ED), // rgba(233, 246, 237)
+              Color.fromARGB(255, 248, 255, 250),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xFF2CAF6B), // rgba(44, 175, 107)
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF2CAF6B).withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: const Color(0xFFCDEBD8), // rgba(205, 235, 216)
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            // Padding added to visually center the emoji perfectly
-            child: const Padding(
-              padding: EdgeInsets.only(bottom: 2.0),
-              child: Text(
-                '🎁',
-                style: TextStyle(fontSize: 22, height: 1.0),
-                textAlign: TextAlign.center,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2CAF6B), // rgba(44, 175, 107)
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2CAF6B).withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              // Padding added to visually center the emoji perfectly
+              child: const Padding(
+                padding: EdgeInsets.only(bottom: 2.0),
+                child: Text(
+                  '🎁',
+                  style: TextStyle(fontSize: 22, height: 1.0),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 14),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Top up your wallet — refer friends',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Top up your wallet — refer friends',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Earn ₹100 when a friend joins + ₹500 when they buy a plan, straight to your wallet',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 11,
-                    height: 1.3,
+                  SizedBox(height: 4),
+                  Text(
+                    'Earn ₹100 when a friend joins + ₹500 when they buy a plan, straight to your wallet',
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 11,
+                      height: 1.3,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Icon(Icons.chevron_right, color: Colors.green.shade700, size: 24),
-        ],
+            const SizedBox(width: 8),
+            Icon(Icons.chevron_right, color: Colors.green.shade700, size: 24),
+          ],
+        ),
       ),
-    ),
     );
   }
 

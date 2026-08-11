@@ -31,7 +31,7 @@ class _FilterScreenState extends State<FilterScreen> {
   String _selectedTier = 'Premium+';
 
   String _activeBrowsePool = 'Premium+ only';
-  final Set<String> _selectedLookingFor = {'New friends'};
+  final Set<String> _selectedLookingFor = {'Any'};
 
   void _toggleLookingFor(String label) {
     setState(() {
@@ -109,7 +109,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   _membersOnly = false;
                   _selectedTier = 'Premium+';
                   _selectedLookingFor.clear();
-                  _selectedLookingFor.add('New friends');
+                  _selectedLookingFor.add('Any');
                 });
               },
               child: Container(
