@@ -111,7 +111,6 @@ class _FilterScreenState extends State<FilterScreen> {
                   _isOnlineNow = false;
                   _showWhoLikedMe = false;
                   _membersOnly = false;
-                  _selectedTier = 'Premium+';
                   _selectedLookingFor.clear();
                   _selectedLookingFor.add('Any');
                 });
@@ -396,8 +395,11 @@ class _FilterScreenState extends State<FilterScreen> {
                             children: [
                               _buildLockHeader(
                                 'VIP Filters',
-                                Colors.amber.shade700,
+                                Colors.purple,
                                 'VIP',
+                                isUnlocked:
+                                    _selectedTier == 'VIP' ||
+                                    _selectedTier == 'Elite',
                               ),
                               _buildPreferenceRow(
                                 'Income range',
@@ -405,6 +407,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                         state.maxIncome == 200.0)
                                     ? 'Any'
                                     : '${state.minIncome >= 100 ? '${(state.minIncome / 100).toStringAsFixed(state.minIncome % 100 == 0 ? 0 : 1)} Cr' : '${state.minIncome.toInt()} L'} - ${state.maxIncome >= 100 ? (state.maxIncome == 200 ? '2 Cr+' : '${(state.maxIncome / 100).toStringAsFixed(state.maxIncome % 100 == 0 ? 0 : 1)} Cr') : '${state.maxIncome.toInt()} L'}',
+                                valueColor: Colors.purple,
                                 onTap: () {
                                   final filterBloc = context.read<FilterBloc>();
                                   Navigator.push(
@@ -424,6 +427,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 state.networkingIntent.isEmpty
                                     ? 'Any'
                                     : state.networkingIntent.join(', '),
+                                valueColor: Colors.purple,
                                 onTap: () {
                                   final filterBloc = context.read<FilterBloc>();
                                   Navigator.push(
@@ -443,6 +447,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 state.ambition.isEmpty
                                     ? 'Any'
                                     : state.ambition.join(', '),
+                                valueColor: Colors.purple,
                                 onTap: () {
                                   final filterBloc = context.read<FilterBloc>();
                                   Navigator.push(
@@ -472,8 +477,10 @@ class _FilterScreenState extends State<FilterScreen> {
                             children: [
                               _buildLockHeader(
                                 'Elite Filters',
-                                Colors.purple.shade300,
+                                const Color(0xFFFFE066),
                                 'Elite',
+                                isUnlocked: _selectedTier == 'Elite',
+                                isElite: true,
                               ),
                               _buildToggleRow(
                                 'Show who liked me first',
@@ -1092,7 +1099,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     color: _selectedTier == 'Elite' ? null : Colors.white,
                     gradient: _selectedTier == 'Elite'
                         ? const LinearGradient(
-                            colors: [Color(0xFF1A1A1A), Color(0xFF333333)],
+                            colors: [Color(0xFF4A4A4A), Color(0xFF1A1A1A)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           )
@@ -1107,7 +1114,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     ],
                     border: Border.all(
                       color: _selectedTier == 'Elite'
-                          ? const Color(0xFFFFD700).withOpacity(0.5)
+                          ? const Color(0xFFFFE066).withOpacity(0.5)
                           : Colors.purple.withOpacity(0.5),
                       width: 1.5,
                     ),
@@ -1130,7 +1137,7 @@ class _FilterScreenState extends State<FilterScreen> {
                           style: TextStyle(
                             color: isSelected
                                 ? (_selectedTier == 'Elite'
-                                      ? const Color(0xFFFFD700)
+                                      ? const Color(0xFFFFE066)
                                       : Colors.purple)
                                 : Colors.black87,
                             fontSize: 11,
@@ -1177,9 +1184,9 @@ class _FilterScreenState extends State<FilterScreen> {
                   colors: isSelected
                       ? (isElite
                             ? [
+                                const Color(0xFF4A4A4A),
                                 const Color(0xFF1A1A1A),
-                                const Color(0xFF333333),
-                              ] // Black/Dark Grey Gradient
+                              ] // Light Black to Dark Black Gradient
                             : [
                                 const Color(0xFFAB47BC),
                                 const Color(0xFF2C2C2C),
@@ -1193,7 +1200,7 @@ class _FilterScreenState extends State<FilterScreen> {
             color: isPremium
                 ? (isSelected
                       ? (isElite
-                            ? const Color(0xFFFFD700).withOpacity(0.7)
+                            ? const Color(0xFFFFE066).withOpacity(0.7)
                             : Colors.transparent)
                       : (disabled
                             ? Colors.grey.shade100
@@ -1212,7 +1219,7 @@ class _FilterScreenState extends State<FilterScreen> {
           style: TextStyle(
             color: (isSelected && isPremium)
                 ? (isElite
-                      ? const Color(0xFFFFD700)
+                      ? const Color(0xFFFFE066)
                       : Colors.white) // Gold text for Elite, White for Purple
                 : (isSelected
                       ? const Color(0xFFE43A6A)
@@ -1248,17 +1255,43 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Widget _buildLockHeader(String title, Color badgeColor, String badgeText) {
+  Widget _buildLockHeader(
+    String title,
+    Color badgeColor,
+    String badgeText, {
+    bool isUnlocked = false,
+    bool isElite = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(Icons.lock, size: 14, color: badgeColor),
+          if (!isUnlocked)
+            Icon(Icons.lock, size: 14, color: isElite ? Colors.black87 : badgeColor)
+          else
+            const Text(
+              '✓',
+              style: TextStyle(
+                color: Color(0xFF00C853),
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: badgeColor.withOpacity(0.15),
+              color: isElite ? null : badgeColor.withOpacity(0.15),
+              gradient: isElite
+                  ? const LinearGradient(
+                      colors: [Color(0xFF4A4A4A), Color(0xFF1A1A1A)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              border: isElite
+                  ? Border.all(color: badgeColor.withOpacity(0.5))
+                  : null,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -1277,8 +1310,14 @@ class _FilterScreenState extends State<FilterScreen> {
           ),
           const Spacer(),
           Text(
-            'Other world • upgrade to unlock',
-            style: TextStyle(fontSize: 10, color: Colors.grey.shade400),
+            isUnlocked ? '• Your world' : 'Other world • upgrade to unlock',
+            style: TextStyle(
+              fontSize: 10,
+              color: isUnlocked
+                  ? const Color(0xFF00C853)
+                  : Colors.grey.shade400,
+              fontWeight: isUnlocked ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
         ],
       ),
@@ -1289,6 +1328,7 @@ class _FilterScreenState extends State<FilterScreen> {
     String title,
     String value, {
     VoidCallback? onTap,
+    Color? valueColor,
   }) {
     return InkWell(
       onTap: onTap,
@@ -1315,8 +1355,8 @@ class _FilterScreenState extends State<FilterScreen> {
                       value,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xFFE43A6A),
+                      style: TextStyle(
+                        color: valueColor ?? const Color(0xFFE43A6A),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1394,10 +1434,10 @@ class _FilterScreenState extends State<FilterScreen> {
                     ? LinearGradient(
                         colors: value
                             ? [
-                                const Color.fromARGB(255, 209, 114, 223),
-                                const Color(0xFF1A1A1A),
+                                const Color.fromARGB(255, 23, 23, 23),
+                                const Color.fromARGB(255, 250, 218, 93),
                               ]
-                            : [Colors.grey.shade300, Colors.grey.shade300],
+                            : [Colors.grey.shade500, Colors.grey.shade500],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       )
