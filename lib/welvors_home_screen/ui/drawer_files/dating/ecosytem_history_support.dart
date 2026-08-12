@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
+import 'core_ecosystem/trust_verification/trust_verification_screen.dart';
 
 class EcosystemHistorySupport extends StatelessWidget {
   const EcosystemHistorySupport({super.key});
@@ -90,6 +91,14 @@ class EcosystemHistorySupport extends StatelessWidget {
                     ),
                   ],
                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TrustVerificationScreen(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
