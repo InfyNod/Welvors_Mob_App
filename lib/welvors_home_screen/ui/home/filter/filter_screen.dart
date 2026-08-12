@@ -1112,12 +1112,6 @@ class _FilterScreenState extends State<FilterScreen> {
                         offset: const Offset(0, 2),
                       ),
                     ],
-                    border: Border.all(
-                      color: _selectedTier == 'Elite'
-                          ? const Color(0xFFFFE066).withOpacity(0.5)
-                          : Colors.purple.withOpacity(0.5),
-                      width: 1.5,
-                    ),
                   ),
                 ),
               ),
