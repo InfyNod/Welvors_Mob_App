@@ -130,3 +130,12 @@ class UpdateIncomeRange extends FilterEvent {
   @override
   List<Object?> get props => [minIncome, maxIncome];
 }
+
+class UpdateNetworkingIntent extends FilterEvent {
+  final List<String> networkingIntent;
+
+  const UpdateNetworkingIntent(this.networkingIntent);
+
+  @override
+  List<Object?> get props => [networkingIntent];
+}

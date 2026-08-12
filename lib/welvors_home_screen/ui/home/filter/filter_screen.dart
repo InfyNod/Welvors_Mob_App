@@ -11,6 +11,7 @@ import 'all_screen/languages.dart';
 import 'all_screen/lifestyle.dart';
 import 'all_screen/religion_community.dart';
 import 'all_screen/profession.dart';
+import 'all_screen/networking_intent.dart';
 import 'all_screen/zodiac.dart';
 import 'all_screen/trust_score.dart';
 import 'filter_bloc/filter_bloc.dart';
@@ -397,7 +398,22 @@ class _FilterScreenState extends State<FilterScreen> {
                             },
                           ),
                           _buildDivider(),
-                          _buildPreferenceRow('Networking intent', 'Any'),
+                          _buildPreferenceRow(
+                            'Networking intent',
+                            state.networkingIntent.isEmpty ? 'Any' : state.networkingIntent.join(', '),
+                            onTap: () {
+                              final filterBloc = context.read<FilterBloc>();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BlocProvider.value(
+                                    value: filterBloc,
+                                    child: const NetworkingIntentScreen(),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           _buildDivider(),
                           _buildPreferenceRow('Ambition', 'Any'),
                         ],

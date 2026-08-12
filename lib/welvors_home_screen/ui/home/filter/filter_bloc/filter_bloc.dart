@@ -90,5 +90,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         maxIncome: event.maxIncome,
       ));
     });
+
+    on<UpdateNetworkingIntent>((event, emit) {
+      emit(state.copyWith(
+        networkingIntent: event.networkingIntent,
+      ));
+    });
   }
 }
