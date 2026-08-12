@@ -12,6 +12,7 @@ import 'all_screen/lifestyle.dart';
 import 'all_screen/religion_community.dart';
 import 'all_screen/profession.dart';
 import 'all_screen/networking_intent.dart';
+import 'all_screen/ambition.dart';
 import 'all_screen/zodiac.dart';
 import 'all_screen/trust_score.dart';
 import 'filter_bloc/filter_bloc.dart';
@@ -33,6 +34,7 @@ class _FilterScreenState extends State<FilterScreen> {
   String _selectedTier = 'Premium+';
 
   String _activeBrowsePool = 'Premium+ only';
+  String _activeVipBrowsePool = 'Both';
   final Set<String> _selectedLookingFor = {'Any'};
 
   void _toggleLookingFor(String label) {
@@ -148,11 +150,14 @@ class _FilterScreenState extends State<FilterScreen> {
             child: BlocBuilder<FilterBloc, FilterState>(
               builder: (context, state) {
                 return ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   children: [
                     _buildPreferenceRow(
-                      'Age', 
-                      '${state.minAge.round()} – ${state.maxAge.round()}', 
+                      'Age',
+                      '${state.minAge.round()} – ${state.maxAge.round()}',
                       onTap: () {
                         // Pass the existing FilterBloc instance to the new route
                         final filterBloc = context.read<FilterBloc>();
@@ -169,7 +174,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                     _buildDivider(),
                     _buildPreferenceRow(
-                      'Distance', 
+                      'Distance',
                       '${state.distance.round()} km',
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
@@ -186,7 +191,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                     _buildDivider(),
                     _buildPreferenceRow(
-                      'Show me', 
+                      'Show me',
                       state.showMe,
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
@@ -202,272 +207,307 @@ class _FilterScreenState extends State<FilterScreen> {
                       },
                     ),
                     _buildDivider(),
-                _buildOnlineNowRow(),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Looking for', 
-                  state.lookingFor.isEmpty ? 'Any' : state.lookingFor.join(', '),
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const LookingForScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Height', 
-                  state.minHeight == null || state.maxHeight == null
-                      ? 'Any'
-                      : '${_formatHeight(state.minHeight!)} - ${_formatHeight(state.maxHeight!)}',
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const HeightScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Education', 
-                  state.education.isEmpty ? 'Any' : state.education.join(', '),
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const EducationScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Languages', 
-                  state.languages.isEmpty ? 'Any' : state.languages.join(', '),
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const LanguagesScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Lifestyle', 
-                  state.lifestyle.isEmpty ? 'Any' : state.lifestyle.map((e) => e.split(':').last).join(', '),
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const LifestyleScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Religion & community', 
-                  state.religion.isEmpty ? 'Any' : state.religion.join(', '),
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const ReligionCommunityScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Profession', 
-                  state.profession.isEmpty ? 'Any' : state.profession.join(', '),
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const ProfessionScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Zodiac', 
-                  state.zodiac,
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const ZodiacScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                _buildPreferenceRow(
-                  'Trust score', 
-                  '${state.minTrustScore.round()} – ${state.maxTrustScore.round()}',
-                  onTap: () {
-                    final filterBloc = context.read<FilterBloc>();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: filterBloc,
-                          child: const TrustScoreScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                const SizedBox(height: 24),
-                _buildBrowsePoolFreePremium(),
-                const SizedBox(height: 24),
+                    _buildOnlineNowRow(),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Looking for',
+                      state.lookingFor.isEmpty
+                          ? 'Any'
+                          : state.lookingFor.join(', '),
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const LookingForScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Height',
+                      state.minHeight == null || state.maxHeight == null
+                          ? 'Any'
+                          : '${_formatHeight(state.minHeight!)} - ${_formatHeight(state.maxHeight!)}',
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const HeightScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Education',
+                      state.education.isEmpty
+                          ? 'Any'
+                          : state.education.join(', '),
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const EducationScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Languages',
+                      state.languages.isEmpty
+                          ? 'Any'
+                          : state.languages.join(', '),
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const LanguagesScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Lifestyle',
+                      state.lifestyle.isEmpty
+                          ? 'Any'
+                          : state.lifestyle
+                                .map((e) => e.split(':').last)
+                                .join(', '),
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const LifestyleScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Religion & community',
+                      state.religion.isEmpty
+                          ? 'Any'
+                          : state.religion.join(', '),
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const ReligionCommunityScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Profession',
+                      state.profession.isEmpty
+                          ? 'Any'
+                          : state.profession.join(', '),
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const ProfessionScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Zodiac',
+                      state.zodiac,
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const ZodiacScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    _buildPreferenceRow(
+                      'Trust score',
+                      '${state.minTrustScore.round()} – ${state.maxTrustScore.round()}',
+                      onTap: () {
+                        final filterBloc = context.read<FilterBloc>();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: filterBloc,
+                              child: const TrustScoreScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(),
+                    const SizedBox(height: 24),
+                    _buildBrowsePoolFreePremium(),
+                    const SizedBox(height: 24),
 
-                _buildLockedPremiumBox(
-                  IgnorePointer(
-                    ignoring:
-                        _selectedTier != 'VIP' && _selectedTier != 'Elite',
-                    child: Opacity(
-                      opacity:
-                          (_selectedTier == 'VIP' || _selectedTier == 'Elite')
-                          ? 1.0
-                          : 0.4,
-                      child: Column(
-                        children: [
-                          _buildLockHeader(
-                            'VIP Filters',
-                            Colors.amber.shade700,
-                            'VIP',
+                    _buildLockedPremiumBox(
+                      IgnorePointer(
+                        ignoring:
+                            _selectedTier != 'VIP' && _selectedTier != 'Elite',
+                        child: Opacity(
+                          opacity:
+                              (_selectedTier == 'VIP' ||
+                                  _selectedTier == 'Elite')
+                              ? 1.0
+                              : 0.4,
+                          child: Column(
+                            children: [
+                              _buildLockHeader(
+                                'VIP Filters',
+                                Colors.amber.shade700,
+                                'VIP',
+                              ),
+                              _buildPreferenceRow(
+                                'Income range',
+                                (state.minIncome == 5.0 &&
+                                        state.maxIncome == 200.0)
+                                    ? 'Any'
+                                    : '${state.minIncome >= 100 ? '${(state.minIncome / 100).toStringAsFixed(state.minIncome % 100 == 0 ? 0 : 1)} Cr' : '${state.minIncome.toInt()} L'} - ${state.maxIncome >= 100 ? (state.maxIncome == 200 ? '2 Cr+' : '${(state.maxIncome / 100).toStringAsFixed(state.maxIncome % 100 == 0 ? 0 : 1)} Cr') : '${state.maxIncome.toInt()} L'}',
+                                onTap: () {
+                                  final filterBloc = context.read<FilterBloc>();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BlocProvider.value(
+                                        value: filterBloc,
+                                        child: const IncomeRangeScreen(),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              _buildDivider(),
+                              _buildPreferenceRow(
+                                'Networking intent',
+                                state.networkingIntent.isEmpty
+                                    ? 'Any'
+                                    : state.networkingIntent.join(', '),
+                                onTap: () {
+                                  final filterBloc = context.read<FilterBloc>();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BlocProvider.value(
+                                        value: filterBloc,
+                                        child: const NetworkingIntentScreen(),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              _buildDivider(),
+                              _buildPreferenceRow(
+                                'Ambition',
+                                state.ambition.isEmpty
+                                    ? 'Any'
+                                    : state.ambition.join(', '),
+                                onTap: () {
+                                  final filterBloc = context.read<FilterBloc>();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BlocProvider.value(
+                                        value: filterBloc,
+                                        child: const AmbitionScreen(),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                          _buildPreferenceRow(
-                            'Income range',
-                            (state.minIncome == 5.0 && state.maxIncome == 200.0)
-                                ? 'Any'
-                                : '${state.minIncome >= 100 ? '${(state.minIncome / 100).toStringAsFixed(state.minIncome % 100 == 0 ? 0 : 1)} Cr' : '${state.minIncome.toInt()} L'} - ${state.maxIncome >= 100 ? (state.maxIncome == 200 ? '2 Cr+' : '${(state.maxIncome / 100).toStringAsFixed(state.maxIncome % 100 == 0 ? 0 : 1)} Cr') : '${state.maxIncome.toInt()} L'}',
-                            onTap: () {
-                              final filterBloc = context.read<FilterBloc>();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BlocProvider.value(
-                                    value: filterBloc,
-                                    child: const IncomeRangeScreen(),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildDivider(),
-                          _buildPreferenceRow(
-                            'Networking intent',
-                            state.networkingIntent.isEmpty ? 'Any' : state.networkingIntent.join(', '),
-                            onTap: () {
-                              final filterBloc = context.read<FilterBloc>();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BlocProvider.value(
-                                    value: filterBloc,
-                                    child: const NetworkingIntentScreen(),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildDivider(),
-                          _buildPreferenceRow('Ambition', 'Any'),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 24),
-                _buildLockedPremiumBox(
-                  IgnorePointer(
-                    ignoring: _selectedTier != 'Elite',
-                    child: Opacity(
-                      opacity: _selectedTier == 'Elite' ? 1.0 : 0.4,
-                      child: Column(
-                        children: [
-                          _buildLockHeader(
-                            'Elite Filters',
-                            Colors.purple.shade300,
-                            'Elite',
+                    const SizedBox(height: 24),
+                    _buildLockedPremiumBox(
+                      IgnorePointer(
+                        ignoring: _selectedTier != 'Elite',
+                        child: Opacity(
+                          opacity: _selectedTier == 'Elite' ? 1.0 : 0.4,
+                          child: Column(
+                            children: [
+                              _buildLockHeader(
+                                'Elite Filters',
+                                Colors.purple.shade300,
+                                'Elite',
+                              ),
+                              _buildToggleRow(
+                                'Show who liked me first',
+                                'Elite priority ordering',
+                                _showWhoLikedMe,
+                                (val) {
+                                  setState(() => _showWhoLikedMe = val);
+                                },
+                                isElite: true,
+                              ),
+                              _buildDivider(),
+                              _buildToggleRow(
+                                'Members-only gatherings',
+                                'Open to private Elite events',
+                                _membersOnly,
+                                (val) {
+                                  setState(() => _membersOnly = val);
+                                },
+                                isElite: true,
+                              ),
+                            ],
                           ),
-                          _buildToggleRow(
-                            'Show who liked me first',
-                            'Elite priority ordering',
-                            _showWhoLikedMe,
-                            (val) {
-                              setState(() => _showWhoLikedMe = val);
-                            },
-                            isElite: true,
-                          ),
-                          _buildDivider(),
-                          _buildToggleRow(
-                            'Members-only gatherings',
-                            'Open to private Elite events',
-                            _membersOnly,
-                            (val) {
-                              setState(() => _membersOnly = val);
-                            },
-                            isElite: true,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                _buildBrowsePoolVipWorld(),
-                const SizedBox(height: 40),
-              ],
-            ); // Closes ListView
-          }, // Closes builder
-        ), // Closes BlocBuilder
-      ), // Closes Expanded
-      _buildBottomButton(),
+                    const SizedBox(height: 24),
+                    _buildBrowsePoolVipWorld(),
+                    const SizedBox(height: 40),
+                  ],
+                ); // Closes ListView
+              }, // Closes builder
+            ), // Closes BlocBuilder
+          ), // Closes Expanded
+          _buildBottomButton(),
         ],
       ),
     );
@@ -841,81 +881,61 @@ class _FilterScreenState extends State<FilterScreen> {
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade50.withOpacity(0.5),
-                    border: Border.all(color: Colors.purple.shade100, width: 1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.lock_outline,
-                        size: 14,
-                        color: Colors.purple.shade300,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Upgrade to VIP to enter',
-                        style: TextStyle(
-                          color: Colors.purple.shade400,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                if (_selectedTier == 'Premium+')
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade50.withOpacity(0.5),
+                      border: Border.all(color: Colors.purple.shade100, width: 1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          size: 14,
+                          color: Colors.purple.shade300,
                         ),
-                      ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Upgrade to VIP to enter',
+                          style: TextStyle(
+                            color: Colors.purple.shade400,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  _buildVipSlidingSegmentedControl(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'LOOKING FOR',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _buildSelectableWrapChip('Any', premiumStyle: _selectedTier),
+                      _buildSelectableWrapChip('Long-term relationship', premiumStyle: _selectedTier),
+                      _buildSelectableWrapChip('Marriage', premiumStyle: _selectedTier),
+                      _buildSelectableWrapChip('Exclusive companionship', premiumStyle: _selectedTier),
+                      _buildSelectableWrapChip('Travel companion', premiumStyle: _selectedTier),
+                      _buildSelectableWrapChip('Networking', premiumStyle: _selectedTier),
                     ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'LOOKING FOR',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    _buildSelectableWrapChip(
-                      'Any',
-                      disabled: _selectedTier == 'Premium+',
-                      isElite: true,
-                    ),
-                    _buildSelectableWrapChip(
-                      'Long-term relationship',
-                      disabled: _selectedTier == 'Premium+',
-                      isElite: true,
-                    ),
-                    _buildSelectableWrapChip(
-                      'Marriage',
-                      disabled: _selectedTier == 'Premium+',
-                      isElite: true,
-                    ),
-                    _buildSelectableWrapChip(
-                      'Exclusive companionship',
-                      disabled: _selectedTier == 'Premium+',
-                      isElite: true,
-                    ),
-                    _buildSelectableWrapChip(
-                      'Travel companion',
-                      disabled: _selectedTier == 'Premium+',
-                      isElite: true,
-                    ),
-                    _buildSelectableWrapChip(
-                      'Networking',
-                      disabled: _selectedTier == 'Premium+',
-                      isElite: true,
-                    ),
-                  ],
-                ),
+                ],
               ],
             ),
           ),
@@ -1021,14 +1041,99 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
+  Widget _buildVipSlidingSegmentedControl() {
+    final options = ['VIP only', 'VIP Elite only', 'Both'];
+    int selectedIndex = options.indexOf(_activeVipBrowsePool);
+    if (selectedIndex == -1) selectedIndex = 2; // Default to 'Both'
+
+    return Container(
+      height: 44, // 36 for inner pill + 8 padding
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.grey.shade300, width: 1),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final itemWidth = constraints.maxWidth / 3;
+          return Stack(
+            children: [
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                left: selectedIndex * itemWidth,
+                top: 0,
+                bottom: 0,
+                width: itemWidth,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: _selectedTier == 'Elite' 
+                          ? const Color(0xFFFFD700).withOpacity(0.5) 
+                          : Colors.purple.withOpacity(0.5),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                children: List.generate(options.length, (index) {
+                  final isSelected = index == selectedIndex;
+                  return Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () =>
+                          setState(() => _activeVipBrowsePool = options[index]),
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOutCubic,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isSelected
+                                ? (_selectedTier == 'Elite' ? const Color(0xFFD4AF37) : Colors.purple)
+                                : Colors.black87,
+                            fontSize: 11,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w600,
+                          ),
+                          child: Text(options[index]),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildSelectableWrapChip(
     String label, {
     bool? isSelectedParam,
     bool disabled = false,
-    bool isElite = false,
+    String? premiumStyle,
   }) {
     final isSelected =
         isSelectedParam ?? (!disabled && _selectedLookingFor.contains(label));
+    final isVip = premiumStyle == 'VIP';
+    final isElite = premiumStyle == 'Elite';
+    final isPremium = isVip || isElite;
+
     return GestureDetector(
       onTap: disabled ? null : () => _toggleLookingFor(label),
       child: AnimatedContainer(
@@ -1036,24 +1141,30 @@ class _FilterScreenState extends State<FilterScreen> {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: isElite ? null : Colors.white,
-          gradient: isElite
+          color: isPremium ? null : Colors.white,
+          gradient: isPremium
               ? LinearGradient(
                   colors: isSelected
-                      ? [const Color(0xFFAB47BC), const Color(0xFF2C2C2C)] // Richer purple to dark charcoal grey for better text contrast
+                      ? (isElite
+                          ? [const Color(0xFF1A1A1A), const Color(0xFF333333)] // Black/Dark Grey
+                          : [const Color(0xFFAB47BC), const Color(0xFF2C2C2C)]) // Purple/Charcoal
                       : [Colors.white, Colors.white],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
               : null,
           border: Border.all(
-            color: isElite
+            color: isPremium
                 ? (isSelected
-                    ? Colors.transparent
-                    : (disabled ? Colors.grey.shade100 : Colors.grey.shade300))
+                      ? (isElite ? const Color(0xFFFFD700) : Colors.transparent) // Gold border for elite, none for VIP
+                      : (disabled
+                            ? Colors.grey.shade100
+                            : Colors.grey.shade300))
                 : (isSelected
-                    ? const Color(0xFFE43A6A)
-                    : (disabled ? Colors.grey.shade100 : Colors.grey.shade300)),
+                      ? const Color(0xFFE43A6A)
+                      : (disabled
+                            ? Colors.grey.shade100
+                            : Colors.grey.shade300)),
           ),
           borderRadius: BorderRadius.circular(18),
         ),
@@ -1061,14 +1172,16 @@ class _FilterScreenState extends State<FilterScreen> {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           style: TextStyle(
-            color: (isSelected && isElite)
-                ? Colors.white
+            color: (isSelected && isPremium)
+                ? (isElite ? const Color(0xFFFFD700) : Colors.white) // Gold text for Elite, White for VIP
                 : (isSelected
-                    ? const Color(0xFFE43A6A)
-                    : (disabled ? Colors.grey.shade300 : Colors.grey.shade700)),
+                      ? const Color(0xFFE43A6A)
+                      : (disabled
+                            ? Colors.grey.shade300
+                            : Colors.grey.shade700)),
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            fontFamily: 'Inter', // Assuming standard font
+            fontFamily: 'Inter',
           ),
           child: Text(label),
         ),
@@ -1132,7 +1245,11 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Widget _buildPreferenceRow(String title, String value, {VoidCallback? onTap}) {
+  Widget _buildPreferenceRow(
+    String title,
+    String value, {
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Padding(

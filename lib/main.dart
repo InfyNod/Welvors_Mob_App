@@ -12,10 +12,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set the test token provided by the backend team for testing
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('auth_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODYwNzg5MjEsImV4cCI6MTc4NjY4MzcyMX0.eiX2x4C8Ct-Y6Y-YYkev9zINKbsYBvklyNPhUhkBfAo');
+  await prefs.setString(
+    'auth_token',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY1MzMzODAsImV4cCI6MTc4OTEyNTM4MH0.MjmYJDOemJfsj9wNR_DWeQXeqFxQ1rkSSJVze8aTMf0',
+  );
 
   runApp(const WelvorsApp());
 }
@@ -27,18 +30,10 @@ class WelvorsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<OnboardingBloc>(
-          create: (context) => OnboardingBloc(),
-        ),
-        BlocProvider<HomeBloc>(
-          create: (context) => HomeBloc(),
-        ),
-        BlocProvider<BoostBloc>(
-          create: (context) => BoostBloc(),
-        ),
-        BlocProvider<ProfileEditCubit>(
-          create: (context) => ProfileEditCubit(),
-        ),
+        BlocProvider<OnboardingBloc>(create: (context) => OnboardingBloc()),
+        BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
+        BlocProvider<BoostBloc>(create: (context) => BoostBloc()),
+        BlocProvider<ProfileEditCubit>(create: (context) => ProfileEditCubit()),
       ],
       child: MaterialApp(
         title: 'Welvors',

@@ -139,3 +139,12 @@ class UpdateNetworkingIntent extends FilterEvent {
   @override
   List<Object?> get props => [networkingIntent];
 }
+
+class UpdateAmbition extends FilterEvent {
+  final List<String> ambition;
+
+  const UpdateAmbition(this.ambition);
+
+  @override
+  List<Object?> get props => [ambition];
+}

@@ -149,14 +149,14 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
     );
   }
 
-  Widget _buildInfoCard(String icon, String title, String subtitle) {
+  Widget _buildInfoCard(String icon, String title, String subtitle, {Color? bgColor, Color? borderColor}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF8F2),
+        color: bgColor ?? const Color(0xFFFFF8F2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.orange.withOpacity(0.1), width: 1),
+        border: Border.all(color: borderColor ?? Colors.orange.withOpacity(0.1), width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,6 +280,13 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
                 '🤝',
                 'Dating first, network second',
                 'Networking intent only shapes suggestions — it never turns your profile into a business listing.',
+              ),
+              _buildInfoCard(
+                '👑',
+                'VIP & VIP Elite only',
+                'Members outside the VIP world never see these preferences.',
+                bgColor: Colors.grey.shade50,
+                borderColor: Colors.grey.shade200,
               ),
               const SizedBox(height: 40),
             ],

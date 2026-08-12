@@ -96,5 +96,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         networkingIntent: event.networkingIntent,
       ));
     });
+
+    on<UpdateAmbition>((event, emit) {
+      emit(state.copyWith(
+        ambition: event.ambition,
+      ));
+    });
   }
 }
