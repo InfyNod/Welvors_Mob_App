@@ -887,7 +887,10 @@ class _FilterScreenState extends State<FilterScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.purple.shade50.withOpacity(0.5),
-                      border: Border.all(color: Colors.purple.shade100, width: 1),
+                      border: Border.all(
+                        color: Colors.purple.shade100,
+                        width: 1,
+                      ),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -927,12 +930,30 @@ class _FilterScreenState extends State<FilterScreen> {
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      _buildSelectableWrapChip('Any', premiumStyle: _selectedTier),
-                      _buildSelectableWrapChip('Long-term relationship', premiumStyle: _selectedTier),
-                      _buildSelectableWrapChip('Marriage', premiumStyle: _selectedTier),
-                      _buildSelectableWrapChip('Exclusive companionship', premiumStyle: _selectedTier),
-                      _buildSelectableWrapChip('Travel companion', premiumStyle: _selectedTier),
-                      _buildSelectableWrapChip('Networking', premiumStyle: _selectedTier),
+                      _buildSelectableWrapChip(
+                        'Any',
+                        premiumStyle: _selectedTier,
+                      ),
+                      _buildSelectableWrapChip(
+                        'Long-term relationship',
+                        premiumStyle: _selectedTier,
+                      ),
+                      _buildSelectableWrapChip(
+                        'Marriage',
+                        premiumStyle: _selectedTier,
+                      ),
+                      _buildSelectableWrapChip(
+                        'Exclusive companionship',
+                        premiumStyle: _selectedTier,
+                      ),
+                      _buildSelectableWrapChip(
+                        'Travel companion',
+                        premiumStyle: _selectedTier,
+                      ),
+                      _buildSelectableWrapChip(
+                        'Networking',
+                        premiumStyle: _selectedTier,
+                      ),
                     ],
                   ),
                 ],
@@ -1068,7 +1089,14 @@ class _FilterScreenState extends State<FilterScreen> {
                 width: itemWidth,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: _selectedTier == 'Elite' ? null : Colors.white,
+                    gradient: _selectedTier == 'Elite'
+                        ? const LinearGradient(
+                            colors: [Color(0xFF1A1A1A), Color(0xFF333333)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : null,
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
@@ -1078,8 +1106,8 @@ class _FilterScreenState extends State<FilterScreen> {
                       ),
                     ],
                     border: Border.all(
-                      color: _selectedTier == 'Elite' 
-                          ? const Color(0xFFFFD700).withOpacity(0.5) 
+                      color: _selectedTier == 'Elite'
+                          ? const Color(0xFFFFD700).withOpacity(0.5)
                           : Colors.purple.withOpacity(0.5),
                       width: 1.5,
                     ),
@@ -1101,7 +1129,9 @@ class _FilterScreenState extends State<FilterScreen> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: isSelected
-                                ? (_selectedTier == 'Elite' ? const Color(0xFFD4AF37) : Colors.purple)
+                                ? (_selectedTier == 'Elite'
+                                      ? const Color(0xFFFFD700)
+                                      : Colors.purple)
                                 : Colors.black87,
                             fontSize: 11,
                             fontWeight: isSelected
@@ -1146,8 +1176,14 @@ class _FilterScreenState extends State<FilterScreen> {
               ? LinearGradient(
                   colors: isSelected
                       ? (isElite
-                          ? [const Color(0xFF1A1A1A), const Color(0xFF333333)] // Black/Dark Grey
-                          : [const Color(0xFFAB47BC), const Color(0xFF2C2C2C)]) // Purple/Charcoal
+                            ? [
+                                const Color(0xFF1A1A1A),
+                                const Color(0xFF333333),
+                              ] // Black/Dark Grey Gradient
+                            : [
+                                const Color(0xFFAB47BC),
+                                const Color(0xFF2C2C2C),
+                              ]) // Purple/Charcoal
                       : [Colors.white, Colors.white],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -1156,7 +1192,9 @@ class _FilterScreenState extends State<FilterScreen> {
           border: Border.all(
             color: isPremium
                 ? (isSelected
-                      ? (isElite ? const Color(0xFFFFD700) : Colors.transparent) // Gold border for elite, none for VIP
+                      ? (isElite
+                            ? const Color(0xFFFFD700).withOpacity(0.7)
+                            : Colors.transparent)
                       : (disabled
                             ? Colors.grey.shade100
                             : Colors.grey.shade300))
@@ -1173,7 +1211,9 @@ class _FilterScreenState extends State<FilterScreen> {
           curve: Curves.easeOutCubic,
           style: TextStyle(
             color: (isSelected && isPremium)
-                ? (isElite ? const Color(0xFFFFD700) : Colors.white) // Gold text for Elite, White for VIP
+                ? (isElite
+                      ? const Color(0xFFFFD700)
+                      : Colors.white) // Gold text for Elite, White for Purple
                 : (isSelected
                       ? const Color(0xFFE43A6A)
                       : (disabled
