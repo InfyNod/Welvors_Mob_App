@@ -13,6 +13,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import '../../home_bloc/home_bloc.dart';
 import '../../../onbording_allpage/theme/app_colors.dart';
 import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 class SectionColor {
   final Color bg;
@@ -72,7 +73,9 @@ class HomeScreen extends StatelessWidget {
 
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
+                  context.read<HomeBloc>().add(
+                    const LoadHomeDataEvent(isRefresh: true),
+                  );
                   await Future.delayed(const Duration(milliseconds: 800));
                 },
                 child: child,
@@ -84,7 +87,9 @@ class HomeScreen extends StatelessWidget {
             builder: (context, constraints) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
+                  context.read<HomeBloc>().add(
+                    const LoadHomeDataEvent(isRefresh: true),
+                  );
                   await Future.delayed(const Duration(milliseconds: 800));
                 },
                 child: SingleChildScrollView(
@@ -150,7 +155,9 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () {
-              context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
+              context.read<HomeBloc>().add(
+                const LoadHomeDataEvent(isRefresh: true),
+              );
             },
             icon: const Icon(Icons.refresh, color: Colors.white),
             label: const Text(
@@ -180,6 +187,16 @@ class _ProfileDetailsView extends StatelessWidget {
   final ProfileModel profile;
 
   const _ProfileDetailsView({required this.profile});
+  String formatDob(String? dob) {
+    if (dob == null || dob.isEmpty) return '';
+
+    try {
+      final date = DateTime.parse(dob);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (e) {
+      return dob;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -473,7 +490,7 @@ class _ProfileDetailsView extends StatelessWidget {
                             _buildBentoPill(
                               Icons.calendar_today_outlined,
                               '${profile.age} years old',
-                              profile.dob,
+                              formatDob(profile.dob),
                               itemWidth,
                               stacked: true,
                             ),
@@ -2153,7 +2170,9 @@ class _CardsStack extends StatelessWidget {
                   final profile = entry.value;
                   final isFront = index == 0;
 
-                  final widgetKey = ValueKey(profile.id); // Stable key instead of images.first
+                  final widgetKey = ValueKey(
+                    profile.id,
+                  ); // Stable key instead of images.first
 
                   return isFront
                       ? _DraggableCard(key: widgetKey, profile: profile)

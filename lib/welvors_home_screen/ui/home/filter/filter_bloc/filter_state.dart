@@ -17,6 +17,8 @@ class FilterState extends Equatable {
   final String zodiac;
   final double minTrustScore;
   final double maxTrustScore;
+  final double minIncome;
+  final double maxIncome;
 
   const FilterState({
     this.minAge = 19.0,
@@ -35,6 +37,8 @@ class FilterState extends Equatable {
     this.zodiac = 'Any',
     this.minTrustScore = 0.0,
     this.maxTrustScore = 20.0,
+    this.minIncome = 5.0,
+    this.maxIncome = 200.0,
   });
 
   FilterState copyWith({
@@ -54,6 +58,8 @@ class FilterState extends Equatable {
     String? zodiac,
     double? minTrustScore,
     double? maxTrustScore,
+    double? minIncome,
+    double? maxIncome,
   }) {
     return FilterState(
       minAge: minAge ?? this.minAge,
@@ -72,9 +78,11 @@ class FilterState extends Equatable {
       zodiac: zodiac ?? this.zodiac,
       minTrustScore: minTrustScore ?? this.minTrustScore,
       maxTrustScore: maxTrustScore ?? this.maxTrustScore,
+      minIncome: minIncome ?? this.minIncome,
+      maxIncome: maxIncome ?? this.maxIncome,
     );
   }
 
   @override
-  List<Object?> get props => [minAge, maxAge, distance, showMe, showMePreference, lookingFor, minHeight, maxHeight, education, languages, lifestyle, religion, profession, zodiac, minTrustScore, maxTrustScore];
+  List<Object?> get props => [minAge, maxAge, distance, showMe, showMePreference, lookingFor, minHeight, maxHeight, education, languages, lifestyle, religion, profession, zodiac, minTrustScore, maxTrustScore, minIncome, maxIncome];
 }

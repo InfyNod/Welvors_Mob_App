@@ -6,6 +6,7 @@ import 'all_screen/show_me.dart';
 import 'all_screen/looking_for.dart';
 import 'all_screen/height.dart';
 import 'all_screen/education.dart';
+import 'all_screen/income_range.dart';
 import 'all_screen/languages.dart';
 import 'all_screen/lifestyle.dart';
 import 'all_screen/religion_community.dart';
@@ -377,7 +378,24 @@ class _FilterScreenState extends State<FilterScreen> {
                             Colors.amber.shade700,
                             'VIP',
                           ),
-                          _buildPreferenceRow('Income range', 'Any'),
+                          _buildPreferenceRow(
+                            'Income range',
+                            (state.minIncome == 5.0 && state.maxIncome == 200.0)
+                                ? 'Any'
+                                : '${state.minIncome >= 100 ? '${(state.minIncome / 100).toStringAsFixed(state.minIncome % 100 == 0 ? 0 : 1)} Cr' : '${state.minIncome.toInt()} L'} - ${state.maxIncome >= 100 ? (state.maxIncome == 200 ? '2 Cr+' : '${(state.maxIncome / 100).toStringAsFixed(state.maxIncome % 100 == 0 ? 0 : 1)} Cr') : '${state.maxIncome.toInt()} L'}',
+                            onTap: () {
+                              final filterBloc = context.read<FilterBloc>();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BlocProvider.value(
+                                    value: filterBloc,
+                                    child: const IncomeRangeScreen(),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           _buildDivider(),
                           _buildPreferenceRow('Networking intent', 'Any'),
                           _buildDivider(),

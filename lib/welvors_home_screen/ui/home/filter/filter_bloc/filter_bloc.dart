@@ -83,5 +83,12 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         maxTrustScore: event.maxTrustScore,
       ));
     });
+
+    on<UpdateIncomeRange>((event, emit) {
+      emit(state.copyWith(
+        minIncome: event.minIncome,
+        maxIncome: event.maxIncome,
+      ));
+    });
   }
 }

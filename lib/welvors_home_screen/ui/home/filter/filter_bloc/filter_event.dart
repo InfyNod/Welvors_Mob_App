@@ -120,3 +120,13 @@ class UpdateTrustScore extends FilterEvent {
   @override
   List<Object?> get props => [minTrustScore, maxTrustScore];
 }
+
+class UpdateIncomeRange extends FilterEvent {
+  final double minIncome;
+  final double maxIncome;
+
+  const UpdateIncomeRange(this.minIncome, this.maxIncome);
+
+  @override
+  List<Object?> get props => [minIncome, maxIncome];
+}
