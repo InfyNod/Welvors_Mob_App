@@ -111,175 +111,195 @@ class _CommitmentScreenView extends StatelessWidget {
 
   Widget _buildProfileCard(CommitmentLoaded state) {
     return Container(
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFECE6DC)),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFF0F5), Colors.white],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.0, 0.7], // More white space on the right
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFFFD1DC), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 3,
-            offset: Offset(0, 1),
-          ),
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 14,
-            offset: Offset(0, 4),
+            color: const Color(0xFFFFD1DC).withOpacity(0.4),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      child: Stack(
         children: [
-          Row(
-            children: [
-              // Overlapping Avatars Placeholder
-              SizedBox(
-                width: 64,
-                height: 44,
-                child: Stack(
+          // Faint Heart Watermark in top right
+          Positioned(
+            top: -24,
+            right: -24,
+            child: Icon(
+              Icons.favorite,
+              color: const Color(0xFFFFE4EB).withOpacity(0.6),
+              size: 140,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Positioned(
-                      left: 20,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFFC73A5E).withOpacity(0.1),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: const Color(0xFFC73A5E),
-                          size: 24,
-                        ),
+                    // Overlapping Image Avatars with Glow
+                    Container(
+                      width: 104,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFC73A5E).withOpacity(0.25),
+                            blurRadius: 20,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF3DA9FF).withOpacity(0.1),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: const Color(0xFF3DA9FF),
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Together with ${state.partnerName}',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Exclusive — hidden from new matches',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: const Color(0xFF5F5C56),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    if (state.isIdentityVerified)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F8EF),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.check,
-                              color: const Color(0xFF2EAF6B),
-                              size: 10,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Identity verified',
-                              style: TextStyle(
-                                color: const Color(0xFF2EAF6B),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            left: 40, // More overlap gap
+                            child: Container(
+                              width: 64,
+                              height: 64,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 3),
+                                image: const DecorationImage(
+                                  image: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'), // Woman (Priya)
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          Positioned(
+                            left: 0,
+                            child: Container(
+                              width: 64,
+                              height: 64,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 3),
+                                image: const DecorationImage(
+                                  image: NetworkImage('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'), // Man
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: const Color(0xFFECE6DC)),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Shared intent',
-                style: TextStyle(fontSize: 12, color: const Color(0xFF5F5C56)),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8A53D).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Text('💍', style: TextStyle(fontSize: 12)),
-                    const SizedBox(width: 4),
-                    Text(
-                      state.intent,
-                      style: TextStyle(
-                        color: const Color(0xFFE8A53D),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 2),
+                          Text(
+                            'Together with ${state.partnerName}',
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF1F1F1F), letterSpacing: -0.2),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Exclusive — hidden from new\nmatches', // Force a small break or let it wrap nicely
+                            style: TextStyle(fontSize: 13, color: const Color(0xFF6A655F), fontWeight: FontWeight.w600, height: 1.2),
+                          ),
+                          const SizedBox(height: 8),
+                          if (state.isIdentityVerified)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(230, 244, 235, 1),
+                                borderRadius: BorderRadius.circular(16), // Softer pill shape
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.check,
+                                    color: Color.fromRGBO(96, 88, 81, 1),
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Identity verified',
+                                    style: TextStyle(
+                                      color: const Color.fromRGBO(96, 88, 81, 1),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: const Color(0xFFECE6DC)),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Text(
-                'Since ',
-                style: TextStyle(fontSize: 12, color: const Color(0xFF5F5C56)),
-              ),
-              Text(
-                state.duration,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                ' · Mutually confirmed',
-                style: TextStyle(fontSize: 12, color: const Color(0xFF5F5C56)),
-              ),
-            ],
+                const SizedBox(height: 16),
+                const Divider(height: 1, color: Color(0xFFFFD1DC)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Text(
+                      'Shared intent',
+                      style: TextStyle(fontSize: 14, color: const Color(0xFF7A756D), fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDF6E3), // Soft gold pill
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          const Text('💍', style: TextStyle(fontSize: 13)),
+                          const SizedBox(width: 6),
+                          Text(
+                            state.intent,
+                            style: TextStyle(
+                              color: const Color(0xFF9E6B17),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Divider(height: 1, color: Color(0xFFFFD1DC)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Text(
+                      'Since ',
+                      style: TextStyle(fontSize: 14, color: const Color(0xFF5F5C56), fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      state.duration,
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF1F1F1F)),
+                    ),
+                    Text(
+                      ' · Mutually confirmed',
+                      style: TextStyle(fontSize: 14, color: const Color(0xFF5F5C56), fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
