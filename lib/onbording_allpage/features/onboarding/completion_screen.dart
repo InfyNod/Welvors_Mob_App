@@ -5,7 +5,7 @@ import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import 'user_data.dart';
-import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
+import 'splash_screen.dart';
 
 class CompletionScreen extends StatelessWidget {
   const CompletionScreen({super.key});
@@ -229,7 +229,7 @@ class CompletionScreen extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const TopAndBottomNavScreen(),
+                      builder: (context) => const SplashScreen(),
                     ),
                     (route) => false,
                   );
