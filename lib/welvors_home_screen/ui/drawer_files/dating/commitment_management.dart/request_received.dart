@@ -54,20 +54,21 @@ class _RequestsSectionState extends State<RequestsSection> {
       'intentTextColor': const Color(0xFF8B6B78),
       'imageUrl':
           'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-    }
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     // If not expanded, show up to 3 items
-    final int displayCount =
-        _isExpanded ? _requests.length : (_requests.length > 3 ? 3 : _requests.length);
+    final int displayCount = _isExpanded
+        ? _requests.length
+        : (_requests.length > 3 ? 3 : _requests.length);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFF0E5D1)),
         boxShadow: [
           BoxShadow(
@@ -93,9 +94,14 @@ class _RequestsSectionState extends State<RequestsSection> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFD1DC).withOpacity(0.5), // Soft pink bg
+                  color: const Color(
+                    0xFFFFD1DC,
+                  ).withOpacity(0.5), // Soft pink bg
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -139,17 +145,31 @@ class _RequestsSectionState extends State<RequestsSection> {
                   _isExpanded = true;
                 });
               },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Center(
-                  child: Text(
-                    'See more',
-                    style: TextStyle(
-                      color: Color(0xFFC73A5E),
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFD1DC).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      'See more requests',
+                      style: TextStyle(
+                        color: Color(0xFFC73A5E),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Color(0xFFC73A5E),
+                      size: 18,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -175,56 +195,57 @@ class _RequestsSectionState extends State<RequestsSection> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(radius: 22, backgroundImage: NetworkImage(imageUrl)),
+            CircleAvatar(radius: 20, backgroundImage: NetworkImage(imageUrl)),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '$name, $age',
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F1F1F),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '$name, $age',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1F1F1F),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: intentColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(intentIcon, size: 10, color: intentTextColor),
+                            const SizedBox(width: 4),
+                            Text(
+                              intent,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: intentTextColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
                     timeText,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: Color(0xFF8A8680),
                       height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: intentColor,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(intentIcon, size: 12, color: intentTextColor),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            intent,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: intentTextColor,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ],
@@ -232,7 +253,7 @@ class _RequestsSectionState extends State<RequestsSection> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
@@ -240,7 +261,7 @@ class _RequestsSectionState extends State<RequestsSection> {
                 onTap: () {},
                 child: Container(
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: const Color(0xFFE8DCD0)),
@@ -249,7 +270,7 @@ class _RequestsSectionState extends State<RequestsSection> {
                   child: const Text(
                     'Decline',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF5F5C56),
                     ),
@@ -263,7 +284,7 @@ class _RequestsSectionState extends State<RequestsSection> {
                 onTap: () {},
                 child: Container(
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(223, 44, 89, 1),
                     borderRadius: BorderRadius.circular(10),
@@ -271,7 +292,7 @@ class _RequestsSectionState extends State<RequestsSection> {
                   child: const Text(
                     'Approve',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
