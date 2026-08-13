@@ -13,6 +13,7 @@ class CompletionScreen extends StatelessWidget {
   Widget _buildNumberedCard(int number, String title, String subtitle) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8), // Reduced from 12
+      constraints: const BoxConstraints(minHeight: 72),
       padding: const EdgeInsets.symmetric(
         horizontal: 12,
         vertical: 12,
@@ -93,7 +94,7 @@ class CompletionScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimens.pad,
-                  vertical: 8,
+                  vertical: 9,
                 ), // Reduced vertical padding
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
