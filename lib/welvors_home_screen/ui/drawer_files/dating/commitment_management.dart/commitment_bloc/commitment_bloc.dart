@@ -1,0 +1,41 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'commitment_event.dart';
+import 'commitment_state.dart';
+
+class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
+  CommitmentBloc() : super(CommitmentInitial()) {
+    on<LoadCommitmentData>(_onLoadCommitmentData);
+    on<EndExclusiveStatusRequested>(_onEndExclusiveStatusRequested);
+  }
+
+  Future<void> _onLoadCommitmentData(
+    LoadCommitmentData event,
+    Emitter<CommitmentState> emit,
+  ) async {
+    emit(CommitmentLoading());
+    try {
+      // Simulate API call
+      await Future.delayed(const Duration(milliseconds: 600));
+      
+      // Load dummy data based on design
+      emit(const CommitmentLoaded(
+        partnerName: 'Priya',
+        duration: '12 Jun',
+        intent: 'Dating to marry',
+        isIdentityVerified: true,
+      ));
+    } catch (e) {
+      emit(CommitmentError(e.toString()));
+    }
+  }
+
+  Future<void> _onEndExclusiveStatusRequested(
+    EndExclusiveStatusRequested event,
+    Emitter<CommitmentState> emit,
+  ) async {
+    // In a real scenario, this would call an API and likely navigate away or show success state
+    emit(CommitmentLoading());
+    await Future.delayed(const Duration(seconds: 1));
+    emit(const CommitmentError('End exclusive status feature not implemented yet.'));
+  }
+}

@@ -40,9 +40,9 @@ class WelvorsApp extends StatelessWidget {
         title: 'Welvors',
         theme: buildTheme(),
         debugShowCheckedModeBanner: false,
-        // home: const TopAndBottomNavScreen(),
+        home: const TopAndBottomNavScreen(),
         // home: const LandingScreen(),
-        home: const CompletionScreen(), 
+        // home: const CompletionScreen(), 
       ),
     );
   }
