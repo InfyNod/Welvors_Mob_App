@@ -5,7 +5,7 @@ import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import 'user_data.dart';
-import 'founding_batch_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 
 class CompletionScreen extends StatelessWidget {
   const CompletionScreen({super.key});
@@ -149,7 +149,7 @@ class CompletionScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     // Subtitle
                     Text(
-                      'Your profile is saved and ready. Welvors\nopens in small founding batches — here\'s\nhow to lock your spot before the doors\nopen.',
+                      'Your profile is saved and ready. You\'re all\nset to start exploring profiles on Welvors.',
                       textAlign: TextAlign.center,
                       style: AppText.sub.copyWith(
                         color: AppColors.ink60,
@@ -157,12 +157,12 @@ class CompletionScreen extends StatelessWidget {
                         height: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 24), // Reduced from 40
+                    const SizedBox(height: 24),
                     // Section Header
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'JUST ONE STEP LEFT',
+                        'WHAT\'S NEXT',
                         style: AppText.eyebrow.copyWith(
                           color: AppColors.muted,
                           fontSize: 10,
@@ -175,35 +175,30 @@ class CompletionScreen extends StatelessWidget {
                     // Cards
                     _buildNumberedCard(
                       1,
-                      'Reserve your founding spot',
-                      'Pay a refundable ₹299 on the next screen to hold your place',
+                      'Explore Profiles',
+                      'Discover and connect with like-minded individuals',
                     ),
                     _buildNumberedCard(
                       2,
-                      'Get a month of Premium, free',
-                      'Your ₹299 comes back as your first month at launch',
+                      'Find Your Match',
+                      'Engage in meaningful conversations and build real connections',
                     ),
                     _buildNumberedCard(
                       3,
-                      'Skip the line',
-                      'Founding members get early access the day we go live',
+                      'Go on Dates',
+                      'Experience curated dates designed just for you',
                     ),
 
                     const SizedBox(height: 12),
 
-                    // Secure payment text
+                    // Secure payment text -> changed to generic text
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // const Icon(
-                        //   Icons.lock,
-                        //   size: 10,
-                        //   color: AppColors.muted,
-                        // ),
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
-                            '🔒 Secure payment · your founding benefits are locked in for launch',
+                            '✨ Get ready to experience Welvors',
                             textAlign: TextAlign.center,
                             style: AppText.body.copyWith(
                               color: AppColors.muted,
@@ -213,7 +208,7 @@ class CompletionScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8), // Replaced large gap
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -225,16 +220,17 @@ class CompletionScreen extends StatelessWidget {
                 AppDimens.pad,
                 8,
                 AppDimens.pad,
-                16, // Reduced from 24
+                16,
               ),
               child: PrimaryButton(
-                'Lock my founding spot →',
+                'Explore Profiles →',
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const FoundingBatchScreen(),
+                      builder: (context) => const TopAndBottomNavScreen(),
                     ),
+                    (route) => false,
                   );
                 },
               ),
