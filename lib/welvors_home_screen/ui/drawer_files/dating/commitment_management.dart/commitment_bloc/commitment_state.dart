@@ -36,3 +36,16 @@ class CommitmentError extends CommitmentState {
   @override
   List<Object?> get props => [message];
 }
+
+class CommitmentEnded extends CommitmentState {
+  final String partnerName;
+  final String userName;
+
+  const CommitmentEnded({
+    required this.partnerName,
+    required this.userName,
+  });
+
+  @override
+  List<Object?> get props => [partnerName, userName];
+}

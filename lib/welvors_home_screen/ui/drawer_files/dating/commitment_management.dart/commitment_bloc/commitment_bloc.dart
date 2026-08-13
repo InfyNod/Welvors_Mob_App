@@ -50,9 +50,14 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     EndExclusiveStatusRequested event,
     Emitter<CommitmentState> emit,
   ) async {
-    // In a real scenario, this would call an API and likely navigate away or show success state
-    emit(CommitmentLoading());
-    await Future.delayed(const Duration(seconds: 1));
-    emit(const CommitmentError('End exclusive status feature not implemented yet.'));
+    final currentState = state;
+    if (currentState is CommitmentLoaded) {
+      emit(CommitmentLoading());
+      await Future.delayed(const Duration(milliseconds: 300));
+      emit(CommitmentEnded(
+        partnerName: currentState.partnerName,
+        userName: 'Rahul', // Replace with dynamic user logic if available
+      ));
+    }
   }
 }

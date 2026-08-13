@@ -4,6 +4,7 @@ import 'commitment_bloc/commitment_bloc.dart';
 import 'commitment_bloc/commitment_event.dart';
 import 'commitment_bloc/commitment_state.dart';
 import 'request_received.dart';
+import 'end_status.dart';
 
 class CommitmentScreen extends StatelessWidget {
   const CommitmentScreen({super.key});
@@ -124,10 +125,15 @@ class _CommitmentScreenView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: _buildEndExclusiveButton(context),
+                    child: _buildEndExclusiveButton(context, state),
                   ),
                 ),
               ],
+            );
+          } else if (state is CommitmentEnded) {
+            return EndStatusBody(
+              partnerName: state.partnerName,
+              userName: state.userName,
             );
           } else if (state is CommitmentError) {
             return Center(
@@ -664,7 +670,7 @@ class _CommitmentScreenView extends StatelessWidget {
               '"Verified" means Welvors confirmed each person\'s identity — not their relationship history.',
               style: TextStyle(
                 color: const Color(0xFF6A655F),
-                fontSize: 13,
+                fontSize: 12,
                 height: 1.4,
               ),
             ),
@@ -674,10 +680,13 @@ class _CommitmentScreenView extends StatelessWidget {
     );
   }
 
-  Widget _buildEndExclusiveButton(BuildContext context) {
+  Widget _buildEndExclusiveButton(
+    BuildContext context,
+    CommitmentLoaded state,
+  ) {
     return GestureDetector(
       onTap: () {
-        context.read<CommitmentBloc>().add(EndExclusiveStatusRequested());
+        _showEndExclusiveBottomSheet(context, state);
       },
       child: Container(
         width: double.infinity,
@@ -707,6 +716,130 @@ class _CommitmentScreenView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showEndExclusiveBottomSheet(
+    BuildContext context,
+    CommitmentLoaded state,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (BuildContext ctx) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8DCD0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'End exclusive status?',
+                style: TextStyle(
+                  fontFamily: 'Georgia',
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F1F1F),
+                ),
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Your profile reopens to new matches and ${state.partnerName} will be notified right away. You can do this anytime — no approval needed from anyone.',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF6A655F),
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 16),
+              RichText(
+                text: const TextSpan(
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6A655F),
+                    height: 1.4,
+                  ),
+                  children: [
+                    TextSpan(text: 'Want to talk it through first? '),
+                    TextSpan(
+                      text: 'Visit support',
+                      style: TextStyle(
+                        color: Color.fromRGBO(227, 58, 105, 1),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(text: ' — optional, never required.'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.read<CommitmentBloc>().add(
+                    EndExclusiveStatusRequested(),
+                  );
+                },
+                child: Container(
+                  height: 54,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(223, 44, 89, 1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'End status',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(ctx);
+                },
+                child: Container(
+                  height: 54,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: const Color(0xFFE8DCD0)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'Keep it',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1F1F1F),
+                    ),
+                  ),
+                ),
+              ),
+              SafeArea(top: false, child: const SizedBox(height: 16)),
+            ],
+          ),
+        );
+      },
     );
   }
 }
