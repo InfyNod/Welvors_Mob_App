@@ -281,7 +281,9 @@ class _RequestsSectionState extends State<RequestsSection> {
             const SizedBox(width: 10),
             Expanded(
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  _showApproveBottomSheet(context, name);
+                },
                 child: Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -303,6 +305,107 @@ class _RequestsSectionState extends State<RequestsSection> {
           ],
         ),
       ],
+    );
+  }
+
+  void _showApproveBottomSheet(BuildContext context, String name) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (BuildContext ctx) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8DCD0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Go exclusive with $name?',
+                style: const TextStyle(
+                  fontFamily: 'Georgia',
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F1F1F),
+                ),
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'You\'re currently exclusive with Priya. Accepting will end that first — Priya is notified right away. No approval needed from anyone.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF6A655F),
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 32),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(ctx);
+                  // TODO: Add approve logic
+                },
+                child: Container(
+                  height: 54,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(223, 44, 89, 1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    'Go exclusive with $name',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(ctx);
+                },
+                child: Container(
+                  height: 54,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: const Color(0xFFE8DCD0)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1F1F1F),
+                    ),
+                  ),
+                ),
+              ),
+              SafeArea(
+                top: false,
+                child: const SizedBox(height: 16),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

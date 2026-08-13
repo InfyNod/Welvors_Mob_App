@@ -82,7 +82,9 @@ class _CommitmentScreenView extends StatelessWidget {
         builder: (context, state) {
           if (state is CommitmentLoading) {
             return const Center(
-              child: CircularProgressIndicator(color: Color.fromRGBO(223, 44, 89, 1)),
+              child: CircularProgressIndicator(
+                color: Color.fromRGBO(223, 44, 89, 1),
+              ),
             );
           } else if (state is CommitmentLoaded) {
             return Column(
@@ -103,7 +105,7 @@ class _CommitmentScreenView extends StatelessWidget {
                         _buildInfoFooter(),
                         const SizedBox(height: 24),
                         const RequestsSection(),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 0),
                       ],
                     ),
                   ),
