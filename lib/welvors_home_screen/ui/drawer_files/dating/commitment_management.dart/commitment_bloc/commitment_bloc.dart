@@ -6,6 +6,23 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   CommitmentBloc() : super(CommitmentInitial()) {
     on<LoadCommitmentData>(_onLoadCommitmentData);
     on<EndExclusiveStatusRequested>(_onEndExclusiveStatusRequested);
+    on<ApproveRequestEvent>(_onApproveRequestEvent);
+  }
+
+  Future<void> _onApproveRequestEvent(
+    ApproveRequestEvent event,
+    Emitter<CommitmentState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is CommitmentLoaded) {
+      // Avoid emitting CommitmentLoading() so the screen doesn't flicker
+      emit(CommitmentLoaded(
+        partnerName: event.partnerName,
+        duration: currentState.duration,
+        intent: currentState.intent,
+        isIdentityVerified: currentState.isIdentityVerified,
+      ));
+    }
   }
 
   Future<void> _onLoadCommitmentData(

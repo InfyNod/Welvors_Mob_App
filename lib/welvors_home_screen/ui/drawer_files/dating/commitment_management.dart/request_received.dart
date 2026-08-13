@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'commitment_bloc/commitment_bloc.dart';
+import 'commitment_bloc/commitment_event.dart';
+import 'commitment_bloc/commitment_state.dart';
 
 class RequestsSection extends StatefulWidget {
   const RequestsSection({super.key});
@@ -309,6 +313,10 @@ class _RequestsSectionState extends State<RequestsSection> {
   }
 
   void _showApproveBottomSheet(BuildContext context, String name) {
+    final currentState = context.read<CommitmentBloc>().state;
+    final currentPartnerName =
+        currentState is CommitmentLoaded ? currentState.partnerName : 'your partner';
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -344,9 +352,9 @@ class _RequestsSectionState extends State<RequestsSection> {
                 textAlign: TextAlign.left,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'You\'re currently exclusive with Priya. Accepting will end that first — Priya is notified right away. No approval needed from anyone.',
-                style: TextStyle(
+              Text(
+                'You\'re currently exclusive with $currentPartnerName. Accepting will end that first — $currentPartnerName is notified right away. No approval needed from anyone.',
+                style: const TextStyle(
                   fontSize: 14,
                   color: Color(0xFF6A655F),
                   height: 1.4,
@@ -356,7 +364,10 @@ class _RequestsSectionState extends State<RequestsSection> {
               GestureDetector(
                 onTap: () {
                   Navigator.pop(ctx);
-                  // TODO: Add approve logic
+                  context.read<CommitmentBloc>().add(ApproveRequestEvent(name));
+                  setState(() {
+                    _requests.removeWhere((req) => req['name'] == name);
+                  });
                 },
                 child: Container(
                   height: 54,

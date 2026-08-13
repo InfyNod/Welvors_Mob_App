@@ -468,7 +468,7 @@ class _CommitmentScreenView extends StatelessWidget {
                     height: 1.4,
                   ),
                   children: [
-                    const TextSpan(text: 'Hold on to Priya for '),
+                    TextSpan(text: 'Hold on to ${state.partnerName} for '),
                     TextSpan(
                       text: '3 years',
                       style: TextStyle(
@@ -504,7 +504,7 @@ class _CommitmentScreenView extends StatelessWidget {
                 icon: '💝',
                 title: '₹5,000/mo',
                 subtitle:
-                    'Shopping allowance for Priya, 3 years after marriage',
+                    'Shopping allowance for ${state.partnerName}, 3 years after marriage',
                 badgeText: 'FOR HER',
                 borderColor: const Color(0xFFFFD1DC), // Soft pink border
               ),
