@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'commitment_bloc/commitment_bloc.dart';
 import 'commitment_bloc/commitment_event.dart';
 import 'commitment_bloc/commitment_state.dart';
+import 'request_received.dart';
 
 class CommitmentScreen extends StatelessWidget {
   const CommitmentScreen({super.key});
@@ -81,22 +82,50 @@ class _CommitmentScreenView extends StatelessWidget {
         builder: (context, state) {
           if (state is CommitmentLoading) {
             return const Center(
-              child: CircularProgressIndicator(color: const Color(0xFFC73A5E)),
+              child: CircularProgressIndicator(color: Color.fromRGBO(223, 44, 89, 1)),
             );
           } else if (state is CommitmentLoaded) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildProfileCard(state),
-                  const SizedBox(height: 24),
-                  _buildLoyaltyCard(context, state),
-                  const SizedBox(height: 24),
-                  _buildInfoFooter(),
-                  const SizedBox(height: 40),
-                ],
-              ),
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildProfileCard(state),
+                        const SizedBox(height: 24),
+                        _buildLoyaltyCard(context, state),
+                        const SizedBox(height: 24),
+                        _buildInfoFooter(),
+                        const SizedBox(height: 24),
+                        const RequestsSection(),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                ),
+                SafeArea(
+                  top: false,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFDFDFD),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          offset: const Offset(0, -4),
+                          blurRadius: 16,
+                        ),
+                      ],
+                    ),
+                    child: _buildEndExclusiveButton(context),
+                  ),
+                ),
+              ],
             );
           } else if (state is CommitmentError) {
             return Center(
@@ -172,9 +201,14 @@ class _CommitmentScreenView extends StatelessWidget {
                               height: 64,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 3),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 3,
+                                ),
                                 image: const DecorationImage(
-                                  image: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'), // Woman (Priya)
+                                  image: NetworkImage(
+                                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+                                  ), // Woman (Priya)
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -187,9 +221,14 @@ class _CommitmentScreenView extends StatelessWidget {
                               height: 64,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 3),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 3,
+                                ),
                                 image: const DecorationImage(
-                                  image: NetworkImage('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'), // Man
+                                  image: NetworkImage(
+                                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+                                  ), // Man
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -206,20 +245,35 @@ class _CommitmentScreenView extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             'Together with ${state.partnerName}',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF1F1F1F), letterSpacing: -0.2),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF1F1F1F),
+                              letterSpacing: -0.2,
+                            ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             'Exclusive — hidden from new\nmatches', // Force a small break or let it wrap nicely
-                            style: TextStyle(fontSize: 13, color: const Color(0xFF6A655F), fontWeight: FontWeight.w600, height: 1.2),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: const Color(0xFF6A655F),
+                              fontWeight: FontWeight.w600,
+                              height: 1.2,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           if (state.isIdentityVerified)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color.fromRGBO(230, 244, 235, 1),
-                                borderRadius: BorderRadius.circular(16), // Softer pill shape
+                                borderRadius: BorderRadius.circular(
+                                  16,
+                                ), // Softer pill shape
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -233,7 +287,12 @@ class _CommitmentScreenView extends StatelessWidget {
                                   Text(
                                     'Identity verified',
                                     style: TextStyle(
-                                      color: const Color.fromRGBO(96, 88, 81, 1),
+                                      color: const Color.fromRGBO(
+                                        96,
+                                        88,
+                                        81,
+                                        1,
+                                      ),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -253,11 +312,18 @@ class _CommitmentScreenView extends StatelessWidget {
                   children: [
                     Text(
                       'Shared intent',
-                      style: TextStyle(fontSize: 14, color: const Color(0xFF7A756D), fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: const Color(0xFF7A756D),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFDF6E3), // Soft gold pill
                         borderRadius: BorderRadius.circular(20),
@@ -286,15 +352,27 @@ class _CommitmentScreenView extends StatelessWidget {
                   children: [
                     Text(
                       'Since ',
-                      style: TextStyle(fontSize: 14, color: const Color(0xFF5F5C56), fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: const Color(0xFF5F5C56),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     Text(
                       state.duration,
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF1F1F1F)),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF1F1F1F),
+                      ),
                     ),
                     Text(
                       ' · Mutually confirmed',
-                      style: TextStyle(fontSize: 14, color: const Color(0xFF5F5C56), fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: const Color(0xFF5F5C56),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -313,59 +391,87 @@ class _CommitmentScreenView extends StatelessWidget {
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFFFDFBF7),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE8A53D).withOpacity(0.3),
-              width: 1.5,
+            gradient: const LinearGradient(
+              colors: [
+                Color.fromRGBO(254, 245, 230, 1),
+                Color.fromRGBO(246, 210, 217, 1),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFF0E5D1), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: Color(0x0A000000),
-                blurRadius: 3,
-                offset: Offset(0, 1),
-              ),
-              BoxShadow(
-                color: Color(0x0D000000),
-                blurRadius: 14,
+                color: Color(0x08000000),
+                blurRadius: 10,
                 offset: Offset(0, 4),
               ),
             ],
           ),
-          padding: const EdgeInsets.fromLTRB(16, 28, 16, 16),
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Real love deserves a reward. 💍',
-                      style: TextStyle(
-                        color: const Color(
-                          0xFF8B4657,
-                        ), // A deep red/brown as seen in image
-                        fontSize: 18,
-                      ),
-                    ),
+              // Top badge moved inside the card
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
                   ),
-                ],
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color.fromRGBO(229, 155, 70, 1),
+                        Color.fromRGBO(213, 93, 101, 1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.star, color: Colors.white, size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Loyalty Reward',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
+              Text(
+                'Real love deserves a reward. 💍',
+                style: TextStyle(
+                  color: const Color(0xFF4A3B46),
+                  fontSize: 20,
+                  fontFamily: 'Georgia', // Premium serif look
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 10),
               RichText(
                 text: TextSpan(
                   style: TextStyle(
-                    fontSize: 12,
-                    color: const Color(0xFF5F5C56),
-                    height: 1.5,
+                    fontSize: 14,
+                    color: const Color(0xFF6A655F),
+                    height: 1.4,
                   ),
                   children: [
                     const TextSpan(text: 'Hold on to Priya for '),
                     TextSpan(
                       text: '3 years',
                       style: TextStyle(
-                        fontSize: 12,
-                        color: const Color(0xFFE8A53D),
+                        fontSize: 14,
+                        color: const Color(0xFFB8860B),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -376,96 +482,65 @@ class _CommitmentScreenView extends StatelessWidget {
                     TextSpan(
                       text: '₹5 Lakh.',
                       style: TextStyle(
-                        fontSize: 12,
-                        color: const Color(0xFFE8A53D),
+                        fontSize: 14,
+                        color: const Color(0xFFB8860B),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               _buildRewardItem(
                 icon: '✈️',
                 title: '₹5 Lakh',
                 subtitle: 'Fully-paid dream honeymoon for you both',
+                borderColor: const Color(0xFFF0E5D1),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               _buildRewardItem(
                 icon: '💝',
                 title: '₹5,000/mo',
                 subtitle:
                     'Shopping allowance for Priya, 3 years after marriage',
                 badgeText: 'FOR HER',
+                borderColor: const Color(0xFFFFD1DC), // Soft pink border
               ),
               const SizedBox(height: 24),
-              // End exclusive button
+              // See what you'll win button
               GestureDetector(
-                onTap: () {
-                  context.read<CommitmentBloc>().add(
-                    EndExclusiveStatusRequested(),
-                  );
-                },
+                onTap: () {},
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: const Color(0xFFC73A5E).withOpacity(0.2),
-                    ),
+                    color: const Color.fromRGBO(
+                      227,
+                      58,
+                      105,
+                      1,
+                    ), // Requested solid color
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFC73A5E).withOpacity(0.15),
+                        color: const Color.fromRGBO(227, 58, 105, 0.4),
                         blurRadius: 16,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   alignment: Alignment.center,
-                  child: Text(
-                    'End exclusive status',
+                  child: const Text(
+                    "See what you'll win \u2192", // right arrow
                     style: TextStyle(
-                      color: const Color(0xFFC73A5E),
-                      fontSize: 14,
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
               ),
             ],
-          ),
-        ),
-        // Top floating badge
-        Positioned(
-          top: -12,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFE87A65), Color(0xFFD64D6F)],
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.star, color: Colors.white, size: 10),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Loyalty Reward',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       ],
@@ -477,6 +552,7 @@ class _CommitmentScreenView extends StatelessWidget {
     required String title,
     required String subtitle,
     String? badgeText,
+    required Color borderColor,
   }) {
     return Stack(
       clipBehavior: Clip.none,
@@ -485,35 +561,49 @@ class _CommitmentScreenView extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE8A53D).withOpacity(0.2)),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x05000000),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFCF7F3),
-                  shape: BoxShape.circle,
-                ),
+                width: 36,
+                height: 36,
                 alignment: Alignment.center,
-                child: Text(icon, style: const TextStyle(fontSize: 16)),
+                child: Text(icon, style: const TextStyle(fontSize: 26)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(title, style: TextStyle(fontSize: 14)),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Georgia',
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF4A3B46),
+                        letterSpacing: -0.5,
+                      ),
+                    ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize: 11,
-                        color: const Color(0xFF5F5C56),
-                        height: 1.3,
+                        fontSize: 12,
+                        color: const Color(0xFF6A655F),
+                        height: 1.2,
                       ),
                     ),
                   ],
@@ -524,13 +614,18 @@ class _CommitmentScreenView extends StatelessWidget {
         ),
         if (badgeText != null)
           Positioned(
-            top: -8,
-            left: 12,
+            top: -7,
+            left: 14,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8A53D),
-                borderRadius: BorderRadius.circular(8),
+                gradient: const LinearGradient(
+                  colors: [
+                    Color.fromRGBO(229, 155, 70, 1),
+                    Color.fromRGBO(213, 93, 101, 1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(5),
               ),
               child: Text(
                 badgeText,
@@ -547,26 +642,69 @@ class _CommitmentScreenView extends StatelessWidget {
   }
 
   Widget _buildInfoFooter() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Icon(
-          Icons.info_outline,
-          color: const Color(0xFF8A8680),
-          size: 14,
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            '"Verified" means Welvors confirmed each person\'s identity — not their relationship history.',
-            style: TextStyle(
-              color: const Color(0xFF8A8680),
-              fontSize: 11,
-              height: 1.4,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4EFEB),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.info_outline,
+            color: const Color(0xFF6A655F),
+            size: 16,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '"Verified" means Welvors confirmed each person\'s identity — not their relationship history.',
+              style: TextStyle(
+                color: const Color(0xFF6A655F),
+                fontSize: 13,
+                height: 1.4,
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEndExclusiveButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        context.read<CommitmentBloc>().add(EndExclusiveStatusRequested());
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color.fromRGBO(227, 58, 105, 0.2),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromRGBO(227, 58, 105, 0.1),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-      ],
+        alignment: Alignment.center,
+        child: const Text(
+          'End exclusive status',
+          style: TextStyle(
+            color: Color.fromRGBO(227, 58, 105, 1),
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
     );
   }
 }
