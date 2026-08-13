@@ -187,6 +187,56 @@ class _ProfileDetailsView extends StatelessWidget {
   final ProfileModel profile;
 
   const _ProfileDetailsView({required this.profile});
+
+  bool _hasValidData(dynamic data) {
+    if (data == null) return false;
+    if (data is Map) {
+      if (data.isEmpty) return false;
+      return data.entries.any((entry) {
+        final key = entry.key.toString();
+        if (key == '_id' || key == 'id' || key == 'userId' || key == 'createdAt' || key == 'updatedAt' || key == '__v') {
+          return false;
+        }
+        final v = entry.value;
+        if (v == null) return false;
+        if (v is String) return v.trim().isNotEmpty;
+        if (v is List) return v.isNotEmpty;
+        if (v is Map) return v.isNotEmpty;
+        return true;
+      });
+    } else if (data is List) {
+      return data.isNotEmpty;
+    }
+    return false;
+  }
+
+  bool _hasCareerData() {
+    if (profile.career == null) return false;
+    final c = profile.career!;
+    if (c['highestEducation'] != null && c['highestEducation'].toString().isNotEmpty) return true;
+    if (c['collegeName'] != null && c['collegeName'].toString().isNotEmpty) return true;
+    if (c['profession'] != null && c['profession'].toString().isNotEmpty) return true;
+    if (c['companyName'] != null && c['companyName'].toString().isNotEmpty) return true;
+    if (c['salaryRange'] != null && c['salaryRange'].toString().isNotEmpty) return true;
+    if (c['employmentType'] != null && c['employmentType'].toString().isNotEmpty) return true;
+    if (c['ambition'] != null && c['ambition'].toString().isNotEmpty) return true;
+    if (c['bigDreams'] != null && c['bigDreams'].toString().trim().isNotEmpty) return true;
+    return false;
+  }
+
+  bool _hasFamilyData() {
+    if (profile.family == null) return false;
+    final f = profile.family!;
+    if (f['familyType'] != null && f['familyType'].toString().isNotEmpty) return true;
+    if (f['familyStatus'] != null && f['familyStatus'].toString().isNotEmpty) return true;
+    if (f['fatherOccupation'] != null && f['fatherOccupation'].toString().isNotEmpty) return true;
+    if (f['fatherOrganisation'] != null && f['fatherOrganisation'].toString().isNotEmpty) return true;
+    if (f['motherOccupation'] != null && f['motherOccupation'].toString().isNotEmpty) return true;
+    if (f['motherOrganisation'] != null && f['motherOrganisation'].toString().isNotEmpty) return true;
+    if (f['numberOfSiblings'] != null && f['numberOfSiblings'].toString().isNotEmpty) return true;
+    return false;
+  }
+
   String formatDob(String? dob) {
     if (dob == null || dob.isEmpty) return '';
 
@@ -591,7 +641,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ],
 
             // CAREER & AMBITION Section
-            if (profile.career != null && profile.career!.isNotEmpty) ...[
+            if (_hasCareerData()) ...[
               Container(
                 padding: const EdgeInsets.only(
                   left: 20,
@@ -936,7 +986,7 @@ class _ProfileDetailsView extends StatelessWidget {
             ],
 
             // LIFESTYLE Section
-            if (profile.lifestyle != null && profile.lifestyle!.isNotEmpty) ...[
+            if (_hasValidData(profile.lifestyle)) ...[
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -1042,7 +1092,7 @@ class _ProfileDetailsView extends StatelessWidget {
               const SizedBox(height: 16),
             ],
             // FAMILY Section
-            if (profile.family != null && profile.family!.isNotEmpty) ...[
+            if (_hasFamilyData()) ...[
               Container(
                 padding: const EdgeInsets.all(20),
                 width: double.infinity,
