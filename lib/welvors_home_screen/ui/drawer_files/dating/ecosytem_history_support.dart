@@ -3,10 +3,15 @@ import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 import 'core_ecosystem/trust_verification/trust_verification_screen.dart';
 import 'commitment_management.dart/commitment_screen.dart';
-
-class EcosystemHistorySupport extends StatelessWidget {
+import 'commitment_management.dart/commitment_bloc/commitment_bloc.dart';
+class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
 
+  @override
+  State<EcosystemHistorySupport> createState() => _EcosystemHistorySupportState();
+}
+
+class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -54,9 +59,11 @@ class EcosystemHistorySupport extends StatelessWidget {
                       text: 'Your exclusive status · ',
                       style: TextStyle(color: Colors.grey.shade500),
                     ),
-                    const TextSpan(
-                      text: 'Priya',
-                      style: TextStyle(
+                    TextSpan(
+                      text: CommitmentBloc.isSingle 
+                          ? 'Single' 
+                          : (CommitmentBloc.currentCommitment?.partnerName ?? 'Priya'),
+                      style: const TextStyle(
                         color: Color(0xFFE85A7A), // Deep pink
                         fontWeight: FontWeight.bold,
                       ),
@@ -67,13 +74,16 @@ class EcosystemHistorySupport extends StatelessWidget {
                     ),
                   ],
                 ),
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CommitmentScreen(),
                     ),
                   );
+                  if (mounted) {
+                    setState(() {});
+                  }
                 },
               ),
               Divider(color: Colors.grey.shade100, height: 1),

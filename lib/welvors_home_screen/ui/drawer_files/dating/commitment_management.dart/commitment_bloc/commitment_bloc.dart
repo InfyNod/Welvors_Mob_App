@@ -8,6 +8,9 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   static bool _isSingle = false;
   static CommitmentLoaded? _currentCommitment;
 
+  static bool get isSingle => _isSingle;
+  static CommitmentLoaded? get currentCommitment => _currentCommitment;
+
   static String _getFormattedCurrentDate() {
     final now = DateTime.now();
     const months = [
