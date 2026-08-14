@@ -10,8 +10,63 @@ class ReceivedRosesScreen extends StatefulWidget {
 class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
   int _selectedTab = 0; // 0 for Received, 1 for Sent
 
-  // Local state to track which cards have been matched
-  final Map<int, bool> _matchedCards = {};
+  // Dynamic list of cards so they can be removed
+  final List<Map<String, dynamic>> _roseCards = [
+    {
+      'id': 0,
+      'name': 'Dev',
+      'age': '27',
+      'distance': '3 km',
+      'message': '"Your trekking photos are amazing — Ladakh next year?"',
+      'imageUrl': 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80',
+    },
+    {
+      'id': 1,
+      'name': 'Arjun',
+      'age': '28',
+      'distance': '6 km',
+      'message': '"Fellow IIM grad here — chai > coffee, agree?"',
+      'imageUrl': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
+    },
+    {
+      'id': 2,
+      'name': 'Kabir',
+      'age': '30',
+      'distance': '11 km',
+      'message': '"Saw you love indie music — Prateek Kuhad gig next month?"',
+      'imageUrl': 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=80',
+    },
+  ];
+
+  void _handleAction(int id, String popupText) {
+    setState(() {
+      _roseCards.removeWhere((card) => card['id'] == id);
+    });
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              popupText,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF2A2A2A),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        margin: const EdgeInsets.only(bottom: 16, left: 80, right: 80),
+        duration: const Duration(milliseconds: 2000),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,37 +90,31 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
         children: [
           _buildInfoBanner(),
           const SizedBox(height: 16),
-          _buildRoseCard(
-            id: 0,
-            name: 'Dev',
-            age: '27',
-            distance: '3 km',
-            message: '"Your trekking photos are amazing — Ladakh next year?"',
-            imageUrl:
-                'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80',
-          ),
-          const SizedBox(height: 12),
-          _buildRoseCard(
-            id: 1,
-            name: 'Arjun',
-            age: '28',
-            distance: '6 km',
-            message: '"Fellow IIM grad here — chai > coffee, agree?"',
-            imageUrl:
-                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
-          ),
-          const SizedBox(height: 12),
-          _buildRoseCard(
-            id: 2,
-            name: 'Kabir',
-            age: '30',
-            distance: '11 km',
-            message:
-                '"Saw you love indie music — Prateek Kuhad gig next month?"',
-            imageUrl:
-                'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=80',
-          ),
-          const SizedBox(height: 12),
+          ..._roseCards.map((card) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildRoseCard(
+                id: card['id'],
+                name: card['name'],
+                age: card['age'],
+                distance: card['distance'],
+                message: card['message'],
+                imageUrl: card['imageUrl'],
+              ),
+            );
+          }),
+          if (_roseCards.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Text(
+                'No more roses',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade500,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -228,7 +277,6 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
     required String message,
     required String imageUrl,
   }) {
-    final isMatched = _matchedCards[id] ?? false;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -356,108 +404,79 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                 const SizedBox(height: 12),
 
                 // Action Buttons
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: Row(
-                    key: ValueKey<bool>(isMatched),
-                    children: [
-                      // Like Back / Matched Button
-                      GestureDetector(
-                        onTap: isMatched
-                            ? null
-                            : () {
-                                setState(() {
-                                  _matchedCards[id] = true;
-                                });
-                              },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20, // Increased horizontal padding
-                            vertical: 10, // Increased height
-                          ),
-                          decoration: BoxDecoration(
-                            color: isMatched
-                                ? Colors
-                                      .white // Unique matched style (white bg)
-                                : const Color(0xFFE85A7A), // Pink for Like back
-                            borderRadius: BorderRadius.circular(24),
-                            border: isMatched
-                                ? Border.all(
-                                    color: const Color(0xFFE85A7A),
-                                    width: 1.5,
-                                  ) // Pink outline
-                                : null,
-                            boxShadow: isMatched
-                                ? [
-                                    BoxShadow(
-                                      color: const Color(0xFFE85A7A)
-                                          .withOpacity(
-                                            0.25,
-                                          ), // Pink glow when matched
-                                      blurRadius: 10,
-                                      spreadRadius: 1,
-                                    ),
-                                  ]
-                                : [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFFE85A7A,
-                                      ).withOpacity(0.3),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (!isMatched)
-                                const Text(
-                                  '❤️',
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                              if (!isMatched) const SizedBox(width: 6),
-                              Text(
-                                isMatched ? 'Matched ✓' : 'Like back',
-                                style: TextStyle(
-                                  color: isMatched
-                                      ? const Color(0xFFE85A7A)
-                                      : Colors.white, // Pink text when matched
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                Row(
+                  children: [
+                    // Like Back Button
+                    GestureDetector(
+                      onTap: () {
+                        _handleAction(id, "It's a match! 💖");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20, // Increased horizontal padding
+                          vertical: 10, // Increased height
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE85A7A), // Pink for Like back
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFFE85A7A,
+                              ).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '❤️',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'Like back',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Reject Button
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () {
+                        _handleAction(id, "Rejected ❌");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10, // Increased height
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Text(
+                          'Reject',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-
-                      // Pass Button (hidden when matched)
-                      if (!isMatched) ...[
-                        const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10, // Increased height
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: Text(
-                            'Pass',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
