@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeApiService {
-  static const String baseUrl = 'https://dating-app-backend-plum.vercel.app/api';
+  static const String baseUrl = 'https://api.welvors.com/api';
 
   static Future<Map<String, dynamic>?> fetchFeed({int limit = 10, String? cursor}) async {
     try {

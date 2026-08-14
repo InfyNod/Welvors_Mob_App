@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'rose_send.dart';
 
 class ReceivedRosesScreen extends StatefulWidget {
   const ReceivedRosesScreen({super.key});
@@ -91,7 +92,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
           const SizedBox(height: 16),
           _buildToggle(),
           const SizedBox(height: 16),
-          _selectedTab == 0 ? _buildReceivedContent() : _buildSentPlaceholder(),
+          _selectedTab == 0 ? _buildReceivedContent() : const RoseSendScreen(),
           const SizedBox(height: 24),
         ],
       ),
@@ -275,29 +276,6 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSentPlaceholder() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.send_rounded, size: 48, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
-            Text(
-              'No sent roses yet',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
