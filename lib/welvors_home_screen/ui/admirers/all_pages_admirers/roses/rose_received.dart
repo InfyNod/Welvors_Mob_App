@@ -10,6 +10,8 @@ class ReceivedRosesScreen extends StatefulWidget {
 class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
   int _selectedTab = 0; // 0 for Received, 1 for Sent
 
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
   // Dynamic list of cards so they can be removed
   final List<Map<String, dynamic>> _roseCards = [
     {
@@ -39,9 +41,15 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
   ];
 
   void _handleAction(int id, String popupText) {
-    setState(() {
-      _roseCards.removeWhere((card) => card['id'] == id);
-    });
+    final index = _roseCards.indexWhere((card) => card['id'] == id);
+    if (index >= 0) {
+      final removedCard = _roseCards.removeAt(index);
+      _listKey.currentState?.removeItem(
+        index,
+        (context, animation) => _buildRemovedItem(removedCard, animation),
+        duration: const Duration(milliseconds: 600),
+      );
+    }
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -49,20 +57,27 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
         content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              popupText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A2A),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Text(
+                popupText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF2A2A2A),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        margin: const EdgeInsets.only(bottom: 16, left: 80, right: 80),
+        margin: const EdgeInsets.only(bottom: 16),
         duration: const Duration(milliseconds: 2000),
       ),
     );
@@ -90,19 +105,15 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
         children: [
           _buildInfoBanner(),
           const SizedBox(height: 16),
-          ..._roseCards.map((card) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _buildRoseCard(
-                id: card['id'],
-                name: card['name'],
-                age: card['age'],
-                distance: card['distance'],
-                message: card['message'],
-                imageUrl: card['imageUrl'],
-              ),
-            );
-          }),
+          AnimatedList(
+            key: _listKey,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            initialItemCount: _roseCards.length,
+            itemBuilder: (context, index, animation) {
+              return _buildItem(_roseCards[index], animation);
+            },
+          ),
           if (_roseCards.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
@@ -120,6 +131,66 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
     );
   }
 
+  Widget _buildItem(Map<String, dynamic> card, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: FadeTransition(
+        opacity: animation,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _buildRoseCard(
+            id: card['id'],
+            name: card['name'],
+            age: card['age'],
+            distance: card['distance'],
+            message: card['message'],
+            imageUrl: card['imageUrl'],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRemovedItem(Map<String, dynamic> card, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOutCubic,
+      ),
+      child: FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: const Interval(0.5, 1.0),
+        ),
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1.5, 0), // slides out far right
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInBack, // snapping effect
+          )),
+          child: RotationTransition(
+            turns: Tween<double>(begin: 0.05, end: 0.0).animate(CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeIn,
+            )),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildRoseCard(
+                id: card['id'],
+                name: card['name'],
+                age: card['age'],
+                distance: card['distance'],
+                message: card['message'],
+                imageUrl: card['imageUrl'],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
   Widget _buildToggle() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),

@@ -4,7 +4,7 @@ import 'admirers_bloc/admirers_bloc.dart';
 import 'admirers_bloc/admirers_event.dart';
 import 'admirers_bloc/admirers_state.dart';
 import 'all_pages_admirers/likes/received.dart';
-import 'all_pages_admirers/roses/received.dart';
+import 'all_pages_admirers/roses/rose_received.dart';
 
 class TopNavAdmirersScreen extends StatelessWidget {
   const TopNavAdmirersScreen({super.key});
