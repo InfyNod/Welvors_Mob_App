@@ -123,7 +123,7 @@ class _CommitmentScreenView extends StatelessWidget {
                     SafeArea(
                       top: false,
                       child: Container(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 16), // Reduced top padding
                         decoration: BoxDecoration(
                           color: const Color(0xFFFDFDFD),
                           boxShadow: [
@@ -844,7 +844,7 @@ class _CommitmentScreenView extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18),
+        padding: const EdgeInsets.symmetric(vertical: 17),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),

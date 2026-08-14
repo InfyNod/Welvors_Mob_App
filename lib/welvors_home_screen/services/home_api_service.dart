@@ -8,8 +8,7 @@ class HomeApiService {
 
   static Future<Map<String, dynamic>?> fetchFeed({int limit = 10, String? cursor}) async {
     try {
-      final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyNjYwNTczNy0wNzA1LTRhMGEtOGE5ZC04ZjdjOWY2Y2E0MTAiLCJpYXQiOjE3ODY0MjcxNzgsImV4cCI6MTc4OTAxOTE3OH0.hnTawNKc1s4LibLq5F4zlszAiwFpVHGTVxOD4YDoK3M';
-
+      final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY0MjczNTAsImV4cCI6MTc4NzAzMjE1MH0.GUeaaa-GUmgs2elvACLaxuYnKhSnM0zv4k2sp0GR5dU';
       String urlStr = '$baseUrl/user/feed?limit=$limit';
       if (cursor != null && cursor.isNotEmpty) {
         urlStr += '&cursor=$cursor';
