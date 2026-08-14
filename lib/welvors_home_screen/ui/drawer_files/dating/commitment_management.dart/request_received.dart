@@ -14,7 +14,7 @@ class RequestsSection extends StatefulWidget {
 class _RequestsSectionState extends State<RequestsSection> {
   bool _isExpanded = false;
 
-  final List<Map<String, dynamic>> _requests = [
+  static final List<Map<String, dynamic>> _requests = [
     {
       'name': 'Ananya',
       'age': '27',
@@ -286,7 +286,15 @@ class _RequestsSectionState extends State<RequestsSection> {
             Expanded(
               child: GestureDetector(
                 onTap: () {
-                  _showApproveBottomSheet(context, name);
+                  _showApproveBottomSheet(
+                    context,
+                    name,
+                    intent,
+                    imageUrl,
+                    intentColor,
+                    intentTextColor,
+                    intentIcon,
+                  );
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -312,9 +320,17 @@ class _RequestsSectionState extends State<RequestsSection> {
     );
   }
 
-  void _showApproveBottomSheet(BuildContext context, String name) {
+  void _showApproveBottomSheet(
+    BuildContext context,
+    String name,
+    String intent,
+    String imageUrl,
+    Color intentColor,
+    Color intentTextColor,
+    IconData intentIcon,
+  ) {
     final currentState = context.read<CommitmentBloc>().state;
-    final currentPartnerName =
+    final String currentPartnerName =
         currentState is CommitmentLoaded ? currentState.partnerName : 'your partner';
 
     showModalBottomSheet(
@@ -364,7 +380,14 @@ class _RequestsSectionState extends State<RequestsSection> {
               GestureDetector(
                 onTap: () {
                   Navigator.pop(ctx);
-                  context.read<CommitmentBloc>().add(ApproveRequestEvent(name));
+                  context.read<CommitmentBloc>().add(ApproveRequestEvent(
+                    partnerName: name,
+                    intent: intent,
+                    imageUrl: imageUrl,
+                    intentColor: intentColor,
+                    intentTextColor: intentTextColor,
+                    intentIcon: intentIcon,
+                  ));
                   setState(() {
                     _requests.removeWhere((req) => req['name'] == name);
                   });

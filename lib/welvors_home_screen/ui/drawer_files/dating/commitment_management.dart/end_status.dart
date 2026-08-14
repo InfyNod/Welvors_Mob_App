@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'commitment_bloc/commitment_bloc.dart';
+import 'commitment_bloc/commitment_event.dart';
 
 class EndStatusBody extends StatelessWidget {
   final String partnerName;
@@ -150,7 +153,7 @@ class EndStatusBody extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
             child: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                context.read<CommitmentBloc>().add(BackToManagementRequested());
               },
               child: Container(
                 height: 55,

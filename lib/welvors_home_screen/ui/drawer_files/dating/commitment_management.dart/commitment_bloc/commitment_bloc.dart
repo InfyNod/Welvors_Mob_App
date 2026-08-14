@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'commitment_event.dart';
 import 'commitment_state.dart';
@@ -7,22 +8,25 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     on<LoadCommitmentData>(_onLoadCommitmentData);
     on<EndExclusiveStatusRequested>(_onEndExclusiveStatusRequested);
     on<ApproveRequestEvent>(_onApproveRequestEvent);
+    on<BackToManagementRequested>(_onBackToManagementRequested);
   }
 
   Future<void> _onApproveRequestEvent(
     ApproveRequestEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    final currentState = state;
-    if (currentState is CommitmentLoaded) {
-      // Avoid emitting CommitmentLoading() so the screen doesn't flicker
-      emit(CommitmentLoaded(
-        partnerName: event.partnerName,
-        duration: currentState.duration,
-        intent: currentState.intent,
-        isIdentityVerified: currentState.isIdentityVerified,
-      ));
-    }
+    emit(CommitmentLoading());
+    await Future.delayed(const Duration(milliseconds: 300));
+    emit(CommitmentLoaded(
+      partnerName: event.partnerName,
+      duration: '12 Jun', // Use a default or current date
+      intent: event.intent,
+      isIdentityVerified: true,
+      imageUrl: event.imageUrl,
+      intentColor: event.intentColor,
+      intentTextColor: event.intentTextColor,
+      intentIcon: event.intentIcon,
+    ));
   }
 
   Future<void> _onLoadCommitmentData(
@@ -31,15 +35,17 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   ) async {
     emit(CommitmentLoading());
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(milliseconds: 600));
-      
-      // Load dummy data based on design
-      emit(const CommitmentLoaded(
+      await Future.delayed(const Duration(milliseconds: 300));
+      // Default initial data
+      emit(CommitmentLoaded(
         partnerName: 'Priya',
         duration: '12 Jun',
         intent: 'Dating to marry',
         isIdentityVerified: true,
+        imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+        intentColor: const Color(0xFFFDF6E3),
+        intentTextColor: const Color(0xFF9E6B17),
+        intentIcon: Icons.diamond_outlined,
       ));
     } catch (e) {
       emit(CommitmentError(e.toString()));
@@ -59,5 +65,14 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
         userName: 'Rahul', // Replace with dynamic user logic if available
       ));
     }
+  }
+
+  Future<void> _onBackToManagementRequested(
+    BackToManagementRequested event,
+    Emitter<CommitmentState> emit,
+  ) async {
+    emit(CommitmentLoading());
+    await Future.delayed(const Duration(milliseconds: 200));
+    emit(CommitmentSingle());
   }
 }

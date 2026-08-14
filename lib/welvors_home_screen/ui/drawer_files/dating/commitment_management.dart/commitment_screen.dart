@@ -92,6 +92,7 @@ class _CommitmentScreenView extends StatelessWidget {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 16,
@@ -135,6 +136,30 @@ class _CommitmentScreenView extends StatelessWidget {
               partnerName: state.partnerName,
               userName: state.userName,
             );
+          } else if (state is CommitmentSingle) {
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildSingleProfileCard(),
+                        const SizedBox(height: 24),
+                        _buildInfoFooter(),
+                        const SizedBox(height: 24),
+                        const RequestsSection(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
           } else if (state is CommitmentError) {
             return Center(
               child: Text(state.message, style: TextStyle(color: Colors.red)),
@@ -142,6 +167,121 @@ class _CommitmentScreenView extends StatelessWidget {
           }
           return const SizedBox();
         },
+      ),
+    );
+  }
+
+  Widget _buildSingleProfileCard() {
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFF0F5), Colors.white],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.0, 0.7],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFFFD1DC), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFFD1DC).withOpacity(0.4),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -24,
+            right: -24,
+            child: Icon(
+              Icons.favorite,
+              color: const Color(0xFFFFE4EB).withOpacity(0.6),
+              size: 140,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 3,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFC73A5E).withOpacity(0.25),
+                        blurRadius: 20,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                    image: const DecorationImage(
+                      image: NetworkImage(
+                        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'You\'re single',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF1F1F1F),
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      const Text(
+                        'Open to new matches again',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF6A655F),
+                          fontWeight: FontWeight.w600,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF9EAEF),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Text(
+                          'Single',
+                          style: TextStyle(
+                            color: Color(0xFF8B6B78),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -213,9 +353,9 @@ class _CommitmentScreenView extends StatelessWidget {
                                   color: Colors.white,
                                   width: 3,
                                 ),
-                                image: const DecorationImage(
+                                image: DecorationImage(
                                   image: NetworkImage(
-                                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+                                    state.imageUrl,
                                   ), // Woman (Priya)
                                   fit: BoxFit.cover,
                                 ),
@@ -333,17 +473,17 @@ class _CommitmentScreenView extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFDF6E3), // Soft gold pill
+                        color: state.intentColor,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         children: [
-                          const Text('💍', style: TextStyle(fontSize: 13)),
+                          Icon(state.intentIcon, size: 13, color: state.intentTextColor),
                           const SizedBox(width: 6),
                           Text(
                             state.intent,
                             style: TextStyle(
-                              color: const Color(0xFF9E6B17),
+                              color: state.intentTextColor,
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
                             ),
