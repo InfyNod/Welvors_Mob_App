@@ -6,6 +6,7 @@ import 'commitment_bloc/commitment_event.dart';
 import 'commitment_bloc/commitment_state.dart';
 import 'request_received.dart';
 import 'end_status.dart';
+import 'splash_screen_brekup.dart';
 
 class CommitmentScreen extends StatelessWidget {
   const CommitmentScreen({super.key});
@@ -24,8 +25,16 @@ class _CommitmentScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+    return BlocBuilder<CommitmentBloc, CommitmentState>(
+      builder: (context, state) {
+        if (state is CommitmentEndingSplash) {
+          return const Scaffold(
+            body: SplashScreenBreakup(),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
@@ -80,8 +89,8 @@ class _CommitmentScreenView extends StatelessWidget {
           ],
         ),
       ),
-      body: BlocBuilder<CommitmentBloc, CommitmentState>(
-        builder: (context, state) {
+      body: Builder(
+        builder: (context) {
           if (state is CommitmentLoading) {
             return const Center(
               child: CircularProgressIndicator(
@@ -132,16 +141,6 @@ class _CommitmentScreenView extends StatelessWidget {
                 ),
               ],
             );
-          } else if (state is CommitmentEndingSplash) {
-            return Center(
-              child: Lottie.asset(
-                'assets/crying_heart.json',
-                width: 200,
-                height: 200,
-                fit: BoxFit.contain,
-                repeat: true,
-              ),
-            );
           } else if (state is CommitmentEnded) {
             return EndStatusBody(
               partnerName: state.partnerName,
@@ -179,6 +178,8 @@ class _CommitmentScreenView extends StatelessWidget {
           return const SizedBox();
         },
       ),
+    );
+      },
     );
   }
 

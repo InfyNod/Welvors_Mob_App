@@ -55,7 +55,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     final currentState = state;
     if (currentState is CommitmentLoaded) {
       emit(CommitmentEndingSplash());
-      await Future.delayed(const Duration(milliseconds: 1500));
+      await Future.delayed(const Duration(milliseconds: 5000));
       emit(CommitmentEnded(
         partnerName: currentState.partnerName,
         userName: 'Rahul', // Replace with dynamic user logic if available
