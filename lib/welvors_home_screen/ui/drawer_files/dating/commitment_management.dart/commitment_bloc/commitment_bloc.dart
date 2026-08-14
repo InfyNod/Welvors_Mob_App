@@ -4,8 +4,18 @@ import 'commitment_event.dart';
 import 'commitment_state.dart';
 
 class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
-  // Use a static variable to mock persistence across screen navigations.
+  // Use static variables to mock persistence across screen navigations.
   static bool _isSingle = false;
+  static CommitmentLoaded? _currentCommitment;
+
+  static String _getFormattedCurrentDate() {
+    final now = DateTime.now();
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${now.day} ${months[now.month - 1]}';
+  }
 
   CommitmentBloc() : super(CommitmentInitial()) {
     on<LoadCommitmentData>(_onLoadCommitmentData);
@@ -19,16 +29,17 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     Emitter<CommitmentState> emit,
   ) async {
     _isSingle = false; // Reset to active commitment
-    emit(CommitmentLoaded(
+    _currentCommitment = CommitmentLoaded(
       partnerName: event.partnerName,
-      duration: '12 Jun', // Use a default or current date
+      duration: _getFormattedCurrentDate(), // dynamic date
       intent: event.intent,
       isIdentityVerified: true,
       imageUrl: event.imageUrl,
       intentColor: event.intentColor,
       intentTextColor: event.intentTextColor,
       intentIcon: event.intentIcon,
-    ));
+    );
+    emit(_currentCommitment!);
   }
 
   Future<void> _onLoadCommitmentData(
@@ -41,17 +52,21 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
         return;
       }
 
-      // Default initial data
-      emit(CommitmentLoaded(
-        partnerName: 'Priya',
-        duration: '12 Jun',
-        intent: 'Dating to marry',
-        isIdentityVerified: true,
-        imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-        intentColor: const Color(0xFFFDF6E3),
-        intentTextColor: const Color(0xFF9E6B17),
-        intentIcon: Icons.diamond_outlined,
-      ));
+      if (_currentCommitment == null) {
+        // Default initial data
+        _currentCommitment = CommitmentLoaded(
+          partnerName: 'Priya',
+          duration: _getFormattedCurrentDate(), // dynamic date
+          intent: 'Dating to marry',
+          isIdentityVerified: true,
+          imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+          intentColor: const Color(0xFFFDF6E3),
+          intentTextColor: const Color(0xFF9E6B17),
+          intentIcon: Icons.diamond_outlined,
+        );
+      }
+      
+      emit(_currentCommitment!);
     } catch (e) {
       emit(CommitmentError(e.toString()));
     }
@@ -77,6 +92,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     Emitter<CommitmentState> emit,
   ) async {
     _isSingle = true; // Mock saving the state to backend
+    _currentCommitment = null;
     emit(CommitmentSingle());
   }
 }

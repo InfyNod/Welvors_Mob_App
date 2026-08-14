@@ -28,157 +28,158 @@ class _CommitmentScreenView extends StatelessWidget {
     return BlocBuilder<CommitmentBloc, CommitmentState>(
       builder: (context, state) {
         if (state is CommitmentEndingSplash) {
-          return const Scaffold(
-            body: SplashScreenBreakup(),
-          );
+          return const Scaffold(body: SplashScreenBreakup());
         }
 
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+          appBar: AppBar(
+            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            centerTitle: true,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+              child: InkWell(
+                onTap: () => Navigator.pop(context),
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.black87,
+                    size: 16,
+                  ),
+                ),
               ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black87,
-                size: 16,
-              ),
+            ),
+            title: Column(
+              children: const [
+                Text(
+                  'WELVORS',
+                  style: TextStyle(
+                    color: Color(0xFFC73A5E),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2.0,
+                  ),
+                ),
+                Text(
+                  'Commitment Management',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        title: Column(
-          children: const [
-            Text(
-              'WELVORS',
-              style: TextStyle(
-                color: Color(0xFFC73A5E),
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2.0,
-              ),
-            ),
-            Text(
-              'Commitment Management',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: Builder(
-        builder: (context) {
-          if (state is CommitmentLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Color.fromRGBO(223, 44, 89, 1),
-              ),
-            );
-          } else if (state is CommitmentLoaded) {
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildProfileCard(state),
-                        const SizedBox(height: 24),
-                        _buildLoyaltyCard(context, state),
-                        const SizedBox(height: 24),
-                        _buildInfoFooter(),
-                        const SizedBox(height: 24),
-                        const RequestsSection(),
-                        const SizedBox(height: 0),
-                      ],
-                    ),
+          body: Builder(
+            builder: (context) {
+              if (state is CommitmentLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Color.fromRGBO(223, 44, 89, 1),
                   ),
-                ),
-                SafeArea(
-                  top: false,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFDFDFD),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
-                          offset: const Offset(0, -4),
-                          blurRadius: 16,
+                );
+              } else if (state is CommitmentLoaded) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
                         ),
-                      ],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildProfileCard(state),
+                            const SizedBox(height: 24),
+                            _buildLoyaltyCard(context, state),
+                            const SizedBox(height: 24),
+                            _buildInfoFooter(),
+                            const SizedBox(height: 24),
+                            const RequestsSection(),
+                            const SizedBox(height: 0),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: _buildEndExclusiveButton(context, state),
+                    SafeArea(
+                      top: false,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFDFDFD),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.02),
+                              offset: const Offset(0, -4),
+                              blurRadius: 16,
+                            ),
+                          ],
+                        ),
+                        child: _buildEndExclusiveButton(context, state),
+                      ),
+                    ),
+                  ],
+                );
+              } else if (state is CommitmentEnded) {
+                return EndStatusBody(
+                  partnerName: state.partnerName,
+                  userName: state.userName,
+                );
+              } else if (state is CommitmentSingle) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildSingleProfileCard(),
+                            const SizedBox(height: 24),
+                            _buildInfoFooter(),
+                            const SizedBox(height: 24),
+                            const RequestsSection(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else if (state is CommitmentError) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: TextStyle(color: Colors.red),
                   ),
-                ),
-              ],
-            );
-          } else if (state is CommitmentEnded) {
-            return EndStatusBody(
-              partnerName: state.partnerName,
-              userName: state.userName,
-            );
-          } else if (state is CommitmentSingle) {
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildSingleProfileCard(),
-                        const SizedBox(height: 24),
-                        _buildInfoFooter(),
-                        const SizedBox(height: 24),
-                        const RequestsSection(),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          } else if (state is CommitmentError) {
-            return Center(
-              child: Text(state.message, style: TextStyle(color: Colors.red)),
-            );
-          }
-          return const SizedBox();
-        },
-      ),
-    );
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        );
       },
     );
   }
@@ -224,10 +225,7 @@ class _CommitmentScreenView extends StatelessWidget {
                   height: 64,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 3,
-                    ),
+                    border: Border.all(color: Colors.white, width: 3),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFFC73A5E).withOpacity(0.25),
@@ -490,7 +488,11 @@ class _CommitmentScreenView extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          Icon(state.intentIcon, size: 13, color: state.intentTextColor),
+                          Icon(
+                            state.intentIcon,
+                            size: 13,
+                            color: state.intentTextColor,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             state.intent,
@@ -877,6 +879,7 @@ class _CommitmentScreenView extends StatelessWidget {
   ) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -898,7 +901,17 @@ class _CommitmentScreenView extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              Center(
+                child: Lottie.asset(
+                  'assets/error.json',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.contain,
+                  repeat: true,
+                ),
+              ),
+              const SizedBox(height: 6),
               const Text(
                 'End exclusive status?',
                 style: TextStyle(
