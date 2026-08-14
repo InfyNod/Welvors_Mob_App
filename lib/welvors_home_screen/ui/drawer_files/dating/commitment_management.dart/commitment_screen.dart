@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'commitment_bloc/commitment_bloc.dart';
 import 'commitment_bloc/commitment_event.dart';
 import 'commitment_bloc/commitment_state.dart';
@@ -130,6 +131,16 @@ class _CommitmentScreenView extends StatelessWidget {
                   ),
                 ),
               ],
+            );
+          } else if (state is CommitmentEndingSplash) {
+            return Center(
+              child: Lottie.asset(
+                'assets/crying_heart.json',
+                width: 200,
+                height: 200,
+                fit: BoxFit.contain,
+                repeat: true,
+              ),
             );
           } else if (state is CommitmentEnded) {
             return EndStatusBody(

@@ -15,8 +15,6 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     ApproveRequestEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(CommitmentLoading());
-    await Future.delayed(const Duration(milliseconds: 300));
     emit(CommitmentLoaded(
       partnerName: event.partnerName,
       duration: '12 Jun', // Use a default or current date
@@ -33,9 +31,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     LoadCommitmentData event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(CommitmentLoading());
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
       // Default initial data
       emit(CommitmentLoaded(
         partnerName: 'Priya',
@@ -58,8 +54,8 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   ) async {
     final currentState = state;
     if (currentState is CommitmentLoaded) {
-      emit(CommitmentLoading());
-      await Future.delayed(const Duration(milliseconds: 300));
+      emit(CommitmentEndingSplash());
+      await Future.delayed(const Duration(milliseconds: 1500));
       emit(CommitmentEnded(
         partnerName: currentState.partnerName,
         userName: 'Rahul', // Replace with dynamic user logic if available
@@ -71,8 +67,6 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     BackToManagementRequested event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(CommitmentLoading());
-    await Future.delayed(const Duration(milliseconds: 200));
     emit(CommitmentSingle());
   }
 }

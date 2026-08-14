@@ -55,6 +55,8 @@ class CommitmentError extends CommitmentState {
   List<Object?> get props => [message];
 }
 
+class CommitmentEndingSplash extends CommitmentState {}
+
 class CommitmentEnded extends CommitmentState {
   final String partnerName;
   final String userName;

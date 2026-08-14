@@ -25,14 +25,17 @@ class EndStatusBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Success Icon
-                Lottie.asset(
-                  'assets/crying_heart.json',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.contain,
-                  repeat: true,
+                Transform.translate(
+                  offset: const Offset(-15, 0),
+                  child: Lottie.asset(
+                    'assets/Love_blind.json',
+                    width: 180,
+                    height: 180,
+                    fit: BoxFit.contain,
+                    repeat: true,
+                  ),
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: 2),
                 // Title
                 const Text(
                   "You're open to matches\nagain.",
