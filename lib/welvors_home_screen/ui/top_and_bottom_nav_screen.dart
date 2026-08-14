@@ -10,7 +10,7 @@ import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
 import '../home_bloc/home_bloc.dart';
 import 'home/home_screen.dart';
 import 'date_now/date_now_screen.dart';
-import 'admirers/admirers_screen.dart';
+import 'admirers/top_nav_admirers_screen.dart';
 import 'chat/chat_screen.dart';
 import 'event/events_screen.dart';
 import 'drawer_files/dating/drawer_screen_dating.dart';
@@ -240,7 +240,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
       case 1:
         return const DateNowScreen();
       case 2:
-        return const AdmirersScreen();
+        return const TopNavAdmirersScreen();
       case 3:
         return const ChatScreen();
       case 4:
