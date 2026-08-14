@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../drawer_files/dating/roses/roses_screen.dart';
 
-class RoseSendScreen extends StatelessWidget {
+class RoseSendScreen extends StatefulWidget {
   const RoseSendScreen({super.key});
 
+  @override
+  State<RoseSendScreen> createState() => _RoseSendScreenState();
+}
+
+class _RoseSendScreenState extends State<RoseSendScreen> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -87,13 +92,13 @@ class RoseSendScreen extends StatelessWidget {
                 const SizedBox(width: 16),
 
                 // Texts
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '3 Roses left',
-                        style: TextStyle(
+                        '${RosesScreen.availableRoses} Roses left',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -110,13 +115,14 @@ class RoseSendScreen extends StatelessWidget {
 
                 // Get More Button
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const RosesScreen(),
                       ),
                     );
+                    setState(() {});
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(

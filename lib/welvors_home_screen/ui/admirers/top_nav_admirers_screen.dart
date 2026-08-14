@@ -5,6 +5,7 @@ import 'admirers_bloc/admirers_event.dart';
 import 'admirers_bloc/admirers_state.dart';
 import 'all_pages_admirers/likes/received.dart';
 import 'all_pages_admirers/roses/rose_received.dart';
+import 'all_pages_admirers/vip+/vip_received.dart';
 
 class TopNavAdmirersScreen extends StatelessWidget {
   const TopNavAdmirersScreen({super.key});
@@ -55,7 +56,7 @@ class TopNavAdmirersScreen extends StatelessWidget {
       case 'roses':
         return const ReceivedRosesScreen();
       case 'vip':
-        return const Center(child: Text('VIP+ Content Coming Soon'));
+        return const VipReceivedScreen();
       default:
         return const SizedBox();
     }
