@@ -1,4 +1,4 @@
-package com.example.velvors
+package com.infynod.welvors
 
 import io.flutter.embedding.android.FlutterActivity
 
