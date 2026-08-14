@@ -9,7 +9,7 @@ class ReceivedRosesScreen extends StatefulWidget {
 
 class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
   int _selectedTab = 0; // 0 for Received, 1 for Sent
-  
+
   // Local state to track which cards have been matched
   final Map<int, bool> _matchedCards = {};
 
@@ -60,7 +60,8 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
             name: 'Kabir',
             age: '30',
             distance: '11 km',
-            message: '"Saw you love indie music — Prateek Kuhad gig next month?"',
+            message:
+                '"Saw you love indie music — Prateek Kuhad gig next month?"',
             imageUrl:
                 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=80',
           ),
@@ -233,7 +234,10 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFFFF0F5)], // white to soft pink gradient
+          colors: [
+            Colors.white,
+            Color(0xFFFFF0F5),
+          ], // white to soft pink gradient
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -254,41 +258,46 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Profile Image with Rose Icon
-          Stack(
-            clipBehavior: Clip.none,
+          Column(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
                   imageUrl,
                   width: 72,
-                  height: 72,
+                  height: 75,
                   fit: BoxFit.cover,
                 ),
               ),
-              Positioned(
-                bottom: -8,
-                right: -8,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(
+                    8,
+                  ), // Square with rounded corners
+                  border: Border.all(
+                    color: const Color(0xFFF8C6D1),
+                    width: 1.5,
                   ),
-                  child: const Text('🌹', style: TextStyle(fontSize: 12)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(
+                        0xFFE85A7A,
+                      ).withOpacity(0.4), // Pink glow
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
+                child: const Text('🌹', style: TextStyle(fontSize: 20)),
               ),
             ],
           ),
           const SizedBox(width: 20),
-          
+
           // Card Details
           Expanded(
             child: Column(
@@ -296,10 +305,13 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
               children: [
                 // Top Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE85A7A), // Pink background
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
@@ -319,7 +331,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                
+
                 // Name, Age, Distance
                 Text(
                   '$name, $age · $distance',
@@ -330,7 +342,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                
+
                 // Message
                 Text(
                   message,
@@ -342,67 +354,110 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Action Buttons
-                Row(
-                  children: [
-                    // Like Back / Matched Button
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _matchedCards[id] = !isMatched;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE85A7A), // rgba(232, 90, 122)
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (!isMatched)
-                              const Text('❤️', style: TextStyle(fontSize: 12)),
-                            if (!isMatched) const SizedBox(width: 4),
-                            Text(
-                              isMatched ? 'Matched ✓' : 'Like back',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Row(
+                    key: ValueKey<bool>(isMatched),
+                    children: [
+                      // Like Back / Matched Button
+                      GestureDetector(
+                        onTap: isMatched
+                            ? null
+                            : () {
+                                setState(() {
+                                  _matchedCards[id] = true;
+                                });
+                              },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20, // Increased horizontal padding
+                            vertical: 10, // Increased height
+                          ),
+                          decoration: BoxDecoration(
+                            color: isMatched
+                                ? Colors
+                                      .white // Unique matched style (white bg)
+                                : const Color(0xFFE85A7A), // Pink for Like back
+                            borderRadius: BorderRadius.circular(24),
+                            border: isMatched
+                                ? Border.all(
+                                    color: const Color(0xFFE85A7A),
+                                    width: 1.5,
+                                  ) // Pink outline
+                                : null,
+                            boxShadow: isMatched
+                                ? [
+                                    BoxShadow(
+                                      color: const Color(0xFFE85A7A)
+                                          .withOpacity(
+                                            0.25,
+                                          ), // Pink glow when matched
+                                      blurRadius: 10,
+                                      spreadRadius: 1,
+                                    ),
+                                  ]
+                                : [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFFE85A7A,
+                                      ).withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (!isMatched)
+                                const Text(
+                                  '❤️',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              if (!isMatched) const SizedBox(width: 6),
+                              Text(
+                                isMatched ? 'Matched ✓' : 'Like back',
+                                style: TextStyle(
+                                  color: isMatched
+                                      ? const Color(0xFFE85A7A)
+                                      : Colors.white, // Pink text when matched
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // Pass Button (hidden when matched)
+                      if (!isMatched) ...[
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10, // Increased height
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Text(
+                            'Pass',
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    
-                    // Pass Button
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: Text(
-                        'Pass',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+                      ],
+                    ],
+                  ),
                 ),
               ],
             ),
