@@ -33,7 +33,8 @@ class RoseSendScreen extends StatelessWidget {
 
           // Sent Item 1: Matched
           _buildSentCard(
-            imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80',
+            imageUrl:
+                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80',
             name: 'Aanya',
             age: '25',
             subtitle: '2h ago · Matched within 14 min 🎉',
@@ -47,7 +48,8 @@ class RoseSendScreen extends StatelessWidget {
 
           // Sent Item 2: Seen
           _buildSentCard(
-            imageUrl: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
+            imageUrl:
+                'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
             name: 'Chloe',
             age: '26',
             subtitle: 'Yesterday · Viewed your profile',
@@ -61,10 +63,10 @@ class RoseSendScreen extends StatelessWidget {
 
           // Bottom Promotional Banner
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: const Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(18),
             ),
             child: Row(
               children: [
@@ -72,13 +74,18 @@ class RoseSendScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    color: const Color.fromARGB(
+                      255,
+                      218,
+                      61,
+                      61,
+                    ).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Text('🌹', style: TextStyle(fontSize: 20)),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Texts
                 const Expanded(
                   child: Column(
@@ -95,15 +102,12 @@ class RoseSendScreen extends StatelessWidget {
                       SizedBox(height: 4),
                       Text(
                         'Roses get 3× more replies',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Get More Button
                 GestureDetector(
                   onTap: () {
@@ -115,7 +119,10 @@ class RoseSendScreen extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color.fromRGBO(61, 169, 255, 1),
                       borderRadius: BorderRadius.circular(20),
@@ -188,7 +195,7 @@ class RoseSendScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(width: 16),
-          
+
           // Name and Details
           Expanded(
             child: Column(
@@ -205,16 +212,13 @@ class RoseSendScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          
+
           // Status Pill
           statusWidget,
         ],
