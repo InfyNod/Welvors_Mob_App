@@ -4,6 +4,9 @@ import 'commitment_event.dart';
 import 'commitment_state.dart';
 
 class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
+  // Use a static variable to mock persistence across screen navigations.
+  static bool _isSingle = false;
+
   CommitmentBloc() : super(CommitmentInitial()) {
     on<LoadCommitmentData>(_onLoadCommitmentData);
     on<EndExclusiveStatusRequested>(_onEndExclusiveStatusRequested);
@@ -15,6 +18,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     ApproveRequestEvent event,
     Emitter<CommitmentState> emit,
   ) async {
+    _isSingle = false; // Reset to active commitment
     emit(CommitmentLoaded(
       partnerName: event.partnerName,
       duration: '12 Jun', // Use a default or current date
@@ -32,6 +36,11 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     Emitter<CommitmentState> emit,
   ) async {
     try {
+      if (_isSingle) {
+        emit(CommitmentSingle());
+        return;
+      }
+
       // Default initial data
       emit(CommitmentLoaded(
         partnerName: 'Priya',
@@ -67,6 +76,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     BackToManagementRequested event,
     Emitter<CommitmentState> emit,
   ) async {
+    _isSingle = true; // Mock saving the state to backend
     emit(CommitmentSingle());
   }
 }
