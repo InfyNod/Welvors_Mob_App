@@ -51,13 +51,13 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
     },
   ];
 
-  void _handleAction(int id, String popupText) {
+  void _handleAction(int id, String popupText, {bool isAccepted = true}) {
     final index = _vipCards.indexWhere((card) => card['id'] == id);
     if (index >= 0) {
       final removedCard = _vipCards.removeAt(index);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildRemovedItem(removedCard, animation),
+        (context, animation) => _buildRemovedItem(removedCard, animation, isAccepted: isAccepted),
         duration: const Duration(milliseconds: 600),
       );
       setState(() {});
@@ -342,8 +342,9 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
 
   Widget _buildRemovedItem(
     Map<String, dynamic> card,
-    Animation<double> animation,
-  ) {
+    Animation<double> animation, {
+    bool isAccepted = true,
+  }) {
     return SizeTransition(
       sizeFactor: CurvedAnimation(
         parent: animation,
@@ -357,7 +358,7 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
         child: SlideTransition(
           position:
               Tween<Offset>(
-                begin: const Offset(1.5, 0), // slides out far right
+                begin: Offset(isAccepted ? 1.5 : -1.5, 0), // slides out left if declined, right if accepted
                 end: Offset.zero,
               ).animate(
                 CurvedAnimation(
@@ -367,7 +368,7 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
               ),
           child: RotationTransition(
             turns: Tween<double>(
-              begin: 0.05,
+              begin: isAccepted ? 0.05 : -0.05,
               end: 0.0,
             ).animate(CurvedAnimation(parent: animation, curve: Curves.easeIn)),
             child: Padding(
@@ -508,7 +509,7 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    _handleAction(id, "Proposal Accepted! 💍");
+                    _handleAction(id, "Proposal Accepted! 💍", isAccepted: true);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -540,7 +541,7 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    _handleAction(id, "Declined ❌");
+                    _handleAction(id, "Declined ❌", isAccepted: false);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),

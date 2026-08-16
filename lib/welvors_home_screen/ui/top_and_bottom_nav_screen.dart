@@ -12,7 +12,7 @@ import 'home/home_screen.dart';
 import 'date_now/date_now_screen.dart';
 import 'admirers/top_nav_admirers_screen.dart';
 import 'chat/chat_screen.dart';
-import 'event/events_screen.dart';
+import 'event/top_nav_events_screen.dart';
 import 'drawer_files/dating/drawer_screen_dating.dart';
 import 'drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 import 'drawer_files/dating/my_boosts/boost_bloc/boost_state.dart';

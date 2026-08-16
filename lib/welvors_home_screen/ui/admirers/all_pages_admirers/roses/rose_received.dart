@@ -41,15 +41,16 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
     },
   ];
 
-  void _handleAction(int id, String popupText) {
+  void _handleAction(int id, String popupText, {bool isAccepted = true}) {
     final index = _roseCards.indexWhere((card) => card['id'] == id);
     if (index >= 0) {
       final removedCard = _roseCards.removeAt(index);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildRemovedItem(removedCard, animation),
+        (context, animation) => _buildRemovedItem(removedCard, animation, isAccepted: isAccepted),
         duration: const Duration(milliseconds: 600),
       );
+      setState(() {});
     }
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -152,7 +153,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
     );
   }
 
-  Widget _buildRemovedItem(Map<String, dynamic> card, Animation<double> animation) {
+  Widget _buildRemovedItem(Map<String, dynamic> card, Animation<double> animation, {bool isAccepted = true}) {
     return SizeTransition(
       sizeFactor: CurvedAnimation(
         parent: animation,
@@ -165,14 +166,14 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
         ),
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(1.5, 0), // slides out far right
+            begin: Offset(isAccepted ? 1.5 : -1.5, 0), // slides out right if accepted, left if rejected
             end: Offset.zero,
           ).animate(CurvedAnimation(
             parent: animation,
             curve: Curves.easeInBack, // snapping effect
           )),
           child: RotationTransition(
-            turns: Tween<double>(begin: 0.05, end: 0.0).animate(CurvedAnimation(
+            turns: Tween<double>(begin: isAccepted ? 0.05 : -0.05, end: 0.0).animate(CurvedAnimation(
               parent: animation,
               curve: Curves.easeIn,
             )),
@@ -458,7 +459,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                     // Like Back Button
                     GestureDetector(
                       onTap: () {
-                        _handleAction(id, "It's a match! 💖");
+                        _handleAction(id, "It's a match! 💖", isAccepted: true);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -503,7 +504,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                     const SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
-                        _handleAction(id, "Rejected ❌");
+                        _handleAction(id, "Rejected ❌", isAccepted: false);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
