@@ -23,18 +23,33 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, String>> _allTickets = [
+  final List<Map<String, dynamic>> _allTickets = [
     {
       'title': 'Sunset Soirée for Singles',
       'date': 'Sat, Oct 12 · 7:00 PM',
       'location': 'The Rooftop Lounge, Bandra',
-      'imageUrl': 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
+      'status': 'Confirmed',
+      'categories': ['Mixers', 'This Month'],
     },
     {
       'title': 'Speed Dating: Creative Professionals',
       'date': 'Sat, Oct 28 · 6:30 PM',
       'location': 'Artisan Loft, Lower Parel',
-      'imageUrl': 'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80',
+      'status': 'Confirmed',
+      'categories': ['Speed Dating', 'This Month'],
+    },
+    {
+      'title': 'Acoustic Night & Cocktails',
+      'date': 'Fri, Nov 3 · 8:00 PM',
+      'location': 'The Velvet Room, Juhu',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
+      'status': 'Cancelled',
+      'categories': ['Mixers'],
     },
   ];
 
@@ -53,9 +68,14 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white background
+      backgroundColor: const Color.fromARGB(
+        255,
+        255,
+        255,
+        255,
+      ), // Slightly off-white background
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -113,8 +133,14 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     hintText: 'Search tickets...',
                     border: InputBorder.none,
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
                   ),
                   style: const TextStyle(color: Colors.black, fontSize: 14),
                 ),
@@ -199,20 +225,29 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     },
                     child: Container(
                       margin: const EdgeInsets.only(right: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade300,
+                          color: isSelected
+                              ? const Color(0xFFE85A7A)
+                              : Colors.grey.shade300,
                         ),
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         _filters[index],
                         style: TextStyle(
-                          color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade700,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                          color: isSelected
+                              ? const Color(0xFFE85A7A)
+                              : Colors.grey.shade700,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.w600,
                           fontSize: 13,
                         ),
                       ),
@@ -227,38 +262,87 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
-                children: _allTickets.where((ticket) {
-                  return ticket['title']!.toLowerCase().contains(_searchQuery.toLowerCase());
-                }).map((ticket) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: _buildTicketCard(
-                      title: ticket['title']!,
-                      date: ticket['date']!,
-                      location: ticket['location']!,
-                      imageUrl: ticket['imageUrl']!,
+                children: [
+                  ..._allTickets
+                      .where((ticket) {
+                        // Search Filter
+                        if (_searchQuery.isNotEmpty &&
+                            !ticket['title'].toString().toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            )) {
+                          return false;
+                        }
+
+                        // Category Filter
+                        final selectedFilter = _filters[_selectedFilterIndex];
+                        if (selectedFilter == 'All') return true;
+                        if (selectedFilter == '✓ Confirmed')
+                          return ticket['status'] == 'Confirmed';
+                        if (selectedFilter == 'Cancelled')
+                          return ticket['status'] == 'Cancelled';
+
+                        final categories = ticket['categories'] as List<String>;
+                        return categories.contains(selectedFilter);
+                      })
+                      .map((ticket) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildTicketCard(
+                            title: ticket['title'] as String,
+                            date: ticket['date'] as String,
+                            location: ticket['location'] as String,
+                            imageUrl: ticket['imageUrl'] as String,
+                            status: ticket['status'] as String,
+                          ),
+                        );
+                      }),
+                  // Show empty message if nothing matches
+                  if (_allTickets.where((ticket) {
+                    if (_searchQuery.isNotEmpty &&
+                        !ticket['title'].toString().toLowerCase().contains(
+                          _searchQuery.toLowerCase(),
+                        ))
+                      return false;
+                    final selectedFilter = _filters[_selectedFilterIndex];
+                    if (selectedFilter == 'All') return true;
+                    if (selectedFilter == '✓ Confirmed')
+                      return ticket['status'] == 'Confirmed';
+                    if (selectedFilter == 'Cancelled')
+                      return ticket['status'] == 'Cancelled';
+                    return (ticket['categories'] as List<String>).contains(
+                      selectedFilter,
+                    );
+                  }).isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: Text(
+                        "No tickets found",
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
-                  );
-                }).toList(),
+                ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Bottom Text
-            RichText(
-              text: const TextSpan(
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-                children: [
-                  TextSpan(text: 'Looking for more events? Check '),
-                  TextSpan(
-                    text: 'Upcoming.',
-                    style: TextStyle(
-                      color: Color(0xFFE85A7A),
-                      fontWeight: FontWeight.bold,
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: RichText(
+                text: const TextSpan(
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  children: [
+                    TextSpan(text: 'Looking for more events? Check '),
+                    TextSpan(
+                      text: 'Upcoming.',
+                      style: TextStyle(
+                        color: Color(0xFFE85A7A),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 40),
@@ -273,22 +357,27 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
     required String date,
     required String location,
     required String imageUrl,
+    required String status,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            spreadRadius: 1,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: Colors.grey.shade100),
-      ),
-      child: Column(
+    final bool isCancelled = status == 'Cancelled';
+
+    return Opacity(
+      opacity: isCancelled ? 0.6 : 1.0,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              spreadRadius: 1,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Colors.grey.shade100),
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image with badge
@@ -306,33 +395,68 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Positioned(
-                top: 12,
-                left: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1CAF5E),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.check, color: Colors.white, size: 14),
-                      SizedBox(width: 4),
-                      Text(
-                        'CONFIRMED',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.5,
+              if (status == 'Confirmed')
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 44, 175, 107),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'CONFIRMED',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                )
+              else if (status == 'Cancelled')
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade600,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.close, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'CANCELLED',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
 
@@ -351,7 +475,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Date
                 Row(
                   children: [
@@ -368,7 +492,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                   ],
                 ),
                 const SizedBox(height: 6),
-                
+
                 // Location
                 Row(
                   children: [
@@ -384,7 +508,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
                 Divider(height: 1, color: Colors.grey.shade200),
                 const SizedBox(height: 16),
@@ -405,35 +529,45 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                       children: [
                         // View Details Button
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xFFE85A7A)),
+                            border: Border.all(
+                              color: isCancelled ? Colors.grey.shade400 : const Color(0xFFE85A7A),
+                            ),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Text(
+                          child: Text(
                             'View Details',
                             style: TextStyle(
-                              color: Color(0xFFE85A7A),
+                              color: isCancelled ? Colors.grey.shade500 : const Color(0xFFE85A7A),
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        
+
                         // Ticket Button
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            gradient: isCancelled
+                                ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
+                                : const LinearGradient(
+                                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFE85A7A).withOpacity(0.3),
+                                color: (isCancelled ? Colors.grey : const Color(0xFFE85A7A)).withOpacity(0.3),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
@@ -441,7 +575,11 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                           ),
                           child: const Row(
                             children: [
-                              Icon(Icons.confirmation_num, color: Colors.white, size: 16),
+                              Icon(
+                                Icons.confirmation_num,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                               SizedBox(width: 4),
                               Text(
                                 'Ticket',
@@ -463,6 +601,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
