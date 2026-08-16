@@ -11,5 +11,9 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
     on<SelectFilterEvent>((event, emit) {
       emit(state.copyWith(selectedFilterIndex: event.index));
     });
+
+    on<SearchQueryEvent>((event, emit) {
+      emit(state.copyWith(searchQuery: event.query));
+    });
   }
 }

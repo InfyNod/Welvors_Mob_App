@@ -5,6 +5,7 @@ import 'events_bloc/events_bloc.dart';
 import 'events_bloc/events_event.dart';
 import 'events_bloc/events_state.dart';
 import 'all_screen/events_cards.dart';
+import 'all_screen/events_location.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -45,6 +46,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
 
   final ScrollController _categoryScrollController = ScrollController();
   late final List<GlobalKey> _filterKeys;
+  String _currentCity = 'Mumbai';
 
   @override
   void initState() {
@@ -105,38 +107,55 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Location Button
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on_outlined,
-                            size: 16,
-                            color: Color(0xFFE85A7A),
+                    GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => EventsLocationSheet(
+                            initialCity: _currentCity,
+                            onCitySelected: (city) {
+                              setState(() {
+                                _currentCity = city;
+                              });
+                            },
                           ),
-                          const SizedBox(width: 4),
-                          const Text(
-                            'Mumbai',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              size: 16,
+                              color: Color(0xFFE85A7A),
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            size: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                        ],
+                            const SizedBox(width: 4),
+                            Text(
+                              _currentCity,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 16,
+                              color: Colors.grey.shade600,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     // My Ticket Button
@@ -194,6 +213,9 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: TextField(
+                              onChanged: (value) {
+                                context.read<EventsBloc>().add(SearchQueryEvent(value));
+                              },
                               decoration: InputDecoration(
                                 hintText: 'Search comedy, mixers, parties...',
                                 hintStyle: TextStyle(

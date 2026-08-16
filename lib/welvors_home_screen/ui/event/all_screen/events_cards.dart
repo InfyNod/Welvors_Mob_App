@@ -1,45 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../events_bloc/events_bloc.dart';
+import '../events_bloc/events_state.dart';
 
 class EventsCards extends StatelessWidget {
   const EventsCards({super.key});
+
+  bool _matches(EventsState state, {required List<int> categories, required List<int> filters, required String searchData}) {
+    if (state.selectedCategoryIndex != 0 && !categories.contains(state.selectedCategoryIndex)) {
+      return false;
+    }
+    if (!filters.contains(state.selectedFilterIndex)) {
+      return false;
+    }
+    if (state.searchQuery.isNotEmpty) {
+      if (!searchData.toLowerCase().contains(state.searchQuery.toLowerCase())) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 24),
-      child: Column(
-        children: [
-          // Highlighted / Promoted Events (Horizontal Scroll)
-          SizedBox(
-            height: 150,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                _buildPromotedCard(),
-                const SizedBox(width: 12),
-                _buildFeaturedCard(),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
+      child: BlocBuilder<EventsBloc, EventsState>(
+        builder: (context, state) {
+          final showCard1 = _matches(state, categories: [1, 3], filters: [0, 1, 3], searchData: "sunset soiree singles signature mixer");
+          final showCard2 = _matches(state, categories: [1, 2, 4], filters: [0, 1, 3], searchData: "artisanal spirits stories speed dating");
+          final showCard3 = _matches(state, categories: [1, 3, 4], filters: [1, 3], searchData: "vintage vibes vineyards wine tasting");
+          final showCard4 = _matches(state, categories: [5, 6], filters: [0, 1, 3], searchData: "sandakphu ridge trek trekking");
 
-          // Standard Events (Vertical)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                _buildStandardCard(),
-                const SizedBox(height: 24),
-                _buildStandardCard2(),
-                const SizedBox(height: 24),
-                _buildStandardCard3(),
-                const SizedBox(height: 24),
-                _buildStandardCard4(),
-              ],
-            ),
-          ),
-        ],
+          return Column(
+            children: [
+              // Highlighted / Promoted Events (Horizontal Scroll)
+              SizedBox(
+                height: 150,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    _buildPromotedCard(),
+                    const SizedBox(width: 12),
+                    _buildFeaturedCard(),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Standard Events (Vertical)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    if (showCard1) ...[
+                      _buildStandardCard(),
+                      const SizedBox(height: 24),
+                    ],
+                    if (showCard2) ...[
+                      _buildStandardCard2(),
+                      const SizedBox(height: 24),
+                    ],
+                    if (showCard3) ...[
+                      _buildStandardCard3(),
+                      const SizedBox(height: 24),
+                    ],
+                    if (showCard4) ...[
+                      _buildStandardCard4(),
+                      const SizedBox(height: 24),
+                    ],
+                    if (!showCard1 && !showCard2 && !showCard3 && !showCard4)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: Text(
+                          "No events found for the selected filters.",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
