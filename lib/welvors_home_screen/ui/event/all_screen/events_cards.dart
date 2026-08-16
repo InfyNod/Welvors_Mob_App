@@ -27,7 +27,13 @@ class EventsCards extends StatelessWidget {
           // Standard Events (Vertical)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildStandardCard(),
+            child: Column(
+              children: [
+                _buildStandardCard(),
+                const SizedBox(height: 24),
+                _buildStandardCard2(),
+              ],
+            ),
           ),
         ],
       ),
@@ -539,6 +545,246 @@ class EventsCards extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       'The Rooftop Lounge, Bandra',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStandardCard2() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top Image
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: Image.network(
+                  'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80',
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.favorite_border,
+                    color: Colors.black87,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Action Icons Row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.star_border,
+                  color: Color(0xFFE85A7A),
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '41',
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(width: 24),
+                const Icon(
+                  Icons.chat_bubble_outline,
+                  color: Color(0xFFE85A7A),
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '7',
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+                const Spacer(),
+                const Icon(
+                  Icons.ios_share,
+                  color: Color(0xFFE85A7A),
+                  size: 22,
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(height: 1, color: Colors.grey.shade200),
+          ),
+
+          // Content Details
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 8 SPOTS LEFT & Interested
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE5F8E6),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.check, color: Color(0xFF2E8B57), size: 12),
+                          SizedBox(width: 4),
+                          Text(
+                            '8 SPOTS LEFT',
+                            style: TextStyle(
+                              color: Color(0xFF2E8B57),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: '41+ ',
+                            style: TextStyle(
+                              color: Color(0xFFE85A7A),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'interested',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Tags
+                const Text(
+                  'SPEED DATING',
+                  style: TextStyle(
+                    color: Color(0xFFE85A7A),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Title & Price
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Artisanal Spirits & Stories',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      '₹950',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+
+                // Date
+                Row(
+                  children: [
+                    const Text('📅', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Thu, Oct 17 · 6:30 PM – 9:00 PM',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+
+                // Location
+                Row(
+                  children: [
+                    const Text('📍', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Text(
+                      'The Velvet Room, Lower Parel',
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 13,
