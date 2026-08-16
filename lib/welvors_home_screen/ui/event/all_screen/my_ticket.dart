@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'ticket_screen.dart';
 
 class MyTicketScreen extends StatefulWidget {
   const MyTicketScreen({super.key});
@@ -551,45 +552,62 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                         const SizedBox(width: 8),
 
                         // Ticket Button
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: isCancelled
-                                ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
-                                : const LinearGradient(
-                                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
+                        GestureDetector(
+                          onTap: () {
+                            if (!isCancelled) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TicketScreen(
+                                    title: title,
+                                    date: date,
+                                    location: location,
+                                    status: status,
                                   ),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (isCancelled ? Colors.grey : const Color(0xFFE85A7A)).withOpacity(0.3),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.confirmation_num,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                'Ticket',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                            ],
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: isCancelled
+                                  ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
+                                  : const LinearGradient(
+                                      colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isCancelled ? Colors.grey : const Color(0xFFE85A7A)).withOpacity(0.3),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.confirmation_num,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Ticket',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
