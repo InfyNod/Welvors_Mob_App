@@ -5,10 +5,11 @@ class EventsCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 24),
-      children: [
-        // Highlighted / Promoted Events (Horizontal Scroll)
+      child: Column(
+        children: [
+          // Highlighted / Promoted Events (Horizontal Scroll)
         SizedBox(
           height: 200,
           child: ListView(
@@ -24,11 +25,12 @@ class EventsCards extends StatelessWidget {
         const SizedBox(height: 24),
         
         // Standard Events (Vertical)
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _buildStandardCard(),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildStandardCard(),
+          ),
+        ],
+      ),
     );
   }
 
