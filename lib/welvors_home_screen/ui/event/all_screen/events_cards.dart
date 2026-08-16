@@ -10,21 +10,21 @@ class EventsCards extends StatelessWidget {
       child: Column(
         children: [
           // Highlighted / Promoted Events (Horizontal Scroll)
-        SizedBox(
-          height: 200,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildPromotedCard(),
-              const SizedBox(width: 12),
-              _buildFeaturedCard(),
-            ],
+          SizedBox(
+            height: 150,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _buildPromotedCard(),
+                const SizedBox(width: 12),
+                _buildFeaturedCard(),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 24),
-        
-        // Standard Events (Vertical)
+          const SizedBox(height: 24),
+
+          // Standard Events (Vertical)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildStandardCard(),
@@ -36,16 +36,16 @@ class EventsCards extends StatelessWidget {
 
   Widget _buildPromotedCard() {
     return Container(
-      width: 280,
+      width: 270,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         image: const DecorationImage(
           image: AssetImage('assets/concert.jpeg'),
           fit: BoxFit.cover,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE85A7A).withOpacity(0.3),
+            color: const Color(0xFFE85A7A).withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -53,78 +53,79 @@ class EventsCards extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
             colors: [
-              const Color(0xFFE85A7A).withOpacity(0.9), // Solid pink on left
-              const Color(0xFFE85A7A).withOpacity(0.4), // Transparent pink on right
+              Colors.black.withOpacity(0.9),
+              Colors.black.withOpacity(0.1),
             ],
           ),
         ),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // PROMOTED tag
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
+                color: const Color(0xFFE85A7A).withOpacity(0.95),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star, size: 10, color: Color(0xFFE85A7A)),
+                  Icon(Icons.star, size: 10, color: Colors.white),
                   SizedBox(width: 4),
                   Text(
                     'PROMOTED',
                     style: TextStyle(
-                      color: Color(0xFFE85A7A),
+                      color: Colors.white,
                       fontSize: 9,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const Spacer(),
             const Text(
               'This weekend · Mumbai',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.white70,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             const Text(
               'Rooftop Singles Night',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
                 height: 1.2,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
               '60 verified singles · Live music · Limited seats',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: 10,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const Spacer(),
-            // Book Now Button
+            const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -133,12 +134,12 @@ class EventsCards extends StatelessWidget {
                     'Book now',
                     style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(width: 4),
-                  Icon(Icons.arrow_forward, size: 14, color: Colors.black87),
+                  Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
                 ],
               ),
             ),
@@ -150,16 +151,16 @@ class EventsCards extends StatelessWidget {
 
   Widget _buildFeaturedCard() {
     return Container(
-      width: 280,
+      width: 270,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         image: const DecorationImage(
           image: AssetImage('assets/speed.jpeg'),
           fit: BoxFit.cover,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -167,84 +168,89 @@ class EventsCards extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
             colors: [
-              Colors.black.withOpacity(0.85),
-              Colors.black.withOpacity(0.4),
+              Colors.black.withOpacity(0.9),
+              Colors.black.withOpacity(0.1),
             ],
           ),
         ),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // FEATURED tag
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFD700), // Gold/Yellow
-                borderRadius: BorderRadius.circular(4),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFFED86A), // rgba(254, 216, 106)
+                    Color(0xFFE9A73F), // rgba(233, 167, 63)
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     '✦',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 10,
-                    ),
+                    style: TextStyle(color: Colors.black87, fontSize: 10),
                   ),
                   SizedBox(width: 4),
                   Text(
                     'FEATURED',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.black87,
                       fontSize: 9,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const Spacer(),
             const Text(
               'Sat, Oct 19 · Bandra',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.white70,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             const Text(
               'Speed Dating · 25–32',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
                 height: 1.2,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
               '15 curated matches in one evening',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: 10,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const Spacer(),
-            // View Details Button
+            const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -253,12 +259,12 @@ class EventsCards extends StatelessWidget {
                     'View details',
                     style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(width: 4),
-                  Icon(Icons.arrow_forward, size: 14, color: Colors.black87),
+                  Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
                 ],
               ),
             ),
@@ -275,7 +281,7 @@ class EventsCards extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -285,7 +291,7 @@ class EventsCards extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top Image with Heart Icon
+          // Top Image
           Stack(
             children: [
               ClipRRect(
@@ -294,7 +300,7 @@ class EventsCards extends StatelessWidget {
                   topRight: Radius.circular(20),
                 ),
                 child: Image.network(
-                  'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80', // Wine glasses party image
+                  'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -306,57 +312,79 @@ class EventsCards extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.white.withOpacity(0.9),
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
                   ),
                   child: const Icon(
                     Icons.favorite_border,
-                    color: Colors.grey,
+                    color: Colors.black87,
                     size: 20,
                   ),
                 ),
               ),
             ],
           ),
-          
+
           // Action Icons Row
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                const Icon(Icons.star_border, color: Color(0xFFE85A7A), size: 22),
-                const SizedBox(width: 4),
-                Text('67', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
-                const SizedBox(width: 16),
-                Icon(Icons.chat_bubble_outline, color: Colors.grey.shade400, size: 20),
-                const SizedBox(width: 4),
-                Text('12', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
+                const Icon(
+                  Icons.star_border,
+                  color: Color(0xFFE85A7A),
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '67',
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(width: 24),
+                const Icon(
+                  Icons.chat_bubble_outline,
+                  color: Color(0xFFE85A7A),
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '12',
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
                 const Spacer(),
-                const Icon(Icons.ios_share, color: Color(0xFFE85A7A), size: 22),
+                const Icon(
+                  Icons.ios_share,
+                  color: Color(0xFFE85A7A),
+                  size: 22,
+                ),
               ],
             ),
           ),
-          
-          Divider(height: 1, color: Colors.grey.shade200),
-          
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(height: 1, color: Colors.grey.shade200),
+          ),
+
           // Content Details
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Interested avatars
+                // Avatars & Interested
                 Row(
                   children: [
                     SizedBox(
-                      width: 72, // 3 avatars * 24 width overlap
+                      width: 72, // 4 avatars
                       height: 24,
                       child: Stack(
                         children: [
@@ -364,8 +392,9 @@ class EventsCards extends StatelessWidget {
                             left: 0,
                             child: CircleAvatar(
                               radius: 12,
-                              backgroundImage: const NetworkImage('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80'),
-                              backgroundColor: Colors.grey.shade200,
+                              backgroundImage: const NetworkImage(
+                                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80',
+                              ),
                             ),
                           ),
                           Positioned(
@@ -375,7 +404,9 @@ class EventsCards extends StatelessWidget {
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
                                 radius: 10.5,
-                                backgroundImage: const NetworkImage('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80'),
+                                backgroundImage: const NetworkImage(
+                                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+                                ),
                               ),
                             ),
                           ),
@@ -386,7 +417,9 @@ class EventsCards extends StatelessWidget {
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
                                 radius: 10.5,
-                                backgroundImage: const NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80'),
+                                backgroundImage: const NetworkImage(
+                                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+                                ),
                               ),
                             ),
                           ),
@@ -398,39 +431,63 @@ class EventsCards extends StatelessWidget {
                               child: CircleAvatar(
                                 radius: 10.5,
                                 backgroundColor: const Color(0xFFE85A7A),
-                                child: const Text('+64', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                                child: const Text(
+                                  '+64',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'interested',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(width: 12),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: '67+ ',
+                            style: TextStyle(
+                              color: Color(0xFFE85A7A),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'interested',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                
-                // Tags & Title
+
+                // Tags
                 const Text(
                   'SIGNATURE MIXER',
                   style: TextStyle(
                     color: Color(0xFFE85A7A),
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+                    letterSpacing: 1.0,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
+
+                // Title & Price
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Expanded(
                       child: Text(
@@ -445,43 +502,45 @@ class EventsCards extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    const Text(
                       '₹1,250',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.grey.shade800,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                
-                // Date & Location
+                const SizedBox(height: 14),
+
+                // Date
                 Row(
                   children: [
-                    Icon(Icons.calendar_month_outlined, size: 14, color: Colors.grey.shade500),
-                    const SizedBox(width: 6),
+                    const Text('📅', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
                     Text(
                       'Sat, Oct 12 · 7:00 PM – 10:00 PM',
                       style: TextStyle(
                         color: Colors.grey.shade600,
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
+
+                // Location
                 Row(
                   children: [
-                    Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
-                    const SizedBox(width: 6),
+                    const Text('📍', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
                     Text(
                       'The Rooftop Lounge, Bandra',
                       style: TextStyle(
                         color: Colors.grey.shade600,
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
