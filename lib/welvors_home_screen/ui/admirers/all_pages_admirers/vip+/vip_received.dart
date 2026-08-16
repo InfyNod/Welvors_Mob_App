@@ -60,6 +60,7 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
         (context, animation) => _buildRemovedItem(removedCard, animation),
         duration: const Duration(milliseconds: 600),
       );
+      setState(() {});
     }
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -96,32 +97,25 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              _buildInfoBanner(),
-              const SizedBox(height: 16),
-              _buildToggle(),
-              const SizedBox(height: 16),
-              _selectedTab == 0 ? _buildReceivedContent() : const VipSendScreen(),
-            ],
-          ),
-        ),
-        SliverFillRemaining(
-          hasScrollBody: false,
-          fillOverscroll: true,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                bottom: 24,
-                top: 0,
-                left: 16,
-                right: 16,
-              ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          _buildInfoBanner(),
+          const SizedBox(height: 16),
+          _buildToggle(),
+          const SizedBox(height: 16),
+          _selectedTab == 0 ? _buildReceivedContent() : const VipSendScreen(),
+          Padding(
+            padding: const EdgeInsets.only(
+              bottom: 24,
+              top: 16,
+              left: 16,
+              right: 16,
+            ),
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              opacity: (_selectedTab == 0 && _vipCards.length <= 2) ? 0.0 : 1.0,
               child: Text(
                 _selectedTab == 0
                     ? '👑 You\'re seeing proposals because you\'re a VIP+ member'
@@ -135,8 +129,8 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -377,7 +371,7 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
               end: 0.0,
             ).animate(CurvedAnimation(parent: animation, curve: Curves.easeIn)),
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 16),
               child: _buildVipCard(
                 id: card['id'],
                 name: card['name'],
@@ -410,12 +404,16 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300, width: 1.0),
         boxShadow: [
           BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
             color: Colors.black.withOpacity(0.02),
-            blurRadius: 15,
-            offset: const Offset(0, 2),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
