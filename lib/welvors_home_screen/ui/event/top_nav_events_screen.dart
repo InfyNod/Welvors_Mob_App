@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'events_bloc/events_bloc.dart';
 import 'events_bloc/events_event.dart';
 import 'events_bloc/events_state.dart';
+import 'all_screen/events_cards.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -389,14 +390,9 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
             ),
             const SizedBox(height: 24),
 
-            // Placeholder for the rest of the page
+            // Event Cards
             const Expanded(
-              child: Center(
-                child: Text(
-                  'Event Cards will be here...',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
+              child: EventsCards(),
             ),
           ],
         ),
