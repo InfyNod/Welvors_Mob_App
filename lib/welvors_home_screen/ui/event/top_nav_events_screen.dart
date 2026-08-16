@@ -6,6 +6,7 @@ import 'events_bloc/events_event.dart';
 import 'events_bloc/events_state.dart';
 import 'all_screen/events_cards.dart';
 import 'all_screen/events_location.dart';
+import 'all_screen/my_ticket.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -159,43 +160,51 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       ),
                     ),
                     // My Ticket Button
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MyTicketScreen()),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
                         ),
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFDE2957).withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.confirmation_num_outlined,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'My Ticket',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFDE2957).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.confirmation_num_outlined,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'My Ticket',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
