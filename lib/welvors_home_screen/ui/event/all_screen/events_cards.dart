@@ -281,9 +281,10 @@ class EventsCards extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
           ),
         ],
         border: Border.all(color: Colors.grey.shade100),
@@ -301,7 +302,7 @@ class EventsCards extends StatelessWidget {
                 ),
                 child: Image.network(
                   'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
-                  height: 200,
+                  height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
@@ -376,7 +377,7 @@ class EventsCards extends StatelessWidget {
 
           // Content Details
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -470,7 +471,7 @@ class EventsCards extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 // Tags
                 const Text(
@@ -512,7 +513,7 @@ class EventsCards extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
 
                 // Date
                 Row(
@@ -529,7 +530,7 @@ class EventsCards extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
 
                 // Location
                 Row(
