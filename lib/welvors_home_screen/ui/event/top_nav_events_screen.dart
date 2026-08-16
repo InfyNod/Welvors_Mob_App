@@ -294,12 +294,10 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                                   width: 50,
                                                   height: 50,
                                                   decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? Colors.white
-                                                        : Colors.grey.shade50,
+                                                    color: Colors.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          16,
+                                                          18,
                                                         ),
                                                     border: isSelected
                                                         ? Border.all(
@@ -322,22 +320,14 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                                           ).withOpacity(0.25),
                                                           blurRadius: 10,
                                                           spreadRadius: 1,
-                                                          offset: const Offset(
-                                                            0,
-                                                            4,
-                                                          ),
+                                                          offset: const Offset(0, 4),
                                                         )
                                                       else
                                                         BoxShadow(
                                                           color: Colors.black
-                                                              .withOpacity(
-                                                                0.04,
-                                                              ),
+                                                              .withOpacity(0.04),
                                                           blurRadius: 8,
-                                                          offset: const Offset(
-                                                            0,
-                                                            3,
-                                                          ),
+                                                          offset: const Offset(0, 3),
                                                         ),
                                                     ],
                                                   ),
