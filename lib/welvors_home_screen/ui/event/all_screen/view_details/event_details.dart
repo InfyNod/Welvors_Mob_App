@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eventphoto_why_come.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass.dart';
 
 class EventDetailsScreen extends StatelessWidget {
   final String title;
@@ -81,22 +83,25 @@ class EventDetailsScreen extends StatelessWidget {
             Stack(
               children: [
                 SizedBox(
-                  height: 250,
+                  height: 300,
                   width: double.infinity,
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.network(imageUrl, fit: BoxFit.cover),
                 ),
                 Positioned(
                   top: 16,
                   left: 16,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE85A7A), width: 1),
+                      border: Border.all(
+                        color: const Color(0xFFE85A7A),
+                        width: 1,
+                      ),
                     ),
                     child: const Row(
                       children: [
@@ -120,15 +125,16 @@ class EventDetailsScreen extends StatelessWidget {
 
             // Main Content Area
             Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
+              decoration: const BoxDecoration(color: Colors.white),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Flat Content
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 24,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -142,10 +148,17 @@ class EventDetailsScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: const Color(0xFFFFF0F3),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFFE85A7A).withOpacity(0.3)),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFFE85A7A,
+                                  ).withOpacity(0.3),
+                                ),
                               ),
                               child: const Center(
-                                child: Text('🥂', style: TextStyle(fontSize: 24)),
+                                child: Text(
+                                  '🥂',
+                                  style: TextStyle(fontSize: 24),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -172,7 +185,11 @@ class EventDetailsScreen extends StatelessWidget {
                                           color: Colors.grey.shade600,
                                         ),
                                       ),
-                                      const Icon(Icons.check, color: Color(0xFFE85A7A), size: 12),
+                                      const Icon(
+                                        Icons.check,
+                                        color: Color(0xFFE85A7A),
+                                        size: 12,
+                                      ),
                                       const Text(
                                         ' Verified',
                                         style: TextStyle(
@@ -221,13 +238,29 @@ class EventDetailsScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              _buildStatItem(Icons.calendar_today, 'DATE', date.split('·').first.trim()),
+                              _buildStatItem(
+                                Icons.calendar_today,
+                                'DATE',
+                                date.split('·').first.trim(),
+                              ),
                               _buildVerticalDivider(),
-                              _buildStatItem(Icons.access_time, 'TIME', '7-10 PM'),
+                              _buildStatItem(
+                                Icons.access_time,
+                                'TIME',
+                                '7-10 PM',
+                              ),
                               _buildVerticalDivider(),
-                              _buildStatItem(Icons.confirmation_num_outlined, 'ENTRY', '₹1,250'),
+                              _buildStatItem(
+                                Icons.confirmation_num_outlined,
+                                'ENTRY',
+                                '₹1,250',
+                              ),
                               _buildVerticalDivider(),
-                              _buildStatItem(Icons.people_outline, 'CROWD', '60 singles'),
+                              _buildStatItem(
+                                Icons.people_outline,
+                                'CROWD',
+                                '60 singles',
+                              ),
                             ],
                           ),
                         ),
@@ -254,7 +287,10 @@ class EventDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -284,7 +320,7 @@ class EventDetailsScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         // Ratio Bar
                         Row(
                           children: [
@@ -294,7 +330,10 @@ class EventDetailsScreen extends StatelessWidget {
                                 height: 12,
                                 decoration: const BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [Color(0xFFFA9EB5), Color(0xFFE85A7A)],
+                                    colors: [
+                                      Color(0xFFFA9EB5),
+                                      Color(0xFFE85A7A),
+                                    ],
                                   ),
                                   borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(6),
@@ -309,7 +348,10 @@ class EventDetailsScreen extends StatelessWidget {
                                 height: 12,
                                 decoration: const BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [Color(0xFF6BB5F6), Color(0xFF2C74C9)],
+                                    colors: [
+                                      Color(0xFF6BB5F6),
+                                      Color(0xFF2C74C9),
+                                    ],
                                   ),
                                   borderRadius: BorderRadius.only(
                                     topRight: Radius.circular(6),
@@ -320,13 +362,16 @@ class EventDetailsScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
-                                CircleAvatar(radius: 3, backgroundColor: Color(0xFFFA6A85)),
+                                CircleAvatar(
+                                  radius: 3,
+                                  backgroundColor: Color(0xFFFA6A85),
+                                ),
                                 SizedBox(width: 6),
                                 Text(
                                   'Women 52%',
@@ -349,14 +394,17 @@ class EventDetailsScreen extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(width: 6),
-                                CircleAvatar(radius: 3, backgroundColor: Color(0xFF4A90E2)),
+                                CircleAvatar(
+                                  radius: 3,
+                                  backgroundColor: Color(0xFF4A90E2),
+                                ),
                               ],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
                         Divider(height: 1, color: Colors.grey.shade200),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
                         Row(
                           children: [
                             const Expanded(
@@ -364,44 +412,76 @@ class EventDetailsScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     '25–32',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                   SizedBox(height: 4),
                                   Text(
                                     'Age range',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                            Container(height: 30, width: 1, color: Colors.grey.shade200),
+                            Container(
+                              height: 30,
+                              width: 1,
+                              color: Colors.grey.shade200,
+                            ),
                             const Expanded(
                               child: Column(
                                 children: [
                                   Text(
                                     '100%',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                   SizedBox(height: 4),
                                   Text(
                                     'ID verified',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                            Container(height: 30, width: 1, color: Colors.grey.shade200),
+                            Container(
+                              height: 30,
+                              width: 1,
+                              color: Colors.grey.shade200,
+                            ),
                             const Expanded(
                               child: Column(
                                 children: [
                                   Text(
                                     '7',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                   SizedBox(height: 4),
                                   Text(
                                     'Your matches',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -411,6 +491,10 @@ class EventDetailsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  const EventMoreDetailsSection(),
+                  const SizedBox(height: 20),
+                  const YourPassAndAmenitiesSection(),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -482,11 +566,7 @@ class EventDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildVerticalDivider() {
-    return Container(
-      height: 30,
-      width: 1,
-      color: Colors.grey.shade200,
-    );
+    return Container(height: 30, width: 1, color: Colors.grey.shade200);
   }
 
   Widget _buildAvatar(double leftPos, String imgUrl) {
@@ -497,10 +577,7 @@ class EventDetailsScreen extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: const Color(0xFFFFF0F3), width: 2),
         ),
-        child: CircleAvatar(
-          radius: 10,
-          backgroundImage: NetworkImage(imgUrl),
-        ),
+        child: CircleAvatar(radius: 10, backgroundImage: NetworkImage(imgUrl)),
       ),
     );
   }
@@ -513,7 +590,8 @@ class _FillingFastCard extends StatefulWidget {
   State<_FillingFastCard> createState() => _FillingFastCardState();
 }
 
-class _FillingFastCardState extends State<_FillingFastCard> with SingleTickerProviderStateMixin {
+class _FillingFastCardState extends State<_FillingFastCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _scaleAnimation;
 
@@ -569,7 +647,10 @@ class _FillingFastCardState extends State<_FillingFastCard> with SingleTickerPro
               ScaleTransition(
                 scale: _scaleAnimation,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE85A7A),
                     borderRadius: BorderRadius.circular(20),
@@ -629,9 +710,18 @@ class _FillingFastCardState extends State<_FillingFastCard> with SingleTickerPro
                 height: 24,
                 child: Stack(
                   children: [
-                    _buildAvatar(0, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80'),
-                    _buildAvatar(15, 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80'),
-                    _buildAvatar(30, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80'),
+                    _buildAvatar(
+                      0,
+                      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
+                    ),
+                    _buildAvatar(
+                      15,
+                      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80',
+                    ),
+                    _buildAvatar(
+                      30,
+                      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+                    ),
                   ],
                 ),
               ),
@@ -646,7 +736,10 @@ class _FillingFastCardState extends State<_FillingFastCard> with SingleTickerPro
                     ),
                     children: [
                       TextSpan(text: '52 of 60 spots booked · '),
-                      TextSpan(text: '12 people booked in the last 24 hours', style: TextStyle(fontWeight: FontWeight.normal)),
+                      TextSpan(
+                        text: '12 people booked in the last 24 hours',
+                        style: TextStyle(fontWeight: FontWeight.normal),
+                      ),
                     ],
                   ),
                 ),
@@ -666,10 +759,7 @@ class _FillingFastCardState extends State<_FillingFastCard> with SingleTickerPro
           shape: BoxShape.circle,
           border: Border.all(color: const Color(0xFFFFF0F3), width: 2),
         ),
-        child: CircleAvatar(
-          radius: 10,
-          backgroundImage: NetworkImage(imgUrl),
-        ),
+        child: CircleAvatar(radius: 10, backgroundImage: NetworkImage(imgUrl)),
       ),
     );
   }
