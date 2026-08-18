@@ -40,7 +40,7 @@ class TrackRefundScreen extends StatelessWidget {
         title: const Text(
           'Refund Status',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 17,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
@@ -125,14 +125,13 @@ class TrackRefundScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9),
+        color: const Color.fromRGBO(227, 243, 234, 1.0),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFC8E6C9), width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.check, color: Color(0xFF2E7D32), size: 20),
+          const Icon(Icons.check, color: Color.fromRGBO(25, 110, 66, 1.0), size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -143,13 +142,13 @@ class TrackRefundScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E7D32),
+                    color: Color.fromRGBO(25, 110, 66, 1.0),
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   'Cancelled 4 days before event (Policy: >3 days)',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF2E7D32)),
+                  style: TextStyle(fontSize: 12, color: Color.fromRGBO(25, 110, 66, 1.0)),
                 ),
               ],
             ),
@@ -219,7 +218,7 @@ class TrackRefundScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8), // Reduced
+              const SizedBox(height: 4), // Reduced
               const Text(
                 '₹1,250',
                 style: TextStyle(
@@ -229,7 +228,7 @@ class TrackRefundScreen extends StatelessWidget {
                   letterSpacing: -1,
                 ),
               ),
-              const SizedBox(height: 16), // Reduced
+              const SizedBox(height: 6), // Reduced
               Container(
                 height: 1,
                 decoration: BoxDecoration(

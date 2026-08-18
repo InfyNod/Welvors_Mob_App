@@ -78,7 +78,9 @@ class TicketScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.12), // Premium pinkish glow shadow
+                          color: const Color(
+                            0xFFE43A6A,
+                          ).withOpacity(0.12), // Premium pinkish glow shadow
                           blurRadius: 32,
                           offset: const Offset(0, 16),
                         ),
@@ -100,13 +102,17 @@ class TicketScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
-                                  vertical: 8,
+                                  vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF1CAF5E).withOpacity(0.1),
+                                  color: const Color(
+                                    0xFF1CAF5E,
+                                  ).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFF1CAF5E).withOpacity(0.3),
+                                    color: const Color(
+                                      0xFF1CAF5E,
+                                    ).withOpacity(0.3),
                                     width: 1,
                                   ),
                                 ),
@@ -155,32 +161,66 @@ class TicketScreen extends StatelessWidget {
                                   color: Color(0xFFE43A6A),
                                 ),
                               ),
-                              const SizedBox(height: 28),
+                              const SizedBox(height: 20),
 
                               // Premium QR Code Visual
                               Container(
-                                width: 150,
-                                height: 150,
+                                width: 160,
+                                height: 160,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFFE43A6A).withOpacity(0.15),
+                                    color: const Color(
+                                      0xFFE43A6A,
+                                    ).withOpacity(0.15),
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFFE43A6A).withOpacity(0.08),
-                                      blurRadius: 16,
-                                      offset: const Offset(0, 8),
+                                      color: const Color(
+                                        0xFFE43A6A,
+                                      ).withOpacity(0.1),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 10),
                                     ),
                                   ],
                                 ),
                                 child: Center(
-                                  child: Icon(
-                                    Icons.qr_code_2,
-                                    size: 110,
-                                    color: Colors.black87.withOpacity(0.85),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SPK-8829-XQ',
+                                      width: 130,
+                                      height: 130,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return const Center(
+                                              child: SizedBox(
+                                                width: 30,
+                                                height: 30,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      color: Color(0xFFE43A6A),
+                                                      strokeWidth: 3,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return Icon(
+                                              Icons.qr_code_2,
+                                              size: 110,
+                                              color: Colors.black87.withOpacity(
+                                                0.85,
+                                              ),
+                                            );
+                                          },
+                                    ),
                                   ),
                                 ),
                               ),
@@ -188,7 +228,10 @@ class TicketScreen extends StatelessWidget {
 
                               // Ticket ID
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.grey.shade50,
                                   borderRadius: BorderRadius.circular(12),
@@ -221,13 +264,16 @@ class TicketScreen extends StatelessWidget {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: List.generate(
-                                        (constraints.constrainWidth() / 12).floor(),
+                                        (constraints.constrainWidth() / 12)
+                                            .floor(),
                                         (index) => Container(
                                           width: 6,
                                           height: 2,
                                           decoration: BoxDecoration(
                                             color: Colors.grey.shade300,
-                                            borderRadius: BorderRadius.circular(2),
+                                            borderRadius: BorderRadius.circular(
+                                              2,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -237,41 +283,71 @@ class TicketScreen extends StatelessWidget {
                               ),
                               // Left Cutout (Hole effect)
                               Positioned(
-                                left: -12,
+                                left: 0,
                                 top: 0,
                                 bottom: 0,
                                 child: Container(
-                                  width: 24,
+                                  width: 12,
                                   decoration: BoxDecoration(
-                                    color: Colors.white, // Matches Scaffold
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.08),
-                                        blurRadius: 4,
-                                        offset: const Offset(2, 0), // Shadow inside ticket
-                                      )
-                                    ],
+                                    color: const Color.fromRGBO(
+                                      250,
+                                      241,
+                                      244,
+                                      1.0,
+                                    ), // Background color
+                                    borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(12),
+                                      bottomRight: Radius.circular(12),
+                                    ),
+                                    border: Border(
+                                      top: BorderSide(
+                                        color: Colors.black.withOpacity(0.04),
+                                        width: 1,
+                                      ),
+                                      right: BorderSide(
+                                        color: Colors.black.withOpacity(0.04),
+                                        width: 1,
+                                      ),
+                                      bottom: BorderSide(
+                                        color: Colors.black.withOpacity(0.04),
+                                        width: 1,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                               // Right Cutout (Hole effect)
                               Positioned(
-                                right: -12,
+                                right: 0,
                                 top: 0,
                                 bottom: 0,
                                 child: Container(
-                                  width: 24,
+                                  width: 12,
                                   decoration: BoxDecoration(
-                                    color: Colors.white, // Matches Scaffold
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.08),
-                                        blurRadius: 4,
-                                        offset: const Offset(-2, 0), // Shadow inside ticket
-                                      )
-                                    ],
+                                    color: const Color.fromRGBO(
+                                      250,
+                                      241,
+                                      244,
+                                      1.0,
+                                    ), // Background color
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      bottomLeft: Radius.circular(12),
+                                    ),
+                                    border: Border(
+                                      top: BorderSide(
+                                        color: Colors.black.withOpacity(0.04),
+                                        width: 1,
+                                      ),
+                                      left: BorderSide(
+                                        color: Colors.black.withOpacity(0.04),
+                                        width: 1,
+                                      ),
+                                      bottom: BorderSide(
+                                        color: Colors.black.withOpacity(0.04),
+                                        width: 1,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -295,7 +371,9 @@ class TicketScreen extends StatelessWidget {
                                       color: const Color(0xFFFFF0F3),
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: const Color(0xFFE43A6A).withOpacity(0.1),
+                                        color: const Color(
+                                          0xFFE43A6A,
+                                        ).withOpacity(0.1),
                                         width: 1,
                                       ),
                                     ),
@@ -309,7 +387,8 @@ class TicketScreen extends StatelessWidget {
                                   // Address
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           location
@@ -382,16 +461,24 @@ class TicketScreen extends StatelessWidget {
                               // Important Info Box
                               Container(
                                 width: double.infinity,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFFFFF4F6), Color(0xFFFFF8F9)],
+                                    colors: [
+                                      Color(0xFFFFF4F6),
+                                      Color(0xFFFFF8F9),
+                                    ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: const Color(0xFFE43A6A).withOpacity(0.05),
+                                    color: const Color(
+                                      0xFFE43A6A,
+                                    ).withOpacity(0.05),
                                   ),
                                 ),
                                 child: Column(
@@ -399,7 +486,11 @@ class TicketScreen extends StatelessWidget {
                                   children: [
                                     const Row(
                                       children: [
-                                        Icon(Icons.info_outline, color: Color(0xFFE43A6A), size: 14),
+                                        Icon(
+                                          Icons.info_outline,
+                                          color: Color(0xFFE43A6A),
+                                          size: 14,
+                                        ),
                                         SizedBox(width: 6),
                                         Text(
                                           'IMPORTANT INFO',
@@ -413,7 +504,9 @@ class TicketScreen extends StatelessWidget {
                                       ],
                                     ),
                                     const SizedBox(height: 8),
-                                    _buildInfoRow('Please arrive 15 mins early'),
+                                    _buildInfoRow(
+                                      'Please arrive 15 mins early',
+                                    ),
                                     const SizedBox(height: 4),
                                     _buildInfoRow('Carry a valid photo ID'),
                                     const SizedBox(height: 4),
@@ -496,36 +589,6 @@ class TicketScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Add to Calendar Button
-                Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.grey.shade200,
-                      width: 1.5,
-                    ),
-                  ),
-                  child: TextButton(
-                    onPressed: () {},
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Add to Calendar',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
