@@ -254,17 +254,11 @@ class EventDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,12 +291,14 @@ class EventDetailsScreen extends StatelessWidget {
                             Expanded(
                               flex: 52,
                               child: Container(
-                                height: 8,
+                                height: 12,
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFFFA6A85),
+                                  gradient: LinearGradient(
+                                    colors: [Color(0xFFFA9EB5), Color(0xFFE85A7A)],
+                                  ),
                                   borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(4),
-                                    bottomLeft: Radius.circular(4),
+                                    topLeft: Radius.circular(6),
+                                    bottomLeft: Radius.circular(6),
                                   ),
                                 ),
                               ),
@@ -310,12 +306,14 @@ class EventDetailsScreen extends StatelessWidget {
                             Expanded(
                               flex: 48,
                               child: Container(
-                                height: 8,
+                                height: 12,
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFF4A90E2),
+                                  gradient: LinearGradient(
+                                    colors: [Color(0xFF6BB5F6), Color(0xFF2C74C9)],
+                                  ),
                                   borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(4),
-                                    bottomRight: Radius.circular(4),
+                                    topRight: Radius.circular(6),
+                                    bottomRight: Radius.circular(6),
                                   ),
                                 ),
                               ),
@@ -353,6 +351,60 @@ class EventDetailsScreen extends StatelessWidget {
                                 SizedBox(width: 6),
                                 CircleAvatar(radius: 3, backgroundColor: Color(0xFF4A90E2)),
                               ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Divider(height: 1, color: Colors.grey.shade200),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    '25–32',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Age range',
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(height: 30, width: 1, color: Colors.grey.shade200),
+                            const Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    '100%',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'ID verified',
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(height: 30, width: 1, color: Colors.grey.shade200),
+                            const Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    '7',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Your matches',
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
