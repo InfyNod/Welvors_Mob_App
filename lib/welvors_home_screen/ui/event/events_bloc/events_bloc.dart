@@ -15,5 +15,21 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
     on<SearchQueryEvent>((event, emit) {
       emit(state.copyWith(searchQuery: event.query));
     });
+
+    on<ToggleLikeEvent>((event, emit) {
+      final newLikedEvents = Set<String>.from(state.likedEvents);
+      if (newLikedEvents.contains(event.eventId)) {
+        newLikedEvents.remove(event.eventId);
+      } else {
+        newLikedEvents.add(event.eventId);
+      }
+      emit(state.copyWith(likedEvents: newLikedEvents));
+    });
+
+    on<BookEventEvent>((event, emit) {
+      final newBookedEvents = Set<String>.from(state.bookedEvents);
+      newBookedEvents.add(event.eventId);
+      emit(state.copyWith(bookedEvents: newBookedEvents));
+    });
   }
 }

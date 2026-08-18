@@ -14,3 +14,13 @@ class SearchQueryEvent extends EventsEvent {
   final String query;
   SearchQueryEvent(this.query);
 }
+
+class ToggleLikeEvent extends EventsEvent {
+  final String eventId;
+  ToggleLikeEvent(this.eventId);
+}
+
+class BookEventEvent extends EventsEvent {
+  final String eventId;
+  BookEventEvent(this.eventId);
+}

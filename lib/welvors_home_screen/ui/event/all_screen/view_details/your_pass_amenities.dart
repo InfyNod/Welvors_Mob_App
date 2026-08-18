@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class YourPassAndAmenitiesSection extends StatelessWidget {
-  const YourPassAndAmenitiesSection({super.key});
+  final String price;
+  const YourPassAndAmenitiesSection({super.key, required this.price});
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +92,11 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
-                        '₹1,250',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
+                      Text(
+                        price,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
                           color: Colors.black87,
                         ),
                       ),

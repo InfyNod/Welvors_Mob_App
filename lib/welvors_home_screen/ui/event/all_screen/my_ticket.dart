@@ -541,6 +541,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                   location: location,
                                   imageUrl: imageUrl,
                                   status: status,
+                                  price: '₹1,250',
                                   categories: null,
                                 ),
                               ),

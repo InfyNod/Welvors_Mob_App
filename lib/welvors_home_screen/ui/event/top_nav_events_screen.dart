@@ -13,10 +13,7 @@ class EventsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => EventsBloc(),
-      child: const _EventsScreenView(),
-    );
+    return const _EventsScreenView();
   }
 }
 

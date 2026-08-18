@@ -8,7 +8,7 @@ import 'welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'welvors_home_screen/home_bloc/home_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
-
+import 'welvors_home_screen/ui/event/events_bloc/events_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -35,6 +35,7 @@ class WelvorsApp extends StatelessWidget {
         BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
         BlocProvider<BoostBloc>(create: (context) => BoostBloc()),
         BlocProvider<ProfileEditCubit>(create: (context) => ProfileEditCubit()),
+        BlocProvider<EventsBloc>(create: (context) => EventsBloc()),
       ],
       child: MaterialApp(
         title: 'Welvors',

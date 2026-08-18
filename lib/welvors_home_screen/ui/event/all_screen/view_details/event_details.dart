@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../events_bloc/events_bloc.dart';
+import '../../events_bloc/events_state.dart';
+import '../../events_bloc/events_event.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eventphoto_why_come.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass_amenities.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_itinerary_location.dart';
@@ -11,6 +15,8 @@ class EventDetailsScreen extends StatelessWidget {
   final String imageUrl;
   final String status;
   final List<String>? categories;
+  final String price;
+  final int spotsLeft;
 
   const EventDetailsScreen({
     super.key,
@@ -19,6 +25,8 @@ class EventDetailsScreen extends StatelessWidget {
     required this.location,
     required this.imageUrl,
     required this.status,
+    required this.price,
+    this.spotsLeft = 8,
     this.categories,
   });
 
@@ -27,11 +35,11 @@ class EventDetailsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: Container(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           left: 20,
           right: 20,
           top: 16,
-          bottom: MediaQuery.of(context).padding.bottom + 16,
+          bottom: 16,
         ),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -43,30 +51,49 @@ class EventDetailsScreen extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE43A6A),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  '🎟️ Book Now · ₹1,250 — 8 spots left',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: BlocBuilder<EventsBloc, EventsState>(
+                  builder: (context, state) {
+                    final isBooked = state.bookedEvents.contains(title);
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: isBooked ? null : () {
+                              context.read<EventsBloc>().add(BookEventEvent(title));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Booked $title successfully!')),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isBooked ? Colors.grey : const Color(0xFFE43A6A),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              isBooked
+                                  ? '✅ Booked'
+                                  : '🎟️ Book Now · $price — $spotsLeft spots left',
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-          ],
+            ],
+          ),
         ),
       ),
       appBar: AppBar(
@@ -130,7 +157,9 @@ class EventDetailsScreen extends StatelessWidget {
                 SizedBox(
                   height: 300,
                   width: double.infinity,
-                  child: Image.network(imageUrl, fit: BoxFit.cover),
+                  child: imageUrl.startsWith('http')
+                      ? Image.network(imageUrl, fit: BoxFit.cover)
+                      : Image.asset(imageUrl, fit: BoxFit.cover),
                 ),
                 Positioned(
                   top: 16,
@@ -539,7 +568,7 @@ class EventDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   const EventMoreDetailsSection(),
                   const SizedBox(height: 20),
-                  const YourPassAndAmenitiesSection(),
+                  YourPassAndAmenitiesSection(price: price),
                   const SizedBox(height: 20),
                   const EventItineraryAndLocationSection(),
                   const SizedBox(height: 20),

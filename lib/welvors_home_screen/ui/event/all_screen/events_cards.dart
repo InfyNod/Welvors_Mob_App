@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import '../events_bloc/events_bloc.dart';
 import '../events_bloc/events_state.dart';
+import '../events_bloc/events_event.dart';
+import 'view_details/event_details.dart';
 
 class EventsCards extends StatefulWidget {
   const EventsCards({super.key});
@@ -12,17 +14,6 @@ class EventsCards extends StatefulWidget {
 }
 
 class _EventsCardsState extends State<EventsCards> {
-  final Set<String> _likedEvents = {};
-
-  void _toggleLike(String eventId) {
-    setState(() {
-      if (_likedEvents.contains(eventId)) {
-        _likedEvents.remove(eventId);
-      } else {
-        _likedEvents.add(eventId);
-      }
-    });
-  }
 
   void _shareEvent(BuildContext context, String eventName) async {
     try {
@@ -39,21 +30,27 @@ class _EventsCardsState extends State<EventsCards> {
   }
 
   Widget _buildFavoriteIcon(String eventId) {
-    final isLiked = _likedEvents.contains(eventId);
-    return GestureDetector(
-      onTap: () => _toggleLike(eventId),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          isLiked ? Icons.favorite : Icons.favorite_border,
-          color: isLiked ? const Color(0xFFE85A7A) : Colors.black87,
-          size: 20,
-        ),
-      ),
+    return BlocBuilder<EventsBloc, EventsState>(
+      builder: (context, state) {
+        final isLiked = state.likedEvents.contains(eventId);
+        return GestureDetector(
+          onTap: () {
+            context.read<EventsBloc>().add(ToggleLikeEvent(eventId));
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.9),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isLiked ? Icons.favorite : Icons.favorite_border,
+              color: isLiked ? const Color(0xFFE85A7A) : Colors.black87,
+              size: 20,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -158,7 +155,23 @@ class _EventsCardsState extends State<EventsCards> {
   }
 
   Widget _buildPromotedCard() {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              title: 'Rooftop Singles Night',
+              date: 'This weekend',
+              location: 'Mumbai',
+              imageUrl: 'assets/concert.jpeg',
+              status: 'PROMOTED',
+              price: '₹1,250',
+            ),
+          ),
+        );
+      },
+      child: Container(
       width: 270,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -269,11 +282,27 @@ class _EventsCardsState extends State<EventsCards> {
           ],
         ),
       ),
+    ),
     );
   }
-
   Widget _buildFeaturedCard() {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              title: 'Speed Dating · 25–32',
+              date: 'Sat, Oct 19',
+              location: 'Bandra',
+              imageUrl: 'assets/speed.jpeg',
+              status: 'FEATURED',
+              price: '₹999',
+            ),
+          ),
+        );
+      },
+      child: Container(
       width: 270,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -394,11 +423,27 @@ class _EventsCardsState extends State<EventsCards> {
           ],
         ),
       ),
+    ),
     );
   }
-
   Widget _buildStandardCard() {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              title: 'Sunset Soirée for Singles',
+              date: 'Sun, Oct 20',
+              location: 'Juhu Beach',
+              imageUrl: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
+              status: 'FILLING FAST',
+              price: '₹1,499',
+            ),
+          ),
+        );
+      },
+      child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -660,11 +705,27 @@ class _EventsCardsState extends State<EventsCards> {
           ),
         ],
       ),
+    ),
     );
   }
-
   Widget _buildStandardCard2() {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              title: 'Mixology Masterclass',
+              date: 'Fri, Oct 18',
+              location: 'Lower Parel',
+              imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80',
+              status: 'NEW',
+              price: '₹1,800',
+            ),
+          ),
+        );
+      },
+      child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -885,11 +946,27 @@ class _EventsCardsState extends State<EventsCards> {
           ),
         ],
       ),
+    ),
     );
   }
-
   Widget _buildStandardCard3() {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              title: 'Board Game Mixer',
+              date: 'Sat, Oct 26',
+              location: 'Andheri West',
+              imageUrl: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffaed?auto=format&fit=crop&w=800&q=80',
+              status: 'POPULAR',
+              price: '₹750',
+            ),
+          ),
+        );
+      },
+      child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -1084,11 +1161,27 @@ class _EventsCardsState extends State<EventsCards> {
           ),
         ],
       ),
+    ),
     );
   }
-
   Widget _buildStandardCard4() {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              title: 'Salsa Dancing Basics',
+              date: 'Sun, Oct 27',
+              location: 'Khar',
+              imageUrl: 'https://images.unsplash.com/photo-1548123378-bde4eca81d2d?auto=format&fit=crop&w=800&q=80',
+              status: 'SOLD OUT',
+              price: '₹1,100',
+            ),
+          ),
+        );
+      },
+      child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -1294,6 +1387,6 @@ class _EventsCardsState extends State<EventsCards> {
           ),
         ],
       ),
+    ),
     );
-  }
-}
+  }}
