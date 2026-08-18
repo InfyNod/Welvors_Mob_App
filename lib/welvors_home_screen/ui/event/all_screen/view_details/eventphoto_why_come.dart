@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class EventMoreDetailsSection extends StatelessWidget {
-  const EventMoreDetailsSection({super.key});
+  final bool isTrekkingEvent;
+
+  const EventMoreDetailsSection({super.key, this.isTrekkingEvent = false});
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +64,9 @@ class EventMoreDetailsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
+        
+        if (isTrekkingEvent)
+          const TrekItinerarySection(),
 
         // Why You Should Come
         const Padding(
@@ -177,6 +182,223 @@ class EventMoreDetailsSection extends StatelessWidget {
                     height: 1.3, // Tighter line height
                   ),
                 ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TrekItinerarySection extends StatelessWidget {
+  const TrekItinerarySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            '4-Day Trek Itinerary',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF0F5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              'Full day-by-day plan · guided by certified trek leaders · all meals & stays included',
+              style: TextStyle(color: Color(0xFFE43A6A), fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              _buildDayItem(
+                day: '1',
+                title: 'Arrival & briefing',
+                date: 'Fri, Nov 14',
+                location: 'Manebhanjan (2,130 m) · base village',
+                schedule: [
+                  {'time': '2:00 PM', 'desc': 'Reach base, check into homestay'},
+                  {'time': '5:00 PM', 'desc': 'Gear check + route & safety briefing'},
+                  {'time': '8:00 PM', 'desc': 'Group dinner & icebreakers 🔥'},
+                ],
+                amenities: '🛏️ Homestay · 🍽️ Dinner',
+                isLast: false,
+              ),
+              _buildDayItem(
+                day: '2',
+                title: 'The climb begins',
+                date: 'Sat, Nov 15',
+                location: 'Manebhanjan → Tumling (2,970 m) · ~11 km',
+                schedule: [
+                  {'time': '6:30 AM', 'desc': 'Sunrise, breakfast, warm-up'},
+                  {'time': '8:00 AM', 'desc': 'Trek through Singalila forest trail'},
+                  {'time': '1:00 PM', 'desc': 'Packed lunch at Chitrey'},
+                  {'time': '4:30 PM', 'desc': 'Reach Tumling · tea + rest'},
+                ],
+                amenities: '🛏️ Trekker\'s hut · 🍽️ All meals',
+                isLast: false,
+              ),
+              _buildDayItem(
+                day: '3',
+                title: 'Summit push',
+                date: 'Sun, Nov 16',
+                location: 'Tumling → Sandakphu (3,636 m) · ~14 km',
+                schedule: [
+                  {'time': '5:00 AM', 'desc': 'Early start for the ridge'},
+                  {'time': '12:00 PM', 'desc': 'Lunch at Kalapokhri'},
+                  {'time': '4:00 PM', 'desc': 'Summit · Sleeping Buddha & Everest views 🏔️'},
+                  {'time': '7:00 PM', 'desc': 'Bonfire dinner at the top'},
+                ],
+                amenities: '🛏️ Summit lodge · 🍽️ All meals',
+                isLast: false,
+              ),
+              _buildDayItem(
+                day: '4',
+                title: 'Sunrise & descent',
+                date: 'Mon, Nov 17',
+                location: 'Sandakphu → Sepi → Darjeeling',
+                schedule: [
+                  {'time': '5:15 AM', 'desc': 'Golden sunrise over the Himalayas'},
+                  {'time': '8:00 AM', 'desc': 'Breakfast + descent by trail/jeep'},
+                  {'time': '2:00 PM', 'desc': 'Reach Darjeeling · farewell & photos'},
+                ],
+                amenities: '✓ Trek completed',
+                isLast: true,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildDayItem({
+    required String day,
+    required String title,
+    required String date,
+    required String location,
+    required List<Map<String, String>> schedule,
+    required String amenities,
+    required bool isLast,
+  }) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Timeline column
+          Column(
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE43A6A),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  day,
+                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ),
+              if (!isLast)
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          // Content column
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Day $day · $title',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
+                    ),
+                    Text(
+                      date,
+                      style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on, size: 14, color: Color(0xFFE43A6A)),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        location,
+                        style: const TextStyle(color: Color(0xFFE43A6A), fontSize: 12, fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ...schedule.map((item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 65,
+                        child: Text(
+                          item['time']!,
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          item['desc']!,
+                          style: const TextStyle(color: Colors.black87, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    amenities,
+                    style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 24),
               ],
             ),
           ),

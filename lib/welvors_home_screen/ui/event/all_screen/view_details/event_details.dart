@@ -587,7 +587,9 @@ class EventDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const EventMoreDetailsSection(),
+                  EventMoreDetailsSection(
+                    isTrekkingEvent: title.toLowerCase().contains('trek'),
+                  ),
                   const SizedBox(height: 20),
                   YourPassAndAmenitiesSection(price: price),
                   const SizedBox(height: 20),

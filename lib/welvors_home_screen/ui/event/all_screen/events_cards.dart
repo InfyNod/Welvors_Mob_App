@@ -30,21 +30,25 @@ class _EventsCardsState extends State<EventsCards> {
     }
   }
 
-  Widget _buildShareIcon(BuildContext context, String eventName) {
-    return InkWell(
-      onTap: () {
-        debugPrint("Share clicked for $eventName");
-        _shareEvent(context, eventName);
+  Widget _buildShareIcon(BuildContext parentContext, String eventName) {
+    return Builder(
+      builder: (BuildContext iconContext) {
+        return InkWell(
+          onTap: () {
+            debugPrint("Share clicked for $eventName");
+            _shareEvent(iconContext, eventName);
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.ios_share,
+              color: Color(0xFFE85A7A),
+              size: 22,
+            ),
+          ),
+        );
       },
-      borderRadius: BorderRadius.circular(20),
-      child: const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Icon(
-          Icons.ios_share,
-          color: Color(0xFFE85A7A),
-          size: 22,
-        ),
-      ),
     );
   }
 
@@ -477,6 +481,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
               ),
+              const PriceBadge(price: '₹1,250'),
             ],
           ),
 
@@ -642,15 +647,6 @@ class _EventsCardsState extends State<EventsCards> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      '₹1,250',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -770,6 +766,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
               ),
+              const PriceBadge(price: '₹950'),
             ],
           ),
 
@@ -894,15 +891,6 @@ class _EventsCardsState extends State<EventsCards> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      '₹950',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -1022,6 +1010,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
               ),
+              const PriceBadge(price: 'Sold Out'),
             ],
           ),
 
@@ -1118,15 +1107,6 @@ class _EventsCardsState extends State<EventsCards> {
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Sold Out',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade500,
                       ),
                     ),
                   ],
@@ -1248,6 +1228,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
               ),
+              const PriceBadge(price: '₹8,900'),
             ],
           ),
 
@@ -1332,15 +1313,6 @@ class _EventsCardsState extends State<EventsCards> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      '₹8,900',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -1387,4 +1359,49 @@ class _EventsCardsState extends State<EventsCards> {
       ),
     ),
     );
-  }}
+  }
+}
+
+class PriceBadge extends StatelessWidget {
+  final String price;
+  const PriceBadge({super.key, required this.price});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 12,
+      right: 12,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+          child: Container(
+            width: 85,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.5),
+            ),
+            child: Text(
+              price,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
