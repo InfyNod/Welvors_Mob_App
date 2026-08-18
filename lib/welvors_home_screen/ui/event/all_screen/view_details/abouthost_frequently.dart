@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Invite_match_drawer.dart';
 
 class AboutHostAndFAQSection extends StatelessWidget {
   const AboutHostAndFAQSection({super.key});
@@ -196,7 +197,9 @@ class AboutHostAndFAQSection extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showInviteMatchDrawer(context);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
                     elevation: 8,

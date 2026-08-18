@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../events_bloc/events_bloc.dart';
 import '../../events_bloc/events_state.dart';
 import '../../events_bloc/events_event.dart';
@@ -138,7 +139,19 @@ class EventDetailsScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              try {
+                final box = context.findRenderObject() as RenderBox?;
+                await Share.share(
+                  'Check out this event on Velvors: $title',
+                  sharePositionOrigin: box != null
+                      ? box.localToGlobal(Offset.zero) & box.size
+                      : null,
+                );
+              } catch (e) {
+                debugPrint('Error sharing: $e');
+              }
+            },
             icon: const Icon(
               Icons.share_outlined,
               color: Colors.black87,

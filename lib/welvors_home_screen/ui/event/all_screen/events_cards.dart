@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
@@ -27,31 +28,6 @@ class _EventsCardsState extends State<EventsCards> {
     } catch (e) {
       debugPrint('Error sharing: $e');
     }
-  }
-
-  Widget _buildFavoriteIcon(String eventId) {
-    return BlocBuilder<EventsBloc, EventsState>(
-      builder: (context, state) {
-        final isLiked = state.likedEvents.contains(eventId);
-        return GestureDetector(
-          onTap: () {
-            context.read<EventsBloc>().add(ToggleLikeEvent(eventId));
-          },
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isLiked ? Icons.favorite : Icons.favorite_border,
-              color: isLiked ? const Color(0xFFE85A7A) : Colors.black87,
-              size: 20,
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildShareIcon(BuildContext context, String eventName) {
@@ -434,11 +410,11 @@ class _EventsCardsState extends State<EventsCards> {
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
               title: 'Sunset Soirée for Singles',
-              date: 'Sun, Oct 20',
-              location: 'Juhu Beach',
+              date: 'Sat, Oct 12',
+              location: 'The Rooftop Lounge, Bandra',
               imageUrl: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
-              status: 'FILLING FAST',
-              price: '₹1,499',
+              status: 'SIGNATURE MIXER',
+              price: '₹1,250',
             ),
           ),
         );
@@ -470,15 +446,36 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 child: Image.network(
                   'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
-                  height: 160,
+                  height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
               Positioned(
                 top: 12,
-                right: 12,
-                child: _buildFavoriteIcon('card1'),
+                left: 12,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'SIGNATURE MIXER',
+                        style: const TextStyle(
+                          color: Color(0xFFE43A6A),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -626,17 +623,7 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 const SizedBox(height: 12),
 
-                // Tags
-                const Text(
-                  'SIGNATURE MIXER',
-                  style: TextStyle(
-                    color: Color(0xFFE85A7A),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 8),
+
 
                 // Title & Price
                 Row(
@@ -715,12 +702,12 @@ class _EventsCardsState extends State<EventsCards> {
           context,
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
-              title: 'Mixology Masterclass',
-              date: 'Fri, Oct 18',
-              location: 'Lower Parel',
-              imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80',
-              status: 'NEW',
-              price: '₹1,800',
+              title: 'Artisanal Spirits & Stories',
+              date: 'Thu, Oct 17',
+              location: 'The Velvet Room, Lower Parel',
+              imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80',
+              status: 'SPEED DATING',
+              price: '₹950',
             ),
           ),
         );
@@ -752,15 +739,36 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 child: Image.network(
                   'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80',
-                  height: 160,
+                  height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
               Positioned(
                 top: 12,
-                right: 12,
-                child: _buildFavoriteIcon('card2'),
+                left: 12,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'SPEED DATING',
+                        style: const TextStyle(
+                          color: Color(0xFFE43A6A),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -867,17 +875,7 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 const SizedBox(height: 12),
 
-                // Tags
-                const Text(
-                  'SPEED DATING',
-                  style: TextStyle(
-                    color: Color(0xFFE85A7A),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 8),
+
 
                 // Title & Price
                 Row(
@@ -956,12 +954,12 @@ class _EventsCardsState extends State<EventsCards> {
           context,
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
-              title: 'Board Game Mixer',
-              date: 'Sat, Oct 26',
-              location: 'Andheri West',
-              imageUrl: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffaed?auto=format&fit=crop&w=800&q=80',
-              status: 'POPULAR',
-              price: '₹750',
+              title: 'Vintage Vibes & Vineyards',
+              date: 'Tue, Oct 22',
+              location: 'Reserve Bar, Juhu',
+              imageUrl: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80',
+              status: 'WINE TASTING',
+              price: 'Sold Out',
             ),
           ),
         );
@@ -993,15 +991,36 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 child: Image.network(
                   'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80', // Wine tasting image
-                  height: 160,
+                  height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
               Positioned(
                 top: 12,
-                right: 12,
-                child: _buildFavoriteIcon('card3'),
+                left: 12,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'WINE TASTING',
+                        style: const TextStyle(
+                          color: Color(0xFFE43A6A),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -1082,17 +1101,7 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 const SizedBox(height: 12),
 
-                // Tags
-                const Text(
-                  'WINE TASTING',
-                  style: TextStyle(
-                    color: Color(0xFFE85A7A),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 8),
+
 
                 // Title & Price
                 Row(
@@ -1171,12 +1180,12 @@ class _EventsCardsState extends State<EventsCards> {
           context,
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
-              title: 'Salsa Dancing Basics',
-              date: 'Sun, Oct 27',
-              location: 'Khar',
-              imageUrl: 'https://images.unsplash.com/photo-1548123378-bde4eca81d2d?auto=format&fit=crop&w=800&q=80',
-              status: 'SOLD OUT',
-              price: '₹1,100',
+              title: 'Sandakphu Ridge Trek',
+              date: 'Nov 14–17',
+              location: 'Darjeeling, WB',
+              imageUrl: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80',
+              status: '🥾 TREKKING',
+              price: '₹8,900',
             ),
           ),
         );
@@ -1208,15 +1217,36 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 child: Image.network(
                   'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80', // Trekking image
-                  height: 160,
+                  height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
               Positioned(
                 top: 12,
-                right: 12,
-                child: _buildFavoriteIcon('card4'),
+                left: 12,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '🥾 TREKKING',
+                        style: const TextStyle(
+                          color: Color(0xFFE43A6A),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -1283,17 +1313,7 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 const SizedBox(height: 12),
 
-                // Tags
-                const Text(
-                  '🥾 TREKKING',
-                  style: TextStyle(
-                    color: Color(0xFFE85A7A),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 8),
+
 
                 // Title & Price
                 Row(
@@ -1359,29 +1379,7 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 const SizedBox(height: 12),
                 
-                // View itinerary button
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'View itinerary',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_forward, size: 14, color: Colors.black87),
-                    ],
-                  ),
-                ),
+
               ],
             ),
           ),
