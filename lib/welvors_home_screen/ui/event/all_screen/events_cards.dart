@@ -1,10 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import '../events_bloc/events_bloc.dart';
 import '../events_bloc/events_state.dart';
 
-class EventsCards extends StatelessWidget {
+class EventsCards extends StatefulWidget {
   const EventsCards({super.key});
+
+  @override
+  State<EventsCards> createState() => _EventsCardsState();
+}
+
+class _EventsCardsState extends State<EventsCards> {
+  final Set<String> _likedEvents = {};
+
+  void _toggleLike(String eventId) {
+    setState(() {
+      if (_likedEvents.contains(eventId)) {
+        _likedEvents.remove(eventId);
+      } else {
+        _likedEvents.add(eventId);
+      }
+    });
+  }
+
+  void _shareEvent(String eventName) {
+    Share.share('Check out this event on Velvors: $eventName');
+  }
+
+  Widget _buildFavoriteIcon(String eventId) {
+    final isLiked = _likedEvents.contains(eventId);
+    return GestureDetector(
+      onTap: () => _toggleLike(eventId),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          isLiked ? Icons.favorite : Icons.favorite_border,
+          color: isLiked ? const Color(0xFFE85A7A) : Colors.black87,
+          size: 20,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShareIcon(String eventName) {
+    return InkWell(
+      onTap: () => _shareEvent(eventName),
+      child: const Icon(
+        Icons.ios_share,
+        color: Color(0xFFE85A7A),
+        size: 22,
+      ),
+    );
+  }
 
   bool _matches(EventsState state, {required List<int> categories, required List<int> filters, required String searchData}) {
     if (state.selectedCategoryIndex != 0 && !categories.contains(state.selectedCategoryIndex)) {
@@ -364,18 +416,7 @@ class EventsCards extends StatelessWidget {
               Positioned(
                 top: 12,
                 right: 12,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.favorite_border,
-                    color: Colors.black87,
-                    size: 20,
-                  ),
-                ),
+                child: _buildFavoriteIcon('card1'),
               ),
             ],
           ),
@@ -415,11 +456,7 @@ class EventsCards extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(
-                  Icons.ios_share,
-                  color: Color(0xFFE85A7A),
-                  size: 22,
-                ),
+                _buildShareIcon('Sunset Soirée for Singles'),
               ],
             ),
           ),
@@ -645,18 +682,7 @@ class EventsCards extends StatelessWidget {
               Positioned(
                 top: 12,
                 right: 12,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.favorite_border,
-                    color: Colors.black87,
-                    size: 20,
-                  ),
-                ),
+                child: _buildFavoriteIcon('card2'),
               ),
             ],
           ),
@@ -688,7 +714,7 @@ class EventsCards extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '7',
+                  '45',
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.w700,
@@ -696,11 +722,7 @@ class EventsCards extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(
-                  Icons.ios_share,
-                  color: Color(0xFFE85A7A),
-                  size: 22,
-                ),
+                _buildShareIcon('Speed Dating: Creative Professionals'),
               ],
             ),
           ),
@@ -885,18 +907,7 @@ class EventsCards extends StatelessWidget {
               Positioned(
                 top: 12,
                 right: 12,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.favorite_border,
-                    color: Colors.black87,
-                    size: 20,
-                  ),
-                ),
+                child: _buildFavoriteIcon('card3'),
               ),
             ],
           ),
@@ -913,7 +924,7 @@ class EventsCards extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '128',
+                  '94',
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.w700,
@@ -928,7 +939,7 @@ class EventsCards extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '23',
+                  '28',
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.w700,
@@ -936,11 +947,7 @@ class EventsCards extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(
-                  Icons.ios_share,
-                  color: Color(0xFFE85A7A),
-                  size: 22,
-                ),
+                _buildShareIcon('Wine Tasting & Networking'),
               ],
             ),
           ),
@@ -1099,18 +1106,7 @@ class EventsCards extends StatelessWidget {
               Positioned(
                 top: 12,
                 right: 12,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.favorite_border,
-                    color: Colors.black87,
-                    size: 20,
-                  ),
-                ),
+                child: _buildFavoriteIcon('card4'),
               ),
             ],
           ),
@@ -1127,7 +1123,7 @@ class EventsCards extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '96',
+                  '210',
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.w700,
@@ -1142,7 +1138,7 @@ class EventsCards extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '19',
+                  '85',
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.w700,
@@ -1150,11 +1146,7 @@ class EventsCards extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(
-                  Icons.ios_share,
-                  color: Color(0xFFE85A7A),
-                  size: 22,
-                ),
+                _buildShareIcon('Himalayan Adventure Trek'),
               ],
             ),
           ),
