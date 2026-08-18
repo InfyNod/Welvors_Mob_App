@@ -199,33 +199,78 @@ class TrekItinerarySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            '4-Day Trek Itinerary',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+        // Beautiful Header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE43A6A).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.map_rounded, color: Color(0xFFE43A6A), size: 20),
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                '4-Day Trek Itinerary',
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black87,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
+        // Highlight Banner
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF0F5),
-              borderRadius: BorderRadius.circular(8),
+              gradient: LinearGradient(
+                colors: [const Color(0xFFFA6A85).withOpacity(0.15), const Color(0xFFDE2957).withOpacity(0.05)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFFA6A85).withOpacity(0.3), width: 1),
             ),
-            child: const Text(
-              'Full day-by-day plan · guided by certified trek leaders · all meals & stays included',
-              style: TextStyle(color: Color(0xFFE43A6A), fontSize: 12, fontWeight: FontWeight.w600),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(color: const Color(0xFFFA6A85).withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2)),
+                    ],
+                  ),
+                  child: const Icon(Icons.verified, color: Color(0xFFE43A6A), size: 16),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Full day-by-day plan · Guided by certified leaders · Meals & stays included',
+                    style: TextStyle(
+                      color: Color(0xFFD62851),
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 24),
+        // Timeline Items
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -281,7 +326,8 @@ class TrekItinerarySection extends StatelessWidget {
                   {'time': '8:00 AM', 'desc': 'Breakfast + descent by trail/jeep'},
                   {'time': '2:00 PM', 'desc': 'Reach Darjeeling · farewell & photos'},
                 ],
-                amenities: '✓ Trek completed',
+                amenities: 'Trek completed',
+                isSuccessBadge: true,
                 isLast: true,
               ),
             ],
@@ -300,20 +346,32 @@ class TrekItinerarySection extends StatelessWidget {
     required List<Map<String, String>> schedule,
     required String amenities,
     required bool isLast,
+    bool isSuccessBadge = false,
   }) {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Timeline column
+          // Premium Timeline Indicator
           Column(
             children: [
               Container(
-                width: 24,
-                height: 24,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE43A6A),
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFE43A6A).withOpacity(0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -324,82 +382,163 @@ class TrekItinerarySection extends StatelessWidget {
               if (!isLast)
                 Expanded(
                   child: Container(
-                    width: 2,
-                    color: Colors.grey.shade300,
+                    width: 2.5,
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFFE43A6A).withOpacity(0.6),
+                          const Color(0xFFE43A6A).withOpacity(0.1),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
             ],
           ),
-          const SizedBox(width: 16),
-          // Content column
+          const SizedBox(width: 10),
+          // Premium Content Card
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Day $day · $title',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
-                    ),
-                    Text(
-                      date,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 14, color: Color(0xFFE43A6A)),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        location,
-                        style: const TextStyle(color: Color(0xFFE43A6A), fontSize: 12, fontWeight: FontWeight.w600),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ...schedule.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade100, width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 15,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title and Date
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        width: 65,
-                        child: Text(
-                          item['time']!,
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      ),
                       Expanded(
                         child: Text(
-                          item['desc']!,
-                          style: const TextStyle(color: Colors.black87, fontSize: 13),
+                          'Day $day · $title',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 15.5,
+                            color: Colors.black87,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Text(
+                          date,
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 11.5, fontWeight: FontWeight.w700),
                         ),
                       ),
                     ],
                   ),
-                )),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(20),
+                  const SizedBox(height: 12),
+                  // Location Pin
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE43A6A).withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.location_on, size: 12, color: Color(0xFFE43A6A)),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          location,
+                          style: const TextStyle(color: Color(0xFFE43A6A), fontSize: 13, fontWeight: FontWeight.w700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    amenities,
-                    style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w600),
+                  const SizedBox(height: 16),
+                  Divider(height: 1, color: Colors.grey.shade100),
+                  const SizedBox(height: 14),
+                  // Schedule
+                  ...schedule.map((item) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 65,
+                          child: Text(
+                            item['time']!,
+                            style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            item['desc']!,
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 13,
+                              height: 1.4,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 4),
+                  // Amenities / Success Pill
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSuccessBadge ? Colors.green.withOpacity(0.12) : const Color(0xFFE43A6A).withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSuccessBadge ? Colors.green.withOpacity(0.4) : const Color(0xFFE43A6A).withOpacity(0.2),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isSuccessBadge) ...[
+                          const Icon(Icons.check_circle_rounded, size: 16, color: Colors.green),
+                          const SizedBox(width: 6),
+                        ],
+                        Text(
+                          amenities,
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: isSuccessBadge ? Colors.green.shade700 : const Color(0xFFD62851),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-              ],
+                ],
+              ),
             ),
           ),
         ],
