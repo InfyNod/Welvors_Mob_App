@@ -8,6 +8,7 @@ import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eve
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass_amenities.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_itinerary_location.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/abouthost_frequently.dart';
+import 'booking_confirm.dart';
 
 class EventDetailsScreen extends StatelessWidget {
   final String title;
@@ -67,8 +68,15 @@ class EventDetailsScreen extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: isBooked ? null : () {
                               context.read<EventsBloc>().add(BookEventEvent(title));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Booked $title successfully!')),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BookingConfirmationScreen(
+                                    title: title,
+                                    date: date,
+                                    location: location,
+                                  ),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
