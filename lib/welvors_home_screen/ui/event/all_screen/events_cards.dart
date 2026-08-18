@@ -24,8 +24,18 @@ class _EventsCardsState extends State<EventsCards> {
     });
   }
 
-  void _shareEvent(String eventName) {
-    Share.share('Check out this event on Velvors: $eventName');
+  void _shareEvent(BuildContext context, String eventName) async {
+    try {
+      final box = context.findRenderObject() as RenderBox?;
+      await Share.share(
+        'Check out this event on Velvors: $eventName',
+        sharePositionOrigin: box != null
+            ? box.localToGlobal(Offset.zero) & box.size
+            : null,
+      );
+    } catch (e) {
+      debugPrint('Error sharing: $e');
+    }
   }
 
   Widget _buildFavoriteIcon(String eventId) {
@@ -47,13 +57,20 @@ class _EventsCardsState extends State<EventsCards> {
     );
   }
 
-  Widget _buildShareIcon(String eventName) {
+  Widget _buildShareIcon(BuildContext context, String eventName) {
     return InkWell(
-      onTap: () => _shareEvent(eventName),
-      child: const Icon(
-        Icons.ios_share,
-        color: Color(0xFFE85A7A),
-        size: 22,
+      onTap: () {
+        debugPrint("Share clicked for $eventName");
+        _shareEvent(context, eventName);
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Icon(
+          Icons.ios_share,
+          color: Color(0xFFE85A7A),
+          size: 22,
+        ),
       ),
     );
   }
@@ -456,7 +473,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
                 const Spacer(),
-                _buildShareIcon('Sunset Soirée for Singles'),
+                _buildShareIcon(context, 'Sunset Soirée for Singles'),
               ],
             ),
           ),
@@ -722,7 +739,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
                 const Spacer(),
-                _buildShareIcon('Speed Dating: Creative Professionals'),
+                _buildShareIcon(context, 'Speed Dating: Creative Professionals'),
               ],
             ),
           ),
@@ -947,7 +964,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
                 const Spacer(),
-                _buildShareIcon('Wine Tasting & Networking'),
+                _buildShareIcon(context, 'Wine Tasting & Networking'),
               ],
             ),
           ),
@@ -1146,7 +1163,7 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
                 const Spacer(),
-                _buildShareIcon('Himalayan Adventure Trek'),
+                _buildShareIcon(context, 'Himalayan Adventure Trek'),
               ],
             ),
           ),
