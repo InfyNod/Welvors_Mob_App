@@ -46,10 +46,13 @@ class AboutHostAndFAQSection extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFF0F3), // Light pink
-                      shape: BoxShape.circle,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFDDE6), // Slightly darker pink
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text('🥂', style: TextStyle(fontSize: 24)),
                   ),
@@ -122,6 +125,101 @@ class AboutHostAndFAQSection extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 20),
+        // Invite a match
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFFEEF3), Color(0xFFFFF0F5)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFE43A6A).withOpacity(0.15),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
+              ),
+              BoxShadow(
+                color: Colors.white.withOpacity(0.8),
+                blurRadius: 10,
+                offset: const Offset(-5, -5),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  Text('💗', style: TextStyle(fontSize: 16)),
+                  SizedBox(width: 8),
+                  Text(
+                    'Invite a match to meet here',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              RichText(
+                text: const TextSpan(
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
+                  children: [
+                    TextSpan(
+                      text:
+                          'Chatting with someone? Invite them to this event — a ',
+                    ),
+                    TextSpan(
+                      text: 'safe, verified public venue ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text:
+                          'with trained staff is the perfect place for a first meeting.',
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE43A6A),
+                    elevation: 8,
+                    shadowColor: const Color(0xFFE43A6A).withOpacity(0.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: const Text(
+                    '💌 Invite a Match',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900, // Extra bold
+                      fontSize: 15,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(height: 32),
 
         // Frequently Asked
@@ -137,16 +235,33 @@ class AboutHostAndFAQSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 110,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
             children: [
-              _buildFaqCard('Can I\ncome\nalone?'),
-              _buildFaqCard('What\'s\nthe refund\npolicy?'),
-              _buildFaqCard('Is alcohol\nincluded?'),
-              _buildFaqCard('Is there\na dress\ncode?'),
+              const FaqExpandableCard(
+                question: 'Can I come alone?',
+                answer:
+                    'Yes! Most of our guests come solo. Our icebreakers are designed to make it easy to meet everyone.',
+              ),
+              const SizedBox(height: 12),
+              const FaqExpandableCard(
+                question: 'What\'s the refund policy?',
+                answer:
+                    'Full refund on cancellations made 3+ days before the event.',
+              ),
+              const SizedBox(height: 12),
+              const FaqExpandableCard(
+                question: 'Is alcohol included?',
+                answer:
+                    'Yes, standard entry includes one welcome cocktail. Additional drinks can be purchased at the bar.',
+              ),
+              const SizedBox(height: 12),
+              const FaqExpandableCard(
+                question: 'Is there a dress code?',
+                answer:
+                    'Smart casual is recommended. Right of admission is reserved by the venue.',
+              ),
             ],
           ),
         ),
@@ -276,43 +391,6 @@ class AboutHostAndFAQSection extends StatelessWidget {
     );
   }
 
-  Widget _buildFaqCard(String question) {
-    return Container(
-      width: 120,
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Text(
-            question,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-              height: 1.3,
-            ),
-          ),
-          const Positioned(
-            bottom: 0,
-            right: 0,
-            child: Icon(Icons.add, color: Color(0xFFE43A6A), size: 16),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildTermText(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -332,6 +410,91 @@ class AboutHostAndFAQSection extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class FaqExpandableCard extends StatefulWidget {
+  final String question;
+  final String answer;
+
+  const FaqExpandableCard({
+    super.key,
+    required this.question,
+    required this.answer,
+  });
+
+  @override
+  State<FaqExpandableCard> createState() => _FaqExpandableCardState();
+}
+
+class _FaqExpandableCardState extends State<FaqExpandableCard> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _isExpanded
+              ? const Color(0xFFE43A6A).withOpacity(0.3)
+              : Colors.grey.shade200,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _isExpanded = !_isExpanded;
+          });
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.question,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                Icon(
+                  _isExpanded ? Icons.remove : Icons.add,
+                  color: const Color(0xFFE43A6A),
+                  size: 20,
+                ),
+              ],
+            ),
+            if (_isExpanded) ...[
+              const SizedBox(height: 12),
+              Text(
+                widget.answer,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade700,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
