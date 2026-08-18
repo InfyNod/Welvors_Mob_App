@@ -78,7 +78,7 @@ class TicketScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE85A7A).withOpacity(0.12), // Premium pinkish glow shadow
+                          color: const Color(0xFFE43A6A).withOpacity(0.12), // Premium pinkish glow shadow
                           blurRadius: 32,
                           offset: const Offset(0, 16),
                         ),
@@ -152,7 +152,7 @@ class TicketScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFFE85A7A),
+                                  color: Color(0xFFE43A6A),
                                 ),
                               ),
                               const SizedBox(height: 28),
@@ -165,12 +165,12 @@ class TicketScreen extends StatelessWidget {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFFE85A7A).withOpacity(0.15),
+                                    color: const Color(0xFFE43A6A).withOpacity(0.15),
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFFE85A7A).withOpacity(0.08),
+                                      color: const Color(0xFFE43A6A).withOpacity(0.08),
                                       blurRadius: 16,
                                       offset: const Offset(0, 8),
                                     ),
@@ -295,13 +295,13 @@ class TicketScreen extends StatelessWidget {
                                       color: const Color(0xFFFFF0F3),
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: const Color(0xFFE85A7A).withOpacity(0.1),
+                                        color: const Color(0xFFE43A6A).withOpacity(0.1),
                                         width: 1,
                                       ),
                                     ),
                                     child: const Icon(
                                       Icons.location_on,
-                                      color: Color(0xFFE85A7A),
+                                      color: Color(0xFFE43A6A),
                                       size: 20,
                                     ),
                                   ),
@@ -360,14 +360,14 @@ class TicketScreen extends StatelessWidget {
                                       children: [
                                         Icon(
                                           Icons.directions,
-                                          color: Color(0xFFE85A7A),
+                                          color: Color(0xFFE43A6A),
                                           size: 14,
                                         ),
                                         SizedBox(width: 4),
                                         Text(
                                           'Directions',
                                           style: TextStyle(
-                                            color: Color(0xFFE85A7A),
+                                            color: Color(0xFFE43A6A),
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -391,7 +391,7 @@ class TicketScreen extends StatelessWidget {
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: const Color(0xFFE85A7A).withOpacity(0.05),
+                                    color: const Color(0xFFE43A6A).withOpacity(0.05),
                                   ),
                                 ),
                                 child: Column(
@@ -399,14 +399,14 @@ class TicketScreen extends StatelessWidget {
                                   children: [
                                     const Row(
                                       children: [
-                                        Icon(Icons.info_outline, color: Color(0xFFE85A7A), size: 14),
+                                        Icon(Icons.info_outline, color: Color(0xFFE43A6A), size: 14),
                                         SizedBox(width: 6),
                                         Text(
                                           'IMPORTANT INFO',
                                           style: TextStyle(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w800,
-                                            color: Color(0xFFE85A7A),
+                                            color: Color(0xFFE43A6A),
                                             letterSpacing: 1.2,
                                           ),
                                         ),
@@ -462,7 +462,7 @@ class TicketScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFE85A7A).withOpacity(0.3),
+                        color: const Color(0xFFE43A6A).withOpacity(0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
                       ),

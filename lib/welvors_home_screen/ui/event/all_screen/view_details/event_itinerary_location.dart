@@ -70,7 +70,7 @@ class EventItineraryAndLocationSection extends StatelessWidget {
             children: [
               const Icon(
                 Icons.map_outlined,
-                color: Color(0xFFE85A7A), // Pink icon
+                color: Color(0xFFE43A6A), // Pink icon
                 size: 24,
               ),
               const SizedBox(width: 12),
@@ -123,7 +123,7 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                 width: 12,
                 height: 12,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFE85A7A), // Pink dot
+                  color: Color(0xFFE43A6A), // Pink dot
                   shape: BoxShape.circle,
                 ),
               ),
@@ -233,7 +233,7 @@ class EventItineraryAndLocationSection extends StatelessWidget {
             // Location Pin
             const Icon(
               Icons.location_on,
-              color: Color(0xFFE85A7A), // Pink pin
+              color: Color(0xFFE43A6A), // Pink pin
               size: 40,
             ),
           ],

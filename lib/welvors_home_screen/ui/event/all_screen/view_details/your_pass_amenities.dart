@@ -27,10 +27,10 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE85A7A), width: 1.5),
+            border: Border.all(color: const Color(0xFFE43A6A), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE85A7A).withOpacity(0.12),
+                color: const Color(0xFFE43A6A).withOpacity(0.12),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
@@ -68,12 +68,12 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE85A7A)),
+                      border: Border.all(color: const Color(0xFFE43A6A)),
                     ),
                     child: const Text(
                       '♀ Woman',
                       style: TextStyle(
-                        color: Color(0xFFE85A7A),
+                        color: Color(0xFFE43A6A),
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -146,7 +146,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
             border: Border.all(color: const Color(0xFFF8BBD0).withOpacity(0.6)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE85A7A).withOpacity(0.06),
+                color: const Color(0xFFE43A6A).withOpacity(0.06),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -200,7 +200,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     backgroundColor: Colors.white, // Added background color
-                    side: const BorderSide(color: Color(0xFFE85A7A)),
+                    side: const BorderSide(color: Color(0xFFE43A6A)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -209,7 +209,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                   child: const Text(
                     '💌 Invite a Match',
                     style: TextStyle(
-                      color: Color.fromARGB(255, 245, 81, 119),
+                      color: Color(0xFFE43A6A),
                       fontWeight: FontWeight.w800, // Extra bold
                       fontSize: 14,
                     ),
@@ -353,7 +353,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
             color: Color(0xFFFFF0F3),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, size: 14, color: const Color(0xFFE85A7A)),
+          child: Icon(icon, size: 14, color: const Color(0xFFE43A6A)),
         ),
         const SizedBox(width: 8),
         Text(

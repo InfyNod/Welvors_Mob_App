@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eventphoto_why_come.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass_amenities.dart';
-import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_itinerary.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_itinerary_location.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/abouthost_frequently.dart';
 
 class EventDetailsScreen extends StatelessWidget {
   final String title;
@@ -25,6 +26,49 @@ class EventDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 16,
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 15,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE43A6A),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  '🎟️ Book Now · ₹1,250 — 8 spots left',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -100,13 +144,13 @@ class EventDetailsScreen extends StatelessWidget {
                       color: Colors.black.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: const Color(0xFFE85A7A),
+                        color: const Color(0xFFE43A6A),
                         width: 1,
                       ),
                     ),
                     child: const Row(
                       children: [
-                        Icon(Icons.star, color: Color(0xFFE85A7A), size: 12),
+                        Icon(Icons.star, color: Color(0xFFE43A6A), size: 12),
                         SizedBox(width: 4),
                         Text(
                           'OFFICIAL BRAND EVENT',
@@ -151,7 +195,7 @@ class EventDetailsScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: const Color(
-                                    0xFFE85A7A,
+                                    0xFFE43A6A,
                                   ).withOpacity(0.3),
                                 ),
                               ),
@@ -188,7 +232,7 @@ class EventDetailsScreen extends StatelessWidget {
                                       ),
                                       const Icon(
                                         Icons.check,
-                                        color: Color(0xFFE85A7A),
+                                        color: Color(0xFFE43A6A),
                                         size: 12,
                                       ),
                                       const Text(
@@ -196,7 +240,7 @@ class EventDetailsScreen extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
-                                          color: Color(0xFFE85A7A),
+                                          color: Color(0xFFE43A6A),
                                         ),
                                       ),
                                     ],
@@ -333,7 +377,7 @@ class EventDetailsScreen extends StatelessWidget {
                                   gradient: LinearGradient(
                                     colors: [
                                       Color(0xFFFA9EB5),
-                                      Color(0xFFE85A7A),
+                                      Color(0xFFE43A6A),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.only(
@@ -498,7 +542,9 @@ class EventDetailsScreen extends StatelessWidget {
                   const YourPassAndAmenitiesSection(),
                   const SizedBox(height: 20),
                   const EventItineraryAndLocationSection(),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
+                  const AboutHostAndFAQSection(),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -543,7 +589,7 @@ class EventDetailsScreen extends StatelessWidget {
             color: Color(0xFFFFF0F3),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: const Color(0xFFE85A7A), size: 14),
+          child: Icon(icon, color: const Color(0xFFE43A6A), size: 14),
         ),
         const SizedBox(height: 4),
         Text(
@@ -625,7 +671,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
       decoration: BoxDecoration(
         color: const Color(0xFFFFF0F3),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE85A7A).withOpacity(0.1)),
+        border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -655,7 +701,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE85A7A),
+                    color: const Color(0xFFE43A6A),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
@@ -681,7 +727,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                     height: 8,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE85A7A).withOpacity(0.2),
+                      color: const Color(0xFFE43A6A).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -694,7 +740,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                         height: 8,
                         width: value,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE85A7A),
+                          color: const Color(0xFFE43A6A),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       );
