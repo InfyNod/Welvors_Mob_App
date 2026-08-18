@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eventphoto_why_come.dart';
-import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass_amenities.dart';
 
 class EventDetailsScreen extends StatelessWidget {
   final String title;
