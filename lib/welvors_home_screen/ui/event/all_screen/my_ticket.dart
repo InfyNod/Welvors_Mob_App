@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ticket_screen.dart';
+import 'view_details/event_details.dart';
 
 class MyTicketScreen extends StatefulWidget {
   const MyTicketScreen({super.key});
@@ -529,23 +530,40 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     Row(
                       children: [
                         // View Details Button
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: isCancelled ? Colors.grey.shade400 : const Color(0xFFE85A7A),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EventDetailsScreen(
+                                  title: title,
+                                  date: date,
+                                  location: location,
+                                  imageUrl: imageUrl,
+                                  status: status,
+                                  categories: null,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
                             ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'View Details',
-                            style: TextStyle(
-                              color: isCancelled ? Colors.grey.shade500 : const Color(0xFFE85A7A),
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: isCancelled ? Colors.grey.shade400 : const Color(0xFFE85A7A),
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'View Details',
+                              style: TextStyle(
+                                color: isCancelled ? Colors.grey.shade500 : const Color(0xFFE85A7A),
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
