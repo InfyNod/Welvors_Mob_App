@@ -71,13 +71,24 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: const Color(0xFFE43A6A)),
                     ),
-                    child: const Text(
-                      '♀ Woman',
-                      style: TextStyle(
-                        color: Color(0xFFE43A6A),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.female,
+                          color: Color(0xFFE43A6A),
+                          size: 16,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'Woman',
+                          style: TextStyle(
+                            color: Color(0xFFE43A6A),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -100,19 +111,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          '₹1,600',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey.shade400,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                      ),
+
                     ],
                   ),
                   const Padding(

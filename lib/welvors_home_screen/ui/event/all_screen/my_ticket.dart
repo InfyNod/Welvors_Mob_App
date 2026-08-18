@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ticket_screen.dart';
 import 'view_details/event_details.dart';
+import 'cancel/cancel_drawer.dart';
 
 class MyTicketScreen extends StatefulWidget {
   const MyTicketScreen({super.key});
@@ -28,7 +29,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   final List<Map<String, dynamic>> _allTickets = [
     {
       'title': 'Sunset Soirée for Singles',
-      'date': 'Sat, Oct 12 · 7:00 PM',
+      'date': 'Wed, Aug 19 · 7:00 PM', // Set to near date for testing non-eligible
       'location': 'The Rooftop Lounge, Bandra',
       'imageUrl':
           'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
@@ -37,7 +38,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
     },
     {
       'title': 'Speed Dating: Creative Professionals',
-      'date': 'Sat, Oct 28 · 6:30 PM',
+      'date': 'Sat, Oct 28 · 6:30 PM', // Set to future date for testing eligible
       'location': 'Artisan Loft, Lower Parel',
       'imageUrl':
           'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80',
@@ -354,6 +355,56 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
     );
   }
 
+  bool _isRefundEligible(String dateStr) {
+    try {
+      // Expected format: "Sat, Oct 12 · 7:00 PM"
+      final parts = dateStr.split('·');
+      if (parts.length != 2) return true;
+      final datePart = parts[0].trim();
+      final timePart = parts[1].trim();
+      
+      final months = {
+        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+      };
+      
+      final dateWords = datePart.split(RegExp(r'\s+'));
+      if (dateWords.length < 3) return true;
+      final monthStr = dateWords[1];
+      final dayStr = dateWords[2];
+      
+      final month = months[monthStr] ?? DateTime.now().month;
+      final day = int.tryParse(dayStr) ?? DateTime.now().day;
+      
+      int hour = 0;
+      int minute = 0;
+      if (timePart.contains(':')) {
+        final timeWords = timePart.split(' ');
+        final hm = timeWords[0].split(':');
+        hour = int.tryParse(hm[0]) ?? 0;
+        minute = int.tryParse(hm[1]) ?? 0;
+        if (timeWords.length > 1 && timeWords[1].toUpperCase() == 'PM' && hour < 12) {
+          hour += 12;
+        } else if (timeWords.length > 1 && timeWords[1].toUpperCase() == 'AM' && hour == 12) {
+          hour = 0;
+        }
+      }
+
+      final now = DateTime.now();
+      // Assume event is in the current year, or next year if month already passed
+      int year = now.year;
+      if (month < now.month) {
+        year++; 
+      }
+      final eventDate = DateTime(year, month, day, hour, minute);
+      
+      final difference = eventDate.difference(now);
+      return difference.inHours >= 72;
+    } catch (e) {
+      return true; // Fallback
+    }
+  }
+
   Widget _buildTicketCard({
     required String title,
     required String date,
@@ -380,265 +431,288 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
           border: Border.all(color: Colors.grey.shade100),
         ),
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image with badge
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                child: Image.network(
-                  imageUrl,
-                  height: 140,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              if (status == 'Confirmed')
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 44, 175, 107),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.check, color: Colors.white, size: 14),
-                        SizedBox(width: 4),
-                        Text(
-                          'CONFIRMED',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              else if (status == 'Cancelled')
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade600,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.close, color: Colors.white, size: 14),
-                        SizedBox(width: 4),
-                        Text(
-                          'CANCELLED',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image with badge
+            Stack(
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  child: Image.network(
+                    imageUrl,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(height: 12),
-
-                // Date
-                Row(
-                  children: [
-                    const Text('📅', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 8),
-                    Text(
-                      date,
-                      style: TextStyle(
+                if (status == 'Confirmed')
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 44, 175, 107),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check, color: Colors.white, size: 14),
+                          SizedBox(width: 4),
+                          Text(
+                            'CONFIRMED',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else if (status == 'Cancelled')
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
                         color: Colors.grey.shade600,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.close, color: Colors.white, size: 14),
+                          SizedBox(width: 4),
+                          Text(
+                            'CANCELLED',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 6),
+                  ),
+              ],
+            ),
 
-                // Location
-                Row(
-                  children: [
-                    const Text('📍', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 8),
-                    Text(
-                      location,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 12),
 
-                const SizedBox(height: 16),
-                Divider(height: 1, color: Colors.grey.shade200),
-                const SizedBox(height: 16),
-
-                // Actions
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                  // Date
+                  Row(
+                    children: [
+                      const Text('📅', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Text(
+                        date,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+
+                  // Location
+                  Row(
+                    children: [
+                      const Text('📍', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Text(
+                        location,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+                  if (!isCancelled) ...[
+                    Divider(height: 1, color: Colors.grey.shade200),
+                    const SizedBox(height: 16),
+
+                    // Actions
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // View Details Button
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EventDetailsScreen(
-                                  title: title,
-                                  date: date,
-                                  location: location,
-                                  imageUrl: imageUrl,
-                                  status: status,
-                                  price: '₹1,250',
-                                  categories: null,
-                                ),
-                              ),
-                            );
+                            showCancelDrawer(context, isRefundEligible: _isRefundEligible(date));
                           },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: isCancelled ? Colors.grey.shade400 : const Color(0xFFE85A7A),
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'View Details',
-                              style: TextStyle(
-                                color: isCancelled ? Colors.grey.shade500 : const Color(0xFFE85A7A),
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-
-                        // Ticket Button
-                        GestureDetector(
-                          onTap: () {
-                            if (!isCancelled) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TicketScreen(
-                                    title: title,
-                                    date: date,
-                                    location: location,
-                                    status: status,
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: isCancelled
-                                  ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
-                                  : const LinearGradient(
-                                      colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
+                        Row(
+                          children: [
+                            // View Details Button
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EventDetailsScreen(
+                                      title: title,
+                                      date: date,
+                                      location: location,
+                                      imageUrl: imageUrl,
+                                      status: status,
+                                      price: '₹1,250',
+                                      categories: null,
                                     ),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (isCancelled ? Colors.grey : const Color(0xFFE85A7A)).withOpacity(0.3),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
                                 ),
-                              ],
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(
-                                  Icons.confirmation_num,
-                                  color: Colors.white,
-                                  size: 16,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: isCancelled
+                                        ? Colors.grey.shade400
+                                        : const Color(0xFFE85A7A),
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Ticket',
+                                child: Text(
+                                  'View Details',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: isCancelled
+                                        ? Colors.grey.shade500
+                                        : const Color(0xFFE85A7A),
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+
+                            // Ticket Button
+                            GestureDetector(
+                              onTap: () {
+                                if (!isCancelled) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TicketScreen(
+                                        title: title,
+                                        date: date,
+                                        location: location,
+                                        status: status,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: isCancelled
+                                      ? LinearGradient(
+                                          colors: [
+                                            Colors.grey.shade400,
+                                            Colors.grey.shade500,
+                                          ],
+                                        )
+                                      : const LinearGradient(
+                                          colors: [
+                                            Color(0xFFFA6A85),
+                                            Color(0xFFDE2957),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          (isCancelled
+                                                  ? Colors.grey
+                                                  : const Color(0xFFE85A7A))
+                                              .withOpacity(0.3),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.confirmation_num,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'Ticket',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

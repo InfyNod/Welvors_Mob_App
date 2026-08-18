@@ -21,7 +21,8 @@ import 'drawer_files/dating/my_boosts/boost_wallet_all_screen/boost_wallet_top_n
 
 class TopAndBottomNavScreen extends StatefulWidget {
   final bool isPreview;
-  const TopAndBottomNavScreen({super.key, this.isPreview = false});
+  final int initialIndex;
+  const TopAndBottomNavScreen({super.key, this.isPreview = false, this.initialIndex = 0});
 
   @override
   State<TopAndBottomNavScreen> createState() => _TopAndBottomNavScreenState();
@@ -31,7 +32,7 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.isPreview) {
-      return _TopAndBottomNavView(isPreview: widget.isPreview);
+      return _TopAndBottomNavView(isPreview: widget.isPreview, initialIndex: widget.initialIndex);
     }
     return MultiBlocProvider(
       providers: [
@@ -42,23 +43,30 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
           create: (context) => FilterBloc(),
         ),
       ],
-      child: _TopAndBottomNavView(isPreview: widget.isPreview),
+      child: _TopAndBottomNavView(isPreview: widget.isPreview, initialIndex: widget.initialIndex),
     );
   }
 }
 
 class _TopAndBottomNavView extends StatefulWidget {
   final bool isPreview;
-  const _TopAndBottomNavView({this.isPreview = false});
+  final int initialIndex;
+  const _TopAndBottomNavView({this.isPreview = false, this.initialIndex = 0});
 
   @override
   State<_TopAndBottomNavView> createState() => _TopAndBottomNavViewState();
 }
 
 class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
   bool _isRoseVisible = true;
   bool _isDrawerOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   final ValueNotifier<Offset?> _rosePositionNotifier = ValueNotifier(null);
   final ValueNotifier<bool> _isDraggingRoseNotifier = ValueNotifier(false);
