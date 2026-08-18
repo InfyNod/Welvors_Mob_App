@@ -57,15 +57,15 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                       SizedBox(height: 4),
                       Text(
                         'Welcome drink + all access',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
                       ),
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: const Color(0xFFE85A7A)),
@@ -130,7 +130,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 20),
 
         // Invite a match
         Container(
@@ -138,9 +138,9 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFFFF0F3), Colors.white],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              colors: [Color(0xFFFFEEF3), Color(0xFFFFFBFC)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFF8BBD0).withOpacity(0.6)),
@@ -178,9 +178,18 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                     height: 1.4,
                   ),
                   children: [
-                    TextSpan(text: 'Chatting with someone? Invite them to this event — a '),
-                    TextSpan(text: 'safe, verified public venue ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: 'with trained staff is the perfect place for a first meeting.'),
+                    TextSpan(
+                      text:
+                          'Chatting with someone? Invite them to this event — a ',
+                    ),
+                    TextSpan(
+                      text: 'safe, verified public venue ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text:
+                          'with trained staff is the perfect place for a first meeting.',
+                    ),
                   ],
                 ),
               ),
@@ -190,17 +199,18 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white, // Added background color
                     side: const BorderSide(color: Color(0xFFE85A7A)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   child: const Text(
                     '💌 Invite a Match',
                     style: TextStyle(
-                      color: Color(0xFFE85A7A),
-                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 245, 81, 119),
+                      fontWeight: FontWeight.w800, // Extra bold
                       fontSize: 14,
                     ),
                   ),
@@ -251,9 +261,15 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSafetyItem(Icons.shield_outlined, 'Verified Staff'),
+                        _buildSafetyItem(
+                          Icons.shield_outlined,
+                          'Verified Staff',
+                        ),
                         const SizedBox(height: 12),
-                        _buildSafetyItem(Icons.verified_user_outlined, 'ID Verification'),
+                        _buildSafetyItem(
+                          Icons.verified_user_outlined,
+                          'ID Verification',
+                        ),
                       ],
                     ),
                   ),
@@ -263,7 +279,10 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                       children: [
                         _buildSafetyItem(Icons.lock_outline, 'Secure Entry'),
                         const SizedBox(height: 12),
-                        _buildSafetyItem(Icons.visibility_outlined, 'Private Venue'),
+                        _buildSafetyItem(
+                          Icons.visibility_outlined,
+                          'Private Venue',
+                        ),
                       ],
                     ),
                   ),
@@ -301,7 +320,9 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Expanded(child: _buildAmenityCard('🍽️', 'Gourmet\nappetizers')),
+                  Expanded(
+                    child: _buildAmenityCard('🍽️', 'Gourmet\nappetizers'),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(child: _buildAmenityCard('📸', 'Photo corner')),
                 ],
@@ -311,7 +332,9 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                 children: [
                   Expanded(child: _buildAmenityCard('🅿️', 'Valet parking')),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildAmenityCard('👩', 'Female-led host\nteam')),
+                  Expanded(
+                    child: _buildAmenityCard('👩', 'Female-led host\nteam'),
+                  ),
                 ],
               ),
             ],

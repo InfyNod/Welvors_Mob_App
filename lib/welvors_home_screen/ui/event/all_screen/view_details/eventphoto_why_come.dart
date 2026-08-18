@@ -119,7 +119,6 @@ class EventMoreDetailsSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 40),
       ],
     );
   }
