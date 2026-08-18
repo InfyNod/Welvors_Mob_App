@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eventphoto_why_come.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass_amenities.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_itinerary.dart';
 
 class EventDetailsScreen extends StatelessWidget {
   final String title;
@@ -495,6 +496,8 @@ class EventDetailsScreen extends StatelessWidget {
                   const EventMoreDetailsSection(),
                   const SizedBox(height: 20),
                   const YourPassAndAmenitiesSection(),
+                  const SizedBox(height: 20),
+                  const EventItineraryAndLocationSection(),
                   const SizedBox(height: 40),
                 ],
               ),

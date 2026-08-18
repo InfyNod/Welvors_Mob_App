@@ -340,7 +340,6 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 40),
       ],
     );
   }
