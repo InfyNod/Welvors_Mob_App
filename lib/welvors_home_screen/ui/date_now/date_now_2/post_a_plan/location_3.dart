@@ -29,18 +29,33 @@ class _Location3ViewState extends State<Location3View> {
   String? _selectedWhoPays;
   String? _selectedHowMany;
   String? _selectedWhoCanJoin;
-  String _selectedVisibility = 'Premium 👑';
+  String _selectedVisibility = 'Premium';
   bool _isLocationSelected = false;
   String _selectedPlaceSubtext = '';
 
+  final FocusNode _locationFocusNode = FocusNode();
   List<dynamic> _whoPaysOptions = [];
   List<dynamic> _whoCanJoinOptions = [];
+  List<dynamic> _visibilityOptions = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _fetchOptions();
+
+    _locationFocusNode.addListener(() {
+      if (!_locationFocusNode.hasFocus &&
+          _searchController.text.trim().isNotEmpty &&
+          !_isLocationSelected) {
+        setState(() {
+          _isLocationSelected = true;
+          _selectedPlaceSubtext = 'Custom location';
+          _searchController.text = _searchController.text.trim();
+        });
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = context.read<PostPlanBloc>().state;
       if (state.locationName.isNotEmpty) {
@@ -62,10 +77,12 @@ class _Location3ViewState extends State<Location3View> {
   Future<void> _fetchOptions() async {
     final pays = await DateNowApiService.getOptions('WHO_PAYS');
     final gender = await DateNowApiService.getOptions('JOIN_REQUEST_GENDER');
+    final visibility = await DateNowApiService.getOptions('PLAN_VISIBILITY');
     if (mounted) {
       setState(() {
         _whoPaysOptions = pays ?? [];
         _whoCanJoinOptions = gender ?? [];
+        _visibilityOptions = visibility ?? [];
         _isLoading = false;
       });
     }
@@ -73,6 +90,7 @@ class _Location3ViewState extends State<Location3View> {
 
   @override
   void dispose() {
+    _locationFocusNode.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -205,7 +223,18 @@ class _Location3ViewState extends State<Location3View> {
                   children: [
                     TextField(
                       controller: _searchController,
+                      focusNode: _locationFocusNode,
                       onChanged: (val) => setState(() {}),
+                      onSubmitted: (val) {
+                        if (val.trim().isNotEmpty) {
+                          setState(() {
+                            _searchController.text = val.trim();
+                            _selectedPlaceSubtext = 'Custom location';
+                            _isLocationSelected = true;
+                          });
+                        }
+                      },
+                      textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
                         hintText: 'Search cafe, park, restaurant...',
                         hintStyle: TextStyle(
@@ -237,6 +266,7 @@ class _Location3ViewState extends State<Location3View> {
                         ),
                       ),
                     ),
+                    /*
                     if (_searchController.text.isNotEmpty)
                       Container(
                         margin: const EdgeInsets.only(top: 8),
@@ -286,6 +316,7 @@ class _Location3ViewState extends State<Location3View> {
                           ],
                         ),
                       ),
+                    */
                   ],
                 ),
 
@@ -627,26 +658,24 @@ class _Location3ViewState extends State<Location3View> {
                 style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
               const SizedBox(height: 16),
-              _buildVisibilityOption(
-                title: 'Premium 👑',
-                subtitle: 'Only Premium members see this',
-                icon: '💎',
-                isLocked: false,
-              ),
-              const SizedBox(height: 12),
-              _buildVisibilityOption(
-                title: 'VIP & above',
-                subtitle: 'VIP and VIP Elite users only',
-                icon: '⭐',
-                isLocked: true,
-              ),
-              const SizedBox(height: 12),
-              _buildVisibilityOption(
-                title: 'VIP Elite',
-                subtitle: 'Only VIP Elite members see this',
-                icon: '👑',
-                isLocked: true,
-              ),
+              ..._visibilityOptions.map((optionObj) {
+                final label = optionObj['label'] as String;
+                final value = optionObj['value'] as String;
+                final parts = label.split(' ');
+                final icon = parts.isNotEmpty ? parts.first : '';
+                final title = parts.length > 1 ? parts.skip(1).join(' ') : label;
+                final isLocked = value != 'premium';
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: _buildVisibilityOption(
+                    title: title,
+                    subtitle: 'Visible to $title members',
+                    icon: icon,
+                    isLocked: isLocked,
+                  ),
+                );
+              }).toList(),
               const SizedBox(height: 0),
             ],
           ),
