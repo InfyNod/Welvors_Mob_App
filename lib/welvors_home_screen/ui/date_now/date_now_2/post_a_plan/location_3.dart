@@ -4,6 +4,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'map_selection_dialog.dart';
 import 'bloc/post_plan_bloc.dart';
 import 'bloc/post_plan_event.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 
 class Location3View extends StatefulWidget {
   final VoidCallback onContinue;
@@ -32,9 +33,14 @@ class _Location3ViewState extends State<Location3View> {
   bool _isLocationSelected = false;
   String _selectedPlaceSubtext = '';
 
+  List<dynamic> _whoPaysOptions = [];
+  List<dynamic> _whoCanJoinOptions = [];
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = context.read<PostPlanBloc>().state;
       if (state.locationName.isNotEmpty) {
@@ -51,6 +57,18 @@ class _Location3ViewState extends State<Location3View> {
         });
       }
     });
+  }
+
+  Future<void> _fetchOptions() async {
+    final pays = await DateNowApiService.getOptions('WHO_PAYS');
+    final gender = await DateNowApiService.getOptions('JOIN_REQUEST_GENDER');
+    if (mounted) {
+      setState(() {
+        _whoPaysOptions = pays ?? [];
+        _whoCanJoinOptions = gender ?? [];
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -72,10 +90,12 @@ class _Location3ViewState extends State<Location3View> {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            children: [
-              const Text(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+              : ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  children: [
+                    const Text(
                 "Where & when",
                 style: TextStyle(
                   fontSize: 24,
@@ -520,23 +540,20 @@ class _Location3ViewState extends State<Location3View> {
               Wrap(
                 spacing: 8,
                 runSpacing: 10,
-                children:
-                    [
-                          '🙋 I’ll pay',
-                          '🤝 Split (TTMM)',
-                          '💁 You pay',
-                          '🤷 Decide there',
-                        ]
-                        .map(
-                          (option) => _buildGenericChip(
-                            option,
-                            _selectedWhoPays,
-                            (val) {
-                              setState(() => _selectedWhoPays = val);
-                            },
-                          ),
-                        )
-                        .toList(),
+                children: _whoPaysOptions
+                    .map(
+                      (optionObj) {
+                        final option = optionObj['label'] as String;
+                        return _buildGenericChip(
+                          option,
+                          _selectedWhoPays,
+                          (val) {
+                            setState(() => _selectedWhoPays = val);
+                          },
+                        );
+                      },
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 24),
 
@@ -577,12 +594,14 @@ class _Location3ViewState extends State<Location3View> {
               Wrap(
                 spacing: 8,
                 runSpacing: 10,
-                children: ['🌈 Anyone.', '👩 Women', '👨 Men', '⚧ Other']
+                children: _whoCanJoinOptions
                     .map(
-                      (option) =>
-                          _buildGenericChip(option, _selectedWhoCanJoin, (val) {
-                            setState(() => _selectedWhoCanJoin = val);
-                          }),
+                      (optionObj) {
+                        final option = optionObj['label'] as String;
+                        return _buildGenericChip(option, _selectedWhoCanJoin, (val) {
+                          setState(() => _selectedWhoCanJoin = val);
+                        });
+                      },
                     )
                     .toList(),
               ),
