@@ -674,7 +674,7 @@ class _Location3ViewState extends State<Location3View> {
                     decoration: BoxDecoration(
                       color: isContinueActive
                           ? const Color(0xFFE43A6A)
-                          : const Color(0xFFF2EFEA),
+                          : const Color.fromARGB(255, 224, 222, 220),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -739,8 +739,7 @@ class _Location3ViewState extends State<Location3View> {
           _selectedWhen = label;
         });
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
@@ -774,8 +773,7 @@ class _Location3ViewState extends State<Location3View> {
       onTap: () {
         onSelect(label);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
@@ -814,8 +812,7 @@ class _Location3ViewState extends State<Location3View> {
                 _selectedVisibility = title;
               });
             },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: isLocked ? const Color(0xFFF9F7F4) : Colors.white,

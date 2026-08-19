@@ -18,7 +18,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString(
     'auth_token',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY1MzMzODAsImV4cCI6MTc4OTEyNTM4MH0.MjmYJDOemJfsj9wNR_DWeQXeqFxQ1rkSSJVze8aTMf0',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs',
   );
 
   runApp(const WelvorsApp());

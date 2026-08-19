@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/post_plan_bloc.dart';
 import 'bloc/post_plan_event.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 
 class Details2View extends StatefulWidget {
   final VoidCallback onContinue;
@@ -18,27 +19,17 @@ class _Details2ViewState extends State<Details2View> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
-  final List<String> _quickTitles = [
-    'Coffee & deep talks',
-    'Sunset walk & chai',
-    'Dinner with good company',
-    'Skip small talk, grab a drink',
-  ];
+  List<dynamic> _quickTitles = [];
 
   String? _selectedVibe;
-  final List<String> _vibes = [
-    'Deep talker',
-    'Foodie',
-    'Outdoorsy',
-    'Nightlife',
-    'Bookworm',
-    'Chill',
-    'Adventurous',
-  ];
+  List<dynamic> _vibes = [];
+
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = context.read<PostPlanBloc>().state;
       if (state.title.isNotEmpty) {
@@ -51,6 +42,18 @@ class _Details2ViewState extends State<Details2View> {
         });
       }
     });
+  }
+
+  Future<void> _fetchOptions() async {
+    final titles = await DateNowApiService.getOptions('QUICK_TITLE');
+    final vibes = await DateNowApiService.getOptions('VIBE');
+    if (mounted) {
+      setState(() {
+        _quickTitles = titles ?? [];
+        _vibes = vibes ?? [];
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -67,226 +70,233 @@ class _Details2ViewState extends State<Details2View> {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            children: [
-              const Text(
-                "Make it inviting",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 0),
-              const Text(
-                "A clear title and your vibe help the right people ask you out.",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 15),
-
-              // Plan Title
-              const Text(
-                'Plan title',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _titleController,
-                maxLength: 42,
-                onChanged: (val) => setState(() {}),
-                decoration: InputDecoration(
-                  hintText: 'e.g. Iced coffee & deep talks',
-                  hintStyle: TextStyle(color: Colors.grey.shade400),
-                  counterText: '${_titleController.text.length}/42',
-                  counterStyle: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 12,
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                )
+              : ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFE43A6A),
-                      width: 1.5,
+                  children: [
+                    const Text(
+                      "Make it inviting",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
+                    const SizedBox(height: 0),
+                    const Text(
+                      "A clear title and your vibe help the right people ask you out.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
 
-              // Quick Titles
-              const Text(
-                'Or pick a quick title',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 10,
-                children: _quickTitles.map((title) {
-                  bool isSelected = _titleController.text == title;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _titleController.text = title;
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
+                    // Plan Title
+                    const Text(
+                      'Plan title',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFFE43A6A).withOpacity(0.08)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: isSelected
-                              ? const Color(0xFFE43A6A)
-                              : Colors.grey.shade300,
-                          width: isSelected ? 1.2 : 1.0,
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _titleController,
+                      maxLength: 42,
+                      onChanged: (val) => setState(() {}),
+                      decoration: InputDecoration(
+                        hintText: 'e.g. Iced coffee & deep talks',
+                        hintStyle: TextStyle(color: Colors.grey.shade400),
+                        counterText: '${_titleController.text.length}/42',
+                        counterStyle: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
                         ),
-                      ),
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                          color: isSelected
-                              ? const Color(0xFFE43A6A)
-                              : Colors.black87,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE43A6A),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
-              // Short Note
-              const Text(
-                'A short note (optional)',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _noteController,
-                decoration: InputDecoration(
-                  hintText: 'Anyone up for a calm evening? 🌅',
-                  hintStyle: TextStyle(color: Colors.grey.shade400),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFE43A6A),
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Your Vibe
-              const Text(
-                'Your vibe',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 10,
-                children: _vibes.map((vibe) {
-                  bool isSelected = _selectedVibe == vibe;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedVibe = vibe;
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFFE43A6A).withOpacity(0.08)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: isSelected
-                              ? const Color(0xFFE43A6A)
-                              : Colors.grey.shade300,
-                          width: isSelected ? 1.2 : 1.0,
-                        ),
-                      ),
-                      child: Text(
-                        vibe,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                          color: isSelected
-                              ? const Color(0xFFE43A6A)
-                              : Colors.black87,
-                        ),
+                    // Quick Titles
+                    const Text(
+                      'Or pick a quick title',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 0),
-            ],
-          ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: _quickTitles.map((titleObj) {
+                        final title = titleObj['label'] as String;
+                        bool isSelected = _titleController.text == title;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _titleController.text = title;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFFE43A6A).withOpacity(0.08)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: isSelected
+                                    ? const Color(0xFFE43A6A)
+                                    : Colors.grey.shade300,
+                                width: isSelected ? 1.2 : 1.0,
+                              ),
+                            ),
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? const Color(0xFFE43A6A)
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Short Note
+                    const Text(
+                      'A short note (optional)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _noteController,
+                      decoration: InputDecoration(
+                        hintText: 'Anyone up for a calm evening? 🌅',
+                        hintStyle: TextStyle(color: Colors.grey.shade400),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE43A6A),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Your Vibe
+                    const Text(
+                      'Your vibe',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: _vibes.map((vibeObj) {
+                        final vibe = vibeObj['label'] as String;
+                        bool isSelected = _selectedVibe == vibe;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedVibe = vibe;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFFE43A6A).withOpacity(0.08)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: isSelected
+                                    ? const Color(0xFFE43A6A)
+                                    : Colors.grey.shade300,
+                                width: isSelected ? 1.2 : 1.0,
+                              ),
+                            ),
+                            child: Text(
+                              vibe,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? const Color(0xFFE43A6A)
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 0),
+                  ],
+                ),
         ),
         // Bottom Buttons for Step 2
         Container(
@@ -304,12 +314,14 @@ class _Details2ViewState extends State<Details2View> {
                   onTap: isContinueActive
                       ? () {
                           context.read<PostPlanBloc>().add(
-                                UpdateStep2Event(
-                                  title: _titleController.text.trim(),
-                                  description: _noteController.text.trim(),
-                                  tags: _selectedVibe != null ? [_selectedVibe!] : [],
-                                ),
-                              );
+                            UpdateStep2Event(
+                              title: _titleController.text.trim(),
+                              description: _noteController.text.trim(),
+                              tags: _selectedVibe != null
+                                  ? [_selectedVibe!]
+                                  : [],
+                            ),
+                          );
                           widget.onContinue();
                         }
                       : null,
@@ -319,7 +331,7 @@ class _Details2ViewState extends State<Details2View> {
                     decoration: BoxDecoration(
                       color: isContinueActive
                           ? const Color(0xFFE43A6A)
-                          : const Color(0xFFF2EFEA),
+                          : const Color.fromARGB(255, 224, 222, 220),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(

@@ -7,6 +7,7 @@ import 'success_5.dart';
 import 'bloc/post_plan_bloc.dart';
 import 'bloc/post_plan_event.dart';
 import 'bloc/post_plan_state.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 
 class Activity1Screen extends StatelessWidget {
   final PostPlanState? initialState;
@@ -44,72 +45,13 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
   // Step 1 Data (local state until continue is pressed)
   String? _selectedActivity;
   String? _selectedActivityImage;
-  final List<Map<String, String>> _activities = [
-    {
-      'name': 'Coffee',
-      'image':
-          'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Dinner',
-      'image':
-          'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Drinks',
-      'image':
-          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Walk',
-      'image':
-          'https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Brunch',
-      'image':
-          'https://images.unsplash.com/photo-1525648199074-cee30ba79a4a?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Movie',
-      'image':
-          'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Dessert',
-      'image':
-          'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Gallery',
-      'image':
-          'https://media.admiddleeast.com/photos/6537b9c8a4590cb2ed15ae22/16:9/w_2560%2Cc_limit/derick-mckinney-oARTWhz1ACc-unsplash.jpg',
-    },
-    {
-      'name': 'Live music',
-      'image':
-          'https://media.istockphoto.com/id/502088147/photo/nothing-beats-live-music.jpg?s=612x612&w=0&k=20&c=N0RrfR0z1P1Q0DUCJIcEBFV8yxT6xF-wQilMv00O7kA=',
-    },
-    {
-      'name': 'Beach',
-      'image':
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Shopping',
-      'image':
-          'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      'name': 'Games',
-      'image':
-          'https://www.brides.com/thmb/Y7jcQlE8uWdS4KqPSMux7MAdJJk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/couple-games-board-game-recirc-getty-images-776376da45cb4679b0c6deda879dc8ac.jpg',
-    },
-  ];
+  List<dynamic> _activities = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _fetchActivities();
     // Pre-fill if editing
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = context.read<PostPlanBloc>().state;
@@ -120,6 +62,16 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
         });
       }
     });
+  }
+
+  Future<void> _fetchActivities() async {
+    final activities = await DateNowApiService.getOptions('ACTIVITY');
+    if (mounted) {
+      setState(() {
+        _activities = activities ?? [];
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -490,27 +442,32 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
               const SizedBox(height: 12),
 
               // Grid
-              GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.85,
-                ),
-                itemCount: _activities.length,
-                itemBuilder: (context, index) {
-                  final act = _activities[index];
-                  final isSelected = _selectedActivity == act['name'];
-                  return GestureDetector(
-                    onTap: () {
-                    setState(() {
-                      _selectedActivity = _activities[index]['name'];
-                      _selectedActivityImage = _activities[index]['image'];
-                    });
-                  },
+              _isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))),
+                    )
+                  : GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 0.85,
+                      ),
+                      itemCount: _activities.length,
+                      itemBuilder: (context, index) {
+                        final act = _activities[index];
+                        final isSelected = _selectedActivity == act['label'];
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedActivity = act['label'];
+                              _selectedActivityImage = act['icon'];
+                            });
+                          },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -545,8 +502,9 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                                 fit: StackFit.expand,
                                 children: [
                                   Image.network(
-                                    act['image']!,
+                                    act['icon'],
                                     fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, color: Colors.grey),
                                   ),
                                   if (isSelected)
                                     Container(
@@ -561,7 +519,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             child: Text(
-                              act['name']!,
+                              act['label'],
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 12,
