@@ -59,6 +59,27 @@ class DateNowApiService {
     }
   }
 
+  // POST Request to publish the plan (Step 4)
+  static Future<Map<String, dynamic>?> publishPlan(String planId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId/publish');
+      final response = await http.post(
+        url,
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to publish plan: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error publishing plan: $e');
+      return null;
+    }
+  }
+
   // Generic GET Options (for ACTIVITY, QUICK_TITLE, VIBE)
   static Future<List<dynamic>?> getOptions(String type) async {
     try {

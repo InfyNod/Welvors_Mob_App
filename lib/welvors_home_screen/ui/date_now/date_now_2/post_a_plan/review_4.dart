@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/post_plan_bloc.dart';
 import 'bloc/post_plan_event.dart';
 import 'bloc/post_plan_state.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 
 class Review4View extends StatefulWidget {
   final VoidCallback onBack;
@@ -14,6 +15,43 @@ class Review4View extends StatefulWidget {
 }
 
 class _Review4ViewState extends State<Review4View> {
+  bool _isPublishing = false;
+
+  Future<void> _submitPublish(BuildContext context, PostPlanState state) async {
+    final planId = state.planId;
+    if (planId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan ID is missing. Please restart.')));
+      return;
+    }
+
+    setState(() {
+      _isPublishing = true;
+    });
+
+    try {
+      final response = await DateNowApiService.publishPlan(planId);
+      if (response != null) {
+        if (mounted) {
+          context.read<PostPlanBloc>().add(JumpToStepEvent(5));
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to publish plan. Please try again.')));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('An error occurred. Please try again.')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPublishing = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PostPlanBloc, PostPlanState>(
@@ -328,39 +366,55 @@ class _Review4ViewState extends State<Review4View> {
                 child: Column(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        // Action to go live
-                        context.read<PostPlanBloc>().add(JumpToStepEvent(5));
-                      },
+                      onTap: _isPublishing
+                          ? null
+                          : () {
+                              _submitPublish(context, state);
+                            },
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE43A6A),
+                          color: _isPublishing 
+                              ? const Color.fromARGB(255, 224, 222, 220)
+                              : const Color(0xFFE43A6A),
                           borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFE43A6A).withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                          boxShadow: _isPublishing 
+                              ? [] 
+                              : [
+                                  BoxShadow(
+                                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                         ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('🔴', style: TextStyle(fontSize: 12)),
-                            SizedBox(width: 8),
-                            Text(
-                              'Go live · uses 1 plan',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                        child: _isPublishing
+                            ? const Center(
+                                child: SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                ),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('🔴', style: TextStyle(fontSize: 12)),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Go live · uses 1 plan',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                     const SizedBox(height: 12),

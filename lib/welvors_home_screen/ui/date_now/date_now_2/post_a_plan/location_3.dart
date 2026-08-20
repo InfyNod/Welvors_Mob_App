@@ -600,126 +600,33 @@ class _Location3ViewState extends State<Location3View> {
                     const SizedBox(height: 12),
                     // Time placeholder
                     GestureDetector(
-                      onTap: () {
-                        DateTime initialDateTime = DateTime.now();
-                        if (_selectedTime != null) {
-                          initialDateTime = DateTime(
-                            initialDateTime.year,
-                            initialDateTime.month,
-                            initialDateTime.day,
-                            _selectedTime!.hour,
-                            _selectedTime!.minute,
-                          );
-                        }
-                        TimeOfDay tempTime =
-                            _selectedTime ??
-                            TimeOfDay.fromDateTime(initialDateTime);
-
-                        showModalBottomSheet(
+                      onTap: () async {
+                        final TimeOfDay? picked = await showTimePicker(
                           context: context,
-                          backgroundColor: Colors.transparent,
-                          builder: (BuildContext context) {
-                            return Container(
-                              height: 320,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(24),
-                                  topRight: Radius.circular(24),
+                          initialTime: _selectedTime ?? TimeOfDay.now(),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Color(0xFFE43A6A), // Pink header and selected dial color
+                                  onPrimary: Colors.white, // Text color on primary
+                                  onSurface: Colors.black87, // Text color on dial
+                                ),
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFFE43A6A), // Pink OK/Cancel buttons
+                                  ),
                                 ),
                               ),
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 12),
-                                  Container(
-                                    width: 40,
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 8,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text(
-                                          'Select Time',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w900,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                        TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: const Color(
-                                              0xFFE43A6A,
-                                            ).withOpacity(0.1),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _selectedTime = tempTime;
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                            ),
-                                            child: Text(
-                                              'Done',
-                                              style: TextStyle(
-                                                color: Color(0xFFE43A6A),
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Divider(
-                                    height: 1,
-                                    color: Color(0xFFEEEEEE),
-                                  ),
-                                  Expanded(
-                                    child: CupertinoTheme(
-                                      data: const CupertinoThemeData(
-                                        primaryColor: Color(0xFFE43A6A),
-                                      ),
-                                      child: CupertinoDatePicker(
-                                        mode: CupertinoDatePickerMode.time,
-                                        initialDateTime: initialDateTime,
-                                        onDateTimeChanged:
-                                            (DateTime newDateTime) {
-                                              tempTime = TimeOfDay(
-                                                hour: newDateTime.hour,
-                                                minute: newDateTime.minute,
-                                              );
-                                            },
-                                      ),
-                                    ),
-                                  ),
-                                  const SafeArea(
-                                    top: false,
-                                    child: SizedBox(height: 8),
-                                  ),
-                                ],
-                              ),
+                              child: child!,
                             );
                           },
                         );
+                        if (picked != null) {
+                          setState(() {
+                            _selectedTime = picked;
+                          });
+                        }
                       },
                       child: Container(
                         width: double.infinity,
