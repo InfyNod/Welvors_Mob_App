@@ -39,6 +39,126 @@ class _Location3ViewState extends State<Location3View> {
   List<dynamic> _whoCanJoinOptions = [];
   List<dynamic> _visibilityOptions = [];
   bool _isLoading = true;
+  bool _isPatching = false;
+
+  Future<void> _submitStep3() async {
+    final state = context.read<PostPlanBloc>().state;
+    final planId = state.planId;
+    if (planId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan ID is missing. Please restart.')));
+      return;
+    }
+
+    setState(() { _isPatching = true; });
+
+    try {
+      // Find IDs
+      String? whoPaysId;
+      for (var o in _whoPaysOptions) {
+        if (o['label'] == _selectedWhoPays) {
+          whoPaysId = o['id']; break;
+        }
+      }
+      String? joinRequestGenderId;
+      for (var o in _whoCanJoinOptions) {
+        if (o['label'] == _selectedWhoCanJoin) {
+          joinRequestGenderId = o['id']; break;
+        }
+      }
+      String? visibilityId;
+      for (var o in _visibilityOptions) {
+        final label = o['label'] as String;
+        final parts = label.split(' ');
+        final title = parts.length > 1 ? parts.skip(1).join(' ') : label;
+        if (title == _selectedVisibility) {
+          visibilityId = o['id']; break;
+        }
+      }
+
+      // Duration parsing
+      int? duration;
+      if (_selectedHowLong == '30 min') duration = 30;
+      else if (_selectedHowLong == '1 hour') duration = 60;
+      else if (_selectedHowLong == '2 hours') duration = 120;
+      else if (_selectedHowLong == 'Flexible') duration = 0;
+
+      // Participant limit parsing
+      int participantLimit = 1;
+      if (_selectedHowMany != null && _selectedHowMany!.isNotEmpty) {
+        final match = RegExp(r'\d+').firstMatch(_selectedHowMany!);
+        if (match != null) {
+          participantLimit = int.tryParse(match.group(0)!) ?? 1;
+        }
+      }
+
+      // DateTime logic
+      DateTime now = DateTime.now();
+      DateTime eventDate = now;
+      if (_selectedWhen == 'Tomorrow') {
+        eventDate = now.add(const Duration(days: 1));
+      } else if (_selectedWhen == 'This weekend') {
+        int daysUntilSaturday = DateTime.saturday - now.weekday;
+        if (daysUntilSaturday <= 0) daysUntilSaturday += 7;
+        eventDate = now.add(Duration(days: daysUntilSaturday));
+      }
+
+      String? eventDateTimeIso;
+      String? expiresAtIso;
+      if (_selectedTime != null) {
+        final dt = DateTime(eventDate.year, eventDate.month, eventDate.day, _selectedTime!.hour, _selectedTime!.minute);
+        eventDateTimeIso = dt.toUtc().toIso8601String();
+        expiresAtIso = dt.subtract(const Duration(hours: 1)).toUtc().toIso8601String();
+      }
+
+      Map<String, dynamic> data = {
+        "venueName": _searchController.text.trim(),
+        "venueAddress": _selectedPlaceSubtext,
+        "status": "DRAFT",
+      };
+
+      if (duration != null) data["duration"] = duration;
+      if (whoPaysId != null) data["whoPaysId"] = whoPaysId;
+      if (participantLimit > 0) data["participantLimit"] = participantLimit;
+      if (joinRequestGenderId != null) data["joinRequestGenderId"] = joinRequestGenderId;
+      if (visibilityId != null) data["visibilityId"] = visibilityId;
+      if (eventDateTimeIso != null) data["eventDateTime"] = eventDateTimeIso;
+      if (expiresAtIso != null) data["expiresAt"] = expiresAtIso;
+
+      final response = await DateNowApiService.patchPlan(planId, data);
+      
+      if (response != null && response['success'] == true) {
+        if (mounted) {
+          context.read<PostPlanBloc>().add(
+            UpdateStep3Event(
+              locationName: _searchController.text,
+              locationSubtitle: _selectedPlaceSubtext,
+              landmark: '',
+              whenDate: _selectedWhen == 'This weekend' ? 'Weekend' : _selectedWhen,
+              time: _selectedTime,
+              howLong: _selectedHowLong,
+              whoPays: _selectedWhoPays,
+              groupSize: _selectedHowMany,
+              whoCanRequest: _selectedWhoCanJoin,
+              visibility: _selectedVisibility,
+            ),
+          );
+          widget.onContinue();
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update plan. Please try again.')));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('An error occurred. Please try again.')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() { _isPatching = false; });
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -809,26 +929,9 @@ class _Location3ViewState extends State<Location3View> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: isContinueActive
+                  onTap: (isContinueActive && !_isPatching)
                       ? () {
-                          context.read<PostPlanBloc>().add(
-                            UpdateStep3Event(
-                              locationName: _searchController.text,
-                              locationSubtitle: _selectedPlaceSubtext,
-                              landmark:
-                                  '', // We could add controller for landmark later
-                              whenDate: _selectedWhen == 'This weekend'
-                                  ? 'Weekend'
-                                  : _selectedWhen,
-                              time: _selectedTime,
-                              howLong: _selectedHowLong,
-                              whoPays: _selectedWhoPays,
-                              groupSize: _selectedHowMany,
-                              whoCanRequest: _selectedWhoCanJoin,
-                              visibility: _selectedVisibility,
-                            ),
-                          );
-                          widget.onContinue();
+                          _submitStep3();
                         }
                       : null,
                   child: Container(
@@ -840,27 +943,38 @@ class _Location3ViewState extends State<Location3View> {
                           : const Color.fromARGB(255, 224, 222, 220),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Continue',
-                          style: TextStyle(
-                            color: isContinueActive
-                                ? Colors.white
-                                : Colors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    child: _isPatching
+                        ? const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Continue',
+                                style: TextStyle(
+                                  color: isContinueActive
+                                      ? Colors.white
+                                      : Colors.grey,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: isContinueActive ? Colors.white : Colors.grey,
+                                size: 18,
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.arrow_forward,
-                          color: isContinueActive ? Colors.white : Colors.grey,
-                          size: 18,
-                        ),
-                      ],
-                    ),
                   ),
                 ),
                 const SizedBox(height: 12),

@@ -25,6 +25,77 @@ class _Details2ViewState extends State<Details2View> {
   List<dynamic> _vibes = [];
 
   bool _isLoading = true;
+  bool _isPatching = false;
+
+  Future<void> _submitStep2() async {
+    final state = context.read<PostPlanBloc>().state;
+    final planId = state.planId;
+    if (planId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan ID is missing. Please restart.')));
+      return;
+    }
+
+    setState(() { _isPatching = true; });
+
+    try {
+      String? quickTitleId;
+      for (var qt in _quickTitles) {
+        if (qt['label'] == _titleController.text.trim()) {
+          quickTitleId = qt['id'];
+          break;
+        }
+      }
+
+      String? vibeId;
+      if (_selectedVibe != null) {
+        for (var v in _vibes) {
+          if (v['label'] == _selectedVibe) {
+            vibeId = v['id'];
+            break;
+          }
+        }
+      }
+
+      Map<String, dynamic> data = {
+        "title": _titleController.text.trim(),
+        "note": _noteController.text.trim(),
+      };
+      
+      if (quickTitleId != null) {
+        data["quickTitleId"] = quickTitleId;
+      }
+      if (vibeId != null) {
+        data["vibeIds"] = [vibeId];
+      }
+
+      final response = await DateNowApiService.patchPlan(planId, data);
+      
+      if (response != null && response['success'] == true) {
+        if (mounted) {
+          context.read<PostPlanBloc>().add(
+            UpdateStep2Event(
+              title: _titleController.text.trim(),
+              description: _noteController.text.trim(),
+              tags: _selectedVibe != null ? [_selectedVibe!] : [],
+            ),
+          );
+          widget.onContinue();
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update plan. Please try again.')));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('An error occurred. Please try again.')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() { _isPatching = false; });
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -311,18 +382,9 @@ class _Details2ViewState extends State<Details2View> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: isContinueActive
+                  onTap: (isContinueActive && !_isPatching)
                       ? () {
-                          context.read<PostPlanBloc>().add(
-                            UpdateStep2Event(
-                              title: _titleController.text.trim(),
-                              description: _noteController.text.trim(),
-                              tags: _selectedVibe != null
-                                  ? [_selectedVibe!]
-                                  : [],
-                            ),
-                          );
-                          widget.onContinue();
+                          _submitStep2();
                         }
                       : null,
                   child: Container(
@@ -334,27 +396,38 @@ class _Details2ViewState extends State<Details2View> {
                           : const Color.fromARGB(255, 224, 222, 220),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Continue',
-                          style: TextStyle(
-                            color: isContinueActive
-                                ? Colors.white
-                                : Colors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    child: _isPatching
+                        ? const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Continue',
+                                style: TextStyle(
+                                  color: isContinueActive
+                                      ? Colors.white
+                                      : Colors.grey,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: isContinueActive ? Colors.white : Colors.grey,
+                                size: 18,
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.arrow_forward,
-                          color: isContinueActive ? Colors.white : Colors.grey,
-                          size: 18,
-                        ),
-                      ],
-                    ),
                   ),
                 ),
                 const SizedBox(height: 12),

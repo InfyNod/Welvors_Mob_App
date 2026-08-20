@@ -37,6 +37,28 @@ class DateNowApiService {
     }
   }
 
+  // PATCH Request for Step 2 and 3
+  static Future<Map<String, dynamic>?> patchPlan(String planId, Map<String, dynamic> data) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId');
+      final response = await http.patch(
+        url,
+        headers: _headers,
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to patch plan: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error patching plan: $e');
+      return null;
+    }
+  }
+
   // Generic GET Options (for ACTIVITY, QUICK_TITLE, VIBE)
   static Future<List<dynamic>?> getOptions(String type) async {
     try {
