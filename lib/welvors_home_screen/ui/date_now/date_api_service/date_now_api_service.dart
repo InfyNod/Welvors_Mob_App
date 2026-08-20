@@ -18,7 +18,7 @@ class DateNowApiService {
   // POST Request Example
   static Future<Map<String, dynamic>?> postPlan(Map<String, dynamic> data) async {
     try {
-      final url = Uri.parse('$baseUrl/date_now/post'); // Placeholder URL
+      final url = Uri.parse('$baseUrl/user/date-plans');
       final response = await http.post(
         url,
         headers: _headers,

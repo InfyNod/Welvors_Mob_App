@@ -10,7 +10,8 @@ class JumpToStepEvent extends PostPlanEvent {
 class UpdateStep1Event extends PostPlanEvent {
   final String activityName;
   final String activityImage;
-  UpdateStep1Event({required this.activityName, required this.activityImage});
+  final String planId;
+  UpdateStep1Event({required this.activityName, required this.activityImage, required this.planId});
 }
 
 class UpdateStep2Event extends PostPlanEvent {

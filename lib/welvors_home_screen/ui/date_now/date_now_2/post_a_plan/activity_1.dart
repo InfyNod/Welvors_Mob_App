@@ -12,12 +12,9 @@ import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_no
 class Activity1Screen extends StatelessWidget {
   final PostPlanState? initialState;
   final int initialStep;
-  
-  const Activity1Screen({
-    Key? key,
-    this.initialState,
-    this.initialStep = 1,
-  }) : super(key: key);
+
+  const Activity1Screen({Key? key, this.initialState, this.initialStep = 1})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +41,11 @@ class Activity1ScreenBody extends StatefulWidget {
 class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
   // Step 1 Data (local state until continue is pressed)
   String? _selectedActivity;
+  String? _selectedActivityId;
   String? _selectedActivityImage;
   List<dynamic> _activities = [];
   bool _isLoading = true;
+  bool _isCreatingPlan = false;
 
   @override
   void initState() {
@@ -81,101 +80,109 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
         final currentStep = state.currentStep;
 
         return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-          child: InkWell(
-            onTap: () {
-              if (currentStep > 1) {
-                context.read<PostPlanBloc>().add(JumpToStepEvent(currentStep - 1));
-              } else {
-                Navigator.pop(context);
-              }
-            },
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            centerTitle: true,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+              child: InkWell(
+                onTap: () {
+                  if (currentStep > 1) {
+                    context.read<PostPlanBloc>().add(
+                      JumpToStepEvent(currentStep - 1),
+                    );
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.black87,
+                    size: 16,
+                  ),
+                ),
               ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black87,
-                size: 16,
+            ),
+            title: const Text(
+              'Post a Plan',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-        ),
-        title: const Text(
-          'Post a Plan',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Stepper
-            if (currentStep < 5)
-              _buildStepper(currentStep),
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Stepper
+                if (currentStep < 5) _buildStepper(currentStep),
 
-              // Main Content
-              Expanded(
-                child: currentStep == 1
-                    ? _buildStep1Content(context)
-                    : currentStep == 2
-                        ? Details2View(
-                            onContinue: () {
-                              // Details2View updates BLoC internally, we just jump
-                            },
-                            onBack: () {
-                              context.read<PostPlanBloc>().add(JumpToStepEvent(1));
-                            },
-                          )
-                        : currentStep == 3
-                            ? Location3View(
-                                onContinue: () {
-                                  // Location3View updates BLoC internally, we just jump
-                                },
-                                onBack: () {
-                                  context.read<PostPlanBloc>().add(JumpToStepEvent(2));
-                                },
-                              )
-                            : currentStep == 4
-                                ? Review4View(
-                                    onBack: () {
-                                      context.read<PostPlanBloc>().add(JumpToStepEvent(3));
-                                    },
-                                  )
-                                : Success5View(
-                                    onBackToDateNow: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-              ),
-          ],
-        ),
-      ),
+                // Main Content
+                Expanded(
+                  child: currentStep == 1
+                      ? _buildStep1Content(context)
+                      : currentStep == 2
+                      ? Details2View(
+                          onContinue: () {
+                            // Details2View updates BLoC internally, we just jump
+                          },
+                          onBack: () {
+                            context.read<PostPlanBloc>().add(
+                              JumpToStepEvent(1),
+                            );
+                          },
+                        )
+                      : currentStep == 3
+                      ? Location3View(
+                          onContinue: () {
+                            // Location3View updates BLoC internally, we just jump
+                          },
+                          onBack: () {
+                            context.read<PostPlanBloc>().add(
+                              JumpToStepEvent(2),
+                            );
+                          },
+                        )
+                      : currentStep == 4
+                      ? Review4View(
+                          onBack: () {
+                            context.read<PostPlanBloc>().add(
+                              JumpToStepEvent(3),
+                            );
+                          },
+                        )
+                      : Success5View(
+                          onBackToDateNow: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
-  });
   }
 
   Widget _buildBalanceBanner() {
@@ -218,7 +225,10 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
             GestureDetector(
               onTap: () => _showTopUpBottomSheet(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -445,18 +455,27 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
               _isLoading
                   ? const Padding(
                       padding: EdgeInsets.all(40),
-                      child: Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFE43A6A),
+                        ),
+                      ),
                     )
                   : GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 0.85,
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: 20,
                       ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 0.85,
+                          ),
                       itemCount: _activities.length,
                       itemBuilder: (context, index) {
                         final act = _activities[index];
@@ -465,79 +484,87 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                           onTap: () {
                             setState(() {
                               _selectedActivity = act['label'];
+                              _selectedActivityId = act['id'];
                               _selectedActivityImage = act['icon'];
                             });
                           },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: isSelected
-                            ? Border.all(
-                                color: const Color(0xFFE43A6A),
-                                width: 2.5,
-                              )
-                            : null,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.12),
-                            blurRadius: 13,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: isSelected
-                                  ? const BorderRadius.vertical(
-                                      top: Radius.circular(13),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: isSelected
+                                  ? Border.all(
+                                      color: const Color(0xFFE43A6A),
+                                      width: 2.5,
                                     )
-                                  : const BorderRadius.vertical(
-                                      top: Radius.circular(16),
+                                  : null,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.12),
+                                  blurRadius: 13,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: isSelected
+                                        ? const BorderRadius.vertical(
+                                            top: Radius.circular(13),
+                                          )
+                                        : const BorderRadius.vertical(
+                                            top: Radius.circular(16),
+                                          ),
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        Image.network(
+                                          act['icon'],
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(
+                                                    Icons.error,
+                                                    color: Colors.grey,
+                                                  ),
+                                        ),
+                                        if (isSelected)
+                                          Container(
+                                            color: const Color(
+                                              0xFFE43A6A,
+                                            ).withOpacity(0.3),
+                                          ),
+                                      ],
                                     ),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Image.network(
-                                    act['icon'],
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, color: Colors.grey),
                                   ),
-                                  if (isSelected)
-                                    Container(
-                                      color: const Color(
-                                        0xFFE43A6A,
-                                      ).withOpacity(0.3),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  child: Text(
+                                    act['label'],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w900
+                                          : FontWeight.w600,
+                                      color: isSelected
+                                          ? const Color(0xFFE43A6A)
+                                          : Colors.black87,
                                     ),
-                                ],
-                              ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Text(
-                              act['label'],
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: isSelected
-                                    ? FontWeight.w900
-                                    : FontWeight.w600,
-                                color: isSelected
-                                    ? const Color(0xFFE43A6A)
-                                    : Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ],
           ),
         ),
@@ -553,16 +580,56 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
           child: SafeArea(
             top: false,
             child: GestureDetector(
-                onTap: _selectedActivity != null
-                    ? () {
-                        context.read<PostPlanBloc>().add(
+              onTap: (_selectedActivity != null && !_isCreatingPlan)
+                  ? () async {
+                      setState(() {
+                        _isCreatingPlan = true;
+                      });
+                      try {
+                        final response = await DateNowApiService.postPlan({
+                          "activityId": _selectedActivityId,
+                        });
+                        if (response != null && response['success'] == true) {
+                          final planId = response['data']['id'];
+                          if (mounted) {
+                            context.read<PostPlanBloc>().add(
                               UpdateStep1Event(
                                 activityName: _selectedActivity!,
                                 activityImage: _selectedActivityImage ?? '',
+                                planId: planId,
                               ),
                             );
+                          }
+                        } else {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Failed to create plan. Please try again.',
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'An error occurred. Please try again.',
+                              ),
+                            ),
+                          );
+                        }
+                      } finally {
+                        if (mounted) {
+                          setState(() {
+                            _isCreatingPlan = false;
+                          });
+                        }
                       }
-                    : null,
+                    }
+                  : null,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -572,29 +639,42 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                       : const Color(0xFFF2EFEA),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Continue',
-                      style: TextStyle(
-                        color: _selectedActivity != null
-                            ? Colors.white
-                            : Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                child: _isCreatingPlan
+                    ? const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Continue',
+                            style: TextStyle(
+                              color: _selectedActivity != null
+                                  ? Colors.white
+                                  : Colors.grey,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: _selectedActivity != null
+                                ? Colors.white
+                                : Colors.grey,
+                            size: 18,
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: _selectedActivity != null
-                          ? Colors.white
-                          : Colors.grey,
-                      size: 18,
-                    ),
-                  ],
-                ),
               ),
             ),
           ),
@@ -602,8 +682,6 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
       ],
     );
   }
-
-
 
   Widget _buildStepper(int currentStep) {
     return Padding(

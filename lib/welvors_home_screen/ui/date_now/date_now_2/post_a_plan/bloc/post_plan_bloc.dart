@@ -12,6 +12,7 @@ class PostPlanBloc extends Bloc<PostPlanEvent, PostPlanState> {
       emit(state.copyWith(
         selectedActivityName: event.activityName,
         selectedActivityImage: event.activityImage,
+        planId: event.planId,
         currentStep: 2,
       ));
     });

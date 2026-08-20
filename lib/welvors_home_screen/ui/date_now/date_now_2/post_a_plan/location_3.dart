@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -109,164 +110,176 @@ class _Location3ViewState extends State<Location3View> {
       children: [
         Expanded(
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                )
               : ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   children: [
                     const Text(
-                "Where & when",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Search for any place — cafe, park, restaurant or landmark. Your exact location stays private.",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Location & venue
-              const Text(
-                '📍 Location & venue',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Search Field or Selected Card
-              if (_isLocationSelected)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE43A6A).withOpacity(0.06),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFFE43A6A),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Text('☕', style: TextStyle(fontSize: 16)),
-                        ),
+                      "Where & when",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black87,
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Search for any place — cafe, park, restaurant or landmark. Your exact location stays private.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Location & venue
+                    const Text(
+                      '📍 Location & venue',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Search Field or Selected Card
+                    if (_isLocationSelected)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE43A6A).withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFFE43A6A),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Row(
                           children: [
-                            Text(
-                              _searchController.text,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  '☕',
+                                  style: TextStyle(fontSize: 16),
+                                ),
                               ),
                             ),
-                            Text(
-                              _selectedPlaceSubtext.isEmpty
-                                  ? 'Mumbai'
-                                  : _selectedPlaceSubtext,
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _searchController.text,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    _selectedPlaceSubtext.isEmpty
+                                        ? 'Mumbai'
+                                        : _selectedPlaceSubtext,
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isLocationSelected = false;
+                                  _searchController.clear();
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.05),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 14,
+                                  color: Colors.black54,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isLocationSelected = false;
-                            _searchController.clear();
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.05),
-                            shape: BoxShape.circle,
+                      )
+                    else
+                      Column(
+                        children: [
+                          TextField(
+                            controller: _searchController,
+                            focusNode: _locationFocusNode,
+                            onChanged: (val) => setState(() {}),
+                            onSubmitted: (val) {
+                              if (val.trim().isNotEmpty) {
+                                setState(() {
+                                  _searchController.text = val.trim();
+                                  _selectedPlaceSubtext = 'Custom location';
+                                  _isLocationSelected = true;
+                                });
+                              }
+                            },
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              hintText: 'Search cafe, park, restaurant...',
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 14,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: Colors.black54,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE43A6A),
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
                           ),
-                          child: const Icon(
-                            Icons.close,
-                            size: 14,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                Column(
-                  children: [
-                    TextField(
-                      controller: _searchController,
-                      focusNode: _locationFocusNode,
-                      onChanged: (val) => setState(() {}),
-                      onSubmitted: (val) {
-                        if (val.trim().isNotEmpty) {
-                          setState(() {
-                            _searchController.text = val.trim();
-                            _selectedPlaceSubtext = 'Custom location';
-                            _isLocationSelected = true;
-                          });
-                        }
-                      },
-                      textInputAction: TextInputAction.done,
-                      decoration: InputDecoration(
-                        hintText: 'Search cafe, park, restaurant...',
-                        hintStyle: TextStyle(
-                          color: Colors.grey.shade400,
-                          fontSize: 14,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: Colors.black54,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE43A6A),
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                    /*
+                          /*
                     if (_searchController.text.isNotEmpty)
                       Container(
                         margin: const EdgeInsets.only(top: 8),
@@ -317,368 +330,470 @@ class _Location3ViewState extends State<Location3View> {
                         ),
                       ),
                     */
-                  ],
-                ),
+                        ],
+                      ),
 
-              if (!_isLocationSelected) ...[
-                const SizedBox(height: 16),
-                // Locate on map button
-                GestureDetector(
-                  onTap: () async {
-                    final result = await Navigator.push<String>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MapSelectionDialog(),
-                      ),
-                    );
-                    if (result != null) {
-                      setState(() {
-                        _searchController.text = result;
-                        _selectedPlaceSubtext = 'Selected from Map';
-                        _isLocationSelected = true;
-                      });
-                    }
-                  },
-                  child: DottedBorder(
-                    color: const Color(0xFFE43A6A),
-                    strokeWidth: 1.2,
-                    dashPattern: const [6, 4],
-                    borderType: BorderType.RRect,
-                    radius: const Radius.circular(12),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE43A6A).withOpacity(0.06),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '🗺️ Locate on map',
-                          style: TextStyle(
-                            color: Color(0xFFE43A6A),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-
-              if (_isLocationSelected) ...[
-                const SizedBox(height: 24),
-                // Landmark
-                const Text(
-                  '🏛️ Landmark (optional)',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'e.g. Near the fountain, 2nd floor...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 14,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFE43A6A),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('🔒 ', style: TextStyle(fontSize: 14)),
-                      Expanded(
-                        child: Text(
-                          'Only the place name is shown — your exact spot stays private.',
-                          style: TextStyle(
-                            color: Colors.blue.shade700,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-
-              // When
-              const Text(
-                'When',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _buildWhenChip('Today'),
-                  const SizedBox(width: 8),
-                  _buildWhenChip('Tomorrow'),
-                  const SizedBox(width: 8),
-                  _buildWhenChip('This weekend'),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Time
-              const Text(
-                'Time',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              // Time placeholder
-              GestureDetector(
-                onTap: () async {
-                  TimeOfDay? pickedTime = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: const ColorScheme.light(
-                            primary: Color(0xFFE43A6A),
-                            onPrimary: Colors.white,
-                            onSurface: Colors.black87,
-                            surface: Colors.white,
-                          ),
-                          timePickerTheme: TimePickerThemeData(
-                            backgroundColor: Colors.white,
-                            dialBackgroundColor: Colors.grey.shade100,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
+                    if (!_isLocationSelected) ...[
+                      const SizedBox(height: 16),
+                      // Locate on map button
+                      GestureDetector(
+                        onTap: () async {
+                          final result = await Navigator.push<String>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MapSelectionDialog(),
+                            ),
+                          );
+                          if (result != null) {
+                            setState(() {
+                              _searchController.text = result;
+                              _selectedPlaceSubtext = 'Selected from Map';
+                              _isLocationSelected = true;
+                            });
+                          }
+                        },
+                        child: DottedBorder(
+                          color: const Color(0xFFE43A6A),
+                          strokeWidth: 1.2,
+                          dashPattern: const [6, 4],
+                          borderType: BorderType.RRect,
+                          radius: const Radius.circular(12),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE43A6A).withOpacity(0.06),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                '🗺️ Locate on map',
+                                style: TextStyle(
+                                  color: Color(0xFFE43A6A),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        child: child!,
-                      );
-                    },
-                  );
-                  if (pickedTime != null) {
-                    setState(() {
-                      _selectedTime = pickedTime;
-                    });
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 14,
-                    horizontal: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _selectedTime != null
-                            ? _selectedTime!.format(context)
-                            : 'Select time',
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+
+                    if (_isLocationSelected) ...[
+                      const SizedBox(height: 24),
+                      // Landmark
+                      const Text(
+                        '🏛️ Landmark (optional)',
                         style: TextStyle(
-                          color: _selectedTime != null
-                              ? Colors.black87
-                              : Colors.black54,
                           fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
-                      const Icon(
-                        Icons.access_time,
-                        color: Colors.black54,
-                        size: 20,
+                      const SizedBox(height: 12),
+                      TextField(
+                        decoration: InputDecoration(
+                          hintText: 'e.g. Near the fountain, 2nd floor...',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontSize: 14,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE43A6A),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('🔒 ', style: TextStyle(fontSize: 14)),
+                            Expanded(
+                              child: Text(
+                                'Only the place name is shown — your exact spot stays private.',
+                                style: TextStyle(
+                                  color: Colors.blue.shade700,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
                     ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
 
-              // How long
-              const Text(
-                'How long',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 10,
-                children: ['30 min', '1 hour', '2 hours', 'Flexible']
-                    .map(
-                      (option) =>
-                          _buildGenericChip(option, _selectedHowLong, (val) {
-                            setState(() => _selectedHowLong = val);
-                          }),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
+                    // When
+                    const Text(
+                      'When',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        _buildWhenChip('Today'),
+                        const SizedBox(width: 8),
+                        _buildWhenChip('Tomorrow'),
+                        const SizedBox(width: 8),
+                        _buildWhenChip('This weekend'),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
 
-              // Who pays the bill?
-              const Text(
-                'Who pays the bill?',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 10,
-                children: _whoPaysOptions
-                    .map(
-                      (optionObj) {
-                        final option = optionObj['label'] as String;
-                        return _buildGenericChip(
-                          option,
-                          _selectedWhoPays,
-                          (val) {
-                            setState(() => _selectedWhoPays = val);
+                    // Time
+                    const Text(
+                      'Time',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Time placeholder
+                    GestureDetector(
+                      onTap: () {
+                        DateTime initialDateTime = DateTime.now();
+                        if (_selectedTime != null) {
+                          initialDateTime = DateTime(
+                            initialDateTime.year,
+                            initialDateTime.month,
+                            initialDateTime.day,
+                            _selectedTime!.hour,
+                            _selectedTime!.minute,
+                          );
+                        }
+                        TimeOfDay tempTime =
+                            _selectedTime ??
+                            TimeOfDay.fromDateTime(initialDateTime);
+
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (BuildContext context) {
+                            return Container(
+                              height: 320,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 12),
+                                  Container(
+                                    width: 40,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 8,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          'Select Time',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                        TextButton(
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFFE43A6A,
+                                            ).withOpacity(0.1),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _selectedTime = tempTime;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                            ),
+                                            child: Text(
+                                              'Done',
+                                              style: TextStyle(
+                                                color: Color(0xFFE43A6A),
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Divider(
+                                    height: 1,
+                                    color: Color(0xFFEEEEEE),
+                                  ),
+                                  Expanded(
+                                    child: CupertinoTheme(
+                                      data: const CupertinoThemeData(
+                                        primaryColor: Color(0xFFE43A6A),
+                                      ),
+                                      child: CupertinoDatePicker(
+                                        mode: CupertinoDatePickerMode.time,
+                                        initialDateTime: initialDateTime,
+                                        onDateTimeChanged:
+                                            (DateTime newDateTime) {
+                                              tempTime = TimeOfDay(
+                                                hour: newDateTime.hour,
+                                                minute: newDateTime.minute,
+                                              );
+                                            },
+                                      ),
+                                    ),
+                                  ),
+                                  const SafeArea(
+                                    top: false,
+                                    child: SizedBox(height: 8),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
                         );
                       },
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _selectedTime != null
+                              ? const Color(0xFFE43A6A).withOpacity(0.06)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedTime != null
+                                ? const Color(0xFFE43A6A)
+                                : Colors.grey.shade300,
+                            width: _selectedTime != null ? 1.5 : 1.0,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedTime != null
+                                  ? _selectedTime!.format(context)
+                                  : 'Select time',
+                              style: TextStyle(
+                                color: _selectedTime != null
+                                    ? const Color(0xFFE43A6A)
+                                    : Colors.black54,
+                                fontWeight: _selectedTime != null
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Icon(
+                              Icons.access_time,
+                              color: _selectedTime != null
+                                  ? const Color(0xFFE43A6A)
+                                  : Colors.black54,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
-              // How many can join?
-              const Text(
-                'How many can join?',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 10,
-                children: ['1 person', '2 people', 'Small group']
-                    .map(
-                      (option) =>
-                          _buildGenericChip(option, _selectedHowMany, (val) {
-                            setState(() => _selectedHowMany = val);
-                          }),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
+                    // How long
+                    const Text(
+                      'How long',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: ['30 min', '1 hour', '2 hours', 'Flexible']
+                          .map(
+                            (option) => _buildGenericChip(
+                              option,
+                              _selectedHowLong,
+                              (val) {
+                                setState(() => _selectedHowLong = val);
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    const SizedBox(height: 24),
 
-              // Who can request to join?
-              const Text(
-                'Who can request to join?',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 10,
-                children: _whoCanJoinOptions
-                    .map(
-                      (optionObj) {
+                    // Who pays the bill?
+                    const Text(
+                      'Who pays the bill?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: _whoPaysOptions.map((optionObj) {
                         final option = optionObj['label'] as String;
-                        return _buildGenericChip(option, _selectedWhoCanJoin, (val) {
+                        return _buildGenericChip(option, _selectedWhoPays, (
+                          val,
+                        ) {
+                          setState(() => _selectedWhoPays = val);
+                        });
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // How many can join?
+                    const Text(
+                      'How many can join?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: ['1 person', '2 people', 'Small group']
+                          .map(
+                            (option) => _buildGenericChip(
+                              option,
+                              _selectedHowMany,
+                              (val) {
+                                setState(() => _selectedHowMany = val);
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Who can request to join?
+                    const Text(
+                      'Who can request to join?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 10,
+                      children: _whoCanJoinOptions.map((optionObj) {
+                        final option = optionObj['label'] as String;
+                        return _buildGenericChip(option, _selectedWhoCanJoin, (
+                          val,
+                        ) {
                           setState(() => _selectedWhoCanJoin = val);
                         });
-                      },
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 32),
-
-              // Visibility section
-              const Row(
-                children: [
-                  Text('👁️ ', style: TextStyle(fontSize: 14)),
-                  Text(
-                    'Who can see this plan?',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      }).toList(),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Limit visibility to specific membership tiers',
-                style: TextStyle(fontSize: 13, color: Colors.black54),
-              ),
-              const SizedBox(height: 16),
-              ..._visibilityOptions.map((optionObj) {
-                final label = optionObj['label'] as String;
-                final value = optionObj['value'] as String;
-                final parts = label.split(' ');
-                final icon = parts.isNotEmpty ? parts.first : '';
-                final title = parts.length > 1 ? parts.skip(1).join(' ') : label;
-                final isLocked = value != 'premium';
+                    const SizedBox(height: 32),
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildVisibilityOption(
-                    title: title,
-                    subtitle: 'Visible to $title members',
-                    icon: icon,
-                    isLocked: isLocked,
-                  ),
-                );
-              }).toList(),
-              const SizedBox(height: 0),
-            ],
-          ),
+                    // Visibility section
+                    const Row(
+                      children: [
+                        Text('👁️ ', style: TextStyle(fontSize: 14)),
+                        Text(
+                          'Who can see this plan?',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Limit visibility to specific membership tiers',
+                      style: TextStyle(fontSize: 13, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 16),
+                    ..._visibilityOptions.map((optionObj) {
+                      final label = optionObj['label'] as String;
+                      final value = optionObj['value'] as String;
+                      final parts = label.split(' ');
+                      final icon = parts.isNotEmpty ? parts.first : '';
+                      final title = parts.length > 1
+                          ? parts.skip(1).join(' ')
+                          : label;
+                      final isLocked = value != 'premium';
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: _buildVisibilityOption(
+                          title: title,
+                          subtitle: 'Visible to $title members',
+                          icon: icon,
+                          isLocked: isLocked,
+                        ),
+                      );
+                    }).toList(),
+                    const SizedBox(height: 0),
+                  ],
+                ),
         ),
 
         // Bottom Buttons
