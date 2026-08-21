@@ -57,9 +57,25 @@ class _DateNowScreenState extends State<DateNowScreen> {
         if (plans != null) {
           for (var p in plans) {
             String activity = p['activity'] ?? 'Unknown';
+            
+            // Determine default image based on activity type if photoUrl is null
+            String defaultImage = 'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'; // Default walk/nature
+            final activityLower = activity.toLowerCase();
+            if (activityLower.contains('dinner')) {
+              defaultImage = 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            } else if (activityLower.contains('coffee')) {
+              defaultImage = 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            } else if (activityLower.contains('brunch')) {
+              defaultImage = 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            } else if (activityLower.contains('drink') || activityLower.contains('bar')) {
+              defaultImage = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            } else if (activityLower.contains('trek') || activityLower.contains('hike')) {
+              defaultImage = 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            }
+
             _fetchedPlans.add({
               'id': p['id'],
-              'imageUrl': p['photoUrl'] ?? 'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+              'imageUrl': p['photoUrl'] ?? defaultImage,
               'location': 'Live · ${p['venueName'] ?? 'Unknown'}',
               'distance': p['distanceKm'] != null ? '${p['distanceKm']} km away' : 'Near you',
               'match': p['matchScore'] != null ? '${p['matchScore']['score']}% match' : '0% match',
