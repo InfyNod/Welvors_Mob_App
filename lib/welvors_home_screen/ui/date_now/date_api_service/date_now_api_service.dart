@@ -101,9 +101,37 @@ class DateNowApiService {
     }
   }
 
-  // PATCH Request Example
-  static Future<Map<String, dynamic>?> updatePlan(String planId, Map<String, dynamic> data) async {
-    // To be implemented when API is provided
-    return null;
+  static Future<List<dynamic>?> getDiscoverPlans(String filter, {String? overrideToken}) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/discover?filter=$filter');
+      
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${overrideToken ?? _token}',
+      };
+
+      final response = await http.get(url, headers: headers);
+      
+      debugPrint('Discover API Response [${response.statusCode}]: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        if (decoded['success'] == true) {
+          final data = decoded['data'];
+          if (data is List) {
+            return data;
+          } else if (data is Map) {
+            return [data];
+          }
+          return [];
+        }
+      } else {
+        debugPrint('Failed to get discover plans: ${response.statusCode} - ${response.body}');
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching discover plans: $e');
+      return null;
+    }
   }
 }

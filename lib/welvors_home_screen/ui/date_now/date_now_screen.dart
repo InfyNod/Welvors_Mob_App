@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'send_request_drawer.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
 import 'date_now_2/my_plans/my_plan_screen.dart';
-
+import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 
 class DateNowScreen extends StatefulWidget {
   const DateNowScreen({super.key});
@@ -26,128 +26,62 @@ class _DateNowScreenState extends State<DateNowScreen> {
   ];
   int _currentPlanIndex = 0;
 
-  final List<Map<String, dynamic>> _todayPlans = [
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'location': 'Live · Carter Road Promenade',
-      'distance': '800 m away',
-      'match': '81% match',
-      'date': '📅 TODAY',
-      'time': '🕔 5:30 PM',
-      'type': '🌅 Walk',
-      'title': 'Sunset Beach Walk',
-      'subtitle': 'Anyone up for a calm evening? 🌅',
-      'people': '👥 2 people',
-      'pay': '🤝 Split (TTMM)',
-      'name': 'Karan, 27',
-      'verified': false,
-      'nameSubtitle': 'he/him · Outdoorsy',
-      'avatarUrl':
-          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-    },
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'location': 'Live · Olive Bar, Mahalaxmi',
-      'distance': '3.4 km away',
-      'match': '88% match',
-      'date': '📅 TODAY',
-      'time': '🕗 8:30 PM',
-      'type': '🥂 Dinner',
-      'title': 'Pasta & Honest Chats',
-      'subtitle': 'Foodie looking for a dinner buddy 🍝',
-      'people': '👥 Just 1',
-      'pay': '🤝 I\'ll pay',
-      'name': 'Ananya, 25',
-      'verified': true,
-      'nameSubtitle': 'she/her · Foodie',
-      'avatarUrl':
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-    },
-  ];
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _fetchedPlans = [];
 
-  final List<Map<String, dynamic>> _tomorrowPlans = [
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Coffee image
-      'location': 'Live · Blue Tokai, Bandra',
-      'distance': '1.2 km away',
-      'match': '92% match',
-      'date': '📅 TOMORROW',
-      'time': '🕙 10:00 AM',
-      'type': '☕ Coffee',
-      'title': 'Morning Brew & Books',
-      'subtitle': 'Let\'s talk about our favorite books! 📚',
-      'people': '👥 Just 1',
-      'pay': '🤝 You pay',
-      'name': 'Rahul, 28',
-      'verified': true,
-      'nameSubtitle': 'he/him · Bookworm',
-      'avatarUrl':
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-    },
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1543807535-eceef0bc6599?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Brunch image
-      'location': 'Live · The Nutcracker',
-      'distance': '5.0 km away',
-      'match': '75% match',
-      'date': '📅 TOMORROW',
-      'time': '🕐 1:00 PM',
-      'type': '🥞 Brunch',
-      'title': 'Sunday Brunching',
-      'subtitle': 'Craving some pancakes 🥞',
-      'people': '👥 3 people',
-      'pay': '🤝 Split (TTMM)',
-      'name': 'Sneha, 24',
-      'verified': false,
-      'nameSubtitle': 'she/her · Social Butterfly',
-      'avatarUrl':
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchPlans();
+  }
 
-  final List<Map<String, dynamic>> _weekendPlans = [
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Bar/Drinks image
-      'location': 'Live · Toit, Lower Parel',
-      'distance': '8.5 km away',
-      'match': '95% match',
-      'date': '📅 SATURDAY',
-      'time': '🕘 9:00 PM',
-      'type': '🍸 Drinks',
-      'title': 'Craft Beer & Chill',
-      'subtitle': 'Who loves good beer? 🍻',
-      'people': '👥 4 people',
-      'pay': '🤝 Split (TTMM)',
-      'name': 'Vikram, 30',
-      'verified': true,
-      'nameSubtitle': 'he/him · Extrovert',
-      'avatarUrl':
-          'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-    },
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Hiking/Trekking image
-      'location': 'Live · Sanjay Gandhi NP',
-      'distance': '12.0 km away',
-      'match': '89% match',
-      'date': '📅 SUNDAY',
-      'time': '🕕 6:00 AM',
-      'type': '⛰️ Trek',
-      'title': 'Early Morning Trek',
-      'subtitle': 'Nature lovers assemble! 🌿',
-      'people': '👥 5+ people',
-      'pay': '🤝 Split (TTMM)',
-      'name': 'Riya, 26',
-      'verified': true,
-      'nameSubtitle': 'she/her · Fitness Freak',
-      'avatarUrl':
-          'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-    },
-  ];
+  Future<void> _fetchPlans() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String filter = 'today';
+    if (_selectedTabIndex == 1) {
+      filter = 'tomorrow';
+    } else if (_selectedTabIndex == 2) {
+      filter = 'weekend'; // Adjust if backend uses a different term for weekend
+    }
+
+    final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+
+    final plans = await DateNowApiService.getDiscoverPlans(filter, overrideToken: token);
+    
+    if (mounted) {
+      setState(() {
+        _fetchedPlans = [];
+        if (plans != null) {
+          for (var p in plans) {
+            String activity = p['activity'] ?? 'Unknown';
+            _fetchedPlans.add({
+              'id': p['id'],
+              'imageUrl': p['photoUrl'] ?? 'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+              'location': 'Live · ${p['venueName'] ?? 'Unknown'}',
+              'distance': p['distanceKm'] != null ? '${p['distanceKm']} km away' : 'Near you',
+              'match': p['matchScore'] != null ? '${p['matchScore']['score']}% match' : '0% match',
+              'date': p['eventDate'] != null ? '📅 ${p['eventDate']}' : '📅 TODAY',
+              'time': p['eventTime'] != null ? '🕔 ${p['eventTime']}' : '🕔 TBD',
+              'type': activity,
+              'title': p['title'] ?? 'Date Plan',
+              'subtitle': p['note'] ?? '',
+              'people': p['duration'] != null ? '⏱️ ${p['duration']} mins' : '👥 2 people',
+              'pay': p['whoPays'] ?? '🤝 Split',
+              'name': p['host'] != null ? '${p['host']['name']}, ${p['host']['age']}' : 'User',
+              'verified': true, // default for now
+              'nameSubtitle': 'Host',
+              'avatarUrl': p['host'] != null ? p['host']['profilePhoto'] : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+            });
+          }
+        }
+        _currentPlanIndex = 0;
+        _isLoading = false;
+      });
+    }
+  }
 
   late final List<GlobalKey> _filterKeys = List.generate(
     _filters.length,
@@ -324,8 +258,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
                         setState(() {
                           if (_selectedTabIndex != index) {
                             _selectedTabIndex = index;
-                            _currentPlanIndex =
-                                0; // Reset index when changing tab
+                            _fetchPlans(); // Fetch new plans for the selected tab
                           }
                         });
                       },
@@ -417,19 +350,19 @@ class _DateNowScreenState extends State<DateNowScreen> {
   }
 
   Widget _buildDateCard() {
-    List<Map<String, dynamic>> currentList;
-    if (_selectedTabIndex == 0) {
-      currentList = _todayPlans;
-    } else if (_selectedTabIndex == 1) {
-      currentList = _tomorrowPlans;
-    } else {
-      currentList = _weekendPlans;
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+      );
     }
+
+    List<Map<String, dynamic>> currentList = List.from(_fetchedPlans);
 
     String selectedFilter = _filters[_selectedFilterIndex];
     if (selectedFilter != 'All plans') {
+      final filterText = selectedFilter.split(' ').last; // e.g. 'Coffee' from '☕ Coffee'
       currentList = currentList
-          .where((plan) => plan['type'] == selectedFilter)
+          .where((plan) => plan['type'].toString().contains(filterText))
           .toList();
     }
 
@@ -792,9 +725,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
                         icon: const Icon(Icons.close, color: Color(0xFFE43A6A)),
                         onPressed: () {
                           setState(() {
-                            _todayPlans.remove(plan);
-                            _tomorrowPlans.remove(plan);
-                            _weekendPlans.remove(plan);
+                            _fetchedPlans.remove(plan);
                           });
                         },
                       ),
@@ -819,9 +750,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
                               await showRequestDateBottomSheet(context, plan);
                               if (mounted) {
                                 setState(() {
-                                  _todayPlans.remove(plan);
-                                  _tomorrowPlans.remove(plan);
-                                  _weekendPlans.remove(plan);
+                                  _fetchedPlans.remove(plan);
                                 });
                               }
                             },
