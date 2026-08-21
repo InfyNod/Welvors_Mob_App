@@ -134,4 +134,30 @@ class DateNowApiService {
       return null;
     }
   }
+
+  // POST Request to skip a plan
+  static Future<bool> skipPlan(String planId, {String? overrideToken}) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId/skip');
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${overrideToken ?? _token}',
+      };
+
+      final response = await http.post(
+        url,
+        headers: headers,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to skip plan: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error skipping plan: $e');
+      return false;
+    }
+  }
 }
