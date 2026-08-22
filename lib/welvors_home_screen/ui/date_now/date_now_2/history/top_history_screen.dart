@@ -7,7 +7,7 @@ class TopHistoryScreen extends StatefulWidget {
   State<TopHistoryScreen> createState() => _TopHistoryScreenState();
 }
 
-class _TopHistoryScreenState extends State<TopHistoryScreen> {
+class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerProviderStateMixin {
   int _selectedFilterIndex = 0;
 
   final List<String> _filters = [
@@ -19,11 +19,30 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> {
   ];
   
   late final List<GlobalKey> _filterKeys;
+  late final AnimationController _progressController;
+  late final Animation<double> _progressAnimation;
 
   @override
   void initState() {
     super.initState();
     _filterKeys = List.generate(_filters.length, (index) => GlobalKey());
+    
+    _progressController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    
+    _progressAnimation = Tween<double>(begin: 0.0, end: 0.33).animate(
+      CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
+    );
+    
+    _progressController.forward();
+  }
+  
+  @override
+  void dispose() {
+    _progressController.dispose();
+    super.dispose();
   }
 
   final List<Map<String, dynamic>> _historyPlans = [
@@ -84,7 +103,14 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF7EDFA), // Light purple background
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFFF4EDFE), // Left
+              Color(0xFFF7EFF5), // Right
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: const Color(0xFFE8D4F0), width: 1.5),
         ),
@@ -117,27 +143,32 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> {
             SizedBox(
               width: 48,
               height: 48,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  CircularProgressIndicator(
-                    value: 0.33,
-                    backgroundColor: Colors.white,
-                    color: const Color(0xFFE43A6A), // Pink
-                    strokeWidth: 4,
-                    strokeCap: StrokeCap.round,
-                  ),
-                  const Center(
-                    child: Text(
-                      '33%',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFFE43A6A),
+              child: AnimatedBuilder(
+                animation: _progressAnimation,
+                builder: (context, child) {
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CircularProgressIndicator(
+                        value: _progressAnimation.value,
+                        backgroundColor: Colors.white,
+                        color: const Color(0xFFE43A6A), // Pink
+                        strokeWidth: 4,
+                        strokeCap: StrokeCap.round,
                       ),
-                    ),
-                  ),
-                ],
+                      Center(
+                        child: Text(
+                          '${(_progressAnimation.value * 100).toInt()}%',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFFE43A6A),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],

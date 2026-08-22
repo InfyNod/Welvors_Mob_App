@@ -399,7 +399,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             decoration: BoxDecoration(
               color: isSelected
                   ? const Color(0xFFE43A6A)
-                  : const Color(0xFFF2A93B), // Yellow-orange for unselected
+                  : (index == 2 ? Colors.grey.shade400 : const Color(0xFFF2A93B)),
               shape: BoxShape.circle,
             ),
             child: Text(
