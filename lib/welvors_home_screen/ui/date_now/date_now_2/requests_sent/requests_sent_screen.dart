@@ -1,65 +1,17 @@
 import 'package:flutter/material.dart';
 import '../post_a_plan/activity_1.dart';
-import 'package:dotted_border/dotted_border.dart';
-import '../my_plans/my_plan_screen.dart';
 import '../history/top_history_screen.dart';
+import '../my_plans/my_plan_screen.dart';
 import '../history/card_history.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RequestsSentScreen extends StatefulWidget {
   final int initialTabIndex;
   const RequestsSentScreen({super.key, this.initialTabIndex = 0});
 
   // Global static data for sent requests
-  static List<Map<String, dynamic>> mySentRequests = [
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'title': '🍝 Pasta & Honest Chats',
-      'subtitle': 'Today · 8:30 PM · Olive Bar, Mahalaxmi',
-      'hostName': 'Ananya, 25',
-      'hostAvatar':
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'pay': '🤝 She\'ll pay',
-      'match': '88%',
-      'message': 'You: "Hey Ananya! I\'d love to join you for dinner 🍝"',
-      'status': 'Approved',
-      'statusMessage':
-          'Ananya approved — head to Olive Bar, Mahalaxmi to meet. Details are in your chat.',
-      'isLive': true,
-    },
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'title': '🚶 Sunset Beach Walk',
-      'subtitle': 'Today · 5:30 PM · Carter Road',
-      'hostName': 'Karan, 27',
-      'hostAvatar':
-          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'pay': '🤝 Split (TTMM)',
-      'match': '81%',
-      'message': 'You: "Up for a calm evening walk? I\'m nearby!"',
-      'status': 'Pending',
-      'statusMessage':
-          'Waiting for Karan to approve. You can withdraw anytime before they do.',
-      'isLive': true,
-    },
-    {
-      'imageUrl':
-          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'title': '🍸 Rooftop Cocktails',
-      'subtitle': 'Tomorrow · 9:00 PM · AER Worli',
-      'hostName': 'Meher, 24',
-      'hostAvatar':
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'pay': '🤝 She\'ll pay',
-      'match': '91%',
-      'message': 'You: "Let\'s skip small talk over a drink 🍸"',
-      'status': 'Pending',
-      'statusMessage':
-          'Waiting for Meher to approve. You can withdraw anytime before they do.',
-      'isLive': false,
-    },
-  ];
+  static List<Map<String, dynamic>> mySentRequests = [];
 
   @override
   State<RequestsSentScreen> createState() => _RequestsSentScreenState();
@@ -70,6 +22,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   late TabController _tabController;
   int _selectedTabIndex = 0;
   int _selectedFilterIndex = -1;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -85,6 +38,80 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
         _selectedTabIndex = _tabController.index;
       });
     });
+    _fetchMySentRequests();
+  }
+
+  Future<void> _fetchMySentRequests() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+      final url = Uri.parse('https://api.welvors.com/api/user/my-date-plan-requests');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['success'] == true && data['data'] != null) {
+          final List<dynamic> items = data['data'];
+        RequestsSentScreen.mySentRequests = items.map<Map<String, dynamic>>((item) {
+          final plan = item['plan'] ?? {};
+          final host = plan['host'] ?? {};
+          
+          // Format status to Title Case if needed (e.g. PENDING -> Pending)
+          String rawStatus = (item['status'] ?? 'Pending').toString();
+          String displayStatus = rawStatus.isNotEmpty 
+              ? rawStatus[0].toUpperCase() + rawStatus.substring(1).toLowerCase() 
+              : 'Pending';
+
+          return {
+            'id': item['id'],
+            'planId': plan['id'],
+            'imageUrl': plan['photoUrl'] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+            'title': plan['quickTitle'] ?? plan['title'] ?? 'Plan',
+            'subtitle': '${_formatDate(plan['eventDateTime'])} · ${plan['venueName'] ?? ''}',
+            'hostName': host['name'] ?? 'User',
+            'hostAvatar': host['profilePhoto'] ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+            'status': displayStatus,
+            'message': item['message'] ?? 'I would love to join!',
+            'statusMessage': item['status'] == 'APPROVED' ? 'Host approved your request!' : 'Waiting for host to approve. You can withdraw anytime.',
+            'pay': plan['whoPays'] ?? 'Split',
+            'match': '88%',
+            'isLive': false,
+          };
+        }).toList();
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching requests: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  String _formatDate(String? isoString) {
+    if (isoString == null) return '';
+    try {
+      final date = DateTime.parse(isoString).toLocal();
+      final hour = date.hour;
+      final minute = date.minute.toString().padLeft(2, '0');
+      final period = hour >= 12 ? 'PM' : 'AM';
+      final hour12 = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+      return 'Today · $hour12:$minute $period'; 
+    } catch (e) {
+      return '';
+    }
   }
 
   @override
@@ -261,7 +288,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     ),
                     // List
                     Expanded(
-                      child: filteredPlans.isEmpty
+                      child: _isLoading 
+                          ? const Center(child: CircularProgressIndicator(color: Color(0xFFFA6A85)))
+                          : filteredPlans.isEmpty
                           ? Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(24.0),
@@ -964,11 +993,52 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 const SizedBox(height: 32),
                 // Cancel Date button
                 GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      RequestsSentScreen.mySentRequests.remove(plan);
-                    });
+                  onTap: () async {
+                    Navigator.pop(context); // Close bottom sheet
+                    
+                    // Show a simple snackbar indicating progress
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Canceling date...')),
+                    );
+
+                    final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+                    final planId = plan['planId'];
+                    final url = Uri.parse('https://api.welvors.com/api/user/date-plans/$planId/cancel-request');
+                    
+                    try {
+                      final response = await http.patch(
+                        url,
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': 'Bearer $token',
+                        },
+                      );
+                      
+                      if (response.statusCode == 200 || response.statusCode == 201) {
+                        setState(() {
+                          RequestsSentScreen.mySentRequests.remove(plan);
+                        });
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Date canceled successfully')),
+                          );
+                        }
+                      } else {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Failed to cancel date')),
+                          );
+                        }
+                        debugPrint('Failed to cancel: ${response.statusCode} - ${response.body}');
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Error canceling date')),
+                        );
+                      }
+                      debugPrint('Error canceling date: $e');
+                    }
                   },
                   child: Container(
                     width: double.infinity,
