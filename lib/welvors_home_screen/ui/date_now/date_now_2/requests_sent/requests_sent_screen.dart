@@ -25,6 +25,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   int _selectedFilterIndex = -1;
   bool _isLoading = true;
 
+  // Shared token for API calls in this screen
+  static const String _userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+
   @override
   void initState() {
     super.initState();
@@ -48,13 +51,12 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     });
 
     try {
-      final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
       final url = Uri.parse('https://api.welvors.com/api/user/my-date-plan-requests');
       final response = await http.get(
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $_userToken',
         },
       );
       
@@ -1005,7 +1007,6 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       const SnackBar(content: Text('Canceling date...')),
                     );
 
-                    final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
                     final planId = plan['planId'];
                     final url = Uri.parse('https://api.welvors.com/api/user/date-plans/$planId/cancel-request');
                     
@@ -1014,7 +1015,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         url,
                         headers: {
                           'Content-Type': 'application/json',
-                          'Authorization': 'Bearer $token',
+                          'Authorization': 'Bearer $_userToken',
                         },
                       );
                       
@@ -1238,7 +1239,6 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     Navigator.pop(context); // Close bottom sheet
                     
                     final requestId = plan['id'] ?? 'DUMMY_ID';
-                    final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
                     
                     // Show a simple snackbar indicating progress
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -1250,7 +1250,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
 
                     final success = await DateNowApiService.withdrawRequest(
                       requestId,
-                      overrideToken: token,
+                      overrideToken: _userToken,
                     );
                     
                     if (success) {
