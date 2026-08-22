@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'help_support/help_support_screen.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 import 'core_ecosystem/trust_verification/trust_verification_screen.dart';
 import 'commitment_management.dart/commitment_screen.dart';
 import 'commitment_management.dart/commitment_bloc/commitment_bloc.dart';
+
 class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
 
   @override
-  State<EcosystemHistorySupport> createState() => _EcosystemHistorySupportState();
+  State<EcosystemHistorySupport> createState() =>
+      _EcosystemHistorySupportState();
 }
 
 class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
@@ -60,9 +63,10 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                       style: TextStyle(color: Colors.grey.shade500),
                     ),
                     TextSpan(
-                      text: CommitmentBloc.isSingle 
-                          ? 'Single' 
-                          : (CommitmentBloc.currentCommitment?.partnerName ?? 'Priya'),
+                      text: CommitmentBloc.isSingle
+                          ? 'Single'
+                          : (CommitmentBloc.currentCommitment?.partnerName ??
+                                'Priya'),
                       style: const TextStyle(
                         color: Color(0xFFE85A7A), // Deep pink
                         fontWeight: FontWeight.bold,
@@ -190,6 +194,14 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 iconBgColor: const Color(0xFFFBE4E7), // Light red
                 title: 'Help & Support',
                 subtitle: 'FAQ, Chat with Support',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HelpSupportScreen(),
+                    ),
+                  );
+                },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
               _buildSimpleTile(
@@ -251,44 +263,44 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              shape: BoxShape.circle,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Text(icon, style: const TextStyle(fontSize: 20)),
             ),
-            alignment: Alignment.center,
-            child: Text(icon, style: const TextStyle(fontSize: 20)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: titleColor,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: titleColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(fontSize: 11),
-                    children: [subtitleRich],
+                  const SizedBox(height: 2),
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(fontSize: 11),
+                      children: [subtitleRich],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20),
-        ],
+            Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20),
+          ],
+        ),
       ),
-    ),
     );
   }
 

@@ -20,56 +20,56 @@ class WalletBenefitsBottomSheet extends StatelessWidget {
         'iconBg': const Color(0xFFFBE4E7),
         'title': 'Send Gifts',
         'desc': 'Surprise your match with roses, rings & gifts in chat',
-        'price': 'from 250'
+        'price': 'from 250',
       },
       {
         'icon': '⭐',
         'iconBg': const Color(0xFFFFF9C4),
         'title': 'Roses',
         'desc': 'Stand out instantly and get 3x more replies',
-        'price': '50 coins'
+        'price': '50 coins',
       },
       {
         'icon': '💙',
         'iconBg': const Color(0xFFE3F2FD),
         'title': 'Likes',
         'desc': 'See who likes you and like back to match',
-        'price': '20 coins'
+        'price': '20 coins',
       },
       {
         'icon': '💌',
         'iconBg': const Color(0xFFFBE4E7),
         'title': 'Compliments',
         'desc': 'Send a warm note even before you match',
-        'price': '80 coins'
+        'price': '80 coins',
       },
       {
         'icon': '🚀',
         'iconBg': const Color(0xFFF3E5F5),
         'title': 'Boosts',
         'desc': 'Become a top profile and get seen by more people',
-        'price': 'from 300'
+        'price': 'from 300',
       },
       {
         'icon': '💎',
         'iconBg': const Color(0xFFE3F2FD),
         'title': 'Activate Plans',
         'desc': 'Unlock Premium+, VIP & Elite memberships',
-        'price': 'from 499'
+        'price': 'from 499',
       },
       {
         'icon': '🎟️',
         'iconBg': const Color(0xFFFBE4E7),
         'title': 'Event Tickets',
         'desc': 'Book your spot at official Welvors events',
-        'price': 'from 950'
+        'price': 'from 950',
       },
       {
         'icon': '📅',
         'iconBg': const Color(0xFFFFF3E0),
         'title': 'Date Plans',
         'desc': 'Post or join live Date Now plans nearby',
-        'price': 'from 100'
+        'price': 'from 100',
       },
     ];
 
@@ -133,7 +133,8 @@ class WalletBenefitsBottomSheet extends StatelessWidget {
                       crossAxisCount: 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1.1, // Increased ratio makes cards shorter and more compact
+                      childAspectRatio:
+                          1.1, // Increased ratio makes cards shorter and more compact
                     ),
                     itemCount: benefits.length,
                     itemBuilder: (context, index) {
@@ -151,27 +152,29 @@ class WalletBenefitsBottomSheet extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the bottom sheet
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE85A7A), // Updated pink color
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                onPressed: () {
+                  Navigator.pop(context); // Close the bottom sheet
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(
+                    0xFFE85A7A,
+                  ), // Updated pink color
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
-              ),
-              child: const Text(
-                'Got it',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                child: const Text(
+                  'Got it',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
           ),
         ],
       ),
@@ -187,13 +190,17 @@ class WalletBenefitsBottomSheet extends StatelessWidget {
         // Removed border to make it look cleaner and more professional
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10), // Darkened for more visibility
+            color: Colors.black.withOpacity(
+              0.10,
+            ), // Darkened for more visibility
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05), // Darkened for more visibility
+            color: Colors.black.withOpacity(
+              0.05,
+            ), // Darkened for more visibility
             blurRadius: 4,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -212,10 +219,16 @@ class WalletBenefitsBottomSheet extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Padding(
-              padding: const EdgeInsets.only(left: 2.0, bottom: 0.5), // Shifted slightly right to center emoji perfectly
+              padding: const EdgeInsets.only(
+                left: 2.0,
+                bottom: 0.5,
+              ), // Shifted slightly right to center emoji perfectly
               child: Text(
                 item['icon'] as String,
-                style: const TextStyle(fontSize: 20, height: 1.1), // Increased icon size
+                style: const TextStyle(
+                  fontSize: 20,
+                  height: 1.1,
+                ), // Increased icon size
                 textAlign: TextAlign.center,
               ),
             ),
