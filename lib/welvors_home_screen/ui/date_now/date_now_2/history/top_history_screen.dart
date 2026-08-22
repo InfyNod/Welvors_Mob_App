@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'card_history.dart';class TopHistoryScreen extends StatefulWidget {
+import 'card_history.dart';
+
+class TopHistoryScreen extends StatefulWidget {
   const TopHistoryScreen({super.key});
 
   @override
@@ -45,8 +47,6 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -64,11 +64,11 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
             _buildStatCards(),
             const SizedBox(height: 16),
             _buildFilters(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             CardHistory(
               selectedFilter: _filters[_selectedFilterIndex].split(' ')[0],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 5),
           ],
         ),
       ),

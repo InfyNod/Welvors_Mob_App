@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'detail_drawer.dart';
 
 class CardHistory extends StatelessWidget {
   final String selectedFilter;
-  
+
   const CardHistory({super.key, this.selectedFilter = 'All'});
 
   static final List<Map<String, dynamic>> _thisWeekPlans = [
@@ -10,13 +11,16 @@ class CardHistory extends StatelessWidget {
       'title': '🍝 Pasta & Long Conversations',
       'date': 'Sat, 2 Aug · 8:00 – 10:30 PM',
       'location': 'Le Petit Bistro · Koregaon Park · 2.1 km',
-      'image': 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'status': 'MET',
       'partnerName': 'Aanya, 25',
-      'partnerAvatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+      'partnerAvatar':
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
       'partnerStatus': 'Met on this plan',
       'rating': 5,
-      'note': 'You both showed up. Dinner ran 30 min over — she asked to meet again.',
+      'note':
+          'You both showed up. Dinner ran 30 min over — she asked to meet again.',
       'views': 214,
       'requests': 7,
       'split': 'Split (TTMM)',
@@ -25,13 +29,16 @@ class CardHistory extends StatelessWidget {
       'title': '🚶 Riverside Evening Walk',
       'date': 'Thu, 24 Jul · 6:30 – 8:00 PM',
       'location': 'Mula Riverfront · Baner · 4.6 km',
-      'image': 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'status': 'MET',
       'partnerName': 'Riya, 26',
-      'partnerAvatar': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+      'partnerAvatar':
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
       'partnerStatus': 'Met on this plan',
       'rating': 4,
-      'note': 'Walked, then coffee after. Good conversation, no spark for a second date.',
+      'note':
+          'Walked, then coffee after. Good conversation, no spark for a second date.',
       'views': 96,
       'requests': 4,
       'split': 'I paid',
@@ -40,9 +47,11 @@ class CardHistory extends StatelessWidget {
       'title': '☕ Sunday Filter Coffee',
       'date': 'Sun, 27 Jul · 10:30 AM – 12:00 PM',
       'location': 'Blue Tokai · Bandra · 1.2 km',
-      'image': 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'status': 'EXPIRED',
-      'note': '2 requests came in but you didn’t approve anyone before the time passed.',
+      'note':
+          '2 requests came in but you didn’t approve anyone before the time passed.',
       'views': 58,
       'requests': 2,
       'split': 'Split (TTMM)',
@@ -54,12 +63,15 @@ class CardHistory extends StatelessWidget {
       'title': '🍸 Rooftop Sundowner',
       'date': 'Fri, 18 Jul · 7:00 – 9:00 PM',
       'location': 'The Terrace · Viman Nagar · 6.3 km',
-      'image': 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'status': 'NO-SHOW',
       'partnerName': 'Meher, 24',
-      'partnerAvatar': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+      'partnerAvatar':
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
       'partnerStatus': 'Approved · didn’t show',
-      'note': 'You approved Meher and waited 40 min. She didn’t arrive and didn’t message.',
+      'note':
+          'You approved Meher and waited 40 min. She didn’t arrive and didn’t message.',
       'views': 187,
       'requests': 6,
       'split': 'Decide there',
@@ -68,9 +80,11 @@ class CardHistory extends StatelessWidget {
       'title': '🎨 Gallery Hop & Chai',
       'date': 'Sun, 13 Jul · 4:00 – 6:00 PM',
       'location': 'Monalisa Kalagram · Koregaon Park · 2.8 km',
-      'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK3K1CU66l6qqVot2o0lnC_CoIhnHhy890WoqnSYVDm7wCxVKhbrDpX_8&s=10',
+      'image':
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK3K1CU66l6qqVot2o0lnC_CoIhnHhy890WoqnSYVDm7wCxVKhbrDpX_8&s=10',
       'status': 'CANCELLED',
-      'note': 'You cancelled 4 hours before. All 3 requesters were notified automatically.',
+      'note':
+          'You cancelled 4 hours before. All 3 requesters were notified automatically.',
       'views': 71,
       'requests': 3,
       'split': 'Split (TTMM)',
@@ -79,9 +93,11 @@ class CardHistory extends StatelessWidget {
       'title': '🥐 Lazy Sunday Brunch',
       'date': 'Sun, 6 Jul · 11:00 AM – 1:00 PM',
       'location': 'Baker’s Table · Kalyani Nagar · 3.4 km',
-      'image': 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'status': 'EXPIRED',
-      'note': 'No requests came in. Try a boost or an earlier time slot next Sunday.',
+      'note':
+          'No requests came in. Try a boost or an earlier time slot next Sunday.',
       'views': 23,
       'requests': 0,
       'split': 'Split (TTMM)',
@@ -116,10 +132,9 @@ class CardHistory extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: filteredThisWeek.length,
             itemBuilder: (context, index) {
-              return _buildHistoryCard(filteredThisWeek[index]);
+              return _buildHistoryCard(context, filteredThisWeek[index]);
             },
           ),
-          if (filteredEarlier.isNotEmpty) const SizedBox(height: 8),
         ],
         if (filteredEarlier.isNotEmpty) ...[
           _buildSectionHeader('EARLIER', filteredEarlier.length),
@@ -128,7 +143,7 @@ class CardHistory extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: filteredEarlier.length,
             itemBuilder: (context, index) {
-              return _buildHistoryCard(filteredEarlier[index]);
+              return _buildHistoryCard(context, filteredEarlier[index]);
             },
           ),
         ],
@@ -138,7 +153,7 @@ class CardHistory extends StatelessWidget {
 
   Widget _buildSectionHeader(String title, int count) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Row(
         children: [
           Text(
@@ -171,14 +186,14 @@ class CardHistory extends StatelessWidget {
     );
   }
 
-  Widget _buildHistoryCard(Map<String, dynamic> plan) {
+  Widget _buildHistoryCard(BuildContext context, Map<String, dynamic> plan) {
     final status = plan['status'] as String;
-    
+
     // Determine colors based on status
     Color borderColor;
     Color badgeBgColor;
     Color badgeTextColor;
-    
+
     switch (status) {
       case 'MET':
         borderColor = const Color(0xFF1EA95B); // Green
@@ -206,7 +221,8 @@ class CardHistory extends StatelessWidget {
         badgeTextColor = Colors.black;
     }
 
-    final hasPartnerInfo = plan.containsKey('partnerName') && plan['partnerName'] != null;
+    final hasPartnerInfo =
+        plan.containsKey('partnerName') && plan['partnerName'] != null;
 
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
@@ -227,12 +243,7 @@ class CardHistory extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: Container(
             decoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(
-                  color: borderColor,
-                  width: 4.0,
-                ),
-              ),
+              border: Border(left: BorderSide(color: borderColor, width: 4.0)),
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -258,14 +269,21 @@ class CardHistory extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                           ),
-                          if (status != 'EXPIRED' && status != 'CANCELLED') // Only show rocket for active-like plans as per screenshot
+                          if (status != 'EXPIRED' &&
+                              status !=
+                                  'CANCELLED') // Only show rocket for active-like plans as per screenshot
                             Positioned(
                               bottom: -2,
                               right: -2,
                               child: Container(
                                 padding: const EdgeInsets.all(2),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: const Color.fromARGB(
+                                    255,
+                                    255,
+                                    255,
+                                    255,
+                                  ),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
@@ -275,7 +293,10 @@ class CardHistory extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                child: const Text('🚀', style: TextStyle(fontSize: 10)),
+                                child: const Text(
+                                  '🚀',
+                                  style: TextStyle(fontSize: 10),
+                                ),
                               ),
                             ),
                         ],
@@ -308,7 +329,11 @@ class CardHistory extends StatelessWidget {
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              Icon(Icons.location_on, size: 12, color: Colors.red.shade400),
+                              Icon(
+                                Icons.location_on,
+                                size: 12,
+                                color: Colors.red.shade400,
+                              ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
@@ -328,7 +353,10 @@ class CardHistory extends StatelessWidget {
                     ),
                     // Status Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: badgeBgColor,
                         borderRadius: BorderRadius.circular(8),
@@ -344,14 +372,19 @@ class CardHistory extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 if (hasPartnerInfo) ...[
                   const SizedBox(height: 12),
                   // Partner Info Card
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFBF4ED), // Light yellowish-orange tint
+                      color: const Color(
+                        0xFFFBF4ED,
+                      ), // Light yellowish-orange tint
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -398,14 +431,14 @@ class CardHistory extends StatelessWidget {
                             }),
                           )
                         else if (status == 'NO-SHOW')
-                          const Text('⚠️', style: TextStyle(fontSize: 18))
+                          const Text('⚠️', style: TextStyle(fontSize: 18)),
                       ],
                     ),
                   ),
                 ],
-                
+
                 const SizedBox(height: 10),
-                
+
                 // Note
                 Text(
                   plan['note'],
@@ -415,9 +448,9 @@ class CardHistory extends StatelessWidget {
                     height: 1.3,
                   ),
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Dotted Divider
                 Row(
                   children: List.generate(
@@ -425,14 +458,16 @@ class CardHistory extends StatelessWidget {
                     (index) => Expanded(
                       child: Container(
                         height: 1,
-                        color: index.isEven ? Colors.grey.shade300 : Colors.transparent,
+                        color: index.isEven
+                            ? Colors.grey.shade300
+                            : Colors.transparent,
                       ),
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Bottom Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -442,22 +477,37 @@ class CardHistory extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            _buildSmallStatPill(Icons.visibility, '${plan['views']}'),
+                            _buildSmallStatPill(
+                              Icons.visibility,
+                              '${plan['views']}',
+                            ),
                             const SizedBox(width: 8),
-                            _buildSmallStatPill(Icons.mail_outline, '${plan['requests']} requests'),
+                            _buildSmallStatPill(
+                              Icons.mail_outline,
+                              '${plan['requests']} requests',
+                            ),
                             const SizedBox(width: 8),
-                            _buildSmallStatPill(Icons.handshake_outlined, plan['split'], iconColor: const Color(0xFFF2A93B)),
+                            _buildSmallStatPill(
+                              Icons.handshake_outlined,
+                              plan['split'],
+                              iconColor: const Color(0xFFF2A93B),
+                            ),
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'Details ›',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE43A6A),
+                    GestureDetector(
+                      onTap: () {
+                        showHistoryDetailDrawer(context, plan);
+                      },
+                      child: const Text(
+                        'Details ›',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFE43A6A),
+                        ),
                       ),
                     ),
                   ],
@@ -470,7 +520,11 @@ class CardHistory extends StatelessWidget {
     );
   }
 
-  Widget _buildSmallStatPill(IconData icon, String text, {Color iconColor = Colors.grey}) {
+  Widget _buildSmallStatPill(
+    IconData icon,
+    String text, {
+    Color iconColor = Colors.grey,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -479,7 +533,11 @@ class CardHistory extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 12, color: iconColor == Colors.grey ? Colors.black54 : iconColor),
+          Icon(
+            icon,
+            size: 12,
+            color: iconColor == Colors.grey ? Colors.black54 : iconColor,
+          ),
           const SizedBox(width: 4),
           Text(
             text,
@@ -494,4 +552,3 @@ class CardHistory extends StatelessWidget {
     );
   }
 }
-
