@@ -213,8 +213,8 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             controller: _tabController,
             isScrollable: true,
             tabAlignment: TabAlignment.start,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            labelPadding: const EdgeInsets.only(right: 24),
+            padding: const EdgeInsets.only(left: 4, right: 16),
+            labelPadding: const EdgeInsets.symmetric(horizontal: 12),
             indicatorColor: const Color(0xFFE43A6A),
             indicatorWeight: 2,
             indicatorSize: TabBarIndicatorSize.label,
@@ -222,6 +222,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             splashFactory: NoSplash
                 .splashFactory, // Removes ripple effect for smoother look
             overlayColor: WidgetStateProperty.all(Colors.transparent),
+            physics: const BouncingScrollPhysics(),
             tabs: [
               _buildTab(
                 'Requests sent',
@@ -367,7 +368,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 ),
                 // TAB 2: My plans
                 const MyPlanScreen(),
-                
+
                 // TAB 3: History
                 const TopHistoryScreen(),
               ],
