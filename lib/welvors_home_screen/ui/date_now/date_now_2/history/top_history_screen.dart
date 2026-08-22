@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-
-class TopHistoryScreen extends StatefulWidget {
+import 'card_history.dart';class TopHistoryScreen extends StatefulWidget {
   const TopHistoryScreen({super.key});
 
   @override
   State<TopHistoryScreen> createState() => _TopHistoryScreenState();
 }
 
-class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerProviderStateMixin {
+class _TopHistoryScreenState extends State<TopHistoryScreen>
+    with SingleTickerProviderStateMixin {
   int _selectedFilterIndex = 0;
 
   final List<String> _filters = [
@@ -17,7 +17,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
     'No-show 1',
     'Cancelled 1',
   ];
-  
+
   late final List<GlobalKey> _filterKeys;
   late final AnimationController _progressController;
   late final Animation<double> _progressAnimation;
@@ -26,62 +26,36 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
   void initState() {
     super.initState();
     _filterKeys = List.generate(_filters.length, (index) => GlobalKey());
-    
+
     _progressController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    
+
     _progressAnimation = Tween<double>(begin: 0.0, end: 0.33).animate(
       CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
     );
-    
+
     _progressController.forward();
   }
-  
+
   @override
   void dispose() {
     _progressController.dispose();
     super.dispose();
   }
 
-  final List<Map<String, dynamic>> _historyPlans = [
-    {
-      'title': '🍝 Pasta & Long Conversations',
-      'date': 'Sat, 2 Aug · 8:00 – 10:30 PM',
-      'location': 'Le Petit Bistro · Koregaon Park · 2.1 km',
-      'image': 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'status': 'MET',
-      'partnerName': 'Aanya, 25',
-      'partnerAvatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'partnerStatus': 'Met on this plan',
-      'rating': 5,
-      'note': 'You both showed up. Dinner ran 30 min over — she asked to meet again.',
-      'views': 214,
-      'requests': 7,
-      'split': 'Split (TTMM)',
-    },
-    {
-      'title': '🚶 Riverside Evening Walk',
-      'date': 'Thu, 24 Jul · 6:30 – 8:00 PM',
-      'location': 'Mula Riverfront · Baner · 4.6 km',
-      'image': 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'status': 'MET',
-      'partnerName': 'Riya, 26',
-      'partnerAvatar': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'partnerStatus': 'Met on this plan',
-      'rating': 4,
-      'note': '',
-      'views': 120,
-      'requests': 4,
-      'split': 'I paid',
-    },
-  ];
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFFCF9F6), // Match the off-white background from image
+      color: const Color.fromARGB(
+        255,
+        255,
+        255,
+        255,
+      ), // Match the off-white background from image
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,6 +64,10 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
             _buildStatCards(),
             const SizedBox(height: 16),
             _buildFilters(),
+            const SizedBox(height: 16),
+            CardHistory(
+              selectedFilter: _filters[_selectedFilterIndex].split(' ')[0],
+            ),
             const SizedBox(height: 32),
           ],
         ),
@@ -244,7 +222,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
       child: Row(
         children: List.generate(_filters.length, (index) {
           final isSelected = _selectedFilterIndex == index;
-          
+
           // Split the text into word and number
           final parts = _filters[index].split(' ');
           final word = parts[0];
@@ -257,7 +235,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
                 setState(() {
                   _selectedFilterIndex = index;
                 });
-                
+
                 // Animate to center
                 Scrollable.ensureVisible(
                   _filterKeys[index].currentContext!,
@@ -268,12 +246,17 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
               },
               child: Container(
                 key: _filterKeys[index],
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? const Color(0xFF1E1E24) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF1E1E24) : Colors.grey.shade300,
+                    color: isSelected
+                        ? const Color(0xFF1E1E24)
+                        : Colors.grey.shade300,
                   ),
                 ),
                 child: RichText(
@@ -282,7 +265,9 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
                       TextSpan(
                         text: word,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : const Color(0xFF1E1E24),
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF1E1E24),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -291,7 +276,9 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
                         TextSpan(
                           text: ' $number',
                           style: TextStyle(
-                            color: isSelected ? Colors.white70 : Colors.grey.shade500,
+                            color: isSelected
+                                ? Colors.white70
+                                : Colors.grey.shade500,
                             fontWeight: FontWeight.normal,
                             fontSize: 12,
                           ),
@@ -306,5 +293,4 @@ class _TopHistoryScreenState extends State<TopHistoryScreen> with SingleTickerPr
       ),
     );
   }
-
 }
