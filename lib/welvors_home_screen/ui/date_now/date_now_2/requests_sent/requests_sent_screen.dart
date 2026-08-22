@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../post_a_plan/activity_1.dart';
 import 'package:dotted_border/dotted_border.dart';
 import '../my_plans/my_plan_screen.dart';
+import '../history/top_history_screen.dart';
 
 class RequestsSentScreen extends StatefulWidget {
   final int initialTabIndex;
@@ -74,7 +75,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     super.initState();
     _selectedTabIndex = widget.initialTabIndex;
     _tabController = TabController(
-      length: 2,
+      length: 3,
       vsync: this,
       initialIndex: widget.initialTabIndex,
     );
@@ -228,6 +229,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 0,
               ),
               _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
+              _buildTab('History', 6, 2),
             ],
           ),
           const Divider(height: 1, color: Colors.black12),
@@ -286,7 +288,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                                       Container(
                                         padding: const EdgeInsets.all(20),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFFA6A85).withOpacity(0.1),
+                                          color: const Color(
+                                            0xFFFA6A85,
+                                          ).withOpacity(0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         child: const Icon(
@@ -325,11 +329,16 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                                           ),
                                           decoration: BoxDecoration(
                                             gradient: const LinearGradient(
-                                              colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                                              colors: [
+                                                Color(0xFFFA6A85),
+                                                Color(0xFFDE2957),
+                                              ],
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                             ),
-                                            borderRadius: BorderRadius.circular(24),
+                                            borderRadius: BorderRadius.circular(
+                                              24,
+                                            ),
                                           ),
                                           child: const Text(
                                             'Discover plans',
@@ -358,6 +367,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 ),
                 // TAB 2: My plans
                 const MyPlanScreen(),
+                
+                // TAB 3: History
+                const TopHistoryScreen(),
               ],
             ),
           ),
