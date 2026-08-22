@@ -67,24 +67,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Bar
+            /*
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
-                    blurRadius: 16,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: TextField(
                 controller: _searchController,
@@ -95,23 +82,34 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     fontSize: 14,
                   ),
                   prefixIcon: Icon(Icons.search, color: Colors.grey.shade400),
-                  border: InputBorder.none,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE85A7A),
+                      width: 1.5,
+                    ),
+                  ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 16,
+                    vertical: 10,
                   ),
+                  isDense: true,
                 ),
               ),
             ),
             const SizedBox(height: 24),
+            */
 
             // Contact Options (Row)
             Row(
               children: [
                 Expanded(
                   child: _buildContactCard(
-                    icon: Icons.chat_bubble_outline,
-                    iconColor: Colors.pink,
+                    emoji: '💬',
                     iconBgColor: Colors.pink.shade50,
                     title: 'Live Chat',
                     subtitle: 'Chat with our support\nteam',
@@ -125,8 +123,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildContactCard(
-                    icon: Icons.email_outlined,
-                    iconColor: Colors.blue,
+                    emoji: '✉️',
                     iconBgColor: Colors.blue.shade50,
                     title: 'Email Us',
                     subtitle: 'support@welvors.com\n',
@@ -159,32 +156,29 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 1.45, // Increased from 1.3 to reduce height
+              childAspectRatio:
+                  1.8, // Adjusted to prevent overflow while keeping it compact
               children: [
                 _buildTopicCard(
-                  icon: Icons.person,
-                  iconColor: Colors.blue,
+                  emoji: '👤',
                   title: 'Account & Profile',
                   subtitle: 'Login, verification',
                   onTap: () {},
                 ),
                 _buildTopicCard(
-                  icon: Icons.shield,
-                  iconColor: Colors.red,
+                  emoji: '🛡️',
                   title: 'Safety & Privacy',
                   subtitle: 'Block, report, data',
                   onTap: () {},
                 ),
                 _buildTopicCard(
-                  icon: Icons.credit_card,
-                  iconColor: Colors.amber.shade700,
+                  emoji: '💳',
                   title: 'Plans & Wallet',
                   subtitle: 'Payments, refunds',
                   onTap: () {},
                 ),
                 _buildTopicCard(
-                  icon: Icons.favorite,
-                  iconColor: Colors.pink,
+                  emoji: '💕',
                   title: 'Matches & Dates',
                   subtitle: 'Likes, events, plans',
                   onTap: () {},
@@ -192,7 +186,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               ],
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 10),
             const Text(
               'POPULAR QUESTIONS',
               style: TextStyle(
@@ -270,11 +264,15 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               onTap: () {},
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 20,
+                  horizontal: 14,
+                  vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFBE4E7), Colors.white],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -294,16 +292,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      width: 38,
+                      height: 38,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFBE4E7),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
-                        Icons.shield_outlined,
-                        color: Colors.red,
-                        size: 24,
-                      ),
+                      alignment: Alignment.center,
+                      child: const Text('🛡️', style: TextStyle(fontSize: 22)),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -352,7 +348,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // MORE Section List
             Container(
               decoration: BoxDecoration(
@@ -401,8 +397,8 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 ],
               ),
             ),
-            
-            const SizedBox(height: 40),
+
+            const SizedBox(height: 30),
             Center(
               child: RichText(
                 text: TextSpan(
@@ -427,8 +423,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   }
 
   Widget _buildContactCard({
-    required IconData icon,
-    required Color iconColor,
+    required String emoji,
     required Color iconBgColor,
     required String title,
     required String subtitle,
@@ -439,7 +434,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -462,14 +457,16 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: iconBgColor,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: iconColor, size: 24),
+              alignment: Alignment.center,
+              child: Text(emoji, style: const TextStyle(fontSize: 22)),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               title,
               style: const TextStyle(
@@ -487,7 +484,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 height: 1.3,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Row(
               children: [
                 if (statusColor == Colors.green)
@@ -517,8 +514,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   }
 
   Widget _buildTopicCard({
-    required IconData icon,
-    required Color iconColor,
+    required String emoji,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
@@ -526,7 +522,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -549,8 +545,8 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: iconColor, size: 24),
-            const SizedBox(height: 12),
+            Text(emoji, style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 6),
             Text(
               title,
               style: const TextStyle(
@@ -558,11 +554,21 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 fontSize: 14,
                 color: Colors.black87,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+            const SizedBox(height: 2),
+            Expanded(
+              child: Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey.shade500,
+                  height: 1.2,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -582,17 +588,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         child: Row(
           children: [
             Container(
-              width: 32,
-              height: 32,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: iconBgColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
-              child: Text(
-                emoji,
-                style: const TextStyle(fontSize: 16),
-              ),
+              child: Text(emoji, style: const TextStyle(fontSize: 20)),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -644,6 +647,8 @@ class _FaqItemState extends State<_FaqItem> {
           _isExpanded = !_isExpanded;
         });
       },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
@@ -663,24 +668,39 @@ class _FaqItemState extends State<_FaqItem> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                Icon(
-                  _isExpanded ? Icons.close : Icons.add,
-                  color: Colors.grey.shade400,
-                  size: 16,
+                AnimatedRotation(
+                  turns: _isExpanded ? 0.125 : 0,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  child: Icon(
+                    Icons.add,
+                    color: _isExpanded ? Colors.pink.shade300 : Colors.grey.shade400,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
-            if (_isExpanded) ...[
-              const SizedBox(height: 12),
-              Text(
-                widget.answer,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                  height: 1.5,
-                ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: double.infinity,
+                child: _isExpanded
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          widget.answer,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            height: 1.5,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ),
-            ],
+            ),
           ],
         ),
       ),
