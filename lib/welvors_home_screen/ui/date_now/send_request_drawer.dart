@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
+import 'date_api_service/date_now_api_service.dart';
 
 Future<void> showRequestDateBottomSheet(
   BuildContext context,
@@ -324,27 +325,41 @@ Future<void> showRequestDateBottomSheet(
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  Navigator.pop(context);
+                                onTap: () async {
+                                  // Call API in the background using the correct token for this viewer
+                                  final testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+                                  bool success = await DateNowApiService.requestDatePlan(plan['id'], overrideToken: testToken);
                                   
-                                  // Construct sent request map
-                                  final newSentRequest = {
-                                    'imageUrl': plan['imageUrl'] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                                    'title': plan['title'] ?? 'Activity',
-                                    'subtitle': '${(plan['date'] as String?)?.replaceAll('📅 ', '') ?? 'Today'} · ${(plan['time'] as String?)?.replaceAll('🕔 ', '').replaceAll('🕗 ', '').replaceAll('🕙 ', '').replaceAll('🕐 ', '').replaceAll('🕘 ', '').replaceAll('🕕 ', '') ?? 'Now'} · ${plan['location'] ?? ''}',
-                                    'hostName': plan['name'] ?? 'User',
-                                    'hostAvatar': plan['avatarUrl'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-                                    'pay': plan['whoPays'] != null ? '🤝 ${plan['whoPays']}' : '🤝 Split (TTMM)',
-                                    'match': plan['match'] ?? '90%',
-                                    'message': 'You: "${messageController.text.isNotEmpty ? messageController.text : 'I would love to join!'}"',
-                                    'status': 'Pending',
-                                    'statusMessage': 'Waiting for ${(plan['name'] as String?)?.split(',')[0] ?? 'host'} to approve. You can withdraw anytime before they do.',
-                                    'isLive': true,
-                                  };
-                                  
-                                  RequestsSentScreen.mySentRequests.insert(0, newSentRequest);
-
-                                  showRequestSentBottomSheet(context, plan);
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                    
+                                    if (success) {
+                                      // Construct sent request map
+                                      final newSentRequest = {
+                                        'imageUrl': plan['imageUrl'] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                                        'title': plan['title'] ?? 'Activity',
+                                        'subtitle': '${(plan['date'] as String?)?.replaceAll('📅 ', '') ?? 'Today'} · ${(plan['time'] as String?)?.replaceAll('🕔 ', '').replaceAll('🕗 ', '').replaceAll('🕙 ', '').replaceAll('🕐 ', '').replaceAll('🕘 ', '').replaceAll('🕕 ', '') ?? 'Now'} · ${plan['location'] ?? ''}',
+                                        'hostName': plan['name'] ?? 'User',
+                                        'hostAvatar': plan['avatarUrl'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+                                        'pay': plan['whoPays'] != null ? '🤝 ${plan['whoPays']}' : '🤝 Split (TTMM)',
+                                        'match': plan['match'] ?? '90%',
+                                        'message': 'You: "${messageController.text.isNotEmpty ? messageController.text : 'I would love to join!'}"',
+                                        'status': 'Pending',
+                                        'statusMessage': 'Waiting for ${(plan['name'] as String?)?.split(',')[0] ?? 'host'} to approve. You can withdraw anytime before they do.',
+                                        'isLive': true,
+                                      };
+                                      
+                                      RequestsSentScreen.mySentRequests.insert(0, newSentRequest);
+                                      showRequestSentBottomSheet(context, plan);
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Failed to send request. Please try again.'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  }
                                 },
                                 child: const Center(
                                   child: Text(
