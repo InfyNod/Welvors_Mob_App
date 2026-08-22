@@ -3,63 +3,12 @@ import '../post_a_plan/activity_1.dart';
 import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'manage_plan.dart';
+import '../../date_api_service/date_now_api_service.dart';
 
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
 
-  static List<Map<String, dynamic>> myHostedPlans = [
-    {
-      'day': 'Today',
-      'category': '☕ Coffee',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'title': '☕ Iced Coffee Deep Talks',
-      'subtitle': 'Today · 6:00 PM · Blue Tokai',
-      'tags': ['🤝 Split (TTMM)', '👥 Just 1'],
-      'isLive': true,
-      'requests': [
-        {
-          'avatar':
-              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-          'name': 'Aanya',
-          'age': 25,
-          'match': '92%',
-          'message': '"Hey! I\'d love to join you for coffee✨"',
-          'status': 'new',
-        },
-        {
-          'avatar':
-              'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-          'name': 'Riya',
-          'age': 23,
-          'match': '86%',
-          'message': '"Count me in, I\'m nearby!"',
-          'status': 'pending',
-        },
-      ],
-    },
-    {
-      'day': 'Tomorrow',
-      'category': '🍸 Drinks',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'title': '🍸 Rooftop Cocktails',
-      'subtitle': 'Tomorrow · 9:00 PM · AER Worli',
-      'tags': ['🤝 I\'ll pay', '👥 Just 1'],
-      'isLive': false,
-      'requests': [
-        {
-          'avatar':
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-          'name': 'Karan',
-          'age': 27,
-          'match': '88%',
-          'message': '"This sounds perfect, I\'m in!"',
-          'status': 'new',
-        },
-      ],
-    },
-  ];
+  static List<Map<String, dynamic>> myHostedPlans = [];
 
   @override
   State<MyPlanScreen> createState() => _MyPlanScreenState();
@@ -78,7 +27,50 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
     '🍸 Drinks',
     '🚶 Walk',
   ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchRequestsForDummyPlan();
+  }
 
+  Future<void> _fetchRequestsForDummyPlan() async {
+    // The backend-provided planId for testing
+    final planId = '25a5c41d-b968-4aa1-b476-440b2a6b8b3e';
+    final data = await DateNowApiService.getPlanRequests(planId);
+    
+    if (data != null && mounted) {
+      setState(() {
+        final planData = data['plan'] ?? {};
+        final requestsList = (data['requests'] as List<dynamic>?) ?? [];
+        
+        final mappedRequests = requestsList.map((req) {
+          final requester = req['requester'] ?? {};
+          return {
+            'id': req['id'],
+            'avatar': requester['photo'] ?? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+            'name': requester['name'] ?? 'User',
+            'age': requester['age'] ?? 25,
+            'match': '${req['compatibility'] ?? 80}%',
+            'message': req['message'] != null ? '"${req['message']}"' : '"This sounds perfect, I\'m in!"',
+            'status': (req['status'] ?? 'new').toString().toLowerCase(),
+          };
+        }).toList();
+
+        MyPlanScreen.myHostedPlans = [
+          {
+            'day': 'Today',
+            'category': planData['activity'] ?? 'Plan',
+            'imageUrl': planData['photoUrl'] ?? 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+            'title': planData['title'] ?? 'My Plan',
+            'subtitle': 'Today · ${planData['venueName'] ?? 'Venue'}',
+            'tags': ['👥 Limit ${planData['participantLimit'] ?? 2}'],
+            'isLive': true,
+            'requests': mappedRequests,
+          }
+        ];
+      });
+    }
+  }
 
 
   @override
@@ -477,11 +469,12 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
-              children: [
-                _buildSmallTag(plan['tags'][0]),
-                const SizedBox(width: 8),
-                _buildSmallTag(plan['tags'][1]),
-              ],
+              children: (plan['tags'] as List<dynamic>?)?.map((tag) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: _buildSmallTag(tag.toString()),
+                );
+              }).toList() ?? [],
             ),
           ),
         ],
@@ -682,10 +675,19 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        planRequests.remove(request);
-                      });
+                    onTap: () async {
+                      final requestId = request['id'] ?? 'DUMMY_ID';
+                      final success = await DateNowApiService.declineRequest(requestId);
+                      if (success) {
+                        setState(() {
+                          planRequests.remove(request);
+                        });
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Request declined')),
+                          );
+                        }
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -710,10 +712,19 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                 Expanded(
                   flex: 2,
                   child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        request['status'] = 'approved';
-                      });
+                    onTap: () async {
+                      final requestId = request['id'] ?? 'DUMMY_ID';
+                      final success = await DateNowApiService.approveRequest(requestId);
+                      if (success) {
+                        setState(() {
+                          request['status'] = 'approved';
+                        });
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Request approved')),
+                          );
+                        }
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -986,8 +997,17 @@ Future<String?> _showRequesterProfileBottomSheet(
                                 children: [
                                   Expanded(
                                     child: GestureDetector(
-                                      onTap: () =>
-                                          Navigator.pop(context, 'decline'),
+                                      onTap: () async {
+                                        final requestId = request['id'] ?? 'DUMMY_ID';
+                                        final success = await DateNowApiService.declineRequest(requestId);
+                                        if (success) {
+                                          Navigator.pop(context); // Close bottom sheet
+                                          _showFeedbackSavedSnackBar(
+                                            context,
+                                            'Request from ${request['name']} declined',
+                                          );
+                                        }
+                                      },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
                                           vertical: 16,
@@ -1017,14 +1037,20 @@ Future<String?> _showRequesterProfileBottomSheet(
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: GestureDetector(
-                                      onTap: () {
-                                        setModalState(() {
-                                          request['status'] = 'approved';
-                                        });
-                                        _showFeedbackSavedSnackBar(
-                                          context,
-                                          '${request['name']} approved. Date details sent to chat',
-                                        );
+                                      onTap: () async {
+                                        final requestId = request['id'] ?? 'DUMMY_ID';
+                                        final success = await DateNowApiService.approveRequest(requestId);
+                                        if (success) {
+                                          setModalState(() {
+                                            request['status'] = 'approved';
+                                          });
+                                          if (context.mounted) {
+                                            _showFeedbackSavedSnackBar(
+                                              context,
+                                              '${request['name']} approved. Date details sent to chat',
+                                            );
+                                          }
+                                        }
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(

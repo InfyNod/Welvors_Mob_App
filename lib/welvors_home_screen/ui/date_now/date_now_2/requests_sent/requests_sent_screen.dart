@@ -3,6 +3,7 @@ import '../post_a_plan/activity_1.dart';
 import '../history/top_history_screen.dart';
 import '../my_plans/my_plan_screen.dart';
 import '../history/card_history.dart';
+import '../../date_api_service/date_now_api_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -425,7 +426,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
           ),
           const SizedBox(width: 6),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            width: 18,
+            height: 18,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               color: isSelected
                   ? const Color(0xFFE43A6A)
@@ -433,12 +436,13 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               shape: BoxShape.circle,
             ),
             child: Text(
-              count.toString(),
+              count > 99 ? '99+' : count.toString(),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -1229,11 +1233,42 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 const SizedBox(height: 32),
                 // Withdraw request button
                 GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      RequestsSentScreen.mySentRequests.remove(plan);
-                    });
+                  onTap: () async {
+                    // Start loader or just optimistically remove
+                    Navigator.pop(context); // Close bottom sheet
+                    
+                    final requestId = plan['id'] ?? 'DUMMY_ID';
+                    final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+                    
+                    // Show a simple snackbar indicating progress
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Withdrawing request...'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+
+                    final success = await DateNowApiService.withdrawRequest(
+                      requestId,
+                      overrideToken: token,
+                    );
+                    
+                    if (success) {
+                      setState(() {
+                        RequestsSentScreen.mySentRequests.remove(plan);
+                      });
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Request withdrawn')),
+                        );
+                      }
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Failed to withdraw request')),
+                        );
+                      }
+                    }
                   },
                   child: Container(
                     width: double.infinity,

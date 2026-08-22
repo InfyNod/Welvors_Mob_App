@@ -411,6 +411,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
     final plan = currentList[displayIndex];
 
     return Container(
+      key: ValueKey(plan['id']),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),

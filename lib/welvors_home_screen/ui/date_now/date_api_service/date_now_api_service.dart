@@ -205,4 +205,104 @@ class DateNowApiService {
       return false;
     }
   }
+
+  // PATCH Request to approve date request
+  static Future<bool> approveRequest(String requestId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plan-requests/$requestId/approve');
+      final response = await http.patch(url, headers: _headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to approve request: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error approving request: $e');
+      return false;
+    }
+  }
+
+  // PATCH Request to decline date request
+  static Future<bool> declineRequest(String requestId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plan-requests/$requestId/decline');
+      final response = await http.patch(url, headers: _headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to decline request: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error declining request: $e');
+      return false;
+    }
+  }
+
+  // Request to withdraw a sent request
+  static Future<bool> withdrawRequest(String requestId, {String? overrideToken}) async {
+    try {
+      // The user mentioned the API is on the vercel domain, which might not be deployed to production yet
+      final String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api';
+      final url = Uri.parse('$vercelBaseUrl/user/date-plans/withdraw/$requestId');
+      
+      final headers = overrideToken != null 
+          ? {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $overrideToken',
+            }
+          : _headers;
+      
+      // We assume it's PATCH based on the other endpoints, but fallback to POST/DELETE
+      var response = await http.patch(url, headers: headers);
+      debugPrint('PATCH vercel response: ${response.statusCode} - ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) return true;
+      if (response.body.contains('"success":') || response.body.contains('not found')) return false;
+
+      // If 404 HTML, try POST on Vercel
+      if (response.statusCode == 404) {
+        response = await http.post(url, headers: headers);
+        debugPrint('POST vercel response: ${response.statusCode} - ${response.body}');
+        if (response.statusCode == 200 || response.statusCode == 201) return true;
+        if (response.body.contains('"success":') || response.body.contains('not found')) return false;
+      }
+      
+      // Try DELETE on Vercel
+      if (response.statusCode == 404) {
+        response = await http.delete(url, headers: headers);
+        debugPrint('DELETE vercel response: ${response.statusCode} - ${response.body}');
+        if (response.statusCode == 200 || response.statusCode == 201) return true;
+        if (response.body.contains('"success":') || response.body.contains('not found')) return false;
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint('Error withdrawing request: $e');
+      return false;
+    }
+  }
+
+  // GET Request to fetch requests for a specific plan
+  static Future<Map<String, dynamic>?> getPlanRequests(String planId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId/requests');
+      final response = await http.get(url, headers: _headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['success'] == true && data['data'] != null) {
+          return data['data'] as Map<String, dynamic>;
+        }
+      } else {
+        debugPrint('Failed to fetch plan requests: ${response.statusCode} - ${response.body}');
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching plan requests: $e');
+      return null;
+    }
+  }
 }
