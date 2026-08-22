@@ -12,13 +12,20 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
     with SingleTickerProviderStateMixin {
   int _selectedFilterIndex = 0;
 
-  final List<String> _filters = [
-    'All 6',
-    'Met 2',
-    'Expired 2',
-    'No-show 1',
-    'Cancelled 1',
-  ];
+  List<String> get _filters {
+    final allPlans = [...CardHistory.thisWeekPlans, ...CardHistory.earlierPlans];
+    final metCount = allPlans.where((p) => p['status'] == 'MET').length;
+    final expiredCount = allPlans.where((p) => p['status'] == 'EXPIRED').length;
+    final noShowCount = allPlans.where((p) => p['status'] == 'NO-SHOW').length;
+    final cancelledCount = allPlans.where((p) => p['status'] == 'CANCELLED').length;
+    return [
+      'All ${allPlans.length}',
+      'Met $metCount',
+      'Expired $expiredCount',
+      'No-show $noShowCount',
+      'Cancelled $cancelledCount',
+    ];
+  }
 
   late final List<GlobalKey> _filterKeys;
   late final AnimationController _progressController;
@@ -27,7 +34,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
   @override
   void initState() {
     super.initState();
-    _filterKeys = List.generate(_filters.length, (index) => GlobalKey());
+    _filterKeys = List.generate(5, (index) => GlobalKey());
 
     _progressController = AnimationController(
       vsync: this,

@@ -3,6 +3,7 @@ import '../post_a_plan/activity_1.dart';
 import 'package:dotted_border/dotted_border.dart';
 import '../my_plans/my_plan_screen.dart';
 import '../history/top_history_screen.dart';
+import '../history/card_history.dart';
 
 class RequestsSentScreen extends StatefulWidget {
   final int initialTabIndex;
@@ -230,7 +231,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 0,
               ),
               _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
-              _buildTab('History', 6, 2),
+              _buildTab('History', CardHistory.thisWeekPlans.length + CardHistory.earlierPlans.length, 2),
             ],
           ),
           const Divider(height: 1, color: Colors.black12),

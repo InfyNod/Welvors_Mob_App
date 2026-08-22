@@ -6,7 +6,7 @@ class CardHistory extends StatelessWidget {
 
   const CardHistory({super.key, this.selectedFilter = 'All'});
 
-  static final List<Map<String, dynamic>> _thisWeekPlans = [
+  static List<Map<String, dynamic>> thisWeekPlans = [
     {
       'title': '🍝 Pasta & Long Conversations',
       'date': 'Sat, 2 Aug · 8:00 – 10:30 PM',
@@ -58,7 +58,7 @@ class CardHistory extends StatelessWidget {
     },
   ];
 
-  static final List<Map<String, dynamic>> _earlierPlans = [
+  static List<Map<String, dynamic>> earlierPlans = [
     {
       'title': '🍸 Rooftop Sundowner',
       'date': 'Fri, 18 Jul · 7:00 – 9:00 PM',
@@ -119,8 +119,8 @@ class CardHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filteredThisWeek = _filterPlans(_thisWeekPlans);
-    final filteredEarlier = _filterPlans(_earlierPlans);
+    final filteredThisWeek = _filterPlans(thisWeekPlans);
+    final filteredEarlier = _filterPlans(earlierPlans);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,9 +269,7 @@ class CardHistory extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                           ),
-                          if (status != 'EXPIRED' &&
-                              status !=
-                                  'CANCELLED') // Only show rocket for active-like plans as per screenshot
+                          if (plan['boost'] != null && plan['boost'] != 'No') // Show rocket only if boosted
                             Positioned(
                               bottom: -2,
                               right: -2,

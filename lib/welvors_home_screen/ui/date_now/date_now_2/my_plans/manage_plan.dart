@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../post_a_plan/activity_1.dart';
 import '../post_a_plan/bloc/post_plan_state.dart';
+import '../history/card_history.dart';
+import 'my_plan_screen.dart';
 
 void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -1358,6 +1360,25 @@ void showThanksBottomSheet(
                       const SizedBox(height: 12),
                       GestureDetector(
                         onTap: () {
+                          // Move to history as MET
+                          CardHistory.thisWeekPlans.insert(0, {
+                            'title': plan['title'],
+                            'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
+                            'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                            'image': plan['imageUrl'],
+                            'status': 'MET',
+                            'partnerName': attendee['name'],
+                            'partnerAvatar': attendee['avatar'],
+                            'partnerStatus': 'Met on this plan',
+                            'rating': ratePerson,
+                            'note': 'You both showed up. Good experience!',
+                            'views': 120,
+                            'requests': (plan['requests'] as List?)?.length ?? 0,
+                            'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                            'boost': 'No',
+                          });
+                          MyPlanScreen.myHostedPlans.remove(plan);
+
                           Navigator.pop(context);
                           _showFeedbackSavedSnackBar(context, 'Plan closed · feedback saved');
                           onPlanClosed();
@@ -1586,6 +1607,25 @@ void showReportIssueBottomSheet(
                           GestureDetector(
                             onTap: () {
                               if (issueDescription.trim().isNotEmpty) {
+                                // Move to history as REPORTED/NO-SHOW
+                                CardHistory.thisWeekPlans.insert(0, {
+                                  'title': plan['title'],
+                                  'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
+                                  'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                                  'image': plan['imageUrl'],
+                                  'status': ratePerson > 0 ? 'MET' : 'NO-SHOW',
+                                  'partnerName': attendee['name'],
+                                  'partnerAvatar': attendee['avatar'],
+                                  'partnerStatus': ratePerson > 0 ? 'Met on this plan' : 'Reported issue',
+                                  'rating': ratePerson,
+                                  'note': 'Reported an issue: ${issueDescription.trim()}',
+                                  'views': 120,
+                                  'requests': (plan['requests'] as List?)?.length ?? 0,
+                                  'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                                  'boost': 'No',
+                                });
+                                MyPlanScreen.myHostedPlans.remove(plan);
+
                                 Navigator.pop(context);
                                 _showFeedbackSavedSnackBar(context, 'Report submitted');
                                 onPlanClosed();
@@ -1890,6 +1930,21 @@ void showNoOneCameBottomSheet(
                           GestureDetector(
                             onTap: () {
                               if (isFormValid) {
+                                // Move to history as NO-SHOW
+                                CardHistory.thisWeekPlans.insert(0, {
+                                  'title': plan['title'],
+                                  'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
+                                  'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                                  'image': plan['imageUrl'],
+                                  'status': 'NO-SHOW',
+                                  'note': 'No one came. Feedback recorded.',
+                                  'views': 120,
+                                  'requests': (plan['requests'] as List?)?.length ?? 0,
+                                  'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                                  'boost': 'No',
+                                });
+                                MyPlanScreen.myHostedPlans.remove(plan);
+
                                 Navigator.pop(context);
                                 _showFeedbackSavedSnackBar(context, 'Plan closed · feedback saved');
                                 onPlanClosed();
@@ -2066,6 +2121,23 @@ void showCancelPlanBottomSheet(
                       // Cancel plan button
                       GestureDetector(
                         onTap: () {
+                          // Move to history
+                          CardHistory.thisWeekPlans.insert(0, {
+                            'title': plan['title'],
+                            'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
+                            'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                            'image': plan['imageUrl'],
+                            'status': 'CANCELLED',
+                            'note': 'You cancelled this plan. All requesters were notified automatically.',
+                            'views': 120, 
+                            'requests': (plan['requests'] as List?)?.length ?? 0,
+                            'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                            'boost': 'No',
+                          });
+
+                          // Remove from active plans
+                          MyPlanScreen.myHostedPlans.remove(plan);
+
                           Navigator.pop(context);
                           _showFeedbackSavedSnackBar(context, 'Plan cancelled');
                           onPlanClosed();

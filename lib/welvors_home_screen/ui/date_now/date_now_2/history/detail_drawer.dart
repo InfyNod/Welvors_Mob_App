@@ -22,8 +22,9 @@ class HistoryDetailDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = plan['status'] as String;
-    final hasPartnerInfo = plan.containsKey('partnerName') && plan['partnerName'] != null;
-    
+    final hasPartnerInfo =
+        plan.containsKey('partnerName') && plan['partnerName'] != null;
+
     // Status color mapping for the badge text
     Color statusColor;
     switch (status) {
@@ -46,7 +47,9 @@ class HistoryDetailDrawer extends StatelessWidget {
     // Default calculations for stats if not present
     final views = plan['views'] ?? 0;
     final requests = plan['requests'] ?? 0;
-    final approved = hasPartnerInfo ? 1 : 0; // Simplified logic based on partner existence
+    final approved = hasPartnerInfo
+        ? 1
+        : 0; // Simplified logic based on partner existence
 
     return Container(
       decoration: const BoxDecoration(
@@ -69,7 +72,7 @@ class HistoryDetailDrawer extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          
+
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -92,7 +95,10 @@ class HistoryDetailDrawer extends StatelessWidget {
                         top: 12,
                         right: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -111,7 +117,7 @@ class HistoryDetailDrawer extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Title
                   Center(
                     child: Text(
@@ -125,7 +131,7 @@ class HistoryDetailDrawer extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Date and Location
                   Text(
                     plan['date'],
@@ -134,18 +140,25 @@ class HistoryDetailDrawer extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.location_on, size: 14, color: Colors.red.shade400),
+                      Icon(
+                        Icons.location_on,
+                        size: 14,
+                        color: Colors.red.shade400,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           plan['location'],
-                          style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade500,
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Note container
                   Container(
                     width: double.infinity,
@@ -164,22 +177,27 @@ class HistoryDetailDrawer extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // WHO CAME Section
-                  if (hasPartnerInfo && (status == 'MET' || status == 'NO-SHOW')) ...[
+                  if (hasPartnerInfo &&
+                      (status == 'MET' || status == 'NO-SHOW')) ...[
                     _buildSectionTitle('WHO CAME'),
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFBF4ED),
-                        border: Border.all(color: Colors.orange.withOpacity(0.2)),
+                        border: Border.all(
+                          color: Colors.orange.withOpacity(0.2),
+                        ),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: NetworkImage(plan['partnerAvatar']),
+                            backgroundImage: NetworkImage(
+                              plan['partnerAvatar'],
+                            ),
                             radius: 20,
                           ),
                           const SizedBox(width: 12),
@@ -196,7 +214,7 @@ class HistoryDetailDrawer extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  status == 'MET' 
+                                  status == 'MET'
                                       ? 'You rated ${plan['rating']}★ · they rated you 5★'
                                       : 'Didn\'t show up',
                                   style: TextStyle(
@@ -212,7 +230,7 @@ class HistoryDetailDrawer extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                   ],
-                  
+
                   // HOW IT PERFORMED Section
                   _buildSectionTitle('HOW IT PERFORMED'),
                   const SizedBox(height: 16),
@@ -221,35 +239,45 @@ class HistoryDetailDrawer extends StatelessWidget {
                     subtext: null,
                     value: views,
                     maxVal: views > 0 ? views : 1,
-                    progress: 1.0, 
+                    progress: 1.0,
                   ),
                   const SizedBox(height: 12),
                   _buildStatRow(
                     label: 'Requests',
-                    subtext: views > 0 ? '${((requests / views) * 100).toInt()}% of views' : '0% of views',
+                    subtext: views > 0
+                        ? '${((requests / views) * 100).toInt()}% of views'
+                        : '0% of views',
                     value: requests,
                     maxVal: views > 0 ? views : 1,
-                    progress: views > 0 ? (requests / views) : 0, 
+                    progress: views > 0 ? (requests / views) : 0,
                   ),
                   const SizedBox(height: 12),
                   _buildStatRow(
                     label: 'Approved',
-                    subtext: requests > 0 ? '${((approved / requests) * 100).toInt()}% of requests' : '0% of requests',
+                    subtext: requests > 0
+                        ? '${((approved / requests) * 100).toInt()}% of requests'
+                        : '0% of requests',
                     value: approved,
                     maxVal: views > 0 ? views : 1,
-                    progress: views > 0 ? (approved / views) : 0, 
+                    progress: views > 0 ? (approved / views) : 0,
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // INFO GRID
                   Row(
                     children: [
                       Expanded(
-                        child: _buildInfoCard('BILL', plan['split'] ?? 'Split (TTMM)'),
+                        child: _buildInfoCard(
+                          'BILL',
+                          plan['split'] ?? 'Split (TTMM)',
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: _buildInfoCard('GROUP', plan['groupSize'] ?? 'Just 1'),
+                        child: _buildInfoCard(
+                          'GROUP',
+                          plan['groupSize'] ?? 'Just 1',
+                        ),
                       ),
                     ],
                   ),
@@ -261,18 +289,21 @@ class HistoryDetailDrawer extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: _buildInfoCard('PLAN COST', plan['planCost'] ?? '₹100'),
+                        child: _buildInfoCard(
+                          'PLAN COST',
+                          plan['planCost'] ?? '₹100',
+                        ),
                       ),
                     ],
                   ),
-                  
+
                   // Bottom spacing inside scroll view
                   const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
-          
+
           // Sticky MESSAGE BUTTON at bottom
           if (status == 'MET' && hasPartnerInfo)
             SafeArea(
@@ -360,16 +391,13 @@ class HistoryDetailDrawer extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtext,
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: Colors.grey.shade400,
-                  ),
+                  style: TextStyle(fontSize: 9, color: Colors.grey.shade400),
                 ),
               ],
             ],
           ),
         ),
-        
+
         // Progress Bar
         Expanded(
           child: Container(
@@ -390,7 +418,7 @@ class HistoryDetailDrawer extends StatelessWidget {
             ),
           ),
         ),
-        
+
         // Value
         const SizedBox(width: 16),
         SizedBox(
