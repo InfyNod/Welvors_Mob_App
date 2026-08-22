@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
 import 'date_api_service/date_now_api_service.dart';
 
-Future<void> showRequestDateBottomSheet(
+Future<bool> showRequestDateBottomSheet(
   BuildContext context,
   Map<String, dynamic> plan,
-) {
+) async {
   final TextEditingController messageController = TextEditingController();
   int selectedBillIndex = 0;
 
-  return showModalBottomSheet(
+  final result = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.white,
@@ -331,7 +331,7 @@ Future<void> showRequestDateBottomSheet(
                                   bool success = await DateNowApiService.requestDatePlan(plan['id'], overrideToken: testToken);
                                   
                                   if (context.mounted) {
-                                    Navigator.pop(context);
+                                    Navigator.pop(context, success);
                                     
                                     if (success) {
                                       // Construct sent request map
@@ -388,7 +388,7 @@ Future<void> showRequestDateBottomSheet(
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(16),
                                 onTap: () {
-                                  Navigator.pop(context);
+                                  Navigator.pop(context, false);
                                 },
                                 child: const Center(
                                   child: Text(
@@ -415,6 +415,8 @@ Future<void> showRequestDateBottomSheet(
       );
     },
   );
+  
+  return result ?? false;
 }
 
 Widget _buildSelectionChip(

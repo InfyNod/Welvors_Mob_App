@@ -769,8 +769,8 @@ class _DateNowScreenState extends State<DateNowScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () async {
-                              await showRequestDateBottomSheet(context, plan);
-                              if (mounted) {
+                              final requestSent = await showRequestDateBottomSheet(context, plan);
+                              if (mounted && requestSent == true) {
                                 setState(() {
                                   _fetchedPlans.remove(plan);
                                 });
