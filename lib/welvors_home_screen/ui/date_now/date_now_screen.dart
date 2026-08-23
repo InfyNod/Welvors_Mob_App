@@ -3,6 +3,7 @@ import 'send_request_drawer.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
 import 'date_now_2/my_plans/my_plan_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
+import 'date_now_2/post_a_plan/activity_1.dart';
 
 class DateNowScreen extends StatefulWidget {
   const DateNowScreen({super.key});
@@ -47,49 +48,75 @@ class _DateNowScreenState extends State<DateNowScreen> {
       filter = 'weekend'; // Adjust if backend uses a different term for weekend
     }
 
-    final token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+    final token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
 
-    final plans = await DateNowApiService.getDiscoverPlans(filter, overrideToken: token);
-    
+    final plans = await DateNowApiService.getDiscoverPlans(
+      filter,
+      overrideToken: token,
+    );
+
     if (mounted) {
       setState(() {
         _fetchedPlans = [];
         if (plans != null) {
           for (var p in plans) {
             String activity = p['activity'] ?? 'Unknown';
-            
+
             // Determine default image based on activity type if photoUrl is null
-            String defaultImage = 'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'; // Default walk/nature
+            String defaultImage =
+                'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'; // Default walk/nature
             final activityLower = activity.toLowerCase();
             if (activityLower.contains('dinner')) {
-              defaultImage = 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+              defaultImage =
+                  'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
             } else if (activityLower.contains('coffee')) {
-              defaultImage = 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+              defaultImage =
+                  'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
             } else if (activityLower.contains('brunch')) {
-              defaultImage = 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            } else if (activityLower.contains('drink') || activityLower.contains('bar')) {
-              defaultImage = 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            } else if (activityLower.contains('trek') || activityLower.contains('hike')) {
-              defaultImage = 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+              defaultImage =
+                  'https://images.unsplash.com/photo-1543807535-eceef0bc6599?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            } else if (activityLower.contains('drink') ||
+                activityLower.contains('bar')) {
+              defaultImage =
+                  'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            } else if (activityLower.contains('trek') ||
+                activityLower.contains('hike')) {
+              defaultImage =
+                  'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
             }
 
             _fetchedPlans.add({
               'id': p['id'],
               'imageUrl': p['photoUrl'] ?? p['activityIcon'] ?? defaultImage,
               'location': 'Live · ${p['venueName'] ?? 'Unknown'}',
-              'distance': p['distanceKm'] != null ? '${p['distanceKm']} km away' : 'Near you',
-              'match': p['matchScore'] != null ? '${p['matchScore']['score']}% match' : '0% match',
-              'date': p['eventDate'] != null ? '📅 ${p['eventDate']}' : '📅 TODAY',
-              'time': p['eventTime'] != null ? '🕔 ${p['eventTime']}' : '🕔 TBD',
+              'distance': p['distanceKm'] != null
+                  ? '${p['distanceKm']} km away'
+                  : 'Near you',
+              'match': p['matchScore'] != null
+                  ? '${p['matchScore']['score']}% match'
+                  : '0% match',
+              'date': p['eventDate'] != null
+                  ? '📅 ${p['eventDate']}'
+                  : '📅 TODAY',
+              'time': p['eventTime'] != null
+                  ? '🕔 ${p['eventTime']}'
+                  : '🕔 TBD',
               'type': activity,
               'title': p['title'] ?? p['quickTitle'] ?? 'Date Plan',
               'subtitle': p['note'] ?? '',
-              'people': p['duration'] != null ? '⏱️ ${p['duration']} mins' : '👥 2 people',
+              'people': p['duration'] != null
+                  ? '⏱️ ${p['duration']} mins'
+                  : '👥 2 people',
               'pay': p['whoPays'] ?? '🤝 Split',
-              'name': p['host'] != null ? '${p['host']['name']}, ${p['host']['age']}' : 'User',
+              'name': p['host'] != null
+                  ? '${p['host']['name']}, ${p['host']['age']}'
+                  : 'User',
               'verified': true, // default for now
               'nameSubtitle': 'Host',
-              'avatarUrl': p['host'] != null ? p['host']['profilePhoto'] : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+              'avatarUrl': p['host'] != null
+                  ? p['host']['profilePhoto']
+                  : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
             });
           }
         }
@@ -185,7 +212,9 @@ class _DateNowScreenState extends State<DateNowScreen> {
                     ),
                   ).then((_) {
                     if (mounted) {
-                      setState(() {}); // Refresh the badge number when returning
+                      setState(
+                        () {},
+                      ); // Refresh the badge number when returning
                     }
                   });
                 },
@@ -376,31 +405,108 @@ class _DateNowScreenState extends State<DateNowScreen> {
 
     String selectedFilter = _filters[_selectedFilterIndex];
     if (selectedFilter != 'All plans') {
-      final filterText = selectedFilter.split(' ').last; // e.g. 'Coffee' from '☕ Coffee'
+      final filterText = selectedFilter
+          .split(' ')
+          .last; // e.g. 'Coffee' from '☕ Coffee'
       currentList = currentList
           .where((plan) => plan['type'].toString().contains(filterText))
           .toList();
     }
 
     if (currentList.isEmpty) {
+      String currentTab = _tabs[_selectedTabIndex];
+      String filterLabel = currentTab == 'Weekend'
+          ? 'this weekend'
+          : currentTab.toLowerCase();
+      if (selectedFilter != 'All plans') {
+        final filterText = selectedFilter.split(' ').last;
+        filterLabel = '$filterLabel for $filterText';
+      }
+
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.calendar_today_outlined,
+                size: 48,
+                color: Colors.grey.shade400,
+              ),
+            ),
+            const SizedBox(height: 24),
             Text(
-              'No plans found',
+              'No plans found $filterLabel',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey.shade600,
+                color: Colors.grey.shade800,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
-              'Try selecting a different filter.',
-              style: TextStyle(color: Colors.grey.shade500),
+              'Be the first to post a plan and\ninvite others to join you!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey.shade500,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFDE2957).withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(24),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Activity1Screen(),
+                      ),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, size: 18, color: Colors.white),
+                        SizedBox(width: 6),
+                        Text(
+                          'Post a plan',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -741,15 +847,19 @@ class _DateNowScreenState extends State<DateNowScreen> {
                       child: IconButton(
                         icon: const Icon(Icons.close, color: Color(0xFFE43A6A)),
                         onPressed: () async {
-                          final testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
-                          
+                          final testToken =
+                              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+
                           // Optional UI feedback or just remove immediately for perceived speed
                           setState(() {
                             _fetchedPlans.remove(plan);
                           });
-                          
+
                           // Call API in the background
-                          await DateNowApiService.skipPlan(plan['id'], overrideToken: testToken);
+                          await DateNowApiService.skipPlan(
+                            plan['id'],
+                            overrideToken: testToken,
+                          );
                         },
                       ),
                     ),
@@ -770,7 +880,11 @@ class _DateNowScreenState extends State<DateNowScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () async {
-                              final requestSent = await showRequestDateBottomSheet(context, plan);
+                              final requestSent =
+                                  await showRequestDateBottomSheet(
+                                    context,
+                                    plan,
+                                  );
                               if (mounted && requestSent == true) {
                                 setState(() {
                                   _fetchedPlans.remove(plan);
@@ -850,6 +964,4 @@ class _DateNowScreenState extends State<DateNowScreen> {
       ),
     );
   }
-
-
 }
