@@ -36,6 +36,63 @@ void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   );
 }
 
+PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
+  final activity = rawPlan['activity'] ?? {};
+  final venue = rawPlan['venue'] ?? {};
+  
+  TimeOfDay? parsedTime;
+  if (rawPlan['eventTime'] != null) {
+    try {
+      final timeStr = rawPlan['eventTime'].toString().toLowerCase();
+      final isPm = timeStr.contains('pm');
+      final cleanStr = timeStr.replaceAll(RegExp(r'[a-z ]'), '');
+      final parts = cleanStr.split(':');
+      if (parts.length == 2) {
+        int hour = int.parse(parts[0]);
+        final min = int.parse(parts[1]);
+        if (isPm && hour < 12) hour += 12;
+        if (!isPm && hour == 12) hour = 0;
+        parsedTime = TimeOfDay(hour: hour, minute: min);
+      }
+    } catch (_) {}
+  }
+  
+  String durationStr = rawPlan['duration']?.toString() ?? '120';
+  if (durationStr == '120') durationStr = '2 hours';
+  else if (durationStr == '60') durationStr = '1 hour';
+  else if (durationStr == '180') durationStr = '3 hours';
+
+  String _extractLabel(dynamic field, String fallback) {
+    if (field is Map) {
+      return field['label']?.toString() ?? field['name']?.toString() ?? fallback;
+    }
+    return field?.toString() ?? fallback;
+  }
+
+  return PostPlanState(
+    currentStep: 4,
+    planId: rawPlan['id']?.toString(),
+    selectedActivityName: activity['label']?.toString() ?? 'General',
+    selectedActivityImage: activity['icon']?.toString() ?? rawPlan['photoUrl']?.toString(),
+    title: rawPlan['title']?.toString() ?? '',
+    description: rawPlan['note']?.toString() ?? '',
+    tags: const [],
+    locationName: venue['name']?.toString() ?? '',
+    locationSubtitle: venue['address']?.toString() ?? '',
+    landmark: '',
+    whenDate: rawPlan['eventDate']?.toString() ?? 'Today',
+    time: parsedTime,
+    howLong: durationStr,
+    whoPays: _extractLabel(rawPlan['whoPays'], '🤝 Split'),
+    groupSize: rawPlan['participantLimit']?.toString() != null ? '${rawPlan['participantLimit']} person' : '1 person',
+    whoCanRequest: _extractLabel(rawPlan['joinRequestGender'], 'Anyone'),
+    visibility: _extractLabel(rawPlan['visibility'], 'Premium 👑'),
+    finalWhoCanJoin: rawPlan['participantLimit']?.toString() != null ? '${rawPlan['participantLimit']} person' : '1 person',
+    verifiedMembersOnly: true,
+    autoApproveRequests: false,
+  );
+}
+
 void showManageBottomSheet(
   BuildContext context,
   Map<String, dynamic> plan,
@@ -116,12 +173,20 @@ void showManageBottomSheet(
                 subtitle: 'Change time, venue or bill',
                 onTap: () {
                   Navigator.pop(context);
+                  PostPlanState? stateToEdit;
+                  
                   if (plan.containsKey('originalState')) {
+                    stateToEdit = plan['originalState'] as PostPlanState;
+                  } else if (plan.containsKey('rawPlan')) {
+                    stateToEdit = _parseRawPlanToState(plan['rawPlan']);
+                  }
+
+                  if (stateToEdit != null) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Activity1Screen(
-                          initialState: plan['originalState'] as PostPlanState,
+                          initialState: stateToEdit,
                           initialStep: 4, // Step 4 is Review4View
                         ),
                       ),

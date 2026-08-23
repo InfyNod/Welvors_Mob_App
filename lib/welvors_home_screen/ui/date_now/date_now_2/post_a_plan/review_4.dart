@@ -226,12 +226,16 @@ class _Review4ViewState extends State<Review4View> {
                                     '🤝 ',
                                     style: TextStyle(fontSize: 14),
                                   ),
-                                  Text(
-                                    '${state.whoPays ?? 'Split (TTMM)'} · 👥 ${state.groupSize ?? '1 person'}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
+                                  Expanded(
+                                    child: Text(
+                                      '${state.whoPays ?? 'Split (TTMM)'} · 👥 ${state.groupSize ?? '1 person'}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],

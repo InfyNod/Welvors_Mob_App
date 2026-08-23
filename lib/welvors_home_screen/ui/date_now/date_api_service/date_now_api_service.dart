@@ -70,6 +70,33 @@ class DateNowApiService {
     }
   }
 
+  // PATCH Request for Step 1 Activity
+  static Future<Map<String, dynamic>?> patchPlanActivity(
+    String planId,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId/activity');
+      final response = await http.patch(
+        url,
+        headers: _headers,
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint(
+          'Failed to patch plan activity: ${response.statusCode} - ${response.body}',
+        );
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error patching plan activity: $e');
+      return null;
+    }
+  }
+
   // POST Request to publish the plan (Step 4)
   static Future<Map<String, dynamic>?> publishPlan(String planId) async {
     try {

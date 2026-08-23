@@ -586,17 +586,37 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                         _isCreatingPlan = true;
                       });
                       try {
-                        final response = await DateNowApiService.postPlan({
-                          "activityId": _selectedActivityId,
-                        });
-                        if (response != null && response['success'] == true) {
-                          final planId = response['data']['id'];
+                        final currentState = context.read<PostPlanBloc>().state;
+                        String finalPlanId = currentState.planId ?? '';
+                        bool isSuccess = true;
+
+                        if (currentState.planId != null && currentState.planId!.isNotEmpty) {
+                          // EDIT MODE
+                          if (_selectedActivityId != null) {
+                            final response = await DateNowApiService.patchPlanActivity(currentState.planId!, {
+                              "activityId": _selectedActivityId,
+                            });
+                            isSuccess = response != null && response['success'] == true;
+                          }
+                        } else {
+                          // CREATE MODE
+                          final response = await DateNowApiService.postPlan({
+                            "activityId": _selectedActivityId,
+                          });
+                          if (response != null && response['success'] == true) {
+                            finalPlanId = response['data']['id'];
+                          } else {
+                            isSuccess = false;
+                          }
+                        }
+
+                        if (isSuccess) {
                           if (mounted) {
                             context.read<PostPlanBloc>().add(
                               UpdateStep1Event(
                                 activityName: _selectedActivity!,
                                 activityImage: _selectedActivityImage ?? '',
-                                planId: planId,
+                                planId: finalPlanId,
                               ),
                             );
                           }
