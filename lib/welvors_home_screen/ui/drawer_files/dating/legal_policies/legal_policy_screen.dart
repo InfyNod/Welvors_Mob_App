@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'all_page_legal/community_guidelines.dart';
+import 'all_page_legal/privacy_policy.dart';
 import 'all_page_legal/terms_service.dart';
 
 class LegalPoliciesScreen extends StatefulWidget {
@@ -128,6 +130,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.green.shade50,
                 title: 'Privacy Policy',
                 subtitle: 'What data we collect & why',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacyPolicyScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
@@ -135,6 +145,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.orange.shade50,
                 title: 'Community Guidelines',
                 subtitle: 'How to behave on Welvors',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CommunityGuidelinesScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
