@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'all_screen_help/live_chat.dart';
+import 'all_screen_help/account_pofile.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -169,7 +170,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   emoji: '👤',
                   title: 'Account & Profile',
                   subtitle: 'Login, verification',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountProfileScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildTopicCard(
                   emoji: '🛡️',
