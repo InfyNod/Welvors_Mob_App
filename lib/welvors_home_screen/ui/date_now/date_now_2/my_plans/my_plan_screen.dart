@@ -121,7 +121,8 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           String category = activity['label']?.toString() ?? 'General';
           String imageUrl = plan['photoUrl']?.toString() ?? activity['icon']?.toString() ?? 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
           String subtitle = '$_selectedDayFilter · ${venue['name']?.toString() ?? 'Custom location'}';
-          String limitTag = '👥 Limit ${plan['participantLimit'] ?? 1}';
+          final int partLimit = int.tryParse(plan['participantLimit']?.toString() ?? '1') ?? 1;
+          String limitTag = partLimit > 2 ? '👥 Small group' : '👥 Limit $partLimit';
 
           return {
             'id': plan['id']?.toString() ?? '',
