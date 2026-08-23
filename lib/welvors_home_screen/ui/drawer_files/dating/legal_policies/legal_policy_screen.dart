@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/cookie_policy.dart';
+import 'all_page_legal/data_rights.dart';
 import 'all_page_legal/forever_love.dart';
+import 'all_page_legal/verification.dart';
 import 'all_page_legal/privacy_policy.dart';
 import 'all_page_legal/refund_cancelation.dart';
 import 'all_page_legal/safety_dating_tips.dart';
@@ -252,6 +254,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.indigo.shade50,
                 title: 'Data & Your Rights',
                 subtitle: 'Access, download, delete',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DataRightsScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
@@ -259,6 +269,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.teal.shade50,
                 title: 'Verification & ID Policy',
                 subtitle: 'How we handle your documents',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const VerificationPolicyScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 32),

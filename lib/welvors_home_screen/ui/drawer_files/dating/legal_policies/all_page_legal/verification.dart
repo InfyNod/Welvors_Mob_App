@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class DataRightsScreen extends StatelessWidget {
-  const DataRightsScreen({super.key});
+class VerificationPolicyScreen extends StatelessWidget {
+  const VerificationPolicyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class DataRightsScreen extends StatelessWidget {
           ),
         ),
         title: const Text(
-          'Data & Your Rights',
+          'Verification & ID Policy',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 16,
@@ -74,10 +74,10 @@ class DataRightsScreen extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.gavel, size: 14, color: Colors.pink.shade400),
+                  Icon(Icons.update, size: 14, color: Colors.pink.shade400),
                   const SizedBox(width: 6),
                   Text(
-                    'Under India\'s DPDP Act 2023',
+                    'Last updated 20 June 2026',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -90,28 +90,37 @@ class DataRightsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _buildSectionCard(
-              title: 'Your rights',
+              title: 'Why we verify',
+              child: Text(
+                'Verification keeps Welvors free of fake profiles and builds your Trust Score, helping you get more genuine matches.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade600,
+                  height: 1.5,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildSectionCard(
+              title: 'What we collect',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRichBulletPoint(
-                      'Access', ' — see what we hold about you'),
+                  _buildBulletPoint(
+                      'Government ID (Aadhaar, PAN, Passport, DL, Voter ID)'),
                   const SizedBox(height: 12),
-                  _buildRichBulletPoint(
-                      'Download', ' — get a copy of your data'),
+                  _buildBulletPoint('A live selfie / short video for liveness'),
                   const SizedBox(height: 12),
-                  _buildRichBulletPoint('Correct', ' — fix inaccurate info'),
-                  const SizedBox(height: 12),
-                  _buildRichBulletPoint(
-                      'Delete', ' — erase your account & data'),
+                  _buildBulletPoint(
+                      'Optional: education, profession, income proof'),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             _buildSectionCard(
-              title: 'How to exercise them',
+              title: 'How it\'s handled',
               child: Text(
-                'Use Account Settings → Data, or email privacy@welvors.com. We respond within 30 days.',
+                'Documents are encrypted in transit and at rest, checked against official records (e.g. DigiLocker), and deleted after verification. They are never shown to other users.',
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade600,
@@ -120,15 +129,43 @@ class DataRightsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildSectionCard(
-              title: 'Retention',
-              child: Text(
-                'We keep your data only while your account is active, then delete it within 90 days of account deletion (some records are kept longer if law requires).',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade600,
-                  height: 1.5,
-                ),
+
+            // Bottom Card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDF4), // light green
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.green.shade200, width: 0.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Text('✓',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Only your verified badges and Trust Score appear publicly — never the documents themselves.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.green.shade700,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -174,7 +211,7 @@ class DataRightsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRichBulletPoint(String boldText, String regularText) {
+  Widget _buildBulletPoint(String text) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -191,23 +228,12 @@ class DataRightsScreen extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey.shade600,
-                height: 1.5,
-              ),
-              children: [
-                TextSpan(
-                  text: boldText,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                TextSpan(text: regularText),
-              ],
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade600,
+              height: 1.5,
             ),
           ),
         ),
