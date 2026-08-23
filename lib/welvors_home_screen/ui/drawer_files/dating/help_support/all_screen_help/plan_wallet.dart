@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/help_support/all_screen_help/live_chat.dart';
 
-class AccountProfileScreen extends StatelessWidget {
-  const AccountProfileScreen({super.key});
+class PlanWalletScreen extends StatelessWidget {
+  const PlanWalletScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class AccountProfileScreen extends StatelessWidget {
           ),
         ),
         title: const Text(
-          'Account & Profile',
+          'Plans & Wallet',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 16,
@@ -55,7 +55,7 @@ class AccountProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'ACCOUNT & PROFILE · FAQ',
+              'PLANS & WALLET · FAQ',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -79,30 +79,23 @@ class AccountProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const _FaqItem(
-                    question: 'How do I verify my profile?',
+                    question: 'How does the Welvors Wallet work?',
                     answer:
-                        'Go to Profile → Trust Centre and complete the verification steps. Government ID gives instant verification via DigiLocker; manual review takes 24–48 hours.',
+                        'Coins from gifts, refunds and referrals land in your wallet. Use them for Roses, Boosts, Compliments and to activate plans. Withdrawals carry a 25% service charge.',
                     isExpandedDefault: false,
                   ),
                   _buildDivider(),
                   const _FaqItem(
-                    question: 'I can\'t log in to my account',
+                    question: 'How do I get a refund?',
                     answer:
-                        'Use "Forgot password" on the login screen, or sign in with the linked Google/phone number. Still stuck? Start a live chat below.',
+                        'Event bookings cancelled 3+ days early get a full refund to your wallet. For plan billing issues, start a live chat with proof of payment.',
                     isExpandedDefault: false,
                   ),
                   _buildDivider(),
                   const _FaqItem(
-                    question: 'How do I change my phone number?',
+                    question: 'What are Date Plan credits?',
                     answer:
-                        'Account Settings → Personal Information → tap Phone. You\'ll verify the new number with an OTP.',
-                    isExpandedDefault: false,
-                  ),
-                  _buildDivider(),
-                  const _FaqItem(
-                    question: 'How do I delete my account?',
-                    answer:
-                        'Account Settings → Danger Zone → Delete Account. This permanently erases your profile, matches and wallet after a 7-day grace period.',
+                        'Separate from coins — each credit lets you post one live plan in Date Now. Manage them in Profile → Date Plans.',
                     isExpandedDefault: false,
                   ),
                 ],

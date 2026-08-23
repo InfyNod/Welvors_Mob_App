@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/help_support/all_screen_help/live_chat.dart';
 
-class AccountProfileScreen extends StatelessWidget {
-  const AccountProfileScreen({super.key});
+class MatchesDateScreen extends StatelessWidget {
+  const MatchesDateScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class AccountProfileScreen extends StatelessWidget {
           ),
         ),
         title: const Text(
-          'Account & Profile',
+          'Matches & Dates',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 16,
@@ -55,7 +55,7 @@ class AccountProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'ACCOUNT & PROFILE · FAQ',
+              'MATCHES & DATES · FAQ',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -79,30 +79,23 @@ class AccountProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const _FaqItem(
-                    question: 'How do I verify my profile?',
+                    question: 'Why can\'t I see who liked me?',
                     answer:
-                        'Go to Profile → Trust Centre and complete the verification steps. Government ID gives instant verification via DigiLocker; manual review takes 24–48 hours.',
+                        'Free members see blurred likes. Upgrade to Premium+ or unlock with coins to reveal everyone in Admirers.',
                     isExpandedDefault: false,
                   ),
                   _buildDivider(),
                   const _FaqItem(
-                    question: 'I can\'t log in to my account',
+                    question: 'How do Date Now plans work?',
                     answer:
-                        'Use "Forgot password" on the login screen, or sign in with the linked Google/phone number. Still stuck? Start a live chat below.',
+                        'Post a live plan (costs 1 Date Plan credit). Nearby users send join requests; you approve and chat opens automatically.',
                     isExpandedDefault: false,
                   ),
                   _buildDivider(),
                   const _FaqItem(
-                    question: 'How do I change my phone number?',
+                    question: 'What is the Forever Love Programme?',
                     answer:
-                        'Account Settings → Personal Information → tap Phone. You\'ll verify the new number with an OTP.',
-                    isExpandedDefault: false,
-                  ),
-                  _buildDivider(),
-                  const _FaqItem(
-                    question: 'How do I delete my account?',
-                    answer:
-                        'Account Settings → Danger Zone → Delete Account. This permanently erases your profile, matches and wallet after a 7-day grace period.',
+                        'A 3-year commitment journey — date monthly, stay verified, and get a ₹5 Lakh honeymoon when you marry. See Profile → Forever Love Programme.',
                     isExpandedDefault: false,
                   ),
                 ],

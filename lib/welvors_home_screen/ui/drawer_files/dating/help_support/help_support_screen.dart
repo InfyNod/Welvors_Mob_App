@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'all_screen_help/live_chat.dart';
 import 'all_screen_help/account_pofile.dart';
-
+import 'all_screen_help/safety_privacy.dart';
+import 'all_screen_help/plan_wallet.dart';
+import 'all_screen_help/matches_date.dart';
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
 
@@ -183,19 +185,40 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   emoji: '🛡️',
                   title: 'Safety & Privacy',
                   subtitle: 'Block, report, data',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SafetyPrivacyScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildTopicCard(
                   emoji: '💳',
                   title: 'Plans & Wallet',
                   subtitle: 'Payments, refunds',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PlanWalletScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildTopicCard(
                   emoji: '💕',
                   title: 'Matches & Dates',
                   subtitle: 'Likes, events, plans',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MatchesDateScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

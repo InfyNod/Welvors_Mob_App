@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/help_support/all_screen_help/live_chat.dart';
 
-class AccountProfileScreen extends StatelessWidget {
-  const AccountProfileScreen({super.key});
+class SafetyPrivacyScreen extends StatelessWidget {
+  const SafetyPrivacyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class AccountProfileScreen extends StatelessWidget {
           ),
         ),
         title: const Text(
-          'Account & Profile',
+          'Safety & Privacy',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 16,
@@ -55,7 +55,7 @@ class AccountProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'ACCOUNT & PROFILE · FAQ',
+              'SAFETY & PRIVACY · FAQ',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -79,30 +79,23 @@ class AccountProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const _FaqItem(
-                    question: 'How do I verify my profile?',
+                    question: 'How do I block or report someone?',
                     answer:
-                        'Go to Profile → Trust Centre and complete the verification steps. Government ID gives instant verification via DigiLocker; manual review takes 24–48 hours.',
+                        'Open their chat → tap the ⋮ menu → Block or Report. Reports are reviewed by our Trust & Safety team within hours.',
                     isExpandedDefault: false,
                   ),
                   _buildDivider(),
                   const _FaqItem(
-                    question: 'I can\'t log in to my account',
+                    question: 'Who can see my profile?',
                     answer:
-                        'Use "Forgot password" on the login screen, or sign in with the linked Google/phone number. Still stuck? Start a live chat below.',
+                        'Account Settings → Privacy Controls. You can limit visibility to Verified members (by Trust Score) or hide yourself from contacts.',
                     isExpandedDefault: false,
                   ),
                   _buildDivider(),
                   const _FaqItem(
-                    question: 'How do I change my phone number?',
+                    question: 'Is my data safe?',
                     answer:
-                        'Account Settings → Personal Information → tap Phone. You\'ll verify the new number with an OTP.',
-                    isExpandedDefault: false,
-                  ),
-                  _buildDivider(),
-                  const _FaqItem(
-                    question: 'How do I delete my account?',
-                    answer:
-                        'Account Settings → Danger Zone → Delete Account. This permanently erases your profile, matches and wallet after a 7-day grace period.',
+                        'Yes — documents are encrypted, never shown to other users, and deleted after verification. You can download or delete your data anytime.',
                     isExpandedDefault: false,
                   ),
                 ],
