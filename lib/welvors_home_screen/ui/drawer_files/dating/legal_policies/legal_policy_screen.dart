@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'all_page_legal/community_guidelines.dart';
+import 'all_page_legal/cookie_policy.dart';
+import 'all_page_legal/forever_love.dart';
 import 'all_page_legal/privacy_policy.dart';
 import 'all_page_legal/refund_cancelation.dart';
 import 'all_page_legal/safety_dating_tips.dart';
@@ -214,6 +216,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.pink.shade50,
                 title: 'Forever Love Programme Terms',
                 subtitle: '₹5 Lakh honeymoon conditions',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ForeverLoveScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 32),
@@ -227,6 +237,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.brown.shade50,
                 title: 'Cookie Policy',
                 subtitle: 'Trackers & analytics',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CookiePolicyScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
