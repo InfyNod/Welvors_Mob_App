@@ -10,6 +10,26 @@ class LiveChatScreen extends StatefulWidget {
 
 class _LiveChatScreenState extends State<LiveChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 
   List<Map<String, dynamic>> _messages = [
     {
@@ -25,11 +45,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     'Something else',
   ];
 
-  @override
-  void dispose() {
-    _messageController.dispose();
-    super.dispose();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +95,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
+              controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
@@ -277,6 +294,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       _messageController.clear();
       _currentChips.clear();
     });
+    _scrollToBottom();
     
     // Simulate bot reply
     Future.delayed(const Duration(milliseconds: 600), () {
@@ -288,6 +306,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
           });
           _currentChips = ['Connect to agent', 'Nevermind'];
         });
+        _scrollToBottom();
       }
     });
   }
@@ -297,6 +316,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       _messages.add({'isSender': true, 'text': label});
       _currentChips.clear(); // Hide current chips
     });
+    _scrollToBottom();
 
     // Simulate bot reply based on selection
     Future.delayed(const Duration(milliseconds: 600), () {
@@ -336,6 +356,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
             _currentChips = ['Connect to agent', 'Nevermind'];
           }
         });
+        _scrollToBottom();
       }
     });
   }
