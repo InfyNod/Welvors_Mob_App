@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/privacy_policy.dart';
+import 'all_page_legal/refund_cancelation.dart';
 import 'all_page_legal/safety_dating_tips.dart';
+import 'all_page_legal/wallet_coin_terms.dart';
 import 'all_page_legal/terms_service.dart';
 
 class LegalPoliciesScreen extends StatefulWidget {
@@ -182,6 +184,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.purple.shade50,
                 title: 'Refund & Cancellation Policy',
                 subtitle: 'Plans, events, wallet withdrawals',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RefundCancellationScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
@@ -189,6 +199,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.yellow.shade100,
                 title: 'Wallet & Coins Terms',
                 subtitle: 'Earning, spending, 25% withdrawal fee',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WalletCoinTermsScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(

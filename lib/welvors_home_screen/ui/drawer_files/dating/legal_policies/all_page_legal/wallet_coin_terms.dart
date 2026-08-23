@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class RefundCancellationScreen extends StatelessWidget {
-  const RefundCancellationScreen({super.key});
+class WalletCoinTermsScreen extends StatelessWidget {
+  const WalletCoinTermsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class RefundCancellationScreen extends StatelessWidget {
           ),
         ),
         title: const Text(
-          'Refund & Cancellation Policy',
+          'Wallet & Coins Terms',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 16,
@@ -90,37 +90,24 @@ class RefundCancellationScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _buildSectionCard(
-              title: 'Subscription plans',
-              child: Text(
-                'Plans renew automatically. Cancel anytime before renewal in Account Settings → Membership. Part-used periods are non-refundable unless required by law.',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade600,
-                  height: 1.5,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildSectionCard(
-              title: 'Events',
+              title: 'Earning coins',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildBulletPoint(
-                      'Full refund if cancelled 3+ days (72h) before the event'),
-                  const SizedBox(height: 12),
-                  _buildBulletPoint('No refund within 72 hours of the event'),
+                  _buildBulletPoint('Gifts received from other users'),
                   const SizedBox(height: 12),
                   _buildBulletPoint(
-                      'Refunds are credited to your Welvors Wallet'),
+                      'Referral rewards (₹100 on join, ₹500 on a friend\'s plan)'),
+                  const SizedBox(height: 12),
+                  _buildBulletPoint('Event refunds and promotional credits'),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             _buildSectionCard(
-              title: 'Coins & credits',
+              title: 'Spending coins',
               child: Text(
-                'Coins, Roses, Boosts and Date Plan credits are consumable and non-refundable once used.',
+                'Use coins for Roses, Compliments, Boosts, gifts, and to activate plans. Prices are shown before each purchase.',
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade600,
@@ -130,14 +117,50 @@ class RefundCancellationScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _buildSectionCard(
-              title: 'Forever Love Programme',
+              title: 'Withdrawals',
               child: Text(
-                'The ₹10,000 enrolment fee is refundable within 14 days if you haven\'t started monthly check-ins. See its dedicated terms.',
+                'You may withdraw eligible wallet balance to UPI or bank. A 25% service charge applies to all withdrawals. Minimum withdrawal and KYC may apply.',
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade600,
                   height: 1.5,
                 ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Bottom Card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF0F3), // light pink
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.pink.shade100, width: 0.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.pink.withOpacity(0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Text('🪙', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Coins have no cash value except via the withdrawal process described above.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.pink.shade500,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
