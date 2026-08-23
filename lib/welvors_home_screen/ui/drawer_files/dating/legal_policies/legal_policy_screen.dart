@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/privacy_policy.dart';
+import 'all_page_legal/safety_dating_tips.dart';
 import 'all_page_legal/terms_service.dart';
 
 class LegalPoliciesScreen extends StatefulWidget {
@@ -160,6 +161,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.red.shade50,
                 title: 'Safety & Dating Tips',
                 subtitle: 'Stay safe online & on dates',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SafetyDatingTipsScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 32),
