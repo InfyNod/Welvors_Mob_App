@@ -75,14 +75,14 @@ class _DateNowScreenState extends State<DateNowScreen> {
 
             _fetchedPlans.add({
               'id': p['id'],
-              'imageUrl': p['photoUrl'] ?? defaultImage,
+              'imageUrl': p['photoUrl'] ?? p['activityIcon'] ?? defaultImage,
               'location': 'Live · ${p['venueName'] ?? 'Unknown'}',
               'distance': p['distanceKm'] != null ? '${p['distanceKm']} km away' : 'Near you',
               'match': p['matchScore'] != null ? '${p['matchScore']['score']}% match' : '0% match',
               'date': p['eventDate'] != null ? '📅 ${p['eventDate']}' : '📅 TODAY',
               'time': p['eventTime'] != null ? '🕔 ${p['eventTime']}' : '🕔 TBD',
               'type': activity,
-              'title': p['title'] ?? 'Date Plan',
+              'title': p['title'] ?? p['quickTitle'] ?? 'Date Plan',
               'subtitle': p['note'] ?? '',
               'people': p['duration'] != null ? '⏱️ ${p['duration']} mins' : '👥 2 people',
               'pay': p['whoPays'] ?? '🤝 Split',
