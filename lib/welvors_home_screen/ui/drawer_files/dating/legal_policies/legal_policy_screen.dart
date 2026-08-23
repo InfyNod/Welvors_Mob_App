@@ -3,6 +3,7 @@ import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/cookie_policy.dart';
 import 'all_page_legal/data_rights.dart';
 import 'all_page_legal/forever_love.dart';
+import 'all_page_legal/licenses.dart';
 import 'all_page_legal/verification.dart';
 import 'all_page_legal/privacy_policy.dart';
 import 'all_page_legal/refund_cancelation.dart';
@@ -290,6 +291,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.grey.shade100,
                 title: 'Licenses & Acknowledgements',
                 subtitle: 'Open-source & partners',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LicensesScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
