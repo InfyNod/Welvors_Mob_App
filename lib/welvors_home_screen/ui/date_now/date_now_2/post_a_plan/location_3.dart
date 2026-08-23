@@ -85,9 +85,13 @@ class _Location3ViewState extends State<Location3View> {
       // Participant limit parsing
       int participantLimit = 1;
       if (_selectedHowMany != null && _selectedHowMany!.isNotEmpty) {
-        final match = RegExp(r'\d+').firstMatch(_selectedHowMany!);
-        if (match != null) {
-          participantLimit = int.tryParse(match.group(0)!) ?? 1;
+        if (_selectedHowMany == 'Small group') {
+          participantLimit = 4;
+        } else {
+          final match = RegExp(r'\d+').firstMatch(_selectedHowMany!);
+          if (match != null) {
+            participantLimit = int.tryParse(match.group(0)!) ?? 1;
+          }
         }
       }
 

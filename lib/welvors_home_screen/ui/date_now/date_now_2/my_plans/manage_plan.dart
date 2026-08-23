@@ -69,6 +69,11 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
     return field?.toString() ?? fallback;
   }
 
+  String limitStr = rawPlan['participantLimit']?.toString() ?? '1';
+  String groupSizeVal = '1 person';
+  if (limitStr == '2') groupSizeVal = '2 people';
+  else if (limitStr != '1' && limitStr != '0') groupSizeVal = 'Small group';
+
   return PostPlanState(
     currentStep: 4,
     planId: rawPlan['id']?.toString(),
@@ -84,10 +89,10 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
     time: parsedTime,
     howLong: durationStr,
     whoPays: _extractLabel(rawPlan['whoPays'], '🤝 Split'),
-    groupSize: rawPlan['participantLimit']?.toString() != null ? '${rawPlan['participantLimit']} person' : '1 person',
+    groupSize: groupSizeVal,
     whoCanRequest: _extractLabel(rawPlan['joinRequestGender'], 'Anyone'),
     visibility: _extractLabel(rawPlan['visibility'], 'Premium 👑'),
-    finalWhoCanJoin: rawPlan['participantLimit']?.toString() != null ? '${rawPlan['participantLimit']} person' : '1 person',
+    finalWhoCanJoin: groupSizeVal,
     verifiedMembersOnly: true,
     autoApproveRequests: false,
   );
