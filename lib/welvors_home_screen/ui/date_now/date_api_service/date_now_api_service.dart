@@ -129,6 +129,31 @@ class DateNowApiService {
     }
   }
 
+  // GET Request to fetch my hosted plans (Today, Tomorrow, Weekend, Activity)
+  static Future<Map<String, dynamic>?> getMyPlans({required String period, String? activity}) async {
+    try {
+      String query = 'period=${period.toUpperCase()}';
+      if (activity != null && activity.isNotEmpty) {
+        query += '&activity=${activity.toLowerCase()}';
+      }
+      
+      final url = Uri.parse('$vercelBaseUrl/user/date-plans/my-plans?$query');
+      final response = await http.get(url, headers: _headers);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint(
+          'Failed to fetch my plans for $period: ${response.statusCode} - ${response.body}',
+        );
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error fetching my plans: $e');
+      return null;
+    }
+  }
+
   static Future<List<dynamic>?> getDiscoverPlans(
     String filter, {
     String? overrideToken,

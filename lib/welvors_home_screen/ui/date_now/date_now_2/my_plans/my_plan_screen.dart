@@ -81,7 +81,83 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
     '🍽️ Dinner',
     '🍸 Drinks',
     '🚶 Walk',
+    '🥞 Brunch',
+    '🍿 Movie',
   ];
+
+  List<Map<String, dynamic>> _apiPlans = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPlans();
+  }
+
+  Future<void> _fetchPlans() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String? rawActivity;
+    if (_selectedCategoryFilter != null) {
+      rawActivity = _selectedCategoryFilter!.replaceAll(RegExp(r'[^\w\s]+'), '').trim();
+    }
+
+    final res = await DateNowApiService.getMyPlans(period: _selectedDayFilter, activity: rawActivity);
+    if (res != null && res['success'] == true) {
+      final data = res['data'] as List<dynamic>? ?? [];
+      
+      setState(() {
+        _apiPlans = data.map((plan) {
+          final activity = plan['activity'] ?? {};
+          final event = plan['event'] ?? {};
+          final venue = plan['venue'] ?? {};
+          
+          String title = plan['title']?.toString() ?? 
+                         (plan['quickTitle'] != null ? plan['quickTitle']['label']?.toString() : null) ?? 
+                         'Date Plan';
+          
+          String category = activity['label']?.toString() ?? 'General';
+          String imageUrl = plan['photoUrl']?.toString() ?? activity['icon']?.toString() ?? 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+          String subtitle = '$_selectedDayFilter · ${venue['name']?.toString() ?? 'Custom location'}';
+          String limitTag = '👥 Limit ${plan['participantLimit'] ?? 1}';
+
+          return {
+            'id': plan['id']?.toString() ?? '',
+            'day': _selectedDayFilter, // Fallback since it's filtered by day
+            'category': category,
+            'imageUrl': imageUrl,
+            'title': title,
+            'subtitle': subtitle,
+            'tags': [limitTag, category],
+            'isLive': event['isLiveNow'] == true,
+            'requests': (plan['requestsList'] as List<dynamic>? ?? []).map((req) {
+              final requester = req['requester'] ?? {};
+              return {
+                'id': req['id']?.toString() ?? '',
+                'name': requester['name']?.toString() ?? 'Unknown',
+                'age': requester['age'] ?? 20,
+                'match': requester['matchPercentage'] != null ? '${requester['matchPercentage']}%' : '92%',
+                'message': req['message']?.toString() ?? '"No message attached."',
+                'avatar': requester['photo']?.toString() ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+                'status': req['status']?.toString().toLowerCase() == 'pending' ? 'new' : req['status']?.toString().toLowerCase(),
+                'rawRequest': req,
+              };
+            }).toList(),
+            'requestsMeta': plan['requests'] ?? {}, // total, pending
+            'rawPlan': plan,
+          };
+        }).toList();
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _apiPlans = [];
+        _isLoading = false;
+      });
+    }
+  }
 
 
 
@@ -91,7 +167,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
   }
 
   Widget _buildMyPlansTab() {
-    List<Map<String, dynamic>> filteredPlans = MyPlanScreen.myHostedPlans.where((plan) {
+    List<Map<String, dynamic>> filteredPlans = _apiPlans.where((plan) {
       bool matchesDay = plan['day'] == _selectedDayFilter;
       bool matchesCategory = true;
       if (_selectedCategoryFilter != null) {
@@ -126,7 +202,9 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           ),
           // Scrollable Content
           Expanded(
-            child: filteredPlans.isEmpty
+            child: _isLoading 
+              ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+              : filteredPlans.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
                     padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 40),
@@ -214,7 +292,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
   }
 
   Widget _buildContent(Map<String, dynamic> plan) {
-    List<Map<String, dynamic>> requests = plan['requests'] ?? [];
+    List<Map<String, dynamic>> requests = List<Map<String, dynamic>>.from(plan['requests'] ?? []);
 
     return Container(
         margin: const EdgeInsets.only(
@@ -303,13 +381,17 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
       onTap: () {
         setState(() {
           if (isDayFilter) {
-            _selectedDayFilter = label;
+            if (_selectedDayFilter != label) {
+              _selectedDayFilter = label;
+              _fetchPlans(); // Fetch new plans for the selected day
+            }
           } else {
             if (_selectedCategoryFilter == label) {
               _selectedCategoryFilter = null;
             } else {
               _selectedCategoryFilter = label;
             }
+            _fetchPlans(); // Fetch new plans for the selected activity
           }
         });
       },
