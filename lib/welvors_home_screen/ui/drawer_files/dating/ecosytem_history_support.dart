@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'help_support/help_support_screen.dart';
+import 'legal_policies/legal_policy_screen.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 import 'core_ecosystem/trust_verification/trust_verification_screen.dart';
@@ -209,6 +210,14 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 iconBgColor: const Color(0xFFF5F5F5), // Light grey
                 title: 'Legal & Policies',
                 subtitle: 'Terms, Privacy, Refunds & more',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LegalPoliciesScreen(),
+                    ),
+                  );
+                },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
               _buildSimpleTile(

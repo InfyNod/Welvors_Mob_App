@@ -20,6 +20,21 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     super.dispose();
   }
 
+  void _showComingSoon() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Coming Soon!',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: Colors.black87,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,7 +154,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     statusText: 'Replies in 24h',
                     statusColor: Colors.grey.shade600,
                     onTap: () {
-                      // Handle email
+                      _showComingSoon();
                     },
                   ),
                 ),
@@ -298,7 +313,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
             // Safety Centre Card
             GestureDetector(
-              onTap: () {},
+              onTap: () => _showComingSoon(),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -412,24 +427,28 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     emoji: '🚩',
                     iconBgColor: Colors.red.shade50,
                     title: 'Report a problem',
+                    onTap: () => _showComingSoon(),
                   ),
                   _buildDivider(),
                   _buildMoreItem(
                     emoji: '📜',
                     iconBgColor: Colors.orange.shade50,
                     title: 'Community Guidelines',
+                    onTap: () => _showComingSoon(),
                   ),
                   _buildDivider(),
                   _buildMoreItem(
                     emoji: '📋',
                     iconBgColor: Colors.blue.shade50,
                     title: 'Terms of Service',
+                    onTap: () => _showComingSoon(),
                   ),
                   _buildDivider(),
                   _buildMoreItem(
                     emoji: '🔒',
                     iconBgColor: Colors.green.shade50,
                     title: 'Privacy Policy',
+                    onTap: () => _showComingSoon(),
                   ),
                 ],
               ),
@@ -617,9 +636,10 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     required String emoji,
     required Color iconBgColor,
     required String title,
+    required VoidCallback onTap,
   }) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
