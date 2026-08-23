@@ -3,6 +3,7 @@ import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/cookie_policy.dart';
 import 'all_page_legal/data_rights.dart';
 import 'all_page_legal/forever_love.dart';
+import 'all_page_legal/grievance_officer.dart';
 import 'all_page_legal/licenses.dart';
 import 'all_page_legal/verification.dart';
 import 'all_page_legal/privacy_policy.dart';
@@ -306,6 +307,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.cyan.shade50,
                 title: 'Grievance Officer',
                 subtitle: 'IT Rules 2021 contact',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GrievanceOfficerScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 32),
