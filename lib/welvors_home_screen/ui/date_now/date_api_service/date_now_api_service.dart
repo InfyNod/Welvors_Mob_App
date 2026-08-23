@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class DateNowApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
+  static const String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api';
 
   // Hardcoded token for now as per home_api_service.dart pattern
   static const String _token =
@@ -100,14 +101,30 @@ class DateNowApiService {
         if (decoded['success'] == true) {
           return decoded['data'] as List<dynamic>;
         }
-      } else {
-        debugPrint(
-          'Failed to get $type: ${response.statusCode} - ${response.body}',
-        );
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching $type: $e');
+      debugPrint('Error getting options for $type: $e');
+      return null;
+    }
+  }
+
+  // GET Request to fetch history
+  static Future<Map<String, dynamic>?> getHistoryPlans({int page = 1, int limit = 10}) async {
+    try {
+      final url = Uri.parse('$vercelBaseUrl/user/date-plans/history?page=$page&limit=$limit');
+      final response = await http.get(url, headers: _headers);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint(
+          'Failed to fetch history plans: ${response.statusCode} - ${response.body}',
+        );
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error fetching history plans: $e');
       return null;
     }
   }

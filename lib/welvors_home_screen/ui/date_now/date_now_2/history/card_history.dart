@@ -3,8 +3,15 @@ import 'detail_drawer.dart';
 
 class CardHistory extends StatelessWidget {
   final String selectedFilter;
+  final List<Map<String, dynamic>> plansThisWeek;
+  final List<Map<String, dynamic>> plansEarlier;
 
-  const CardHistory({super.key, this.selectedFilter = 'All'});
+  const CardHistory({
+    super.key, 
+    this.selectedFilter = 'All',
+    required this.plansThisWeek,
+    required this.plansEarlier,
+  });
 
   static List<Map<String, dynamic>> thisWeekPlans = [
     {
@@ -119,8 +126,8 @@ class CardHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filteredThisWeek = _filterPlans(thisWeekPlans);
-    final filteredEarlier = _filterPlans(earlierPlans);
+    final filteredThisWeek = _filterPlans(plansThisWeek);
+    final filteredEarlier = _filterPlans(plansEarlier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,6 +221,16 @@ class CardHistory extends StatelessWidget {
         borderColor = const Color(0xFFEF4444); // Red
         badgeBgColor = const Color(0xFFFEE2E2);
         badgeTextColor = const Color(0xFFEF4444);
+        break;
+      case 'ACTIVE':
+        borderColor = const Color(0xFF3B82F6); // Blue
+        badgeBgColor = const Color(0xFFEFF6FF);
+        badgeTextColor = const Color(0xFF3B82F6);
+        break;
+      case 'BOOKED':
+        borderColor = const Color(0xFF8B5CF6); // Purple
+        badgeBgColor = const Color(0xFFF5F3FF);
+        badgeTextColor = const Color(0xFF8B5CF6);
         break;
       default:
         borderColor = Colors.grey;

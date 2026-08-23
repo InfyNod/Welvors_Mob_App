@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../date_api_service/date_now_api_service.dart';
 import 'card_history.dart';
 
 class TopHistoryScreen extends StatefulWidget {
@@ -12,19 +14,29 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
     with SingleTickerProviderStateMixin {
   int _selectedFilterIndex = 0;
 
+  List<Map<String, dynamic>> _thisWeekPlans = [];
+  List<Map<String, dynamic>> _earlierPlans = [];
+  bool _isLoading = true;
+  int _totalViews = 0;
+  int _totalRequests = 0;
+  int _totalMet = 0;
+
   List<String> get _filters {
     final allPlans = [
-      ...CardHistory.thisWeekPlans,
-      ...CardHistory.earlierPlans,
+      ..._thisWeekPlans,
+      ..._earlierPlans,
     ];
     final metCount = allPlans.where((p) => p['status'] == 'MET').length;
     final expiredCount = allPlans.where((p) => p['status'] == 'EXPIRED').length;
     final noShowCount = allPlans.where((p) => p['status'] == 'NO-SHOW').length;
-    final cancelledCount = allPlans
-        .where((p) => p['status'] == 'CANCELLED')
-        .length;
+    final cancelledCount = allPlans.where((p) => p['status'] == 'CANCELLED').length;
+    final activeCount = allPlans.where((p) => p['status'] == 'ACTIVE').length;
+    final bookedCount = allPlans.where((p) => p['status'] == 'BOOKED').length;
+    
     return [
       'All ${allPlans.length}',
+      'Active $activeCount',
+      'Booked $bookedCount',
       'Met $metCount',
       'Expired $expiredCount',
       'No-show $noShowCount',
@@ -34,23 +46,22 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
 
   late final List<GlobalKey> _filterKeys;
   late final AnimationController _progressController;
-  late final Animation<double> _progressAnimation;
+  late Animation<double> _progressAnimation;
 
   @override
   void initState() {
     super.initState();
-    _filterKeys = List.generate(5, (index) => GlobalKey());
+    _filterKeys = List.generate(7, (index) => GlobalKey());
+    _fetchHistoryData();
 
     _progressController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
 
-    _progressAnimation = Tween<double>(begin: 0.0, end: 0.33).animate(
+    _progressAnimation = Tween<double>(begin: 0.0, end: 0.0).animate(
       CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
     );
-
-    _progressController.forward();
   }
 
   @override
@@ -59,8 +70,120 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
     super.dispose();
   }
 
+  Future<void> _fetchHistoryData() async {
+    final response = await DateNowApiService.getHistoryPlans(page: 1, limit: 100);
+    if (response != null && response['success'] == true) {
+      final List<dynamic> data = response['data'] ?? [];
+      
+      final DateTime now = DateTime.now();
+      final DateTime sevenDaysAgo = now.subtract(const Duration(days: 7));
+
+      List<Map<String, dynamic>> thisWeek = [];
+      List<Map<String, dynamic>> earlier = [];
+      
+      int views = 0;
+      int reqs = 0;
+      int met = 0;
+
+      for (var item in data) {
+        // Parse date
+        DateTime eventDate = DateTime.now();
+        if (item['eventDateTime'] != null) {
+          eventDate = DateTime.parse(item['eventDateTime']);
+        }
+        
+        String formattedDate = DateFormat('EEE, d MMM · h:mm a').format(eventDate);
+        
+        // Calculate duration end time if needed, though simple format is fine
+        final duration = item['duration'] ?? 120;
+        final endTime = eventDate.add(Duration(minutes: duration));
+        formattedDate += ' – ${DateFormat('h:mm a').format(endTime)}';
+
+        // Extract required fields
+        final title = item['quickTitle']?['label'] ?? item['title'] ?? 'Date Plan';
+        final location = '${item['venue']?['name'] ?? ''} · ${item['venue']?['address'] ?? ''}';
+        final image = item['activity']?['icon'] ?? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+        final status = item['status']?.toString().toUpperCase() ?? 'EXPIRED';
+        final note = item['message'] ?? '';
+        final requestsCount = item['requests']?['total'] ?? 0;
+        final split = item['whoPays']?['label'] ?? 'Split';
+        
+        final partnerName = item['participant']?['name'];
+        final partnerAvatar = item['participant']?['photoUrl'];
+
+        reqs += requestsCount as int;
+        if (status == 'MET') met++;
+        
+        // We will just mock views as random for now or 0
+        final itemViews = (item['views'] ?? 10) as int;
+        views += itemViews;
+
+        final mappedItem = {
+          'title': title,
+          'date': formattedDate,
+          'location': location,
+          'image': image,
+          'status': status,
+          'note': note,
+          'requests': requestsCount,
+          'split': split,
+          'views': itemViews,
+        };
+        
+        if (partnerName != null) {
+          mappedItem['partnerName'] = partnerName;
+          mappedItem['partnerAvatar'] = partnerAvatar;
+          mappedItem['partnerStatus'] = 'Matched';
+        }
+
+        if (eventDate.isAfter(sevenDaysAgo)) {
+          thisWeek.add(mappedItem);
+        } else {
+          earlier.add(mappedItem);
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _thisWeekPlans = thisWeek;
+          _earlierPlans = earlier;
+          _totalViews = views;
+          _totalRequests = reqs;
+          _totalMet = met;
+          _isLoading = false;
+          
+          double progress = 0.0;
+          int total = thisWeek.length + earlier.length;
+          if (total > 0) {
+            progress = met / total;
+          }
+          
+          _progressAnimation = Tween<double>(begin: 0.0, end: progress).animate(
+            CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
+          );
+          _progressController.forward(from: 0.0);
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Container(
+        color: const Color(0xFFFAFAFA),
+        child: const Center(
+          child: CircularProgressIndicator(color: Colors.pink),
+        ),
+      );
+    }
+    
     return Container(
       color: const Color.fromARGB(
         255,
@@ -73,12 +196,13 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTopCard(),
-            // _buildStatCards(),
             const SizedBox(height: 6),
             _buildFilters(),
             const SizedBox(height: 20),
             CardHistory(
               selectedFilter: _filters[_selectedFilterIndex].split(' ')[0],
+              plansThisWeek: _thisWeekPlans,
+              plansEarlier: _earlierPlans,
             ),
             const SizedBox(height: 5),
           ],
@@ -110,9 +234,9 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '6 plans hosted',
-                  style: TextStyle(
+                Text(
+                  '${_thisWeekPlans.length + _earlierPlans.length} plans hosted',
+                  style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF1E1E24), // Darker text
@@ -120,7 +244,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '2 turned into a real meeting',
+                  '$_totalMet turned into a real meeting',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -167,65 +291,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
     );
   }
 
-  // Widget _buildStatCards() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 16),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         _buildStatCard('649', 'VIEWS'),
-  //         const SizedBox(width: 8),
-  //         _buildStatCard('22', 'REQUESTS'),
-  //         const SizedBox(width: 8),
-  //         _buildStatCard('2', 'MET'),
-  //         const SizedBox(width: 8),
-  //         _buildStatCard('4.5★', 'AVG RATING'),
-  //       ],
-  //     ),
-  //   );
-  // }
 
-  Widget _buildStatCard(String value, String label) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200, width: 1.2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1E1E24),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 8,
-                fontWeight: FontWeight.w800,
-                color: Colors.grey.shade400,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildFilters() {
     return SingleChildScrollView(
