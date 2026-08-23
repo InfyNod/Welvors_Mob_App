@@ -52,49 +52,80 @@ class TermsServiceScreen extends StatelessWidget {
           left: 20,
           right: 20,
           top: 16,
-          bottom: 38,
+          bottom: 40,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Last updated 20 June 2026',
-              style: TextStyle(fontSize: 11, color: Colors.black45),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.history, size: 12, color: Colors.grey.shade500),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Last updated 20 June 2026',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
             Divider(color: Colors.grey.shade200, height: 1),
             const SizedBox(height: 24),
             _buildTermItem(
-              '1. Who can use Welvors',
-              'You must be 18 or older and legally able to enter a contract. One account per person. You agree to give accurate information and keep your login secure.',
+              number: '1',
+              title: 'Who can use Welvors',
+              description:
+                  'You must be 18 or older and legally able to enter a contract. One account per person. You agree to give accurate information and keep your login secure.',
               highlightText: '18 or older',
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildTermItem(
-              '2. Your account',
-              'You are responsible for activity on your account. Impersonation, fake profiles, and accounts created on someone else\'s behalf are prohibited and will be removed.',
+              number: '2',
+              title: 'Your account',
+              description:
+                  'You are responsible for activity on your account. Impersonation, fake profiles, and accounts created on someone else\'s behalf are prohibited and will be removed.',
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildTermItem(
-              '3. Acceptable use',
-              'Don\'t use Welvors to harass, scam, solicit money, post illegal content, or contact minors. We may suspend or ban accounts that break these rules.',
+              number: '3',
+              title: 'Acceptable use',
+              description:
+                  'Don\'t use Welvors to harass, scam, solicit money, post illegal content, or contact minors. We may suspend or ban accounts that break these rules.',
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildTermItem(
-              '4. Paid features',
-              'Plans (Premium+, VIP, Elite), coins, Date Plan credits, Boosts and the Forever Love Programme are billed as shown at purchase. See the Refund Policy for cancellations.',
+              number: '4',
+              title: 'Paid features',
+              description:
+                  'Plans (Premium+, VIP, Elite), coins, Date Plan credits, Boosts and the Forever Love Programme are billed as shown at purchase. See the Refund Policy for cancellations.',
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildTermItem(
-              '5. Content you post',
-              'You keep ownership of your photos and text, but grant Welvors a licence to display them within the app to operate the service.',
+              number: '5',
+              title: 'Content you post',
+              description:
+                  'You keep ownership of your photos and text, but grant Welvors a licence to display them within the app to operate the service.',
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildTermItem(
-              '6. Liability',
-              'Welvors helps you meet people but is not responsible for the conduct of other users, online or offline. Always follow our Safety guidance.',
+              number: '6',
+              title: 'Liability',
+              description:
+                  'Welvors helps you meet people but is not responsible for the conduct of other users, online or offline. Always follow our Safety guidance.',
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
 
             // Bottom Card
             Container(
@@ -118,7 +149,7 @@ class TermsServiceScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Colors.red.shade400,
+                  color: Colors.pink.shade500,
                   height: 1.4,
                 ),
               ),
@@ -129,44 +160,96 @@ class TermsServiceScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTermItem(
-    String title,
-    String description, {
+  Widget _buildTermItem({
+    required String number,
+    required String title,
+    required String description,
     String? highlightText,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: Colors.black87,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-        ),
-        const SizedBox(height: 8),
-        if (highlightText != null)
-          RichText(
-            text: TextSpan(
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey.shade600,
-                height: 1.5,
-              ),
-              children: _buildHighlightedText(description, highlightText),
-            ),
-          )
-        else
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-              height: 1.5,
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.pink.shade50,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        number,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.pink.shade400,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                if (highlightText != null)
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                        height: 1.5,
+                      ),
+                      children: _buildHighlightedText(
+                        description,
+                        highlightText,
+                      ),
+                    ),
+                  )
+                else
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade600,
+                      height: 1.5,
+                    ),
+                  ),
+              ],
             ),
           ),
-      ],
+        ],
+      ),
     );
   }
 
