@@ -13,11 +13,16 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
   int _selectedFilterIndex = 0;
 
   List<String> get _filters {
-    final allPlans = [...CardHistory.thisWeekPlans, ...CardHistory.earlierPlans];
+    final allPlans = [
+      ...CardHistory.thisWeekPlans,
+      ...CardHistory.earlierPlans,
+    ];
     final metCount = allPlans.where((p) => p['status'] == 'MET').length;
     final expiredCount = allPlans.where((p) => p['status'] == 'EXPIRED').length;
     final noShowCount = allPlans.where((p) => p['status'] == 'NO-SHOW').length;
-    final cancelledCount = allPlans.where((p) => p['status'] == 'CANCELLED').length;
+    final cancelledCount = allPlans
+        .where((p) => p['status'] == 'CANCELLED')
+        .length;
     return [
       'All ${allPlans.length}',
       'Met $metCount',
@@ -68,8 +73,8 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTopCard(),
-            _buildStatCards(),
-            const SizedBox(height: 16),
+            // _buildStatCards(),
+            const SizedBox(height: 6),
             _buildFilters(),
             const SizedBox(height: 20),
             CardHistory(
@@ -162,23 +167,23 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
     );
   }
 
-  Widget _buildStatCards() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildStatCard('649', 'VIEWS'),
-          const SizedBox(width: 8),
-          _buildStatCard('22', 'REQUESTS'),
-          const SizedBox(width: 8),
-          _buildStatCard('2', 'MET'),
-          const SizedBox(width: 8),
-          _buildStatCard('4.5★', 'AVG RATING'),
-        ],
-      ),
-    );
-  }
+  // Widget _buildStatCards() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 16),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         _buildStatCard('649', 'VIEWS'),
+  //         const SizedBox(width: 8),
+  //         _buildStatCard('22', 'REQUESTS'),
+  //         const SizedBox(width: 8),
+  //         _buildStatCard('2', 'MET'),
+  //         const SizedBox(width: 8),
+  //         _buildStatCard('4.5★', 'AVG RATING'),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildStatCard(String value, String label) {
     return Expanded(

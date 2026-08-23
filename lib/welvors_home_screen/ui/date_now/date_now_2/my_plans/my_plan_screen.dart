@@ -8,7 +8,62 @@ import '../../date_api_service/date_now_api_service.dart';
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
 
-  static List<Map<String, dynamic>> myHostedPlans = [];
+  static List<Map<String, dynamic>> myHostedPlans = [
+    {
+      'day': 'Today',
+      'category': '☕ Coffee',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'title': 'Morning Coffee Date',
+      'subtitle': 'Today · Central Perk',
+      'tags': ['👥 Limit 2', '☕ Coffee'],
+      'isLive': true,
+      'requests': [
+        {
+          'id': 'req1',
+          'name': 'Sarah',
+          'age': 24,
+          'match': '92%',
+          'message': '"This sounds perfect, I\'m in!"',
+          'avatar':
+              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+          'status': 'new',
+        },
+        {
+          'id': 'req2',
+          'name': 'Jessica',
+          'age': 25,
+          'match': '88%',
+          'message': '"Would love to grab a coffee!"',
+          'avatar':
+              'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+          'status': 'new',
+        },
+      ],
+    },
+    {
+      'day': 'Tomorrow',
+      'category': '🍽️ Dinner',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      'title': 'Sushi Night',
+      'subtitle': 'Tomorrow · Nobu',
+      'tags': ['👥 Limit 2', '🍽️ Dinner'],
+      'isLive': false,
+      'requests': [
+        {
+          'id': 'req3',
+          'name': 'Emma',
+          'age': 26,
+          'match': '85%',
+          'message': '"I love sushi!"',
+          'avatar':
+              'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+          'status': 'approved',
+        },
+      ],
+    },
+  ];
 
   @override
   State<MyPlanScreen> createState() => _MyPlanScreenState();
@@ -27,50 +82,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
     '🍸 Drinks',
     '🚶 Walk',
   ];
-  @override
-  void initState() {
-    super.initState();
-    _fetchRequestsForDummyPlan();
-  }
 
-  Future<void> _fetchRequestsForDummyPlan() async {
-    // The backend-provided planId for testing
-    final planId = '25a5c41d-b968-4aa1-b476-440b2a6b8b3e';
-    final data = await DateNowApiService.getPlanRequests(planId);
-    
-    if (data != null && mounted) {
-      setState(() {
-        final planData = data['plan'] ?? {};
-        final requestsList = (data['requests'] as List<dynamic>?) ?? [];
-        
-        final mappedRequests = requestsList.map((req) {
-          final requester = req['requester'] ?? {};
-          return {
-            'id': req['id'],
-            'avatar': requester['photo'] ?? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-            'name': requester['name'] ?? 'User',
-            'age': requester['age'] ?? 25,
-            'match': '${req['compatibility'] ?? 80}%',
-            'message': req['message'] != null ? '"${req['message']}"' : '"This sounds perfect, I\'m in!"',
-            'status': (req['status'] ?? 'new').toString().toLowerCase(),
-          };
-        }).toList();
-
-        MyPlanScreen.myHostedPlans = [
-          {
-            'day': 'Today',
-            'category': planData['activity'] ?? 'Plan',
-            'imageUrl': planData['photoUrl'] ?? 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            'title': planData['title'] ?? 'My Plan',
-            'subtitle': 'Today · ${planData['venueName'] ?? 'Venue'}',
-            'tags': ['👥 Limit ${planData['participantLimit'] ?? 2}'],
-            'isLive': true,
-            'requests': mappedRequests,
-          }
-        ];
-      });
-    }
-  }
 
 
   @override
