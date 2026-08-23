@@ -91,13 +91,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
               padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
               child: InkWell(
                 onTap: () {
-                  if (currentStep > 1) {
-                    context.read<PostPlanBloc>().add(
-                      JumpToStepEvent(currentStep - 1),
-                    );
-                  } else {
-                    Navigator.pop(context);
-                  }
+                  Navigator.pop(context);
                 },
                 borderRadius: BorderRadius.circular(24),
                 child: Container(
