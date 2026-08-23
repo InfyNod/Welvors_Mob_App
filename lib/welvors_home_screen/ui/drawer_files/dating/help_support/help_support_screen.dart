@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'all_screen_help/live_chat.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -116,7 +117,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     statusText: 'Online · ~2 min',
                     statusColor: Colors.green,
                     onTap: () {
-                      // Handle live chat
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LiveChatScreen(),
+                        ),
+                      );
                     },
                   ),
                 ),
