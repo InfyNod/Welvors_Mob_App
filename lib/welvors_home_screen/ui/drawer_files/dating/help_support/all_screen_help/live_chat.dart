@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class LiveChatScreen extends StatefulWidget {
   const LiveChatScreen({super.key});
@@ -14,14 +15,14 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     {
       'isSender': false,
       'text': "Hi! 👋 I'm Welvors Support. What can I\nhelp you with today?",
-    }
+    },
   ];
 
   List<String> _currentChips = [
     'Account issue',
     'Payment / refund',
     'Report someone',
-    'Something else'
+    'Something else',
   ];
 
   @override
@@ -38,9 +39,31 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
-          onPressed: () => Navigator.pop(context),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black,
+                size: 16,
+              ),
+            ),
+          ),
         ),
         title: const Text(
           'Live Chat',
@@ -59,43 +82,30 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 2),
                   // Support Profile Info
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE43A6A), // Pink background
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: const [
-                        Icon(
-                          Icons.chat_bubble_rounded,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                        Positioned(
-                          top: 10,
-                          child: Icon(
-                            Icons.more_horiz,
-                            color: Color(0xFFE43A6A),
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
+                  Lottie.asset(
+                    'assets/Chat.json',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Welvors Support',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Welvors Support',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.verified, color: Color(0xFFE43A6A), size: 16),
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Row(
@@ -121,89 +131,96 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // Chat Message Bubbles
                   ..._messages.map((msg) => _buildMessageBubble(msg)).toList(),
                 ],
               ),
             ),
           ),
-          
+
           // Bottom Action Section
           SafeArea(
             child: Container(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 12, bottom: 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Quick Action Chips (horizontal scroll)
-                if (_currentChips.isNotEmpty)
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: _currentChips.map((label) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: _buildChip(label),
-                        );
-                      }).toList(),
+              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              decoration: const BoxDecoration(color: Colors.white),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Quick Action Chips (horizontal scroll)
+                  if (_currentChips.isNotEmpty)
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: _currentChips.map((label) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: _buildChip(label),
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
-                if (_currentChips.isNotEmpty) const SizedBox(height: 16),
-                
-                // Input Field
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Colors.grey.shade200, width: 1.5),
-                        ),
-                        child: TextField(
-                          controller: _messageController,
-                          decoration: InputDecoration(
-                            hintText: 'Type your message...',
-                            hintStyle: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 14,
+                  if (_currentChips.isNotEmpty) const SizedBox(height: 16),
+
+                  // Input Field
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _messageController,
+                            onSubmitted: (_) => _sendMessage(),
+                            decoration: InputDecoration(
+                              hintText: 'Type your message...',
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 14,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide(color: Colors.grey.shade200, width: 1.5),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide(color: Colors.grey.shade200, width: 1.5),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: const BorderSide(color: Color(0xFFE43A6A), width: 1.5),
+                              ),
                             ),
-                            border: InputBorder.none,
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        // TODO: Implement send message
-                      },
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE85A7A),
-                          shape: BoxShape.circle,
+                        const SizedBox(width: 12),
+                        GestureDetector(
+                          onTap: _sendMessage,
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE85A7A),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.send_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.send_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          ), // Close SafeArea
+                  ),
+                ],
+              ),
+            ), // Closes Container
+          ), // Closes SafeArea
         ],
       ),
     );
@@ -217,7 +234,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isSender ? null : const Color(0xFFF6F7F9),
+          color: isSender ? null : const Color(0xFFFCE4EC),
           gradient: isSender
               ? const LinearGradient(
                   colors: [Color(0xFFE43A6A), Color(0xFFFA6A85)],
@@ -233,7 +250,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: isSender 
+              color: isSender
                   ? const Color(0xFFE43A6A).withOpacity(0.2)
                   : Colors.black.withOpacity(0.03),
               blurRadius: 10,
@@ -253,6 +270,28 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     );
   }
 
+  void _sendMessage() {
+    if (_messageController.text.trim().isEmpty) return;
+    setState(() {
+      _messages.add({'isSender': true, 'text': _messageController.text.trim()});
+      _messageController.clear();
+      _currentChips.clear();
+    });
+    
+    // Simulate bot reply
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        setState(() {
+          _messages.add({
+            'isSender': false,
+            'text': "Thanks for your message. Let me connect you to an agent."
+          });
+          _currentChips = ['Connect to agent', 'Nevermind'];
+        });
+      }
+    });
+  }
+
   void _onChipTapped(String label) {
     setState(() {
       _messages.add({'isSender': true, 'text': label});
@@ -266,13 +305,33 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
           if (label == 'Account issue') {
             _messages.add({
               'isSender': false,
-              'text': "For account & login issues, try resetting your password or signing in with your linked number. Want me to connect you to an agent?"
+              'text':
+                  "For account & login issues, try resetting your password or signing in with your linked number. Want me to connect you to an agent?",
             });
-            _currentChips = ['Connect to agent', 'Raise a ticket', 'No, thanks'];
+            _currentChips = [
+              'Connect to agent',
+              'Raise a ticket',
+              'No, thanks',
+            ];
+          } else if (label == 'Connect to agent' || label == 'Raise a ticket') {
+            _messages.add({
+              'isSender': false,
+              'text': "Sure, let me connect you to an agent. Please hold on...",
+            });
+            _currentChips = []; // Clear chips
+          } else if (label == 'No, thanks' ||
+              label == 'Nevermind' ||
+              label == 'Something else') {
+            _messages.add({
+              'isSender': false,
+              'text': "Alright. Let me know if you need anything else!",
+            });
+            _currentChips = []; // Clear chips
           } else {
             _messages.add({
               'isSender': false,
-              'text': "Thanks for letting us know. Let me connect you to an agent who can help with this."
+              'text':
+                  "Thanks for letting us know. Let me connect you to an agent who can help with this.",
             });
             _currentChips = ['Connect to agent', 'Nevermind'];
           }
@@ -289,7 +348,10 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFFFFF0F3), // Light pink background
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.5), width: 1.2),
+          border: Border.all(
+            color: const Color(0xFFE43A6A).withOpacity(0.5),
+            width: 1.2,
+          ),
         ),
         child: Text(
           label,
