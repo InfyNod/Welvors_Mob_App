@@ -4,6 +4,7 @@ import '../post_a_plan/activity_1.dart';
 import '../post_a_plan/bloc/post_plan_state.dart';
 import '../history/card_history.dart';
 import 'my_plan_screen.dart';
+import '../../date_api_service/date_now_api_service.dart';
 
 void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -39,7 +40,7 @@ void _showFeedbackSavedSnackBar(BuildContext context, String message) {
 PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
   final activity = rawPlan['activity'] ?? {};
   final venue = rawPlan['venue'] ?? {};
-  
+
   TimeOfDay? parsedTime;
   if (rawPlan['eventTime'] != null) {
     try {
@@ -56,29 +57,37 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
       }
     } catch (_) {}
   }
-  
+
   String durationStr = rawPlan['duration']?.toString() ?? '120';
-  if (durationStr == '120') durationStr = '2 hours';
-  else if (durationStr == '60') durationStr = '1 hour';
-  else if (durationStr == '180') durationStr = '3 hours';
+  if (durationStr == '120')
+    durationStr = '2 hours';
+  else if (durationStr == '60')
+    durationStr = '1 hour';
+  else if (durationStr == '180')
+    durationStr = '3 hours';
 
   String _extractLabel(dynamic field, String fallback) {
     if (field is Map) {
-      return field['label']?.toString() ?? field['name']?.toString() ?? fallback;
+      return field['label']?.toString() ??
+          field['name']?.toString() ??
+          fallback;
     }
     return field?.toString() ?? fallback;
   }
 
   String limitStr = rawPlan['participantLimit']?.toString() ?? '1';
   String groupSizeVal = '1 person';
-  if (limitStr == '2') groupSizeVal = '2 people';
-  else if (limitStr != '1' && limitStr != '0') groupSizeVal = 'Small group';
+  if (limitStr == '2')
+    groupSizeVal = '2 people';
+  else if (limitStr != '1' && limitStr != '0')
+    groupSizeVal = 'Small group';
 
   return PostPlanState(
     currentStep: 4,
     planId: rawPlan['id']?.toString(),
     selectedActivityName: activity['label']?.toString() ?? 'General',
-    selectedActivityImage: activity['icon']?.toString() ?? rawPlan['photoUrl']?.toString(),
+    selectedActivityImage:
+        activity['icon']?.toString() ?? rawPlan['photoUrl']?.toString(),
     title: rawPlan['title']?.toString() ?? '',
     description: rawPlan['note']?.toString() ?? '',
     tags: const [],
@@ -179,7 +188,7 @@ void showManageBottomSheet(
                 onTap: () {
                   Navigator.pop(context);
                   PostPlanState? stateToEdit;
-                  
+
                   if (plan.containsKey('originalState')) {
                     stateToEdit = plan['originalState'] as PostPlanState;
                   } else if (plan.containsKey('rawPlan')) {
@@ -543,6 +552,11 @@ void showReviewBottomSheet(
                   // Continue button
                   GestureDetector(
                     onTap: () {
+                      if (selectedOption != null) {
+                        final status = selectedOption == 'yes' ? 'MET' : 'NO_SHOW';
+                        DateNowApiService.submitFeedbackIsMeet(plan['id']?.toString() ?? '', status);
+                      }
+
                       if (selectedOption == 'yes') {
                         Navigator.pop(context);
                         showWhoCameBottomSheet(context, plan, onPlanClosed);
@@ -627,12 +641,13 @@ void showWhoCameBottomSheet(
   final List<Map<String, dynamic>> attendees = rawRequests
       .where((req) => req['status'] == 'approved')
       .map((req) {
-    return {
-      'name': '${req['name'] ?? ''}, ${req['age'] ?? ''}'.trim(),
-      'match': req['match'] != null ? '${req['match']} match' : '',
-      'avatar': req['avatar'] ?? '',
-    };
-  }).toList();
+        return {
+          'name': '${req['name'] ?? ''}, ${req['age'] ?? ''}'.trim(),
+          'match': req['match'] != null ? '${req['match']} match' : '',
+          'avatar': req['avatar'] ?? '',
+        };
+      })
+      .toList();
 
   int? selectedIndex;
 
@@ -698,8 +713,14 @@ void showWhoCameBottomSheet(
                               : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: isSelected
-                              ? Border.all(color: const Color(0xFFFA6A85), width: 1.5)
-                              : Border.all(color: Colors.transparent, width: 1.5),
+                              ? Border.all(
+                                  color: const Color(0xFFFA6A85),
+                                  width: 1.5,
+                                )
+                              : Border.all(
+                                  color: Colors.transparent,
+                                  width: 1.5,
+                                ),
                           boxShadow: [
                             if (!isSelected)
                               BoxShadow(
@@ -796,7 +817,9 @@ void showWhoCameBottomSheet(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: selectedIndex != null ? null : const Color(0xFFF1B4C3),
+                        color: selectedIndex != null
+                            ? null
+                            : const Color(0xFFF1B4C3),
                         gradient: selectedIndex != null
                             ? const LinearGradient(
                                 colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
@@ -1433,8 +1456,20 @@ void showThanksBottomSheet(
                           // Move to history as MET
                           CardHistory.thisWeekPlans.insert(0, {
                             'title': plan['title'],
-                            'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
-                            'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                            'date':
+                                (plan['subtitle'] as String).split('·').length >
+                                    1
+                                ? (plan['subtitle'] as String)
+                                      .split('·')[1]
+                                      .trim()
+                                : plan['subtitle'],
+                            'location':
+                                (plan['subtitle'] as String).split('·').length >
+                                    2
+                                ? (plan['subtitle'] as String)
+                                      .split('·')[2]
+                                      .trim()
+                                : plan['subtitle'],
                             'image': plan['imageUrl'],
                             'status': 'MET',
                             'partnerName': attendee['name'],
@@ -1443,14 +1478,20 @@ void showThanksBottomSheet(
                             'rating': ratePerson,
                             'note': 'You both showed up. Good experience!',
                             'views': 120,
-                            'requests': (plan['requests'] as List?)?.length ?? 0,
-                            'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                            'requests':
+                                (plan['requests'] as List?)?.length ?? 0,
+                            'split': (plan['tags'] as List).isNotEmpty
+                                ? plan['tags'][0]
+                                : 'Split',
                             'boost': 'No',
                           });
                           MyPlanScreen.myHostedPlans.remove(plan);
 
                           Navigator.pop(context);
-                          _showFeedbackSavedSnackBar(context, 'Plan closed · feedback saved');
+                          _showFeedbackSavedSnackBar(
+                            context,
+                            'Plan closed · feedback saved',
+                          );
                           onPlanClosed();
                         },
                         child: Container(
@@ -1632,7 +1673,8 @@ void showReportIssueBottomSheet(
                             const SizedBox(height: 24),
                             TextField(
                               maxLines: 4,
-                              onChanged: (val) => setState(() => issueDescription = val),
+                              onChanged: (val) =>
+                                  setState(() => issueDescription = val),
                               decoration: InputDecoration(
                                 hintText: 'Describe what happened...',
                                 hintStyle: TextStyle(
@@ -1680,24 +1722,49 @@ void showReportIssueBottomSheet(
                                 // Move to history as REPORTED/NO-SHOW
                                 CardHistory.thisWeekPlans.insert(0, {
                                   'title': plan['title'],
-                                  'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
-                                  'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                                  'date':
+                                      (plan['subtitle'] as String)
+                                              .split('·')
+                                              .length >
+                                          1
+                                      ? (plan['subtitle'] as String)
+                                            .split('·')[1]
+                                            .trim()
+                                      : plan['subtitle'],
+                                  'location':
+                                      (plan['subtitle'] as String)
+                                              .split('·')
+                                              .length >
+                                          2
+                                      ? (plan['subtitle'] as String)
+                                            .split('·')[2]
+                                            .trim()
+                                      : plan['subtitle'],
                                   'image': plan['imageUrl'],
                                   'status': ratePerson > 0 ? 'MET' : 'NO-SHOW',
                                   'partnerName': attendee['name'],
                                   'partnerAvatar': attendee['avatar'],
-                                  'partnerStatus': ratePerson > 0 ? 'Met on this plan' : 'Reported issue',
+                                  'partnerStatus': ratePerson > 0
+                                      ? 'Met on this plan'
+                                      : 'Reported issue',
                                   'rating': ratePerson,
-                                  'note': 'Reported an issue: ${issueDescription.trim()}',
+                                  'note':
+                                      'Reported an issue: ${issueDescription.trim()}',
                                   'views': 120,
-                                  'requests': (plan['requests'] as List?)?.length ?? 0,
-                                  'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                                  'requests':
+                                      (plan['requests'] as List?)?.length ?? 0,
+                                  'split': (plan['tags'] as List).isNotEmpty
+                                      ? plan['tags'][0]
+                                      : 'Split',
                                   'boost': 'No',
                                 });
                                 MyPlanScreen.myHostedPlans.remove(plan);
 
                                 Navigator.pop(context);
-                                _showFeedbackSavedSnackBar(context, 'Report submitted');
+                                _showFeedbackSavedSnackBar(
+                                  context,
+                                  'Report submitted',
+                                );
                                 onPlanClosed();
                               }
                             },
@@ -1705,7 +1772,9 @@ void showReportIssueBottomSheet(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               decoration: BoxDecoration(
-                                color: issueDescription.trim().isNotEmpty ? null : const Color(0xFFF1B4C3),
+                                color: issueDescription.trim().isNotEmpty
+                                    ? null
+                                    : const Color(0xFFF1B4C3),
                                 gradient: issueDescription.trim().isNotEmpty
                                     ? const LinearGradient(
                                         colors: [
@@ -2003,20 +2072,42 @@ void showNoOneCameBottomSheet(
                                 // Move to history as NO-SHOW
                                 CardHistory.thisWeekPlans.insert(0, {
                                   'title': plan['title'],
-                                  'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
-                                  'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                                  'date':
+                                      (plan['subtitle'] as String)
+                                              .split('·')
+                                              .length >
+                                          1
+                                      ? (plan['subtitle'] as String)
+                                            .split('·')[1]
+                                            .trim()
+                                      : plan['subtitle'],
+                                  'location':
+                                      (plan['subtitle'] as String)
+                                              .split('·')
+                                              .length >
+                                          2
+                                      ? (plan['subtitle'] as String)
+                                            .split('·')[2]
+                                            .trim()
+                                      : plan['subtitle'],
                                   'image': plan['imageUrl'],
                                   'status': 'NO-SHOW',
                                   'note': 'No one came. Feedback recorded.',
                                   'views': 120,
-                                  'requests': (plan['requests'] as List?)?.length ?? 0,
-                                  'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                                  'requests':
+                                      (plan['requests'] as List?)?.length ?? 0,
+                                  'split': (plan['tags'] as List).isNotEmpty
+                                      ? plan['tags'][0]
+                                      : 'Split',
                                   'boost': 'No',
                                 });
                                 MyPlanScreen.myHostedPlans.remove(plan);
 
                                 Navigator.pop(context);
-                                _showFeedbackSavedSnackBar(context, 'Plan closed · feedback saved');
+                                _showFeedbackSavedSnackBar(
+                                  context,
+                                  'Plan closed · feedback saved',
+                                );
                                 onPlanClosed();
                               }
                             },
@@ -2194,14 +2285,30 @@ void showCancelPlanBottomSheet(
                           // Move to history
                           CardHistory.thisWeekPlans.insert(0, {
                             'title': plan['title'],
-                            'date': (plan['subtitle'] as String).split('·').length > 1 ? (plan['subtitle'] as String).split('·')[1].trim() : plan['subtitle'],
-                            'location': (plan['subtitle'] as String).split('·').length > 2 ? (plan['subtitle'] as String).split('·')[2].trim() : plan['subtitle'],
+                            'date':
+                                (plan['subtitle'] as String).split('·').length >
+                                    1
+                                ? (plan['subtitle'] as String)
+                                      .split('·')[1]
+                                      .trim()
+                                : plan['subtitle'],
+                            'location':
+                                (plan['subtitle'] as String).split('·').length >
+                                    2
+                                ? (plan['subtitle'] as String)
+                                      .split('·')[2]
+                                      .trim()
+                                : plan['subtitle'],
                             'image': plan['imageUrl'],
                             'status': 'CANCELLED',
-                            'note': 'You cancelled this plan. All requesters were notified automatically.',
-                            'views': 120, 
-                            'requests': (plan['requests'] as List?)?.length ?? 0,
-                            'split': (plan['tags'] as List).isNotEmpty ? plan['tags'][0] : 'Split',
+                            'note':
+                                'You cancelled this plan. All requesters were notified automatically.',
+                            'views': 120,
+                            'requests':
+                                (plan['requests'] as List?)?.length ?? 0,
+                            'split': (plan['tags'] as List).isNotEmpty
+                                ? plan['tags'][0]
+                                : 'Split',
                             'boost': 'No',
                           });
 

@@ -4,7 +4,8 @@ import 'package:flutter/foundation.dart';
 
 class DateNowApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
-  static const String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api';
+  static const String vercelBaseUrl =
+      'https://dating-app-backend-plum.vercel.app/api';
 
   // Hardcoded token for now as per home_api_service.dart pattern
   static const String _token =
@@ -137,9 +138,14 @@ class DateNowApiService {
   }
 
   // GET Request to fetch history
-  static Future<Map<String, dynamic>?> getHistoryPlans({int page = 1, int limit = 10}) async {
+  static Future<Map<String, dynamic>?> getHistoryPlans({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
-      final url = Uri.parse('$vercelBaseUrl/user/date-plans/history?page=$page&limit=$limit');
+      final url = Uri.parse(
+        '$vercelBaseUrl/user/date-plans/history?page=$page&limit=$limit',
+      );
       final response = await http.get(url, headers: _headers);
 
       if (response.statusCode == 200) {
@@ -157,13 +163,16 @@ class DateNowApiService {
   }
 
   // GET Request to fetch my hosted plans (Today, Tomorrow, Weekend, Activity)
-  static Future<Map<String, dynamic>?> getMyPlans({required String period, String? activity}) async {
+  static Future<Map<String, dynamic>?> getMyPlans({
+    required String period,
+    String? activity,
+  }) async {
     try {
       String query = 'period=${period.toUpperCase()}';
       if (activity != null && activity.isNotEmpty) {
         query += '&activity=${activity.toLowerCase()}';
       }
-      
+
       final url = Uri.parse('$vercelBaseUrl/user/date-plans/my-plans?$query');
       final response = await http.get(url, headers: _headers);
 
@@ -278,13 +287,17 @@ class DateNowApiService {
   // PATCH Request to approve date request
   static Future<bool> approveRequest(String requestId) async {
     try {
-      final url = Uri.parse('$baseUrl/user/date-plan-requests/$requestId/approve');
+      final url = Uri.parse(
+        '$baseUrl/user/date-plan-requests/$requestId/approve',
+      );
       final response = await http.patch(url, headers: _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to approve request: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to approve request: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -296,13 +309,17 @@ class DateNowApiService {
   // PATCH Request to decline date request
   static Future<bool> declineRequest(String requestId) async {
     try {
-      final url = Uri.parse('$baseUrl/user/date-plan-requests/$requestId/decline');
+      final url = Uri.parse(
+        '$baseUrl/user/date-plan-requests/$requestId/decline',
+      );
       final response = await http.patch(url, headers: _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to decline request: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to decline request: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -312,39 +329,59 @@ class DateNowApiService {
   }
 
   // Request to withdraw a sent request
-  static Future<bool> withdrawRequest(String requestId, {String? overrideToken}) async {
+  static Future<bool> withdrawRequest(
+    String requestId, {
+    String? overrideToken,
+  }) async {
     try {
       // The user mentioned the API is on the vercel domain, which might not be deployed to production yet
-      final String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api'; //vercel link api
-      final url = Uri.parse('$vercelBaseUrl/user/date-plans/withdraw/$requestId');
-      
-      final headers = overrideToken != null 
+      final String vercelBaseUrl =
+          'https://dating-app-backend-plum.vercel.app/api'; //vercel link api
+      final url = Uri.parse(
+        '$vercelBaseUrl/user/date-plans/withdraw/$requestId',
+      );
+
+      final headers = overrideToken != null
           ? {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $overrideToken',
             }
           : _headers;
-      
+
       // We assume it's PATCH based on the other endpoints, but fallback to POST/DELETE
       var response = await http.patch(url, headers: headers);
-      debugPrint('PATCH vercel response: ${response.statusCode} - ${response.body}');
+      debugPrint(
+        'PATCH vercel response: ${response.statusCode} - ${response.body}',
+      );
       if (response.statusCode == 200 || response.statusCode == 201) return true;
-      if (response.body.contains('"success":') || response.body.contains('not found')) return false;
+      if (response.body.contains('"success":') ||
+          response.body.contains('not found'))
+        return false;
 
       // If 404 HTML, try POST on Vercel
       if (response.statusCode == 404) {
         response = await http.post(url, headers: headers);
-        debugPrint('POST vercel response: ${response.statusCode} - ${response.body}');
-        if (response.statusCode == 200 || response.statusCode == 201) return true;
-        if (response.body.contains('"success":') || response.body.contains('not found')) return false;
+        debugPrint(
+          'POST vercel response: ${response.statusCode} - ${response.body}',
+        );
+        if (response.statusCode == 200 || response.statusCode == 201)
+          return true;
+        if (response.body.contains('"success":') ||
+            response.body.contains('not found'))
+          return false;
       }
-      
+
       // Try DELETE on Vercel
       if (response.statusCode == 404) {
         response = await http.delete(url, headers: headers);
-        debugPrint('DELETE vercel response: ${response.statusCode} - ${response.body}');
-        if (response.statusCode == 200 || response.statusCode == 201) return true;
-        if (response.body.contains('"success":') || response.body.contains('not found')) return false;
+        debugPrint(
+          'DELETE vercel response: ${response.statusCode} - ${response.body}',
+        );
+        if (response.statusCode == 200 || response.statusCode == 201)
+          return true;
+        if (response.body.contains('"success":') ||
+            response.body.contains('not found'))
+          return false;
       }
 
       return false;
@@ -366,12 +403,36 @@ class DateNowApiService {
           return data['data'] as Map<String, dynamic>;
         }
       } else {
-        debugPrint('Failed to fetch plan requests: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to fetch plan requests: ${response.statusCode} - ${response.body}',
+        );
       }
       return null;
     } catch (e) {
       debugPrint('Error fetching plan requests: $e');
       return null;
+    }
+  }
+
+  // POST Request for End & Review 1st screen
+  static Future<bool> submitFeedbackIsMeet(String planId, String status) async {
+    try {
+      final String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api';
+      final url = Uri.parse('$vercelBaseUrl/user/$planId/feedback/is_meet');
+      final response = await http.post(
+        url,
+        headers: _headers,
+        body: json.encode({'attendanceStatus': status}),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to submit feedback: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error submitting feedback is_meet: $e');
+      return false;
     }
   }
 }
