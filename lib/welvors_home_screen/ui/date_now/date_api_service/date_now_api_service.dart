@@ -162,6 +162,30 @@ class DateNowApiService {
     }
   }
 
+  // GET Request to fetch history plan details
+  static Future<Map<String, dynamic>?> getHistoryPlanDetails(String planId) async {
+    try {
+      final url = Uri.parse('$vercelBaseUrl/user/history/details/$planId');
+      final response = await http.get(url, headers: _headers);
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return decoded['data'] as Map<String, dynamic>?;
+        }
+        return decoded;
+      } else {
+        debugPrint(
+          'Failed to fetch history details: ${response.statusCode} - ${response.body}',
+        );
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error fetching history details: $e');
+      return null;
+    }
+  }
+
   // GET Request to fetch my hosted plans (Today, Tomorrow, Weekend, Activity)
   static Future<Map<String, dynamic>?> getMyPlans({
     required String period,

@@ -120,6 +120,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
         views += itemViews;
 
         final mappedItem = {
+          'id': item['_id'] ?? item['id'],
           'title': title,
           'date': formattedDate,
           'location': location,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../date_api_service/date_now_api_service.dart';
 
 void showHistoryDetailDrawer(BuildContext context, Map<String, dynamic> plan) {
   showModalBottomSheet(
@@ -14,14 +15,50 @@ void showHistoryDetailDrawer(BuildContext context, Map<String, dynamic> plan) {
   );
 }
 
-class HistoryDetailDrawer extends StatelessWidget {
+class HistoryDetailDrawer extends StatefulWidget {
   final Map<String, dynamic> plan;
 
   const HistoryDetailDrawer({super.key, required this.plan});
 
   @override
+  State<HistoryDetailDrawer> createState() => _HistoryDetailDrawerState();
+}
+
+class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
+  bool _isLoading = true;
+  Map<String, dynamic>? _detailData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDetails();
+  }
+
+  Future<void> _fetchDetails() async {
+    final planId = widget.plan['id'];
+    if (planId != null) {
+      final response = await DateNowApiService.getHistoryPlanDetails(planId.toString());
+      if (mounted) {
+        setState(() {
+          _detailData = response;
+          _isLoading = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final status = plan['status'] as String;
+    final plan = widget.plan;
+    final status = _detailData?['statusLabel']?.toString().toUpperCase() ?? 
+                   _detailData?['status']?.toString().toUpperCase() ?? 
+                   plan['status'] as String? ?? 'EXPIRED';
     final hasPartnerInfo =
         plan.containsKey('partnerName') && plan['partnerName'] != null;
 
@@ -44,12 +81,39 @@ class HistoryDetailDrawer extends StatelessWidget {
         statusColor = Colors.black;
     }
 
+    int parseStat(dynamic val) {
+      if (val == null) return 0;
+      if (val is int) return val;
+      if (val is double) return val.toInt();
+      if (val is String) return int.tryParse(val) ?? 0;
+      if (val is Map) {
+        if (val.containsKey('total')) return parseStat(val['total']);
+        if (val.containsKey('count')) return parseStat(val['count']);
+      }
+      return 0;
+    }
+
+    String parseString(dynamic val, String defaultVal) {
+      if (val == null) return defaultVal;
+      if (val is String) return val;
+      if (val is Map) {
+        if (val.containsKey('label')) return parseString(val['label'], defaultVal);
+        if (val.containsKey('name')) return parseString(val['name'], defaultVal);
+        if (val.containsKey('value')) return parseString(val['value'], defaultVal);
+      }
+      return val.toString();
+    }
+
     // Default calculations for stats if not present
-    final views = plan['views'] ?? 0;
-    final requests = plan['requests'] ?? 0;
-    final approved = hasPartnerInfo
-        ? 1
-        : 0; // Simplified logic based on partner existence
+    final views = parseStat(_detailData?['views'] ?? plan['views']);
+    final requests = parseStat(_detailData?['requests'] ?? plan['requests']);
+    final approved = parseStat(_detailData?['approved']) > 0 
+        ? parseStat(_detailData?['approved']) 
+        : (hasPartnerInfo ? 1 : 0);
+    final split = parseString(_detailData?['whoPays'] ?? _detailData?['split'] ?? plan['split'], 'Split (TTMM)');
+    final groupSize = parseString(_detailData?['groupSize'] ?? plan['groupSize'], 'Just 1');
+    final boost = parseString(_detailData?['boost'] ?? plan['boost'], 'No');
+    final planCost = parseString(_detailData?['planCost'] ?? plan['planCost'], '₹100');
 
     return Container(
       decoration: const BoxDecoration(
@@ -73,8 +137,14 @@ class HistoryDetailDrawer extends StatelessWidget {
             ),
           ),
 
-          Expanded(
-            child: SingleChildScrollView(
+          _isLoading 
+          ? const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+              ),
+            )
+          : Expanded(
+              child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,14 +339,14 @@ class HistoryDetailDrawer extends StatelessWidget {
                       Expanded(
                         child: _buildInfoCard(
                           'BILL',
-                          plan['split'] ?? 'Split (TTMM)',
+                          split,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildInfoCard(
                           'GROUP',
-                          plan['groupSize'] ?? 'Just 1',
+                          groupSize,
                         ),
                       ),
                     ],
@@ -285,13 +355,13 @@ class HistoryDetailDrawer extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildInfoCard('BOOST', plan['boost'] ?? 'No'),
+                        child: _buildInfoCard('BOOST', boost),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildInfoCard(
                           'PLAN COST',
-                          plan['planCost'] ?? '₹100',
+                          planCost,
                         ),
                       ),
                     ],
@@ -305,7 +375,7 @@ class HistoryDetailDrawer extends StatelessWidget {
           ),
 
           // Sticky MESSAGE BUTTON at bottom
-          if (status == 'MET' && hasPartnerInfo)
+          if (!_isLoading && status == 'MET' && hasPartnerInfo)
             SafeArea(
               top: false,
               child: Container(
