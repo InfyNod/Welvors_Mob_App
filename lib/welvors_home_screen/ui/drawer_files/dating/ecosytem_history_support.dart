@@ -116,12 +116,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const TrustVerificationScreen(),
-                    ),
-                  );
+                 Navigator.pushNamed(context, '/TrustVerificationScreen');
                 },
               ),
             ],

@@ -110,6 +110,9 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
       period: _selectedDayFilter,
       activity: rawActivity,
     );
+
+    if (!mounted) return;
+
     if (res != null && res['success'] == true) {
       final data = res['data'] as List<dynamic>? ?? [];
 
@@ -827,6 +830,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                         requestId,
                       );
                       if (success) {
+                        if (!mounted) return;
                         setState(() {
                           planRequests.remove(request);
                         });
@@ -866,6 +870,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                         requestId,
                       );
                       if (success) {
+                        if (!mounted) return;
                         setState(() {
                           request['status'] = 'approved';
                         });
