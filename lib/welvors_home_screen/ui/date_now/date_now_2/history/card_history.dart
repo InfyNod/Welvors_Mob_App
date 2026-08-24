@@ -356,6 +356,32 @@ class CardHistory extends StatelessWidget {
                       ],
                     ),
                   ),
+                ] else if (status == 'MET') ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Text(
+                        'Your Rating: ',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Row(
+                        children: List.generate(5, (index) {
+                          return Icon(
+                            Icons.star,
+                            size: 16,
+                            color: index < (plan['rating'] ?? 0)
+                                ? const Color(0xFFF2A93B) // Gold star
+                                : Colors.grey.shade300,
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
                 ],
 
                 const SizedBox(height: 12),

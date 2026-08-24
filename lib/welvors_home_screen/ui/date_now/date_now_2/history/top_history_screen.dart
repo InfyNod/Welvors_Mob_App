@@ -103,10 +103,11 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
         final title = item['quickTitle']?['label'] ?? item['title'] ?? 'Date Plan';
         final location = '${item['venue']?['name'] ?? ''} · ${item['venue']?['address'] ?? ''}';
         final image = item['activity']?['icon'] ?? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-        final status = item['status']?.toString().toUpperCase() ?? 'EXPIRED';
+        final status = item['statusLabel']?.toString().toUpperCase() ?? item['status']?.toString().toUpperCase() ?? 'EXPIRED';
         final note = item['message'] ?? '';
         final requestsCount = item['requests']?['total'] ?? 0;
         final split = item['whoPays']?['label'] ?? 'Split';
+        final rating = item['review']?['rating'] ?? 0;
         
         final partnerName = item['participant']?['name'];
         final partnerAvatar = item['participant']?['photoUrl'];
@@ -128,6 +129,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
           'requests': requestsCount,
           'split': split,
           'views': itemViews,
+          'rating': rating,
         };
         
         if (partnerName != null) {

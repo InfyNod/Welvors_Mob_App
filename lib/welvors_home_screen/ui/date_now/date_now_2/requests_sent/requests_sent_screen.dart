@@ -76,7 +76,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
 
           return {
             'id': item['id'],
-            'planId': plan['id'],
+            'planId': item['planId'] ?? plan['id'],
             'imageUrl': plan['photoUrl'] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
             'title': plan['quickTitle'] ?? plan['title'] ?? 'Plan',
             'subtitle': '${_formatDate(plan['eventDateTime'])} · ${plan['venueName'] ?? ''}',
@@ -1017,6 +1017,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                           'Content-Type': 'application/json',
                           'Authorization': 'Bearer $_userToken',
                         },
+                        body: json.encode({}), // Add empty body to prevent backend parsing errors
                       );
                       
                       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -1029,9 +1030,17 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                           );
                         }
                       } else {
+                        String errorMessage = 'Failed to cancel date';
+                        try {
+                          final errorBody = json.decode(response.body);
+                          if (errorBody['message'] != null) {
+                            errorMessage = errorBody['message'];
+                          }
+                        } catch (_) {}
+
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Failed to cancel date')),
+                            SnackBar(content: Text(errorMessage)),
                           );
                         }
                         debugPrint('Failed to cancel: ${response.statusCode} - ${response.body}');
