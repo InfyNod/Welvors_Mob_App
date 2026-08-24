@@ -13,103 +13,9 @@ class CardHistory extends StatelessWidget {
     required this.plansEarlier,
   });
 
-  static List<Map<String, dynamic>> thisWeekPlans = [
-    {
-      'title': '🍝 Pasta & Long Conversations',
-      'date': 'Sat, 2 Aug · 8:00 – 10:30 PM',
-      'location': 'Le Petit Bistro · Koregaon Park · 2.1 km',
-      'image':
-          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'status': 'MET',
-      'partnerName': 'Aanya, 25',
-      'partnerAvatar':
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'partnerStatus': 'Met on this plan',
-      'rating': 5,
-      'note':
-          'You both showed up. Dinner ran 30 min over — she asked to meet again.',
-      'views': 214,
-      'requests': 7,
-      'split': 'Split (TTMM)',
-    },
-    {
-      'title': '🚶 Riverside Evening Walk',
-      'date': 'Thu, 24 Jul · 6:30 – 8:00 PM',
-      'location': 'Mula Riverfront · Baner · 4.6 km',
-      'image':
-          'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'status': 'MET',
-      'partnerName': 'Riya, 26',
-      'partnerAvatar':
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'partnerStatus': 'Met on this plan',
-      'rating': 4,
-      'note':
-          'Walked, then coffee after. Good conversation, no spark for a second date.',
-      'views': 96,
-      'requests': 4,
-      'split': 'I paid',
-    },
-    {
-      'title': '☕ Sunday Filter Coffee',
-      'date': 'Sun, 27 Jul · 10:30 AM – 12:00 PM',
-      'location': 'Blue Tokai · Bandra · 1.2 km',
-      'image':
-          'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'status': 'EXPIRED',
-      'note':
-          '2 requests came in but you didn’t approve anyone before the time passed.',
-      'views': 58,
-      'requests': 2,
-      'split': 'Split (TTMM)',
-    },
-  ];
+  static List<Map<String, dynamic>> thisWeekPlans = [];
 
-  static List<Map<String, dynamic>> earlierPlans = [
-    {
-      'title': '🍸 Rooftop Sundowner',
-      'date': 'Fri, 18 Jul · 7:00 – 9:00 PM',
-      'location': 'The Terrace · Viman Nagar · 6.3 km',
-      'image':
-          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'status': 'NO-SHOW',
-      'partnerName': 'Meher, 24',
-      'partnerAvatar':
-          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-      'partnerStatus': 'Approved · didn’t show',
-      'note':
-          'You approved Meher and waited 40 min. She didn’t arrive and didn’t message.',
-      'views': 187,
-      'requests': 6,
-      'split': 'Decide there',
-    },
-    {
-      'title': '🎨 Gallery Hop & Chai',
-      'date': 'Sun, 13 Jul · 4:00 – 6:00 PM',
-      'location': 'Monalisa Kalagram · Koregaon Park · 2.8 km',
-      'image':
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK3K1CU66l6qqVot2o0lnC_CoIhnHhy890WoqnSYVDm7wCxVKhbrDpX_8&s=10',
-      'status': 'CANCELLED',
-      'note':
-          'You cancelled 4 hours before. All 3 requesters were notified automatically.',
-      'views': 71,
-      'requests': 3,
-      'split': 'Split (TTMM)',
-    },
-    {
-      'title': '🥐 Lazy Sunday Brunch',
-      'date': 'Sun, 6 Jul · 11:00 AM – 1:00 PM',
-      'location': 'Baker’s Table · Kalyani Nagar · 3.4 km',
-      'image':
-          'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'status': 'EXPIRED',
-      'note':
-          'No requests came in. Try a boost or an earlier time slot next Sunday.',
-      'views': 23,
-      'requests': 0,
-      'split': 'Split (TTMM)',
-    },
-  ];
+  static List<Map<String, dynamic>> earlierPlans = [];
 
   List<Map<String, dynamic>> _filterPlans(List<Map<String, dynamic>> plans) {
     if (selectedFilter.toLowerCase() == 'all') {
@@ -452,19 +358,20 @@ class CardHistory extends StatelessWidget {
                   ),
                 ],
 
-                const SizedBox(height: 10),
-
-                // Note
-                Text(
-                  plan['note'],
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade700,
-                    height: 1.3,
-                  ),
-                ),
-
                 const SizedBox(height: 12),
+
+                if (plan['note'] != null && plan['note'].toString().trim().isNotEmpty) ...[
+                  // Note
+                  Text(
+                    plan['note'],
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade700,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
 
                 // Dotted Divider
                 Row(
@@ -503,9 +410,8 @@ class CardHistory extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             _buildSmallStatPill(
-                              Icons.handshake_outlined,
+                              null,
                               plan['split'],
-                              iconColor: const Color(0xFFF2A93B),
                             ),
                           ],
                         ),
@@ -536,7 +442,7 @@ class CardHistory extends StatelessWidget {
   }
 
   Widget _buildSmallStatPill(
-    IconData icon,
+    IconData? icon,
     String text, {
     Color iconColor = Colors.grey,
   }) {
@@ -548,12 +454,14 @@ class CardHistory extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 12,
-            color: iconColor == Colors.grey ? Colors.black54 : iconColor,
-          ),
-          const SizedBox(width: 4),
+          if (icon != null) ...[
+            Icon(
+              icon,
+              size: 12,
+              color: iconColor == Colors.grey ? Colors.black54 : iconColor,
+            ),
+            const SizedBox(width: 4),
+          ],
           Text(
             text,
             style: const TextStyle(
