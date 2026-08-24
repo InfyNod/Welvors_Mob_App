@@ -48,11 +48,9 @@ class _VideoVerificationScreenState extends State<VideoVerificationScreen>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Verification Completed")));
-      Navigator.pushAndRemoveUntil(
+      Navigator.of(
         context,
-        MaterialPageRoute(builder: (_) => const Home()),
-        (route) => false,
-      );
+      ).popUntil((route) => route.settings.name == '/TrustVerificationScreen');
     }
   }
 

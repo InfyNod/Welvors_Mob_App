@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/trust_repository.dart';
 import '../../trust_verfication/home.dart';
 
 import '../bloc/platinum_verification_bloc.dart';
@@ -51,10 +52,8 @@ class PlatinumSuccessScreen extends StatelessWidget {
               colors: [Mycolor.darkPurple, Mycolor.darkPurple],
               title: '← Back to Trust Centre',
               onTap: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const Home()),
-                  (route) => false,
+                Navigator.of(context).popUntil(
+                  (route) => route.settings.name == '/TrustVerificationScreen',
                 );
               },
             ),

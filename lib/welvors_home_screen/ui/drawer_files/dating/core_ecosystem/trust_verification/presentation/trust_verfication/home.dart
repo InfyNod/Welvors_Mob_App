@@ -215,10 +215,7 @@ class _VerificationSectionViewState extends State<_VerificationSectionView>
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFFA6A85),
-                                Color(0xFFDE2957),
-                              ],
+                              colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),

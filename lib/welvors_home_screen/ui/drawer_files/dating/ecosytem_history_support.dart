@@ -95,7 +95,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
               _buildEcosystemTile(
                 icon: '🛡️',
                 iconBgColor: const Color(0xFFFBE4E7), // Light red
-                title: 'Trust Centre',
+                title: 'Trust & Verification',
                 subtitleRich: TextSpan(
                   children: [
                     TextSpan(

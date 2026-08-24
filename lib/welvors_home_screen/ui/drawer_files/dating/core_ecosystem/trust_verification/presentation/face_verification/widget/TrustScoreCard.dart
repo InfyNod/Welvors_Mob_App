@@ -66,7 +66,7 @@ class TrustScoreCardFace extends StatelessWidget {
               minHeight: 7,
               borderRadius: BorderRadius.circular(10),
               backgroundColor: Mycolor.grey1,
-              valueColor: const AlwaysStoppedAnimation(Color(0xffe11d74)),
+              valueColor: const AlwaysStoppedAnimation(Colors.white),
             ),
           ),
 

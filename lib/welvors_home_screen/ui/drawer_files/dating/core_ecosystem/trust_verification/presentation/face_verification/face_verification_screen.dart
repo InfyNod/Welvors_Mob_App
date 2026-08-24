@@ -48,7 +48,7 @@ class FaceVerificationScreen extends StatelessWidget {
       ),
 
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 40),
         child: BottomButton(
           shadowColor: Mycolor.redshadow,
           colors: [Mycolor.pink, Mycolor.pink1],

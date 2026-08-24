@@ -120,7 +120,7 @@ class _EducationView extends StatelessWidget {
                   top: false,
                   child: Container(
                     color: Mycolor.white,
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

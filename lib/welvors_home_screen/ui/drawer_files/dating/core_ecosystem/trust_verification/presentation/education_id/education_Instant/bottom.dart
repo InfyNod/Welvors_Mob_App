@@ -1,3 +1,5 @@
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/government_Id/upload_id/screens/upload_id_screen.dart';
+
 import '../../../export.dart';
 
 class BottomSection extends StatelessWidget {
@@ -33,7 +35,11 @@ class BottomSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     debugPrint('Upload manually instead clicked');
-
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => UploadIdScreen()),
+                    );
                     // Manual upload screen
                   },
                   child: const Text(

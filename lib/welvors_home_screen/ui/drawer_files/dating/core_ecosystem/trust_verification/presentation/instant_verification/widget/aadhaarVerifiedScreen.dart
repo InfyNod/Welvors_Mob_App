@@ -1,3 +1,5 @@
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/trust_repository.dart';
+
 import '../../../export.dart';
 import 'trust_score_card.dart';
 import 'verified_icon.dart';
@@ -95,10 +97,9 @@ class _AadhaarVerifiedView extends StatelessWidget {
                   colors: [Mycolor.darkPurple, Mycolor.darkPurple],
                   title: '← Back to Trust Centre',
                   onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const Home()),
-                      (route) => false,
+                    Navigator.of(context).popUntil(
+                      (route) =>
+                          route.settings.name == '/TrustVerificationScreen',
                     );
                   },
                 ),

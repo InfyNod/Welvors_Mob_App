@@ -11,13 +11,18 @@ class _OtpInputState extends State<OtpInput> {
   final TextEditingController _controller = TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
-
   @override
   void initState() {
     super.initState();
 
     _controller.addListener(_onControllerChanged);
     _focusNode.addListener(_onFocusChanged);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _focusOtp();
+      }
+    });
   }
 
   void _onControllerChanged() {

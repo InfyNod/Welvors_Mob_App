@@ -20,13 +20,13 @@ class IdTypeChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(30),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: selected ? const Color(0xFFFFE5F0) : Colors.white,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: selected ? const Color(0xFFED1472) : const Color(0xFFE9E3E6),
-            width: selected ? 2 : 1.5,
+            width: selected ? 1.5 : 1.5,
           ),
         ),
         child: Row(

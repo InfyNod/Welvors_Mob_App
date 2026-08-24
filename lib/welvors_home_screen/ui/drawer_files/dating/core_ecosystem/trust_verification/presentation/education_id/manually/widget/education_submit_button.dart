@@ -19,7 +19,7 @@ class EducationSubmitButton extends StatelessWidget {
         opacity: onTap == null ? 1 : 1,
         child: Container(
           width: double.infinity,
-          height: 60,
+          height: 54,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             gradient: const LinearGradient(

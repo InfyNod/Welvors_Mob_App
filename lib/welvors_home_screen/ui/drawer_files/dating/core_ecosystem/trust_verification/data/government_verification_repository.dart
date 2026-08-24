@@ -9,7 +9,7 @@ class GovernmentVerificationRepository {
       title: "Government ID",
       bannerMessage:
           "🪪 Verify your government ID to confirm you're a real person. Choose how you'd like to verify.",
-      bannerColor: Mycolor.creamlight,
+      bannerColor: Mycolor.tipbackground,
       methods: [
         VerificationMethod(
           id: "instant_verification",

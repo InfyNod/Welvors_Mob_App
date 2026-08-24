@@ -10,28 +10,27 @@ enum InstantVerificationStatus {
 
 class InstantVerificationState {
   final int currentStep;
-
   final VerificationDocument? selectedDocument;
-
   final String mobileNumber;
-
   final String otp;
-
   final int resendSeconds;
-
   final bool canResend;
-
   final bool consentAccepted;
-
   final bool verificationCompleted;
-
   final InstantVerificationStatus status;
-
   final String? errorMessage;
 
   const InstantVerificationState({
     this.currentStep = 1,
-    this.selectedDocument,
+
+    this.selectedDocument = const VerificationDocument(
+      type: VerificationDocumentType.aadhaar,
+      title: 'Aadhaar Card',
+      subtitle: 'Verify using your Aadhaar card',
+      icon: '🪪',
+      recommended: true,
+    ),
+
     this.mobileNumber = '',
     this.otp = '',
     this.resendSeconds = 16,

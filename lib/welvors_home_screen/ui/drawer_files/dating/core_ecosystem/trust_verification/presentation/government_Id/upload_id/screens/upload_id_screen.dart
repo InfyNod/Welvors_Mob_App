@@ -230,7 +230,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
 
         _sectionTitle('SELECT ID TYPE'),
 
-        hSized14,
+        hSized10,
 
         _buildIdTypes(context, state),
 
@@ -249,12 +249,12 @@ class _UploadIdViewState extends State<_UploadIdView> {
             'Your 12-digit Aadhaar. Encrypted — only last 4 digits are ever stored.',
             style: TextStyle(
               color: Color(0xFF9B949A),
-              fontSize: 16,
+              fontSize: 12,
               height: 1.55,
             ),
           ),
 
-          hSized27,
+          hSized10,
         ],
 
         _sectionTitle(
@@ -265,7 +265,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
 
         _buildNameField(context, state),
 
-        hSized30,
+        hSized20,
 
         _sectionTitle(state.selectedIdType.frontLabel),
 
@@ -279,7 +279,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
           },
         ),
 
-        hSized27,
+        hSized20,
 
         _sectionTitle(state.selectedIdType.backLabel),
 
@@ -307,9 +307,9 @@ class _UploadIdViewState extends State<_UploadIdView> {
   Widget _buildInfoBox() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFE2EF),
+        color: Mycolor.pinklight,
         borderRadius: BorderRadius.circular(18),
       ),
       child: const Row(
@@ -353,17 +353,17 @@ class _UploadIdViewState extends State<_UploadIdView> {
       maxLength: 12,
       cursorColor: const Color(0xFF9A9298),
       controller: _aadhaarController,
-      style: const TextStyle(
-        fontSize: 23,
-        fontWeight: FontWeight.w400,
-        color: Color(0xFF9A9298),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: Mycolor.black,
       ),
 
       decoration: InputDecoration(
         hintText: '1234 5678 9012',
 
-        hintStyle: const TextStyle(
-          fontSize: 23,
+        hintStyle: TextStyle(
+          fontSize: 18,
           fontWeight: FontWeight.w400,
           color: Color(0xFF9A9298),
         ),
@@ -376,7 +376,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
 
         // Exact spacing like screenshot
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 17,
           vertical: 13,
         ),
 
@@ -409,16 +409,16 @@ class _UploadIdViewState extends State<_UploadIdView> {
       cursorColor: const Color(0xFF9A9298),
       controller: _nameController,
       style: const TextStyle(
-        fontSize: 23,
-        fontWeight: FontWeight.w400,
-        color: Color(0xFF9A9298),
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: Mycolor.black,
       ),
 
       decoration: InputDecoration(
         hintText: 'FULL NAME',
 
         hintStyle: const TextStyle(
-          fontSize: 23,
+          fontSize: 18,
           fontWeight: FontWeight.w400,
           color: Color(0xFF9A9298),
         ),
@@ -431,7 +431,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
 
         // Exact spacing like screenshot
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 17,
           vertical: 13,
         ),
 
@@ -512,11 +512,11 @@ class _UploadIdViewState extends State<_UploadIdView> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         decoration: BoxDecoration(
-          color: Mycolor.white,
+          color: state.isConfirmed ? Mycolor.colorfce4ef : Mycolor.white,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: state.isConfirmed ? Mycolor.pink : Mycolor.color0xFFE8E1E4,
-            width: 3,
+            width: 1,
           ),
         ),
         child: Row(
@@ -524,23 +524,23 @@ class _UploadIdViewState extends State<_UploadIdView> {
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 180),
-              width: 25,
-              height: 25,
+              width: 20,
+              height: 20,
               decoration: BoxDecoration(
-                color: state.isConfirmed ? Mycolor.pink : Mycolor.white,
-                borderRadius: BorderRadius.circular(8),
+                color: state.isConfirmed ? Mycolor.colore11d74 : Mycolor.white,
+                borderRadius: BorderRadius.circular(4),
                 border: Border.all(
                   color: state.isConfirmed
-                      ? Mycolor.pink
-                      : Mycolor.color0xFFE5DFE2,
-                  width: 2,
+                      ? Mycolor.colore11d74
+                      : Mycolor.colorfce4ef,
+                  width: 1,
                 ),
               ),
               child: state.isConfirmed
                   ? const Icon(
                       Icons.check_rounded,
                       color: Colors.white,
-                      size: 20,
+                      size: 14,
                     )
                   : null,
             ),
@@ -551,7 +551,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
               child: Text(
                 'I confirm this ID belongs to me and the details are accurate. False documents lead to a permanent ban.',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 11,
                   height: 1.5,
                   color: Color(0xFF252126),
                 ),
@@ -602,7 +602,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
       title,
       style: const TextStyle(
         color: Color(0xFF9B949A),
-        fontSize: 15,
+        fontSize: 12,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
       ),

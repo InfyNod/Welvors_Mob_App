@@ -1,6 +1,5 @@
 import '../../export.dart';
 import 'widget/TrustScoreCard.dart';
-import '../trust_verfication/home.dart';
 
 class FaceVerifiedScreen extends StatelessWidget {
   const FaceVerifiedScreen({super.key});
@@ -76,13 +75,12 @@ class FaceVerifiedScreen extends StatelessWidget {
 
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 54,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const Home()),
-                      (route) => false,
+                    Navigator.of(context).popUntil(
+                      (route) =>
+                          route.settings.name == '/TrustVerificationScreen',
                     );
                   },
 
@@ -101,7 +99,7 @@ class FaceVerifiedScreen extends StatelessWidget {
                 ),
               ),
 
-              hSized20,
+              hSized15,
             ],
           ),
         ),

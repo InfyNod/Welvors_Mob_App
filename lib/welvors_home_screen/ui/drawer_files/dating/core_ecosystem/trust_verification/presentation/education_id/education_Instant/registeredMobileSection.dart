@@ -20,7 +20,7 @@ class RegisteredMobileSection extends StatelessWidget {
                 'REGISTERED MOBILE / DIGILOCKER',
                 style: TextStyle(
                   color: Color(0xFF999399),
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.4,
                 ),
@@ -37,10 +37,10 @@ class RegisteredMobileSection extends StatelessWidget {
 
               cursorColor: const Color(0xFF9A9298),
 
-              style: const TextStyle(
-                fontSize: 23,
+              style: TextStyle(
+                fontSize: 20,
                 fontWeight: FontWeight.w400,
-                color: Color(0xFF9A9298),
+                color: Mycolor.black,
               ),
 
               decoration: InputDecoration(
@@ -113,13 +113,13 @@ class RegisteredMobileSection extends StatelessWidget {
               ),
             ],
 
-            const SizedBox(height: 14),
+            hSized8,
 
             const Text(
               'Used to fetch your academic records securely.',
               style: TextStyle(
                 color: Color(0xFF999399),
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
             ),

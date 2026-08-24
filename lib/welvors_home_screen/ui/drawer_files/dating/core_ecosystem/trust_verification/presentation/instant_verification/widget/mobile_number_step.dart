@@ -31,10 +31,10 @@ class MobileNumberStep extends StatelessWidget {
           maxLength: 10,
           cursorColor: const Color(0xFF9A9298),
 
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w400,
-            color: Color(0xFF9A9298),
+            color: Mycolor.black,
           ),
 
           decoration: InputDecoration(

@@ -540,7 +540,7 @@ class BottomAction extends StatelessWidget {
             opacity: enabled ? 1 : 0.5,
             child: Container(
               width: double.infinity,
-              height: 60,
+              height: 54,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
 

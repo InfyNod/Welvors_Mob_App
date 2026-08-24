@@ -46,7 +46,7 @@ class UploadIdBottomButton extends StatelessWidget {
       children: [
         SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 54,
           child: ElevatedButton(
             onPressed: loading ? null : onSubmit,
             style: ElevatedButton.styleFrom(
@@ -70,8 +70,8 @@ class UploadIdBottomButton extends StatelessWidget {
                 : Text(
                     getSubmitText(),
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
           ),
@@ -93,9 +93,9 @@ class UploadIdBottomButton extends StatelessWidget {
               Text(
                 'Verify instantly instead',
                 style: TextStyle(
-                  color: Color(0xFF9D969C),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+                  color: Color(0xff9a9298),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ],

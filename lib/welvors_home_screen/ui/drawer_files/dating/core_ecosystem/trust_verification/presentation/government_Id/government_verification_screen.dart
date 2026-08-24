@@ -73,7 +73,7 @@ class GovernmentVerificationScreen extends StatelessWidget {
                         child: Text(
                           data.bannerMessage,
                           style: const TextStyle(
-                            color: Mycolor.pink3,
+                            color: Mycolor.pink2,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),

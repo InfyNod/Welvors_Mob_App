@@ -21,7 +21,7 @@ extension IdTypeExtension on IdType {
   String get emoji {
     switch (this) {
       case IdType.aadhaar:
-        return '🪪';
+        return '🆔';
       case IdType.pan:
         return '💳';
       case IdType.passport:

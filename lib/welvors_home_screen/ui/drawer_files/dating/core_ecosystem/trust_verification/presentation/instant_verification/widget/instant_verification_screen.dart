@@ -1,3 +1,5 @@
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/government_Id/upload_id/screens/upload_id_screen.dart';
+
 import '../../../export.dart';
 import 'aadhaarVerifiedScreen.dart';
 import 'common_bottom_button.dart';
@@ -139,7 +141,7 @@ class _InstantVerificationView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      hSized10,
+                      hSized20,
                     ],
                   ),
                 );
@@ -279,7 +281,7 @@ class _InstantVerificationView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        hSized20,
+                        // hSized20,
                       ],
                     ),
                   ),
@@ -306,10 +308,19 @@ class _InstantVerificationView extends StatelessWidget {
                                 );
                               },
                       ),
+
                       hSized18,
                       Center(
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => UploadIdScreen(),
+                              ),
+                            );
+                          },
                           child: Text(
                             'Upload Manually Instead',
                             style: TextStyle(
@@ -320,7 +331,7 @@ class _InstantVerificationView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      hSized20,
+                      // hSized20,
                     ],
                   ),
                 ),

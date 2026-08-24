@@ -19,7 +19,7 @@ class BottomButton extends StatelessWidget {
       children: [
         SizedBox(
           width: double.infinity,
-          height: 60,
+          height: 54,
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),

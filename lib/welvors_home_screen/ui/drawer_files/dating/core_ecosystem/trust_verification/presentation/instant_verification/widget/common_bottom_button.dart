@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 
 class CommonBottomButton extends StatelessWidget {
   final String title;
@@ -18,7 +19,7 @@ class CommonBottomButton extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 54,
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
@@ -29,7 +30,7 @@ class CommonBottomButton extends StatelessWidget {
               : const LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
-                  colors: [Color(0xFFE83B91), Color(0xFFC91660)],
+                  colors: [Mycolor.pink, Mycolor.pink1],
                 ),
           boxShadow: disabled
               ? null

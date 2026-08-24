@@ -34,7 +34,7 @@ class PlatinumIncomeScreen extends StatelessWidget {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 18, bottom: 5, right: 18, top: 10),
+        padding: const EdgeInsets.only(left: 20, bottom: 5, right: 20, top: 10),
 
         child: Column(
           mainAxisSize: MainAxisSize.min,

@@ -15,6 +15,7 @@ class Mycolor {
   static const pink1 = Color(0xFFDE2957); // Darker pink
   static const pink2 = Color(0xFFFA6A85); // Lighter pink
   static const pink3 = Color(0xFFE94086); // Icon pink
+  static const pinkffeef2 = Color(0xFFffeef2); // Icon pink
   static const pinklight = Color(0xFFFCE4EC); // Light pink background
 
   static const green = Color(0xff27AE60);
@@ -78,4 +79,8 @@ class Mycolor {
   static const colorfbd064 = Color(0xfffbd064);
   static const coloredb147 = Color(0xffedb147);
   static const colorc4bec4 = Color(0xffc4bec4);
+  static const colorfce4ef = Color(0xfffce4ef);
+  static const colore11d74 = Color(0xfffe11d74);
+  static const color8b8680 = Color(0xff8b8680);
+  static const colorf5f2ec = Color(0xfff5f2ec);
 }

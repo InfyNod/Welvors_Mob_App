@@ -22,7 +22,11 @@ import 'drawer_files/dating/my_boosts/boost_wallet_all_screen/boost_wallet_top_n
 class TopAndBottomNavScreen extends StatefulWidget {
   final bool isPreview;
   final int initialIndex;
-  const TopAndBottomNavScreen({super.key, this.isPreview = false, this.initialIndex = 0});
+  const TopAndBottomNavScreen({
+    super.key,
+    this.isPreview = false,
+    this.initialIndex = 0,
+  });
 
   @override
   State<TopAndBottomNavScreen> createState() => _TopAndBottomNavScreenState();
@@ -32,18 +36,20 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.isPreview) {
-      return _TopAndBottomNavView(isPreview: widget.isPreview, initialIndex: widget.initialIndex);
+      return _TopAndBottomNavView(
+        isPreview: widget.isPreview,
+        initialIndex: widget.initialIndex,
+      );
     }
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => HomeBloc()..add(LoadHomeDataEvent()),
-        ),
-        BlocProvider(
-          create: (context) => FilterBloc(),
-        ),
+        BlocProvider(create: (context) => HomeBloc()..add(LoadHomeDataEvent())),
+        BlocProvider(create: (context) => FilterBloc()),
       ],
-      child: _TopAndBottomNavView(isPreview: widget.isPreview, initialIndex: widget.initialIndex),
+      child: _TopAndBottomNavView(
+        isPreview: widget.isPreview,
+        initialIndex: widget.initialIndex,
+      ),
     );
   }
 }
@@ -250,7 +256,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
       case 2:
         return const TopNavAdmirersScreen();
       case 3:
-        return const ChatScreen();
+        return const ChatScreen_();
       case 4:
         return const EventsScreen();
       default:
