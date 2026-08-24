@@ -10,6 +10,7 @@ import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
 import '../home_bloc/home_bloc.dart';
 import 'home/home_screen.dart';
 import 'home/send_compliment/complimenting.dart';
+import 'home/notification/notification_screen.dart';
 import 'date_now/date_now_screen.dart';
 import 'admirers/top_nav_admirers_screen.dart';
 import 'chat/chat_screen.dart';
@@ -463,23 +464,30 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   }
 
   Widget _buildNotificationIcon() {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const NotificationScreen()),
+        );
+      },
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
           const Icon(Icons.notifications_none, size: 24, color: Colors.black54),
           Positioned(
             right: 8,
@@ -495,7 +503,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildBottomNav() {
