@@ -1757,6 +1757,16 @@ void showReportIssueBottomSheet(
                           GestureDetector(
                             onTap: () {
                               if (issueDescription.trim().isNotEmpty) {
+                                String reportReason = selectedTags.isNotEmpty 
+                                    ? selectedTags.first.toUpperCase().replaceAll('\'', '').replaceAll(' ', '_') 
+                                    : 'SAFETY_CONCERN';
+
+                                DateNowApiService.submitReportIssue(
+                                  plan['id']?.toString() ?? '',
+                                  reportReason,
+                                  issueDescription.trim(),
+                                );
+
                                 // Move to history as REPORTED/NO-SHOW
                                 CardHistory.thisWeekPlans.insert(0, {
                                   'title': plan['title'],
@@ -2330,6 +2340,10 @@ void showCancelPlanBottomSheet(
                       // Cancel plan button
                       GestureDetector(
                         onTap: () {
+                          DateNowApiService.cancelDatePlan(
+                            plan['id']?.toString() ?? '',
+                          );
+
                           // Move to history
                           CardHistory.thisWeekPlans.insert(0, {
                             'title': plan['title'],

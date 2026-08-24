@@ -513,4 +513,52 @@ class DateNowApiService {
       return false;
     }
   }
+
+  // POST Request for Report Issue
+  static Future<bool> submitReportIssue(
+    String planId,
+    String reason,
+    String comment,
+  ) async {
+    try {
+      final url = Uri.parse('$vercelBaseUrl/user/date-plans/$planId/report');
+      final response = await http.post(
+        url,
+        headers: _headers,
+        body: json.encode({
+          'reason': reason,
+          'comment': comment,
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to submit report issue: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error submitting report issue: $e');
+      return false;
+    }
+  }
+
+  // PATCH Request for Cancel Date Plan
+  static Future<bool> cancelDatePlan(String planId) async {
+    try {
+      final url = Uri.parse('$vercelBaseUrl/user/date-plan/$planId/cancel');
+      final response = await http.patch(
+        url,
+        headers: _headers,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to cancel date plan: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error canceling date plan: $e');
+      return false;
+    }
+  }
 }

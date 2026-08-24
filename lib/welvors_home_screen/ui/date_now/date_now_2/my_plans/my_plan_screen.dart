@@ -518,6 +518,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                   onTap: () => showManageBottomSheet(context, plan, () {
                     setState(() {
                       MyPlanScreen.myHostedPlans.remove(plan);
+                      _apiPlans.remove(plan);
                     });
                   }),
                   child: ClipRRect(
