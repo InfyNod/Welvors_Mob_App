@@ -334,14 +334,8 @@ void showReviewBottomSheet(
   VoidCallback onPlanClosed,
 ) {
   String rawTitle = plan['title'] ?? '';
-  String emoji = "☕";
+  String emoji = _getPlanEmoji(plan);
   String cleanTitle = rawTitle;
-
-  int firstSpaceIndex = rawTitle.indexOf(' ');
-  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
-    emoji = rawTitle.substring(0, firstSpaceIndex).trim();
-    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
-  }
 
   String? selectedOption; // To track selection: 'yes' or 'no'
 
@@ -923,14 +917,8 @@ void showFeedbackBottomSheet(
   VoidCallback onPlanClosed,
 ) {
   String rawTitle = plan['title'] ?? '';
-  String emoji = "☕";
+  String emoji = _getPlanEmoji(plan);
   String cleanTitle = rawTitle;
-
-  int firstSpaceIndex = rawTitle.indexOf(' ');
-  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
-    emoji = rawTitle.substring(0, firstSpaceIndex).trim();
-    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
-  }
 
   // Extract name (before comma)
   String attendeeName = attendee['name'].toString().split(',').first.trim();
@@ -1214,6 +1202,16 @@ void showFeedbackBottomSheet(
                           GestureDetector(
                             onTap: () {
                               if (overallExperience > 0 && ratePerson > 0) {
+                                final apiTags = selectedTags
+                                    .map((tag) => tag.toUpperCase().replaceAll(' ', '_'))
+                                    .toList();
+                                DateNowApiService.submitFeedbackExperience(
+                                  plan['id']?.toString() ?? '',
+                                  overallExperience,
+                                  ratePerson,
+                                  apiTags,
+                                );
+                                
                                 Navigator.pop(context);
                                 showThanksBottomSheet(
                                   context,
@@ -2109,6 +2107,16 @@ void showNoOneCameBottomSheet(
                           GestureDetector(
                             onTap: () {
                               if (isFormValid) {
+                                String noShowReason = selectedTags.isNotEmpty 
+                                    ? selectedTags.first.toUpperCase().replaceAll(' ', '_') 
+                                    : 'NOT_SURE';
+
+                                DateNowApiService.submitFeedbackNoShow(
+                                  plan['id']?.toString() ?? '',
+                                  planQuality,
+                                  noShowReason,
+                                );
+
                                 // Move to history as NO-SHOW
                                 CardHistory.thisWeekPlans.insert(0, {
                                   'title': plan['title'],

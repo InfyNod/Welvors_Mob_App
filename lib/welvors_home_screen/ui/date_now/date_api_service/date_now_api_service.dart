@@ -417,8 +417,7 @@ class DateNowApiService {
   // POST Request for End & Review 1st screen
   static Future<bool> submitFeedbackIsMeet(String planId, String status) async {
     try {
-      final String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api';
-      final url = Uri.parse('$vercelBaseUrl/user/$planId/feedback/is_meet');
+      final url = Uri.parse('$baseUrl/user/$planId/feedback/is_meet');
       final response = await http.post(
         url,
         headers: _headers,
@@ -439,8 +438,7 @@ class DateNowApiService {
   // PUT Request for Who came to meet you screen
   static Future<bool> submitFeedbackMetUser(String planId, String metUserId) async {
     try {
-      final String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api';
-      final url = Uri.parse('$vercelBaseUrl/user/$planId/feedback/met-user');
+      final url = Uri.parse('$baseUrl/user/$planId/feedback/met-user');
       final response = await http.put(
         url,
         headers: _headers,
@@ -454,6 +452,64 @@ class DateNowApiService {
       }
     } catch (e) {
       debugPrint('Error submitting feedback met-user: $e');
+      return false;
+    }
+  }
+
+  // POST Request for Experience Rating screen
+  static Future<bool> submitFeedbackExperience(
+    String planId,
+    int overallRating,
+    int personRating,
+    List<String> experienceTags,
+  ) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId/feedback/experience');
+      final response = await http.post(
+        url,
+        headers: _headers,
+        body: json.encode({
+          'overallRating': overallRating,
+          'personRating': personRating,
+          'experienceTags': experienceTags,
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to submit experience rating: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error submitting experience rating: $e');
+      return false;
+    }
+  }
+
+  // POST Request for No Show Rating screen
+  static Future<bool> submitFeedbackNoShow(
+    String planId,
+    int overallRating,
+    String noShowReason,
+  ) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId/feedback/no-show');
+      final response = await http.post(
+        url,
+        headers: _headers,
+        body: json.encode({
+          'overallRating': overallRating,
+          'noShowReason': noShowReason,
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to submit no-show rating: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error submitting no-show rating: $e');
       return false;
     }
   }
