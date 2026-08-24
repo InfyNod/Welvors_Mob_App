@@ -107,20 +107,21 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
   );
 }
 
+String _getPlanEmoji(Map<String, dynamic> plan) {
+  // User requested a single generic emoji for all plans
+  // because the backend returns full photos for activity icons
+  // which look weird as tiny 40x40 icons in the bottom sheet.
+  return "⭐️";
+}
+
 void showManageBottomSheet(
   BuildContext context,
   Map<String, dynamic> plan,
   VoidCallback onPlanClosed,
 ) {
   String rawTitle = plan['title'] ?? '';
-  String emoji = "☕";
+  String emoji = _getPlanEmoji(plan);
   String cleanTitle = rawTitle;
-
-  int firstSpaceIndex = rawTitle.indexOf(' ');
-  if (firstSpaceIndex != -1 && firstSpaceIndex < 4) {
-    emoji = rawTitle.substring(0, firstSpaceIndex).trim();
-    cleanTitle = rawTitle.substring(firstSpaceIndex + 1).trim();
-  }
 
   showModalBottomSheet(
     context: context,
@@ -161,7 +162,19 @@ void showManageBottomSheet(
                   color: const Color(0xFFFA6A85).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(emoji, style: const TextStyle(fontSize: 32)),
+                child: emoji.startsWith('http')
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.network(
+                          emoji,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Text('☕', style: TextStyle(fontSize: 32)),
+                        ),
+                      )
+                    : Text(emoji, style: const TextStyle(fontSize: 32)),
               ),
               const SizedBox(height: 16),
               // Title
@@ -373,7 +386,22 @@ void showReviewBottomSheet(
                       color: const Color(0xFFFA6A85).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text(emoji, style: const TextStyle(fontSize: 32)),
+                    child: emoji.startsWith('http')
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.network(
+                              emoji,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Text(
+                                    '☕',
+                                    style: TextStyle(fontSize: 32),
+                                  ),
+                            ),
+                          )
+                        : Text(emoji, style: const TextStyle(fontSize: 32)),
                   ),
                   const SizedBox(height: 24),
                   // Title
@@ -553,8 +581,13 @@ void showReviewBottomSheet(
                   GestureDetector(
                     onTap: () {
                       if (selectedOption != null) {
-                        final status = selectedOption == 'yes' ? 'MET' : 'NO_SHOW';
-                        DateNowApiService.submitFeedbackIsMeet(plan['id']?.toString() ?? '', status);
+                        final status = selectedOption == 'yes'
+                            ? 'MET'
+                            : 'NO_SHOW';
+                        DateNowApiService.submitFeedbackIsMeet(
+                          plan['id']?.toString() ?? '',
+                          status,
+                        );
                       }
 
                       if (selectedOption == 'yes') {
@@ -642,6 +675,7 @@ void showWhoCameBottomSheet(
       .where((req) => req['status'] == 'approved')
       .map((req) {
         return {
+          'id': req['_id']?.toString() ?? req['id']?.toString() ?? '',
           'name': '${req['name'] ?? ''}, ${req['age'] ?? ''}'.trim(),
           'match': req['match'] != null ? '${req['match']} match' : '',
           'avatar': req['avatar'] ?? '',
@@ -804,11 +838,17 @@ void showWhoCameBottomSheet(
                   GestureDetector(
                     onTap: () {
                       if (selectedIndex != null) {
+                        final attendee = attendees[selectedIndex!];
+                        DateNowApiService.submitFeedbackMetUser(
+                          plan['id']?.toString() ?? '',
+                          attendee['id']?.toString() ?? '',
+                        );
+
                         Navigator.pop(context);
                         showFeedbackBottomSheet(
                           context,
                           plan,
-                          attendees[selectedIndex!],
+                          attendee,
                           onPlanClosed,
                         );
                       }

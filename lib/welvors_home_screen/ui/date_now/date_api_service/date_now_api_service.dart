@@ -435,4 +435,26 @@ class DateNowApiService {
       return false;
     }
   }
+
+  // PUT Request for Who came to meet you screen
+  static Future<bool> submitFeedbackMetUser(String planId, String metUserId) async {
+    try {
+      final String vercelBaseUrl = 'https://dating-app-backend-plum.vercel.app/api';
+      final url = Uri.parse('$vercelBaseUrl/user/$planId/feedback/met-user');
+      final response = await http.put(
+        url,
+        headers: _headers,
+        body: json.encode({'metUserId': metUserId}),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Failed to submit feedback met-user: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error submitting feedback met-user: $e');
+      return false;
+    }
+  }
 }
