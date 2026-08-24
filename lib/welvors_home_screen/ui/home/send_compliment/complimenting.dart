@@ -3,16 +3,31 @@ import 'try_screen.dart';
 
 class ComplimentingBottomSheet extends StatefulWidget {
   final String complimentingType;
+  final String? profileName;
+  final String? profileImageUrl;
 
-  const ComplimentingBottomSheet({Key? key, this.complimentingType = 'Prompt'})
-    : super(key: key);
+  const ComplimentingBottomSheet({
+    Key? key,
+    this.complimentingType = 'Prompt',
+    this.profileName,
+    this.profileImageUrl,
+  }) : super(key: key);
 
-  static void show(BuildContext context, {String type = 'Prompt'}) {
+  static void show(
+    BuildContext context, {
+    String type = 'Prompt',
+    String? profileName,
+    String? profileImageUrl,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => ComplimentingBottomSheet(complimentingType: type),
+      builder: (context) => ComplimentingBottomSheet(
+        complimentingType: type,
+        profileName: profileName,
+        profileImageUrl: profileImageUrl,
+      ),
     );
   }
 
@@ -111,25 +126,62 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 ),
 
                 // Title Section
-                Text(
-                  'COMPLIMENTING',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.grey.shade400,
-                    letterSpacing: 1.2,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.auto_awesome_rounded, size: 14, color: _primaryColor),
+                    const SizedBox(width: 4),
+                    Text(
+                      'COMPLIMENTING',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: _primaryColor,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  widget.complimentingType,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black87,
+                const SizedBox(height: 10),
+                if (widget.profileName != null)
+                  Row(
+                    children: [
+                      if (widget.profileImageUrl != null) ...[
+                        Container(
+                          padding: const EdgeInsets.all(2), // Border width
+                          decoration: BoxDecoration(
+                            color: _primaryColor.withOpacity(0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: CircleAvatar(
+                            radius: 18,
+                            backgroundImage: NetworkImage(widget.profileImageUrl!),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+                      Text(
+                        widget.profileName!,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black87,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Text(
+                    widget.complimentingType,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black87,
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 20),
 
                 // Stats Row
                 SingleChildScrollView(

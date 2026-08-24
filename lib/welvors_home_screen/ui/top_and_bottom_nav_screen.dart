@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
 import '../home_bloc/home_bloc.dart';
 import 'home/home_screen.dart';
+import 'home/send_compliment/complimenting.dart';
 import 'date_now/date_now_screen.dart';
 import 'admirers/top_nav_admirers_screen.dart';
 import 'chat/chat_screen.dart';
@@ -173,7 +174,20 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                             // Tap to undock
                             setState(() => _isRoseVisible = true);
                           } else {
-                            // TODO: Implement send rose logic here in the future
+                            // Implement send rose logic
+                            final homeState = context.read<HomeBloc>().state;
+                            if (homeState is HomeLoaded && homeState.profiles.isNotEmpty) {
+                              final profile = homeState.profiles.first;
+                              final name = profile.name;
+                              final imageUrl = profile.images.isNotEmpty ? profile.images.first : null;
+                              
+                              ComplimentingBottomSheet.show(
+                                context,
+                                type: 'Profile',
+                                profileName: name,
+                                profileImageUrl: imageUrl,
+                              );
+                            }
                           }
                         },
                         onPanUpdate: (details) {
