@@ -101,28 +101,43 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
 
     String? rawActivity;
     if (_selectedCategoryFilter != null) {
-      rawActivity = _selectedCategoryFilter!.replaceAll(RegExp(r'[^\w\s]+'), '').trim();
+      rawActivity = _selectedCategoryFilter!
+          .replaceAll(RegExp(r'[^\w\s]+'), '')
+          .trim();
     }
 
-    final res = await DateNowApiService.getMyPlans(period: _selectedDayFilter, activity: rawActivity);
+    final res = await DateNowApiService.getMyPlans(
+      period: _selectedDayFilter,
+      activity: rawActivity,
+    );
     if (res != null && res['success'] == true) {
       final data = res['data'] as List<dynamic>? ?? [];
-      
+
       setState(() {
         _apiPlans = data.map((plan) {
           final activity = plan['activity'] ?? {};
           final event = plan['event'] ?? {};
           final venue = plan['venue'] ?? {};
-          
-          String title = plan['title']?.toString() ?? 
-                         (plan['quickTitle'] != null ? plan['quickTitle']['label']?.toString() : null) ?? 
-                         'Date Plan';
-          
+
+          String title =
+              plan['title']?.toString() ??
+              (plan['quickTitle'] != null
+                  ? plan['quickTitle']['label']?.toString()
+                  : null) ??
+              'Date Plan';
+
           String category = activity['label']?.toString() ?? 'General';
-          String imageUrl = plan['photoUrl']?.toString() ?? activity['icon']?.toString() ?? 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-          String subtitle = '$_selectedDayFilter · ${venue['name']?.toString() ?? 'Custom location'}';
-          final int partLimit = int.tryParse(plan['participantLimit']?.toString() ?? '1') ?? 1;
-          String limitTag = partLimit > 2 ? '👥 Small group' : '👥 Limit $partLimit';
+          String imageUrl =
+              plan['photoUrl']?.toString() ??
+              activity['icon']?.toString() ??
+              'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+          String subtitle =
+              '$_selectedDayFilter · ${venue['name']?.toString() ?? 'Custom location'}';
+          final int partLimit =
+              int.tryParse(plan['participantLimit']?.toString() ?? '1') ?? 1;
+          String limitTag = partLimit > 2
+              ? '👥 Small group'
+              : '👥 Limit $partLimit';
 
           return {
             'id': plan['id']?.toString() ?? '',
@@ -133,16 +148,25 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
             'subtitle': subtitle,
             'tags': [limitTag, category],
             'isLive': event['isLiveNow'] == true,
-            'requests': (plan['requestsList'] as List<dynamic>? ?? []).map((req) {
+            'requests': (plan['requestsList'] as List<dynamic>? ?? []).map((
+              req,
+            ) {
               final requester = req['requester'] ?? {};
               return {
                 'id': req['id']?.toString() ?? '',
                 'name': requester['name']?.toString() ?? 'Unknown',
                 'age': requester['age'] ?? 20,
-                'match': requester['matchPercentage'] != null ? '${requester['matchPercentage']}%' : '92%',
-                'message': req['message']?.toString() ?? '"No message attached."',
-                'avatar': requester['photo']?.toString() ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-                'status': req['status']?.toString().toLowerCase() == 'pending' ? 'new' : req['status']?.toString().toLowerCase(),
+                'match': requester['matchPercentage'] != null
+                    ? '${requester['matchPercentage']}%'
+                    : '92%',
+                'message':
+                    req['message']?.toString() ?? '"No message attached."',
+                'avatar':
+                    requester['photo']?.toString() ??
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+                'status': req['status']?.toString().toLowerCase() == 'pending'
+                    ? 'new'
+                    : req['status']?.toString().toLowerCase(),
                 'rawRequest': req,
               };
             }).toList(),
@@ -160,8 +184,6 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return _buildMyPlansTab();
@@ -173,13 +195,17 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
       bool matchesCategory = true;
       if (_selectedCategoryFilter != null) {
         // Strip emojis and get the raw text (e.g. 'Coffee')
-        String filterText = _selectedCategoryFilter!.replaceAll(RegExp(r'[^\w\s]+'), '').trim().toLowerCase();
-        
+        String filterText = _selectedCategoryFilter!
+            .replaceAll(RegExp(r'[^\w\s]+'), '')
+            .trim()
+            .toLowerCase();
+
         String planCategory = (plan['category'] ?? '').toString().toLowerCase();
         String planTitle = (plan['title'] ?? '').toString().toLowerCase();
-        
+
         // Match if the category name OR the title contains the filter text
-        matchesCategory = planCategory.contains(filterText) || planTitle.contains(filterText);
+        matchesCategory =
+            planCategory.contains(filterText) || planTitle.contains(filterText);
       }
       return matchesDay && matchesCategory;
     }).toList();
@@ -203,12 +229,16 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           ),
           // Scrollable Content
           Expanded(
-            child: _isLoading 
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
-              : filteredPlans.isEmpty
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                  )
+                : filteredPlans.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
-                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 40),
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).padding.bottom + 40,
+                    ),
                     itemCount: filteredPlans.length,
                     itemBuilder: (context, index) {
                       return _buildContent(filteredPlans[index]);
@@ -293,74 +323,71 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
   }
 
   Widget _buildContent(Map<String, dynamic> plan) {
-    List<Map<String, dynamic>> requests = List<Map<String, dynamic>>.from(plan['requests'] ?? []);
+    List<Map<String, dynamic>> requests = List<Map<String, dynamic>>.from(
+      plan['requests'] ?? [],
+    );
 
     return Container(
-        margin: const EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 16,
-          bottom: 16,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 24,
-              spreadRadius: 4,
-              offset: const Offset(0, 8),
+      margin: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 24,
+            spreadRadius: 4,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHostedPlanCard(plan),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: 4,
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHostedPlanCard(plan),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: 4,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildBoostSection(),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE43A6A),
-                          shape: BoxShape.circle,
-                        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildBoostSection(),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE43A6A),
+                        shape: BoxShape.circle,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${requests.length} new requests',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${requests.length} new requests',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ...List.generate(requests.length, (index) {
-                    return _buildRequestCard(requests[index], requests);
-                  }),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ...List.generate(requests.length, (index) {
+                  return _buildRequestCard(requests[index], requests);
+                }),
+              ],
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildMyPlansFilterChip(String label, int index) {
@@ -564,12 +591,14 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
-              children: (plan['tags'] as List<dynamic>?)?.map((tag) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: _buildSmallTag(tag.toString()),
-                );
-              }).toList() ?? [],
+              children:
+                  (plan['tags'] as List<dynamic>?)?.map((tag) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: _buildSmallTag(tag.toString()),
+                    );
+                  }).toList() ??
+                  [],
             ),
           ),
         ],
@@ -794,7 +823,9 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                   child: GestureDetector(
                     onTap: () async {
                       final requestId = request['id'] ?? 'DUMMY_ID';
-                      final success = await DateNowApiService.declineRequest(requestId);
+                      final success = await DateNowApiService.declineRequest(
+                        requestId,
+                      );
                       if (success) {
                         setState(() {
                           planRequests.remove(request);
@@ -831,7 +862,9 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                   child: GestureDetector(
                     onTap: () async {
                       final requestId = request['id'] ?? 'DUMMY_ID';
-                      final success = await DateNowApiService.approveRequest(requestId);
+                      final success = await DateNowApiService.approveRequest(
+                        requestId,
+                      );
                       if (success) {
                         setState(() {
                           request['status'] = 'approved';
@@ -1115,10 +1148,16 @@ Future<String?> _showRequesterProfileBottomSheet(
                                   Expanded(
                                     child: GestureDetector(
                                       onTap: () async {
-                                        final requestId = request['id'] ?? 'DUMMY_ID';
-                                        final success = await DateNowApiService.declineRequest(requestId);
+                                        final requestId =
+                                            request['id'] ?? 'DUMMY_ID';
+                                        final success =
+                                            await DateNowApiService.declineRequest(
+                                              requestId,
+                                            );
                                         if (success) {
-                                          Navigator.pop(context); // Close bottom sheet
+                                          Navigator.pop(
+                                            context,
+                                          ); // Close bottom sheet
                                           _showFeedbackSavedSnackBar(
                                             context,
                                             'Request from ${request['name']} declined',
@@ -1155,8 +1194,12 @@ Future<String?> _showRequesterProfileBottomSheet(
                                   Expanded(
                                     child: GestureDetector(
                                       onTap: () async {
-                                        final requestId = request['id'] ?? 'DUMMY_ID';
-                                        final success = await DateNowApiService.approveRequest(requestId);
+                                        final requestId =
+                                            request['id'] ?? 'DUMMY_ID';
+                                        final success =
+                                            await DateNowApiService.approveRequest(
+                                              requestId,
+                                            );
                                         if (success) {
                                           setModalState(() {
                                             request['status'] = 'approved';
