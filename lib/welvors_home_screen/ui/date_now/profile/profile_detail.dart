@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../home/home_screen.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
-
+import 'package:velvors/welvors_home_screen/ui/date_now/send_request_drawer.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 // Mock HomeBloc to feed the single fetched profile to the HomeScreen.
 class ProfileDetailHomeBloc extends Bloc<HomeEvent, HomeState> implements HomeBloc {
   ProfileDetailHomeBloc(ProfileModel profile)
@@ -21,12 +22,16 @@ class ProfileDetailScreen extends StatefulWidget {
   final String userId;
   final String? profileImageUrl;
   final String? profileName;
+  final Map<String, dynamic>? plan;
+  final VoidCallback? onPlanAction;
 
   const ProfileDetailScreen({
     super.key,
     required this.userId,
     this.profileImageUrl,
     this.profileName,
+    this.plan,
+    this.onPlanAction,
   });
 
   @override
@@ -308,9 +313,102 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
     }
 
     // Wrap the HomeScreen inside a BlocProvider to supply the fetched profile
-    return BlocProvider<HomeBloc>(
+    Widget homeScreen = BlocProvider<HomeBloc>(
       create: (context) => ProfileDetailHomeBloc(_profile!),
       child: const HomeScreen(isPreview: true),
     );
+
+    if (widget.plan != null) {
+      return Column(
+        children: [
+          Expanded(child: homeScreen),
+          Container(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFCE4EC), // Light pink
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Color(0xFFE43A6A)),
+                    onPressed: () async {
+                      final testToken =
+                          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+
+                      // Call API in the background
+                      DateNowApiService.skipPlan(
+                        widget.plan!['id'],
+                        overrideToken: testToken,
+                      );
+
+                      if (widget.onPlanAction != null) {
+                        widget.onPlanAction!();
+                      }
+                      Navigator.pop(context); // Go back after skipping
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () async {
+                          final requestSent =
+                              await showRequestDateBottomSheet(
+                                context,
+                                widget.plan!,
+                              );
+                          if (mounted && requestSent == true) {
+                            if (widget.onPlanAction != null) {
+                              widget.onPlanAction!();
+                            }
+                            Navigator.pop(context); // Go back after request sent
+                          }
+                        },
+                        child: const Center(
+                          child: Text(
+                            'Request Date',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+      );
+    }
+
+    return homeScreen;
   }
 }

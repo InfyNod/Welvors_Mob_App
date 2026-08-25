@@ -847,6 +847,22 @@ class _DateNowScreenState extends State<DateNowScreen>
                                   userId: plan['userId'].toString(),
                                   profileImageUrl: plan['avatarUrl'],
                                   profileName: plan['name'],
+                                  plan: plan,
+                                  onPlanAction: () {
+                                    setState(() {
+                                      _removedPlanIds.add(plan['id'].toString());
+                                    });
+                                    final remaining = _fetchedPlans
+                                        .where(
+                                          (p) => !_removedPlanIds.contains(
+                                            p['id'].toString(),
+                                          ),
+                                        )
+                                        .length;
+                                    if (remaining == 0) {
+                                      _fetchPlans();
+                                    }
+                                  },
                                 ),
                               ),
                             );
