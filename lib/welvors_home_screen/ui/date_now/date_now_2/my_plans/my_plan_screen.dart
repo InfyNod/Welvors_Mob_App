@@ -25,6 +25,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
     'Weekend',
     '|',
   ];
+  late List<GlobalKey> _myPlansFilterKeys = List.generate(_myPlansFilters.length, (index) => GlobalKey());
 
   List<Map<String, dynamic>> _apiPlans = [];
   bool _isLoading = true;
@@ -46,6 +47,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
           'Weekend',
           '|',
         ];
+        _myPlansFilterKeys = List.generate(_myPlansFilters.length, (index) => GlobalKey());
         for (var opt in options) {
           String label = '';
           if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
@@ -56,6 +58,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
             label = opt['label'] ?? opt['name'] ?? 'Unknown';
           }
           _myPlansFilters.add(label);
+          _myPlansFilterKeys.add(GlobalKey());
         }
       });
     }
@@ -195,7 +198,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
               children: List.generate(_myPlansFilters.length, (index) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: _buildMyPlansFilterChip(_myPlansFilters[index], index),
+                  child: _buildMyPlansFilterChip(_myPlansFilters[index], index, _myPlansFilterKeys[index]),
                 );
               }),
             ),
@@ -367,40 +370,45 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
     );
   }
 
-  Widget _buildMyPlansFilterChip(String label, int index) {
+  Widget _buildMyPlansFilterChip(String label, int index, GlobalKey key) {
     if (label == '|') {
-      return Container(
-        height: 24,
-        width: 1,
-        color: Colors.grey.shade300,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4),
+        child: Text('|', style: TextStyle(color: Colors.black26, fontSize: 18)),
       );
     }
-    bool isDayFilter =
-        label == 'Today' || label == 'Tomorrow' || label == 'Weekend';
-    bool isSelected = isDayFilter
-        ? _selectedDayFilter == label
-        : _selectedCategoryFilter == label;
+    bool isSelected = false;
+    if (index < 3) {
+      isSelected = _selectedDayFilter == label;
+    } else {
+      isSelected = _selectedCategoryFilter == label;
+    }
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          if (isDayFilter) {
-            if (_selectedDayFilter != label) {
-              _selectedDayFilter = label;
-              _fetchPlans(); // Fetch new plans for the selected day
-            }
+          if (index < 3) {
+            _selectedDayFilter = label;
           } else {
             if (_selectedCategoryFilter == label) {
               _selectedCategoryFilter = null;
             } else {
               _selectedCategoryFilter = label;
             }
-            _fetchPlans(); // Fetch new plans for the selected activity
+          }
+          if (key.currentContext != null) {
+            Scrollable.ensureVisible(
+              key.currentContext!,
+              alignment: 0.5,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
           }
         });
+        _fetchPlans(); // re-fetch with new filters
       },
       child: Container(
+        key: key,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFE43A6A) : Colors.white,

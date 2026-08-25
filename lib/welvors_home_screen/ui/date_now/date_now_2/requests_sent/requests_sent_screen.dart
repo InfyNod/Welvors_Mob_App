@@ -132,6 +132,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
       if (options != null && mounted) {
         setState(() {
           _filters = [];
+          _filterKeys = [];
           for (var opt in options) {
             String label = '';
             if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
@@ -142,6 +143,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               label = opt['label'] ?? opt['name'] ?? 'Unknown';
             }
             _filters.add(label);
+            _filterKeys.add(GlobalKey());
           }
         });
       }
@@ -183,6 +185,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     '🍸 Drinks',
     '🚶 Walk',
   ];
+  late List<GlobalKey> _filterKeys = List.generate(_filters.length, (index) => GlobalKey());
 
   @override
   Widget build(BuildContext context) {
@@ -339,7 +342,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         children: List.generate(_filters.length, (index) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
-                            child: _buildFilterChip(_filters[index], index),
+                            child: _buildFilterChip(_filters[index], index, _filterKeys[index]),
                           );
                         }),
                       ),
@@ -513,7 +516,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     );
   }
 
-  Widget _buildFilterChip(String label, int index) {
+  Widget _buildFilterChip(String label, int index, GlobalKey key) {
     bool isSelected = _selectedFilterIndex == index;
     return GestureDetector(
       onTap: () {
@@ -522,10 +525,19 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             _selectedFilterIndex = -1;
           } else {
             _selectedFilterIndex = index;
+            if (key.currentContext != null) {
+              Scrollable.ensureVisible(
+                key.currentContext!,
+                alignment: 0.5,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
           }
         });
       },
       child: Container(
+        key: key,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
