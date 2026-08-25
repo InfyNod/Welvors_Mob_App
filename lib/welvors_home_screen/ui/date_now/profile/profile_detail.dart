@@ -24,6 +24,7 @@ class ProfileDetailScreen extends StatefulWidget {
   final String? profileName;
   final Map<String, dynamic>? plan;
   final VoidCallback? onPlanAction;
+  final Widget? customBottomWidget;
 
   const ProfileDetailScreen({
     super.key,
@@ -32,6 +33,7 @@ class ProfileDetailScreen extends StatefulWidget {
     this.profileName,
     this.plan,
     this.onPlanAction,
+    this.customBottomWidget,
   });
 
   @override
@@ -75,14 +77,35 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
             if (val == null) return '';
             if (val is String) return val;
             if (val is Map) {
-              return (val['bio'] ?? val['name'] ?? val['label'] ?? val['title'] ?? val['value'] ?? val.toString()).toString();
+              return (val['QUESTION'] ?? val['question'] ?? val['prompt'] ?? val['PROMPT'] ?? val['bio'] ?? val['name'] ?? val['label'] ?? val['title'] ?? val['value'] ?? val.toString()).toString();
             }
             return val.toString();
           }
+
+          Map<String, dynamic>? cleanMap(dynamic input) {
+            if (input == null || input is! Map) return null;
+            return input.map((key, value) => MapEntry(key.toString(), extractString(value)));
+          }
+
+          List<dynamic>? cleanList(dynamic input) {
+            if (input == null || input is! List) return null;
+            return input.map((item) {
+              if (item is Map) {
+                return item.map((k, v) => MapEntry(k.toString(), extractString(v)));
+              }
+              return extractString(item);
+            }).toList();
+          }
           
           final eduWork = data['eduWork'] as Map<String, dynamic>? ?? {};
-          final mappedCareer = (data['career'] != null || profileData['career'] != null) 
-              ? (data['career'] ?? profileData['career'])
+          var rawCareer = data['career'] ?? profileData['career'];
+          if (rawCareer is Map && rawCareer['highestEducation'] == null && rawCareer['highestEdu'] != null) {
+            // Normalize highestEdu to highestEducation
+            rawCareer = Map<String, dynamic>.from(rawCareer);
+            rawCareer['highestEducation'] = rawCareer['highestEdu'];
+          }
+          final mappedCareer = cleanMap((data['career'] != null || profileData['career'] != null) 
+              ? rawCareer
               : (eduWork.isNotEmpty ? {
                   'highestEducation': extractString(eduWork['highestEdu']),
                   'degree': extractString(eduWork['degree']),
@@ -94,10 +117,10 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                   'salaryRange': extractString(eduWork['salaryRange']),
                   'companyName': extractString(eduWork['companyName']),
                   'bigDreams': extractString(eduWork['bigDreams']),
-                } : null);
+                } : null));
 
           final familyProfile = data['familyProfile'] as Map<String, dynamic>? ?? {};
-          final mappedFamily = (data['family'] != null || profileData['family'] != null)
+          final mappedFamily = cleanMap((data['family'] != null || profileData['family'] != null)
               ? (data['family'] ?? profileData['family'])
               : (familyProfile.isNotEmpty ? {
                   'familyStatus': extractString(familyProfile['familyStatus']),
@@ -109,7 +132,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                   'familyHome': extractString(familyProfile['familyHome']),
                   'nativePlace': extractString(familyProfile['nativePlace']),
                   'familyIncome': extractString(familyProfile['familyIncome']),
-                } : null);
+                } : null));
 
           final answers = data['answer'] as List<dynamic>? ?? [];
           List<dynamic>? extractAnswers(String screen) {
@@ -130,17 +153,21 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
             return filtered.isNotEmpty ? filtered : null;
           }
 
-          final mappedLifestyle = data['lifestyle'] ?? profileData['lifestyle'] ?? extractAnswers('LIFESTYLE');
-          final mappedInterests = data['interests'] ?? profileData['interests'] ?? extractAnswers('THINGS_U_LOVE');
-          final mappedNetworking = data['networkingIntent'] ?? profileData['networkingIntent'] ?? data['networkingAnswers'] ?? profileData['networkingAnswers'] ?? extractAnswers('NETWORKING_INTENT');
+          final mappedLifestyle = cleanList(data['lifestyle'] ?? profileData['lifestyle']) ?? extractAnswers('LIFESTYLE');
+          final mappedInterests = cleanList(data['interests'] ?? profileData['interests']) ?? extractAnswers('THINGS_U_LOVE');
+          final mappedNetworking = cleanList(data['networkingIntent'] ?? profileData['networkingIntent'] ?? data['networkingAnswers'] ?? profileData['networkingAnswers']) ?? extractAnswers('NETWORKING_INTENT');
           
-          final mappedPrompts = data['prompts'] ?? data['userPrompts']?.map((p) {
-             final pt = p['prompt'];
-             return {
-                "question": pt != null && pt is Map ? pt['question'] : '',
-                "answer": p['answer'],
-             };
-          }).toList();
+          final List<dynamic> rawPrompts = (data['prompts'] as List?) ?? (data['userPrompts'] as List?) ?? [];
+          final mappedPrompts = rawPrompts.map((p) {
+             if (p is Map) {
+               final pt = p['prompt'] ?? p['question'];
+               return {
+                  "question": extractString(pt),
+                  "answer": extractString(p['answer']),
+               };
+             }
+             return {"question": "", "answer": ""};
+          }).where((m) => m["question"].toString().isNotEmpty).toList();
 
           final photos = data['photos'] as List<dynamic>? ?? [];
           final images = photos.where((p) => p['media_type'] == 'IMAGE').map((p) => p['media_url']?.toString() ?? '').toList();
@@ -406,6 +433,15 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
           ),
         ),
       ],
+      );
+    }
+    
+    if (widget.customBottomWidget != null) {
+      return Column(
+        children: [
+          Expanded(child: homeScreen),
+          widget.customBottomWidget!,
+        ],
       );
     }
 

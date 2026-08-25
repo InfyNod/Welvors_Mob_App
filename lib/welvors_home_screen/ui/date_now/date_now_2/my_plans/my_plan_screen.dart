@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'manage_plan.dart';
 import '../../date_api_service/date_now_api_service.dart';
+import 'profile.dart';
 
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
@@ -14,18 +15,17 @@ class MyPlanScreen extends StatefulWidget {
   State<MyPlanScreen> createState() => _MyPlanScreenState();
 }
 
-class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClientMixin {
+class _MyPlanScreenState extends State<MyPlanScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   String _selectedDayFilter = 'Today';
   String? _selectedCategoryFilter;
-  List<String> _myPlansFilters = [
-    'Today',
-    'Tomorrow',
-    'Weekend',
-    '|',
-  ];
-  late List<GlobalKey> _myPlansFilterKeys = List.generate(_myPlansFilters.length, (index) => GlobalKey());
+  List<String> _myPlansFilters = ['Today', 'Tomorrow', 'Weekend', '|'];
+  late List<GlobalKey> _myPlansFilterKeys = List.generate(
+    _myPlansFilters.length,
+    (index) => GlobalKey(),
+  );
 
   List<Map<String, dynamic>> _apiPlans = [];
   bool _isLoading = true;
@@ -41,18 +41,17 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
     final options = await DateNowApiService.getActivityOptions();
     if (options != null && mounted) {
       setState(() {
-        _myPlansFilters = [
-          'Today',
-          'Tomorrow',
-          'Weekend',
-          '|',
-        ];
-        _myPlansFilterKeys = List.generate(_myPlansFilters.length, (index) => GlobalKey());
+        _myPlansFilters = ['Today', 'Tomorrow', 'Weekend', '|'];
+        _myPlansFilterKeys = List.generate(
+          _myPlansFilters.length,
+          (index) => GlobalKey(),
+        );
         for (var opt in options) {
           String label = '';
           if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
             label = '${opt['emoji']} ${opt['label']}';
-          } else if (opt['icon'] != null && !opt['icon'].toString().startsWith('http')) {
+          } else if (opt['icon'] != null &&
+              !opt['icon'].toString().startsWith('http')) {
             label = '${opt['icon']} ${opt['label']}';
           } else {
             label = opt['label'] ?? opt['name'] ?? 'Unknown';
@@ -127,6 +126,10 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
               final requester = req['requester'] ?? {};
               return {
                 'id': req['id']?.toString() ?? '',
+                'userId':
+                    requester['_id']?.toString() ??
+                    requester['id']?.toString() ??
+                    '',
                 'name': requester['name']?.toString() ?? 'Unknown',
                 'age': requester['age'] ?? 20,
                 'match': requester['matchPercentage'] != null
@@ -198,7 +201,11 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
               children: List.generate(_myPlansFilters.length, (index) {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: _buildMyPlansFilterChip(_myPlansFilters[index], index, _myPlansFilterKeys[index]),
+                  child: _buildMyPlansFilterChip(
+                    _myPlansFilters[index],
+                    index,
+                    _myPlansFilterKeys[index],
+                  ),
                 );
               }),
             ),
@@ -676,9 +683,12 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
         children: [
           GestureDetector(
             onTap: () async {
-              final result = await _showRequesterProfileBottomSheet(
+              final result = await Navigator.push(
                 context,
-                request,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      MyPlanRequesterProfileScreen(request: request),
+                ),
               );
               if (result == 'decline') {
                 setState(() => planRequests.remove(request));
@@ -892,355 +902,6 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
       ),
     );
   }
-}
-
-Future<String?> _showRequesterProfileBottomSheet(
-  BuildContext context,
-  Map<String, dynamic> request,
-) {
-  return showModalBottomSheet<String>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Image section with Name
-                Stack(
-                  children: [
-                    Container(
-                      height: 340,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            request['avatar'].toString().replaceAll(
-                              'w=200',
-                              'w=800',
-                            ),
-                          ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    // Gradient overlay for text readability
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.8),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: const [0.6, 1.0],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 20,
-                      left: 24,
-                      child: Row(
-                        children: [
-                          Text(
-                            '${request['name']}, ${request['age']}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(
-                            Icons.verified,
-                            color: Colors.blue,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                // Profile details
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.blue.shade200),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.check, color: Colors.blue, size: 14),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Verified',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFA6A85).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${request['match'] ?? '92%'} match',
-                              style: const TextStyle(
-                                color: Color(0xFFDE2957),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            color: Colors.black54,
-                            size: 20,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Nearby',
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF6F4EF),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '“${request['message']}”',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: ['Coffee lover', 'Deep talker', 'Bookworm']
-                            .map(
-                              (tag) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  tag,
-                                  style: TextStyle(
-                                    color: Colors.grey.shade700,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                      const SizedBox(height: 32),
-                      SafeArea(
-                        child: request['status'] == 'approved'
-                            ? GestureDetector(
-                                onTap: () => Navigator.pop(context),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFFFA6A85),
-                                        Color(0xFFDE2957),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.chat_bubble_outline,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Message ${request['name']}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        final requestId =
-                                            request['id'] ?? 'DUMMY_ID';
-                                        final success =
-                                            await DateNowApiService.declineRequest(
-                                              requestId,
-                                            );
-                                        if (success) {
-                                          Navigator.pop(
-                                            context,
-                                          ); // Close bottom sheet
-                                          _showFeedbackSavedSnackBar(
-                                            context,
-                                            'Request from ${request['name']} declined',
-                                          );
-                                        }
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                            color: Colors.grey.shade300,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            'Decline',
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        final requestId =
-                                            request['id'] ?? 'DUMMY_ID';
-                                        final success =
-                                            await DateNowApiService.approveRequest(
-                                              requestId,
-                                            );
-                                        if (success) {
-                                          setModalState(() {
-                                            request['status'] = 'approved';
-                                          });
-                                          if (context.mounted) {
-                                            _showFeedbackSavedSnackBar(
-                                              context,
-                                              '${request['name']} approved. Date details sent to chat',
-                                            );
-                                          }
-                                        }
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xFFFA6A85),
-                                              Color(0xFFDE2957),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            'Approve to chat',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
 }
 
 void _showFeedbackSavedSnackBar(BuildContext context, String message) {
