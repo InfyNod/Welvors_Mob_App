@@ -1,0 +1,316 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../home/home_screen.dart';
+import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
+import 'package:velvors/onbording_allpage/theme/app_colors.dart';
+
+// Mock HomeBloc to feed the single fetched profile to the HomeScreen.
+class ProfileDetailHomeBloc extends Bloc<HomeEvent, HomeState> implements HomeBloc {
+  ProfileDetailHomeBloc(ProfileModel profile)
+      : super(HomeLoaded(profiles: [profile])) {
+    on<HomeEvent>((event, emit) {
+      // Keep emitting the same profile so it stays on screen
+      emit(HomeLoaded(profiles: [profile]));
+    });
+  }
+}
+
+class ProfileDetailScreen extends StatefulWidget {
+  final String userId;
+  final String? profileImageUrl;
+  final String? profileName;
+
+  const ProfileDetailScreen({
+    super.key,
+    required this.userId,
+    this.profileImageUrl,
+    this.profileName,
+  });
+
+  @override
+  State<ProfileDetailScreen> createState() => _ProfileDetailScreenState();
+}
+
+class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
+  bool _isLoading = true;
+  ProfileModel? _profile;
+  String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileDetails();
+  }
+
+  Future<void> _fetchProfileDetails() async {
+    try {
+      final token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+
+      final url = Uri.parse(
+          'https://dating-app-backend-plum.vercel.app/api/user/details/${widget.userId}');
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        if (decoded['success'] == true) {
+          final data = decoded['data'];
+          final profileData = data['profile'] ?? {};
+
+          String extractString(dynamic val) {
+            if (val == null) return '';
+            if (val is String) return val;
+            if (val is Map) {
+              return (val['bio'] ?? val['name'] ?? val['label'] ?? val['title'] ?? val['value'] ?? val.toString()).toString();
+            }
+            return val.toString();
+          }
+          
+          final eduWork = data['eduWork'] as Map<String, dynamic>? ?? {};
+          final mappedCareer = (data['career'] != null || profileData['career'] != null) 
+              ? (data['career'] ?? profileData['career'])
+              : (eduWork.isNotEmpty ? {
+                  'highestEducation': extractString(eduWork['highestEdu']),
+                  'degree': extractString(eduWork['degree']),
+                  'collegeName': extractString(eduWork['collegeName']),
+                  'profession': extractString(eduWork['profession']),
+                  'employmentType': extractString(eduWork['employmentType']),
+                  'experience': extractString(eduWork['experience']),
+                  'ambition': extractString(eduWork['ambition']),
+                  'salaryRange': extractString(eduWork['salaryRange']),
+                  'companyName': extractString(eduWork['companyName']),
+                  'bigDreams': extractString(eduWork['bigDreams']),
+                } : null);
+
+          final familyProfile = data['familyProfile'] as Map<String, dynamic>? ?? {};
+          final mappedFamily = (data['family'] != null || profileData['family'] != null)
+              ? (data['family'] ?? profileData['family'])
+              : (familyProfile.isNotEmpty ? {
+                  'familyStatus': extractString(familyProfile['familyStatus']),
+                  'familyType': extractString(familyProfile['familyType']),
+                  'fatherOccupation': extractString(familyProfile['fatherOccupation']),
+                  'motherOccupation': extractString(familyProfile['motherOccupation']),
+                  'fatherOrganisation': extractString(familyProfile['fatherOrganisation']),
+                  'motherOrganisation': extractString(familyProfile['motherOrganisation']),
+                  'familyHome': extractString(familyProfile['familyHome']),
+                  'nativePlace': extractString(familyProfile['nativePlace']),
+                  'familyIncome': extractString(familyProfile['familyIncome']),
+                } : null);
+
+          final answers = data['answer'] as List<dynamic>? ?? [];
+          List<dynamic>? extractAnswers(String screen) {
+            final filtered = answers.where((a) {
+              final q = a['question'];
+              return q is Map && q['screen'] == screen;
+            }).map((a) {
+              final q = a['question'] as Map;
+              final o = a['option'] as Map?;
+              final answerStr = extractString(o ?? a['answer']);
+              return {
+                 "id": q['id'],
+                 "name": answerStr, // For interests which checks 'name'
+                 "question": q['title'], // For lifestyle which checks 'question'
+                 "answer": answerStr, // For lifestyle which checks 'answer'
+              };
+            }).toList();
+            return filtered.isNotEmpty ? filtered : null;
+          }
+
+          final mappedLifestyle = data['lifestyle'] ?? profileData['lifestyle'] ?? extractAnswers('LIFESTYLE');
+          final mappedInterests = data['interests'] ?? profileData['interests'] ?? extractAnswers('THINGS_U_LOVE');
+          final mappedNetworking = data['networkingIntent'] ?? profileData['networkingIntent'] ?? data['networkingAnswers'] ?? profileData['networkingAnswers'] ?? extractAnswers('NETWORKING_INTENT');
+          
+          final mappedPrompts = data['prompts'] ?? data['userPrompts']?.map((p) {
+             final pt = p['prompt'];
+             return {
+                "question": pt != null && pt is Map ? pt['question'] : '',
+                "answer": p['answer'],
+             };
+          }).toList();
+
+          final photos = data['photos'] as List<dynamic>? ?? [];
+          final images = photos.where((p) => p['media_type'] == 'IMAGE').map((p) => p['media_url']?.toString() ?? '').toList();
+          final videos = photos.where((p) => p['media_type'] == 'VIDEO').map((p) => p['media_url']?.toString() ?? '').toList();
+
+          // Create base profile. We use fallback values in case the API doesn't provide them.
+          final baseProfile = ProfileModel(
+            id: widget.userId,
+            images: images.isNotEmpty ? images : (widget.profileImageUrl != null ? [widget.profileImageUrl!] : []),
+            videoUrl: videos.isNotEmpty ? videos.first : null,
+            name: widget.profileName ?? (extractString(data['full_name']).isNotEmpty ? extractString(data['full_name']) : 'User'),
+            age: data['age'] is int ? data['age'] : (int.tryParse(data['age']?.toString() ?? '') ?? 25),
+            location: extractString(profileData['city']),
+            job: '',
+            intent: extractString(profileData['lookingFor'] ?? data['lookingFor']),
+            matchPercentage: '0% Match',
+            trustPercentage: '0% Trust',
+            replyTime: '',
+          );
+
+          // Build a completely flat and perfectly typed map for copyWithDetails
+          final Map<String, dynamic> cleanDetails = {
+            'fullName': extractString(data['full_name']),
+            'age': data['age'],
+            'city': extractString(profileData['city']),
+            'state': extractString(profileData['state']),
+            'career': mappedCareer, 
+            'lifestyle': mappedLifestyle,
+            'interests': mappedInterests,
+            'family': mappedFamily,
+            'networkingIntent': mappedNetworking,
+            'lookingFor': extractString(data['intention']?['option'] ?? profileData['lookingFor'] ?? data['lookingFor']),
+            'lookingFor_subtitle': extractString(data['intention']?['optDescription']),
+            'bio': extractString(profileData['bio'] ?? data['bio']),
+            'height': data['height'] ?? profileData['height'],
+            'dob': data['birth_date'] ?? profileData['dob'],
+            'religion': extractString(profileData['religion'] is Map ? profileData['religion']['name'] : profileData['religion']),
+            'community': extractString(profileData['community'] is Map ? profileData['community']['name'] : profileData['community']),
+            'motherTongue': extractString(profileData['motherTongue'] ?? (profileData['languages'] != null && (profileData['languages'] as List).isNotEmpty ? (profileData['languages'][0]['language'] != null ? profileData['languages'][0]['language']['name'] : '') : '')),
+            'zodiac': extractString(data['about']?['zodiac'] ?? profileData['zodiac']),
+            'loveLanguage': extractString(data['about']?['loveLanguage'] ?? profileData['loveLanguage']),
+            'communicationStyle': extractString(data['about']?['communicationStyle'] ?? profileData['communicationStyle']),
+            'prompts': mappedPrompts, // This is handled internally by copyWithDetails
+          };
+
+          // Use the existing copyWithDetails logic to map the rest of the fields
+          final fullProfile = baseProfile.copyWithDetails(cleanDetails);
+
+          if (mounted) {
+            setState(() {
+              _profile = fullProfile;
+              _isLoading = false;
+            });
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              _errorMessage = 'Failed to load details.';
+              _isLoading = false;
+            });
+          }
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'Error ${response.statusCode}';
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Error in _fetchProfileDetails: $e');
+      debugPrint('StackTrace: $stackTrace');
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Connection error: $e';
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFFF05C91).withOpacity(0.1),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF966EB4).withOpacity(0.10),
+                    blurRadius: 30,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Color(0xFF242424),
+                size: 16,
+              ),
+            ),
+          ),
+        ),
+        title: Text(
+          widget.profileName ?? 'Profile',
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.pink),
+      );
+    }
+
+    if (_errorMessage.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 60, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(
+              _errorMessage,
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _isLoading = true;
+                  _errorMessage = '';
+                });
+                _fetchProfileDetails();
+              },
+              child: const Text('Retry'),
+            )
+          ],
+        ),
+      );
+    }
+
+    if (_profile == null) {
+      return const Center(child: Text('No profile data found.'));
+    }
+
+    // Wrap the HomeScreen inside a BlocProvider to supply the fetched profile
+    return BlocProvider<HomeBloc>(
+      create: (context) => ProfileDetailHomeBloc(_profile!),
+      child: const HomeScreen(isPreview: true),
+    );
+  }
+}

@@ -4,6 +4,7 @@ import 'date_now_2/requests_sent/requests_sent_screen.dart';
 import 'date_now_2/my_plans/my_plan_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 import 'date_now_2/post_a_plan/activity_1.dart';
+import 'profile/profile_detail.dart';
 
 class DateNowScreen extends StatefulWidget {
   const DateNowScreen({super.key});
@@ -136,6 +137,7 @@ class _DateNowScreenState extends State<DateNowScreen>
               'name': p['host'] != null
                   ? '${p['host']['name']}, ${p['host']['age']}'
                   : 'User',
+              'userId': p['host'] != null ? (p['host']['id'] ?? p['host']['userId'] ?? p['host']['_id'] ?? p['userId']) : p['userId'],
               'verified': true, // default for now
               'nameSubtitle': 'Host',
               'avatarUrl': p['host'] != null
@@ -754,7 +756,8 @@ class _DateNowScreenState extends State<DateNowScreen>
                     color: Colors.black87,
                   ),
                 ),
-                if (plan['subtitle'] != null && plan['subtitle'].toString().trim().isNotEmpty) ...[
+                if (plan['subtitle'] != null &&
+                    plan['subtitle'].toString().trim().isNotEmpty) ...[
                   const SizedBox(height: 2),
                   // Subtitle
                   Text(
@@ -835,7 +838,24 @@ class _DateNowScreenState extends State<DateNowScreen>
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (plan['userId'] != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfileDetailScreen(
+                                  userId: plan['userId'].toString(),
+                                  profileImageUrl: plan['avatarUrl'],
+                                  profileName: plan['name'],
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Host details not available')),
+                            );
+                          }
+                        },
                         child: const Row(
                           children: [
                             Text(
@@ -881,9 +901,15 @@ class _DateNowScreenState extends State<DateNowScreen>
                           setState(() {
                             _removedPlanIds.add(plan['id'].toString());
                           });
-                          
+
                           // Check if we need to fetch more
-                          final remaining = _fetchedPlans.where((p) => !_removedPlanIds.contains(p['id'].toString())).length;
+                          final remaining = _fetchedPlans
+                              .where(
+                                (p) => !_removedPlanIds.contains(
+                                  p['id'].toString(),
+                                ),
+                              )
+                              .length;
                           if (remaining == 0) {
                             _fetchPlans();
                           }
@@ -922,9 +948,15 @@ class _DateNowScreenState extends State<DateNowScreen>
                                 setState(() {
                                   _removedPlanIds.add(plan['id'].toString());
                                 });
-                                
+
                                 // Check if we need to fetch more
-                                final remaining = _fetchedPlans.where((p) => !_removedPlanIds.contains(p['id'].toString())).length;
+                                final remaining = _fetchedPlans
+                                    .where(
+                                      (p) => !_removedPlanIds.contains(
+                                        p['id'].toString(),
+                                      ),
+                                    )
+                                    .length;
                                 if (remaining == 0) {
                                   _fetchPlans();
                                 }

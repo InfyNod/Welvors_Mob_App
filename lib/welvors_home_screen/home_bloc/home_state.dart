@@ -183,7 +183,7 @@ class ProfileModel extends Equatable {
       religion: details['religion'] ?? '',
       community: details['community'] ?? '',
       motherTongue: details['motherTongue'] ?? '',
-      dob: this.dob,
+      dob: details['dob'] ?? this.dob,
       zodiac: details['zodiac'] ?? '',
       loveLanguage: details['loveLanguage'] ?? '',
       communication: details['communicationStyle'] ?? '',
