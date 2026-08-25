@@ -20,14 +20,10 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
   int _selectedFilterIndex = 0;
 
   final List<String> _tabs = ['Today', 'Tomorrow', 'Weekend'];
-  final List<String> _filters = [
+  List<String> _filters = [
     'All plans',
-    '☕ Coffee',
-    '🍽️ Dinner',
-    '🍸 Drinks',
-    '🌅 Walk',
-    '🥞 Brunch',
   ];
+  List<GlobalKey> _filterKeys = [GlobalKey()];
   int _currentPlanIndex = 0;
 
   bool _isLoading = true;
@@ -36,7 +32,30 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     _fetchPlans();
+  }
+
+  Future<void> _fetchOptions() async {
+    final options = await DateNowApiService.getActivityOptions();
+    if (options != null && mounted) {
+      setState(() {
+        _filters = ['All plans'];
+        _filterKeys = [GlobalKey()];
+        for (var opt in options) {
+          String label = '';
+          if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
+            label = '${opt['emoji']} ${opt['label']}';
+          } else if (opt['icon'] != null && !opt['icon'].toString().startsWith('http')) {
+            label = '${opt['icon']} ${opt['label']}';
+          } else {
+            label = opt['label'] ?? opt['name'] ?? 'Unknown';
+          }
+          _filters.add(label);
+          _filterKeys.add(GlobalKey());
+        }
+      });
+    }
   }
 
   Future<void> _fetchPlans() async {
@@ -129,10 +148,7 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
     }
   }
 
-  late final List<GlobalKey> _filterKeys = List.generate(
-    _filters.length,
-    (index) => GlobalKey(),
-  );
+
 
   @override
   Widget build(BuildContext context) {

@@ -123,6 +123,26 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
           });
         }
       }
+
+      // Fetch dynamic options for filters
+      final options = await DateNowApiService.getActivityOptions();
+      if (options != null && mounted) {
+        setState(() {
+          _filters = [];
+          for (var opt in options) {
+            String label = '';
+            if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
+              label = '${opt['emoji']} ${opt['label']}';
+            } else if (opt['icon'] != null && !opt['icon'].toString().startsWith('http')) {
+              label = '${opt['icon']} ${opt['label']}';
+            } else {
+              label = opt['label'] ?? opt['name'] ?? 'Unknown';
+            }
+            _filters.add(label);
+          }
+        });
+      }
+
     } catch (e) {
       debugPrint('Error fetching requests: $e');
     } finally {
@@ -154,7 +174,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     super.dispose();
   }
 
-  final List<String> _filters = [
+  List<String> _filters = [
     '☕ Coffee',
     '🍽️ Dinner',
     '🍸 Drinks',
@@ -166,20 +186,14 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     List<Map<String, dynamic>> filteredPlans = RequestsSentScreen.mySentRequests
         .where((plan) {
           if (_selectedFilterIndex == -1) return true;
-          String filter = _filters[_selectedFilterIndex].toLowerCase();
-          String title = plan['title'].toString().toLowerCase();
+          String filterText = _filters[_selectedFilterIndex].split(' ').last.toLowerCase();
+          
+          String title = plan['title']?.toString().toLowerCase() ?? '';
+          String activityName = plan['activity'] != null ? plan['activity']['name'].toString().toLowerCase() : '';
 
-          if (filter.contains('coffee') && title.contains('coffee'))
-            return true;
-          if (filter.contains('dinner') &&
-              (title.contains('dinner') || title.contains('pasta')))
-            return true;
-          if (filter.contains('drinks') &&
-              (title.contains('drinks') || title.contains('cocktails'))) {
+          if (title.contains(filterText) || activityName.contains(filterText)) {
             return true;
           }
-          if (filter.contains('walk') && title.contains('walk')) return true;
-
           return false;
         })
         .toList();
@@ -354,7 +368,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
-                                        'No plans found for ${_filters[_selectedFilterIndex].substring(2).trim()}',
+                                        'No plans found for ${_filters[_selectedFilterIndex]}',
                                         style: TextStyle(
                                           color: Colors.grey.shade600,
                                           fontSize: 16,

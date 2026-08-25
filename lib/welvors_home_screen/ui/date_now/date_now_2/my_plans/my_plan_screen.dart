@@ -74,17 +74,11 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
   bool get wantKeepAlive => true;
   String _selectedDayFilter = 'Today';
   String? _selectedCategoryFilter;
-  final List<String> _myPlansFilters = [
+  List<String> _myPlansFilters = [
     'Today',
     'Tomorrow',
     'Weekend',
     '|',
-    '☕ Coffee',
-    '🍽️ Dinner',
-    '🍸 Drinks',
-    '🚶 Walk',
-    '🥞 Brunch',
-    '🍿 Movie',
   ];
 
   List<Map<String, dynamic>> _apiPlans = [];
@@ -93,7 +87,33 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     _fetchPlans();
+  }
+
+  Future<void> _fetchOptions() async {
+    final options = await DateNowApiService.getActivityOptions();
+    if (options != null && mounted) {
+      setState(() {
+        _myPlansFilters = [
+          'Today',
+          'Tomorrow',
+          'Weekend',
+          '|',
+        ];
+        for (var opt in options) {
+          String label = '';
+          if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
+            label = '${opt['emoji']} ${opt['label']}';
+          } else if (opt['icon'] != null && !opt['icon'].toString().startsWith('http')) {
+            label = '${opt['icon']} ${opt['label']}';
+          } else {
+            label = opt['label'] ?? opt['name'] ?? 'Unknown';
+          }
+          _myPlansFilters.add(label);
+        }
+      });
+    }
   }
 
   Future<void> _fetchPlans() async {

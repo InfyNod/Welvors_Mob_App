@@ -583,4 +583,27 @@ class DateNowApiService {
       return false;
     }
   }
+
+  // Fetch dynamic activity options
+  static Future<List<dynamic>?> getActivityOptions() async {
+    try {
+      final url = Uri.parse('$baseUrl/admin/date-now/options?type=ACTIVITY');
+      final response = await http.get(
+        url,
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      debugPrint('Failed to fetch activity options: ${response.statusCode} - ${response.body}');
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching activity options: $e');
+      return null;
+    }
+  }
 }
