@@ -12,7 +12,10 @@ class DateNowScreen extends StatefulWidget {
   State<DateNowScreen> createState() => _DateNowScreenState();
 }
 
-class _DateNowScreenState extends State<DateNowScreen> {
+class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  
   int _selectedTabIndex = 0;
   int _selectedFilterIndex = 0;
 
@@ -133,6 +136,7 @@ class _DateNowScreenState extends State<DateNowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
