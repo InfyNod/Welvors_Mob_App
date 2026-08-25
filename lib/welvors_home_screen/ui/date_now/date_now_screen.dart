@@ -12,22 +12,22 @@ class DateNowScreen extends StatefulWidget {
   State<DateNowScreen> createState() => _DateNowScreenState();
 }
 
-class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveClientMixin {
+class _DateNowScreenState extends State<DateNowScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  
+
   int _selectedTabIndex = 0;
   int _selectedFilterIndex = 0;
 
   final List<String> _tabs = ['Today', 'Tomorrow', 'Weekend'];
-  List<String> _filters = [
-    'All plans',
-  ];
+  List<String> _filters = ['All plans'];
   List<GlobalKey> _filterKeys = [GlobalKey()];
   int _currentPlanIndex = 0;
 
   bool _isLoading = true;
   List<Map<String, dynamic>> _fetchedPlans = [];
+  final Set<String> _removedPlanIds = {};
 
   @override
   void initState() {
@@ -46,7 +46,8 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
           String label = '';
           if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
             label = '${opt['emoji']} ${opt['label']}';
-          } else if (opt['icon'] != null && !opt['icon'].toString().startsWith('http')) {
+          } else if (opt['icon'] != null &&
+              !opt['icon'].toString().startsWith('http')) {
             label = '${opt['icon']} ${opt['label']}';
           } else {
             label = opt['label'] ?? opt['name'] ?? 'Unknown';
@@ -81,6 +82,7 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
     if (mounted) {
       setState(() {
         _fetchedPlans = [];
+        _removedPlanIds.clear();
         if (plans != null) {
           for (var p in plans) {
             String activity = p['activity'] ?? 'Unknown';
@@ -147,8 +149,6 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
       });
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -421,7 +421,9 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
       );
     }
 
-    List<Map<String, dynamic>> currentList = List.from(_fetchedPlans);
+    List<Map<String, dynamic>> currentList = _fetchedPlans
+        .where((plan) => !_removedPlanIds.contains(plan['id'].toString()))
+        .toList();
 
     String selectedFilter = _filters[_selectedFilterIndex];
     if (selectedFilter != 'All plans') {
@@ -752,13 +754,14 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 2),
-
-                // Subtitle
-                Text(
-                  plan['subtitle'],
-                  style: const TextStyle(fontSize: 13, color: Colors.black54),
-                ),
+                if (plan['subtitle'] != null && plan['subtitle'].toString().trim().isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  // Subtitle
+                  Text(
+                    plan['subtitle'],
+                    style: const TextStyle(fontSize: 13, color: Colors.black54),
+                  ),
+                ],
                 const SizedBox(height: 8),
 
                 // Additional Chips
@@ -876,8 +879,14 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
 
                           // Optional UI feedback or just remove immediately for perceived speed
                           setState(() {
-                            _fetchedPlans.remove(plan);
+                            _removedPlanIds.add(plan['id'].toString());
                           });
+                          
+                          // Check if we need to fetch more
+                          final remaining = _fetchedPlans.where((p) => !_removedPlanIds.contains(p['id'].toString())).length;
+                          if (remaining == 0) {
+                            _fetchPlans();
+                          }
 
                           // Call API in the background
                           await DateNowApiService.skipPlan(
@@ -911,8 +920,14 @@ class _DateNowScreenState extends State<DateNowScreen> with AutomaticKeepAliveCl
                                   );
                               if (mounted && requestSent == true) {
                                 setState(() {
-                                  _fetchedPlans.remove(plan);
+                                  _removedPlanIds.add(plan['id'].toString());
                                 });
+                                
+                                // Check if we need to fetch more
+                                final remaining = _fetchedPlans.where((p) => !_removedPlanIds.contains(p['id'].toString())).length;
+                                if (remaining == 0) {
+                                  _fetchPlans();
+                                }
                               }
                             },
                             child: const Center(

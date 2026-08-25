@@ -218,7 +218,7 @@ class DateNowApiService {
     String? overrideToken,
   }) async {
     try {
-      final url = Uri.parse('$baseUrl/user/date-plans/discover?filter=$filter');
+      final url = Uri.parse('$baseUrl/user/date-plans/discover?filter=$filter&limit=15');
 
       final headers = {
         'Content-Type': 'application/json',
