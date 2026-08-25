@@ -24,6 +24,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   int _selectedTabIndex = 0;
   int _selectedFilterIndex = -1;
   bool _isLoading = true;
+  int _historyCount = 0;
 
   // Shared token for API calls in this screen
   static const String _userToken =
@@ -109,6 +110,17 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               'isLive': false,
             };
           }).toList();
+        }
+      }
+
+      // Fetch history count for the tab
+      final historyResponse = await DateNowApiService.getHistoryPlans(page: 1, limit: 100);
+      if (historyResponse != null && historyResponse['success'] == true) {
+        final List<dynamic> historyData = historyResponse['data'] ?? [];
+        if (mounted) {
+          setState(() {
+            _historyCount = historyData.length;
+          });
         }
       }
     } catch (e) {
@@ -212,7 +224,11 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     MaterialPageRoute(
                       builder: (context) => const Activity1Screen(),
                     ),
-                  );
+                  ).then((_) {
+                    if (mounted) {
+                      _fetchMySentRequests();
+                    }
+                  });
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -282,8 +298,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
               _buildTab(
                 'History',
-                CardHistory.thisWeekPlans.length +
-                    CardHistory.earlierPlans.length,
+                _historyCount,
                 2,
               ),
             ],

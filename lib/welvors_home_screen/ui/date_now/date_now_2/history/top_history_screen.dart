@@ -11,7 +11,10 @@ class TopHistoryScreen extends StatefulWidget {
 }
 
 class _TopHistoryScreenState extends State<TopHistoryScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  
+  @override
+  bool get wantKeepAlive => true;
   int _selectedFilterIndex = 0;
 
   List<Map<String, dynamic>> _thisWeekPlans = [];
@@ -178,6 +181,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_isLoading) {
       return Container(
         color: const Color(0xFFFAFAFA),

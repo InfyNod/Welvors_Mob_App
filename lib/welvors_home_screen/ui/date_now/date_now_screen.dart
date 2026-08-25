@@ -485,7 +485,11 @@ class _DateNowScreenState extends State<DateNowScreen> {
                       MaterialPageRoute(
                         builder: (context) => const Activity1Screen(),
                       ),
-                    );
+                    ).then((_) {
+                      if (mounted) {
+                        _fetchPlans();
+                      }
+                    });
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),

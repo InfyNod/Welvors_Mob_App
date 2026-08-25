@@ -69,7 +69,9 @@ class MyPlanScreen extends StatefulWidget {
   State<MyPlanScreen> createState() => _MyPlanScreenState();
 }
 
-class _MyPlanScreenState extends State<MyPlanScreen> {
+class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   String _selectedDayFilter = 'Today';
   String? _selectedCategoryFilter;
   final List<String> _myPlansFilters = [
@@ -189,6 +191,7 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return _buildMyPlansTab();
   }
 
@@ -295,7 +298,11 @@ class _MyPlanScreenState extends State<MyPlanScreen> {
                 MaterialPageRoute(
                   builder: (context) => const Activity1Screen(),
                 ),
-              );
+              ).then((_) {
+                if (mounted) {
+                  _fetchPlans();
+                }
+              });
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
