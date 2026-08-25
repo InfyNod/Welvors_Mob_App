@@ -88,6 +88,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   plan['photoUrl'] ??
                   (plan['activity'] is Map ? plan['activity']['icon'] : null) ??
                   'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+              'activityName': plan['activity'] is Map
+                  ? (plan['activity']['label'] ?? plan['activity']['name'] ?? '')
+                  : (plan['activity'] ?? ''),
               'title':
                   (plan['quickTitle'] is Map
                       ? plan['quickTitle']['label']
@@ -186,12 +189,11 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     List<Map<String, dynamic>> filteredPlans = RequestsSentScreen.mySentRequests
         .where((plan) {
           if (_selectedFilterIndex == -1) return true;
-          String filterText = _filters[_selectedFilterIndex].split(' ').last.toLowerCase();
+          String filterText = _filters[_selectedFilterIndex].replaceAll(RegExp(r'[^\w\s]'), '').trim().toLowerCase();
           
-          String title = plan['title']?.toString().toLowerCase() ?? '';
-          String activityName = plan['activity'] != null ? plan['activity']['name'].toString().toLowerCase() : '';
+          String activityName = plan['activityName']?.toString().toLowerCase() ?? '';
 
-          if (title.contains(filterText) || activityName.contains(filterText)) {
+          if (activityName.isNotEmpty && activityName.contains(filterText)) {
             return true;
           }
           return false;

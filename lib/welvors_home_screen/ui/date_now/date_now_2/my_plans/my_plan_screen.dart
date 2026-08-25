@@ -8,62 +8,7 @@ import '../../date_api_service/date_now_api_service.dart';
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
 
-  static List<Map<String, dynamic>> myHostedPlans = [
-    {
-      'day': 'Today',
-      'category': '☕ Coffee',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'title': 'Morning Coffee Date',
-      'subtitle': 'Today · Central Perk',
-      'tags': ['👥 Limit 2', '☕ Coffee'],
-      'isLive': true,
-      'requests': [
-        {
-          'id': 'req1',
-          'name': 'Sarah',
-          'age': 24,
-          'match': '92%',
-          'message': '"This sounds perfect, I\'m in!"',
-          'avatar':
-              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-          'status': 'new',
-        },
-        {
-          'id': 'req2',
-          'name': 'Jessica',
-          'age': 25,
-          'match': '88%',
-          'message': '"Would love to grab a coffee!"',
-          'avatar':
-              'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-          'status': 'new',
-        },
-      ],
-    },
-    {
-      'day': 'Tomorrow',
-      'category': '🍽️ Dinner',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'title': 'Sushi Night',
-      'subtitle': 'Tomorrow · Nobu',
-      'tags': ['👥 Limit 2', '🍽️ Dinner'],
-      'isLive': false,
-      'requests': [
-        {
-          'id': 'req3',
-          'name': 'Emma',
-          'age': 26,
-          'match': '85%',
-          'message': '"I love sushi!"',
-          'avatar':
-              'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-          'status': 'approved',
-        },
-      ],
-    },
-  ];
+  static List<Map<String, dynamic>> myHostedPlans = [];
 
   @override
   State<MyPlanScreen> createState() => _MyPlanScreenState();
@@ -199,11 +144,13 @@ class _MyPlanScreenState extends State<MyPlanScreen> with AutomaticKeepAliveClie
             'rawPlan': plan,
           };
         }).toList();
+        MyPlanScreen.myHostedPlans = List.from(_apiPlans);
         _isLoading = false;
       });
     } else {
       setState(() {
         _apiPlans = [];
+        MyPlanScreen.myHostedPlans = [];
         _isLoading = false;
       });
     }

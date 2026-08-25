@@ -138,12 +138,12 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
           ),
 
           _isLoading 
-          ? const Expanded(
+          ? const Flexible(
               child: Center(
                 child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
               ),
             )
-          : Expanded(
+          : Flexible(
               child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
@@ -230,23 +230,25 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                   const SizedBox(height: 16),
 
                   // Note container
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF6F4EF), // Light beige
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      plan['note'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade800,
-                        height: 1.4,
+                  if (plan['note'] != null && plan['note'].toString().trim().isNotEmpty) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF6F4EF), // Light beige
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        plan['note'],
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade800,
+                          height: 1.4,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                  ],
 
                   // WHO CAME Section
                   if (hasPartnerInfo &&
