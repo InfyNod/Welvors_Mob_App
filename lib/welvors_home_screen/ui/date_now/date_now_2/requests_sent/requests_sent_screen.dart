@@ -26,7 +26,8 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   bool _isLoading = true;
 
   // Shared token for API calls in this screen
-  static const String _userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+  static const String _userToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
 
   @override
   void initState() {
@@ -51,7 +52,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     });
 
     try {
-      final url = Uri.parse('https://api.welvors.com/api/user/my-date-plan-requests');
+      final url = Uri.parse(
+        'https://api.welvors.com/api/user/my-date-plan-requests',
+      );
       final response = await http.get(
         url,
         headers: {
@@ -59,37 +62,53 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
           'Authorization': 'Bearer $_userToken',
         },
       );
-      
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         if (data['success'] == true && data['data'] != null) {
           final List<dynamic> items = data['data'];
-        RequestsSentScreen.mySentRequests = items.map<Map<String, dynamic>>((item) {
-          final plan = item['plan'] ?? {};
-          final host = plan['host'] ?? {};
-          
-          // Format status to Title Case if needed (e.g. PENDING -> Pending)
-          String rawStatus = (item['status'] ?? 'Pending').toString();
-          String displayStatus = rawStatus.isNotEmpty 
-              ? rawStatus[0].toUpperCase() + rawStatus.substring(1).toLowerCase() 
-              : 'Pending';
+          RequestsSentScreen.mySentRequests = items.map<Map<String, dynamic>>((
+            item,
+          ) {
+            final plan = item['plan'] ?? {};
+            final host = plan['host'] ?? {};
 
-          return {
-            'id': item['id'],
-            'planId': item['planId'] ?? plan['id'],
-            'imageUrl': plan['photoUrl'] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-            'title': plan['quickTitle'] ?? plan['title'] ?? 'Plan',
-            'subtitle': '${_formatDate(plan['eventDateTime'])} · ${plan['venueName'] ?? ''}',
-            'hostName': host['name'] ?? 'User',
-            'hostAvatar': host['profilePhoto'] ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-            'status': displayStatus,
-            'message': item['message'] ?? 'I would love to join!',
-            'statusMessage': item['status'] == 'APPROVED' ? 'Host approved your request!' : 'Waiting for host to approve. You can withdraw anytime.',
-            'pay': plan['whoPays'] ?? 'Split',
-            'match': '88%',
-            'isLive': false,
-          };
-        }).toList();
+            // Format status to Title Case if needed (e.g. PENDING -> Pending)
+            String rawStatus = (item['status'] ?? 'Pending').toString();
+            String displayStatus = rawStatus.isNotEmpty
+                ? rawStatus[0].toUpperCase() +
+                      rawStatus.substring(1).toLowerCase()
+                : 'Pending';
+
+            return {
+              'id': item['id'],
+              'planId': item['planId'] ?? plan['id'],
+              'imageUrl':
+                  plan['photoUrl'] ??
+                  (plan['activity'] is Map ? plan['activity']['icon'] : null) ??
+                  'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+              'title':
+                  (plan['quickTitle'] is Map
+                      ? plan['quickTitle']['label']
+                      : plan['quickTitle']) ??
+                  plan['title'] ??
+                  'Plan',
+              'subtitle':
+                  '${_formatDate(plan['eventDateTime'])} · ${plan['venueName'] ?? ''}',
+              'hostName': host['name'] ?? 'User',
+              'hostAvatar':
+                  host['profilePhoto'] ??
+                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+              'status': displayStatus,
+              'message': item['message'] ?? 'I would love to join!',
+              'statusMessage': item['status'] == 'APPROVED'
+                  ? 'Host approved your request!'
+                  : 'Waiting for host to approve. You can withdraw anytime.',
+              'pay': plan['whoPays'] ?? 'Split',
+              'match': '88%',
+              'isLive': false,
+            };
+          }).toList();
         }
       }
     } catch (e) {
@@ -111,7 +130,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
       final minute = date.minute.toString().padLeft(2, '0');
       final period = hour >= 12 ? 'PM' : 'AM';
       final hour12 = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-      return 'Today · $hour12:$minute $period'; 
+      return 'Today · $hour12:$minute $period';
     } catch (e) {
       return '';
     }
@@ -261,7 +280,12 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 0,
               ),
               _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
-              _buildTab('History', CardHistory.thisWeekPlans.length + CardHistory.earlierPlans.length, 2),
+              _buildTab(
+                'History',
+                CardHistory.thisWeekPlans.length +
+                    CardHistory.earlierPlans.length,
+                2,
+              ),
             ],
           ),
           const Divider(height: 1, color: Colors.black12),
@@ -291,8 +315,12 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     ),
                     // List
                     Expanded(
-                      child: _isLoading 
-                          ? const Center(child: CircularProgressIndicator(color: Color(0xFFFA6A85)))
+                      child: _isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFFFA6A85),
+                              ),
+                            )
                           : filteredPlans.isEmpty
                           ? Center(
                               child: Padding(
@@ -434,7 +462,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             decoration: BoxDecoration(
               color: isSelected
                   ? const Color(0xFFE43A6A)
-                  : (index == 2 ? Colors.grey.shade400 : const Color(0xFFF2A93B)),
+                  : (index == 2
+                        ? Colors.grey.shade400
+                        : const Color(0xFFF2A93B)),
               shape: BoxShape.circle,
             ),
             child: Text(
@@ -1001,15 +1031,17 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 GestureDetector(
                   onTap: () async {
                     Navigator.pop(context); // Close bottom sheet
-                    
+
                     // Show a simple snackbar indicating progress
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Canceling date...')),
                     );
 
                     final planId = plan['planId'];
-                    final url = Uri.parse('https://api.welvors.com/api/user/date-plans/$planId/cancel-request');
-                    
+                    final url = Uri.parse(
+                      'https://api.welvors.com/api/user/date-plans/$planId/cancel-request',
+                    );
+
                     try {
                       final response = await http.patch(
                         url,
@@ -1017,16 +1049,21 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                           'Content-Type': 'application/json',
                           'Authorization': 'Bearer $_userToken',
                         },
-                        body: json.encode({}), // Add empty body to prevent backend parsing errors
+                        body: json.encode(
+                          {},
+                        ), // Add empty body to prevent backend parsing errors
                       );
-                      
-                      if (response.statusCode == 200 || response.statusCode == 201) {
+
+                      if (response.statusCode == 200 ||
+                          response.statusCode == 201) {
                         setState(() {
                           RequestsSentScreen.mySentRequests.remove(plan);
                         });
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Date canceled successfully')),
+                            const SnackBar(
+                              content: Text('Date canceled successfully'),
+                            ),
                           );
                         }
                       } else {
@@ -1039,11 +1076,13 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         } catch (_) {}
 
                         if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(errorMessage)),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(errorMessage)));
                         }
-                        debugPrint('Failed to cancel: ${response.statusCode} - ${response.body}');
+                        debugPrint(
+                          'Failed to cancel: ${response.statusCode} - ${response.body}',
+                        );
                       }
                     } catch (e) {
                       if (mounted) {
@@ -1246,9 +1285,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   onTap: () async {
                     // Start loader or just optimistically remove
                     Navigator.pop(context); // Close bottom sheet
-                    
+
                     final requestId = plan['id'] ?? 'DUMMY_ID';
-                    
+
                     // Show a simple snackbar indicating progress
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -1261,7 +1300,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       requestId,
                       overrideToken: _userToken,
                     );
-                    
+
                     if (success) {
                       setState(() {
                         RequestsSentScreen.mySentRequests.remove(plan);
@@ -1274,7 +1313,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     } else {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Failed to withdraw request')),
+                          const SnackBar(
+                            content: Text('Failed to withdraw request'),
+                          ),
                         );
                       }
                     }

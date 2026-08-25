@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class DateNowApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
-  static const String vercelBaseUrl =
-      'https://dating-app-backend-plum.vercel.app/api';
+  static const String vercelBaseUrl = baseUrl;
 
   // Hardcoded token for now as per home_api_service.dart pattern
   static const String _token =
@@ -359,8 +358,7 @@ class DateNowApiService {
   }) async {
     try {
       // The user mentioned the API is on the vercel domain, which might not be deployed to production yet
-      final String vercelBaseUrl =
-          'https://dating-app-backend-plum.vercel.app/api'; //vercel link api
+      final String vercelBaseUrl = baseUrl; //vercel link api
       final url = Uri.parse(
         '$vercelBaseUrl/user/date-plans/withdraw/$requestId',
       );
