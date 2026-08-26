@@ -89,7 +89,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   (plan['activity'] is Map ? plan['activity']['icon'] : null) ??
                   'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
               'activityName': plan['activity'] is Map
-                  ? (plan['activity']['label'] ?? plan['activity']['name'] ?? '')
+                  ? (plan['activity']['label'] ??
+                        plan['activity']['name'] ??
+                        '')
                   : (plan['activity'] ?? ''),
               'title':
                   (plan['quickTitle'] is Map
@@ -117,7 +119,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
       }
 
       // Fetch history count for the tab
-      final historyResponse = await DateNowApiService.getHistoryPlans(page: 1, limit: 100);
+      final historyResponse = await DateNowApiService.getHistoryPlans(
+        page: 1,
+        limit: 100,
+      );
       if (historyResponse != null && historyResponse['success'] == true) {
         final List<dynamic> historyData = historyResponse['data'] ?? [];
         if (mounted) {
@@ -137,7 +142,8 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             String label = '';
             if (opt['emoji'] != null && opt['emoji'].toString().isNotEmpty) {
               label = '${opt['emoji']} ${opt['label']}';
-            } else if (opt['icon'] != null && !opt['icon'].toString().startsWith('http')) {
+            } else if (opt['icon'] != null &&
+                !opt['icon'].toString().startsWith('http')) {
               label = '${opt['icon']} ${opt['label']}';
             } else {
               label = opt['label'] ?? opt['name'] ?? 'Unknown';
@@ -147,7 +153,6 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
           }
         });
       }
-
     } catch (e) {
       debugPrint('Error fetching requests: $e');
     } finally {
@@ -179,22 +184,24 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
     super.dispose();
   }
 
-  List<String> _filters = [
-    '☕ Coffee',
-    '🍽️ Dinner',
-    '🍸 Drinks',
-    '🚶 Walk',
-  ];
-  late List<GlobalKey> _filterKeys = List.generate(_filters.length, (index) => GlobalKey());
+  List<String> _filters = ['☕ Coffee', '🍽️ Dinner', '🍸 Drinks', '🚶 Walk'];
+  late List<GlobalKey> _filterKeys = List.generate(
+    _filters.length,
+    (index) => GlobalKey(),
+  );
 
   @override
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> filteredPlans = RequestsSentScreen.mySentRequests
         .where((plan) {
           if (_selectedFilterIndex == -1) return true;
-          String filterText = _filters[_selectedFilterIndex].replaceAll(RegExp(r'[^\w\s]'), '').trim().toLowerCase();
-          
-          String activityName = plan['activityName']?.toString().toLowerCase() ?? '';
+          String filterText = _filters[_selectedFilterIndex]
+              .replaceAll(RegExp(r'[^\w\s]'), '')
+              .trim()
+              .toLowerCase();
+
+          String activityName =
+              plan['activityName']?.toString().toLowerCase() ?? '';
 
           if (activityName.isNotEmpty && activityName.contains(filterText)) {
             return true;
@@ -315,11 +322,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 0,
               ),
               _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
-              _buildTab(
-                'History',
-                _historyCount,
-                2,
-              ),
+              _buildTab('History', _historyCount, 2),
             ],
           ),
           const Divider(height: 1, color: Colors.black12),
@@ -342,7 +345,11 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         children: List.generate(_filters.length, (index) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
-                            child: _buildFilterChip(_filters[index], index, _filterKeys[index]),
+                            child: _buildFilterChip(
+                              _filters[index],
+                              index,
+                              _filterKeys[index],
+                            ),
                           );
                         }),
                       ),
