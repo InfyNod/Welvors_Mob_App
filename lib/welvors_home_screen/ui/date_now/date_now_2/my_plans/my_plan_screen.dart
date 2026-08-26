@@ -36,7 +36,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   DateTime? _boostEndTime;
   Timer? _timer;
 
-  int _fakeViews = 2;
+  int _fakeViews = 100;
   int _fakeRequests = 1;
   int _fakeApproved = 0;
 
@@ -45,9 +45,9 @@ class _MyPlanScreenState extends State<MyPlanScreen>
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
-          if (DateTime.now().second % 7 == 0) _fakeViews++;
-          if (DateTime.now().second % 13 == 0) _fakeRequests++;
-          if (DateTime.now().second % 29 == 0) _fakeApproved++;
+          if (timer.tick % 3 == 0) _fakeViews++;
+          if (timer.tick % 8 == 0) _fakeRequests++;
+          if (timer.tick % 25 == 0) _fakeApproved++;
         });
       }
     });
@@ -657,85 +657,111 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   }
 
   Widget _buildStatChip(String icon, String label, {bool isGreen = false}) {
-     return Container(
-       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-       decoration: BoxDecoration(
-         color: isGreen ? const Color(0xFFEFFFF4) : Colors.white,
-         border: Border.all(color: isGreen ? Colors.green.shade300 : Colors.grey.shade300, width: 0.5),
-         borderRadius: BorderRadius.circular(12),
-       ),
-       child: Row(
-         mainAxisSize: MainAxisSize.min,
-         children: [
-           Text(icon, style: const TextStyle(fontSize: 11)),
-           const SizedBox(width: 4),
-           Text(
-             label,
-             style: TextStyle(
-               fontSize: 11,
-               fontWeight: FontWeight.w600,
-               color: isGreen ? Colors.green.shade700 : Colors.black87,
-             ),
-           ),
-         ],
-       ),
-     );
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      decoration: BoxDecoration(
+        color: isGreen
+            ? const Color(0xFFEFFFF4)
+            : const Color.fromRGBO(255, 252, 248, 1),
+        border: Border.all(
+          color: isGreen
+              ? Colors.green.shade300
+              : const Color.fromRGBO(243, 221, 191, 1),
+          width: 0.5,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            icon,
+            style: TextStyle(
+              fontSize: 12,
+              color: isGreen ? Colors.green.shade700 : null,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isGreen
+                  ? Colors.green.shade700
+                  : const Color.fromRGBO(113, 72, 3, 1),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildActiveBoostSection() {
-     return Container(
-       width: double.infinity,
-       padding: const EdgeInsets.all(16),
-       decoration: BoxDecoration(
-         color: const Color(0xFFFFF7F2),
-         border: Border.all(color: const Color.fromRGBO(241, 182, 114, 1), width: 1.5),
-         borderRadius: BorderRadius.circular(16),
-       ),
-       child: Column(
-         crossAxisAlignment: CrossAxisAlignment.start,
-         children: [
-           Row(
-             children: [
-               Container(
-                 width: 8,
-                 height: 8,
-                 decoration: const BoxDecoration(
-                   color: Colors.orange,
-                   shape: BoxShape.circle,
-                 ),
-               ),
-               const SizedBox(width: 6),
-               const Text(
-                 '🚀 Pinned to top of feed',
-                 style: TextStyle(
-                   color: Color.fromRGBO(138, 90, 0, 1),
-                   fontWeight: FontWeight.bold,
-                   fontSize: 13,
-                 ),
-               ),
-             ],
-           ),
-           const SizedBox(height: 12),
-           Wrap(
-             spacing: 8,
-             runSpacing: 8,
-             children: [
-               _buildStatChip('⏱️', _getRemainingTime()),
-               _buildStatChip('👁️', '$_fakeViews views'),
-               _buildStatChip('✉️', '$_fakeRequests requests'),
-               _buildStatChip('✔️', '$_fakeApproved approved', isGreen: true),
-             ],
-           ),
-         ],
-       ),
-     );
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7F2),
+        border: Border.all(
+          color: const Color.fromRGBO(241, 182, 114, 1),
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              AnimatedOpacity(
+                duration: const Duration(milliseconds: 500),
+                opacity: DateTime.now().second % 2 == 0 ? 1.0 : 0.0,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Colors.orange,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Text(
+                '🚀 Pinned to top of feed',
+                style: TextStyle(
+                  color: Color.fromRGBO(138, 90, 0, 1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+              const Spacer(),
+              _buildStatChip(' ✓', '$_fakeApproved approved', isGreen: true),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildStatChip('⏱️', _getRemainingTime()),
+                const SizedBox(width: 8),
+                _buildStatChip('👁️', '$_fakeViews views'),
+                const SizedBox(width: 8),
+                _buildStatChip('✉️', '$_fakeRequests requests'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildBoostSection(Map<String, dynamic> plan) {
     if (_isBoosted) {
       return _buildActiveBoostSection();
     }
-    
+
     return GestureDetector(
       onTap: () async {
         final duration = await showBoostBottomSheet(context, plan);
@@ -755,13 +781,18 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                   const SizedBox(width: 8),
                   Text(
                     'Boosted · pinned to top for $duration hrs',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
               backgroundColor: const Color(0xFF1E1E1E),
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
               margin: const EdgeInsets.only(bottom: 20, left: 40, right: 40),
               duration: const Duration(seconds: 3),
             ),
@@ -775,46 +806,49 @@ class _MyPlanScreenState extends State<MyPlanScreen>
         strokeWidth: 1.5,
         dashPattern: const [6, 4],
         child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(255, 246, 237, 1),
-          borderRadius: BorderRadius.circular(16),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(255, 246, 237, 1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  '🚀 Boost to top · up to 5x more requests',
+                  style: TextStyle(
+                    color: Color.fromRGBO(138, 90, 0, 1),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color.fromRGBO(252, 168, 85, 1),
+                      Color.fromRGBO(242, 127, 66, 1),
+                    ],
+                  ),
+                ),
+                child: const Text(
+                  'Boost',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Row(
-          children: [
-            const Expanded(
-              child: Text(
-                '🚀 Boost to top · up to 5x more requests',
-                style: TextStyle(
-                  color: Color.fromRGBO(138, 90, 0, 1),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
-                  colors: [
-                    Color.fromRGBO(252, 168, 85, 1),
-                    Color.fromRGBO(242, 127, 66, 1),
-                  ],
-                ),
-              ),
-              child: const Text(
-                'Boost',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
       ),
     );
   }
