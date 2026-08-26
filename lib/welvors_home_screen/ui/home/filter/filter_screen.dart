@@ -206,8 +206,6 @@ class _FilterScreenState extends State<FilterScreen> {
                       },
                     ),
                     _buildDivider(),
-                    _buildOnlineNowRow(),
-                    _buildDivider(),
                     _buildPreferenceRow(
                       'Looking for',
                       state.lookingFor.isEmpty
@@ -377,29 +375,70 @@ class _FilterScreenState extends State<FilterScreen> {
                       },
                     ),
                     _buildDivider(),
+                    _buildOnlineNowRow(),
+                    _buildDivider(),
                     const SizedBox(height: 24),
                     _buildBrowsePoolFreePremium(),
                     const SizedBox(height: 24),
 
                     _buildLockedPremiumBox(
                       IgnorePointer(
-                        ignoring:
-                            _selectedTier != 'VIP' && _selectedTier != 'Elite',
+                        ignoring: _selectedTier != 'VIP & Elite',
                         child: Opacity(
-                          opacity:
-                              (_selectedTier == 'VIP' ||
-                                  _selectedTier == 'Elite')
-                              ? 1.0
-                              : 0.4,
+                          opacity: _selectedTier == 'VIP & Elite' ? 1.0 : 0.4,
                           child: Column(
                             children: [
                               _buildLockHeader(
-                                'VIP Filters',
+                                'Filters',
                                 Colors.purple,
-                                'VIP',
-                                isUnlocked:
-                                    _selectedTier == 'VIP' ||
-                                    _selectedTier == 'Elite',
+                                '',
+                                isUnlocked: _selectedTier == 'VIP & Elite',
+                                customBadge: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.purple.withOpacity(0.3),
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.purple.withOpacity(0.05),
+                                  ),
+                                  child: RichText(
+                                    text: const TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: 'VIP ',
+                                          style: TextStyle(
+                                            color: Colors.purple,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: '& ',
+                                          style: TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Elite',
+                                          style: TextStyle(
+                                            color: Color(0xFFB8860B),
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                               _buildPreferenceRow(
                                 'Income range',
@@ -461,27 +500,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                   );
                                 },
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    _buildLockedPremiumBox(
-                      IgnorePointer(
-                        ignoring: _selectedTier != 'Elite',
-                        child: Opacity(
-                          opacity: _selectedTier == 'Elite' ? 1.0 : 0.4,
-                          child: Column(
-                            children: [
-                              _buildLockHeader(
-                                'Elite Filters',
-                                const Color(0xFFFFE066),
-                                'Elite',
-                                isUnlocked: _selectedTier == 'Elite',
-                                isElite: true,
-                              ),
+                              _buildDivider(),
                               _buildToggleRow(
                                 'Show who liked me first',
                                 'Elite priority ordering',
@@ -508,7 +527,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                     const SizedBox(height: 24),
                     _buildBrowsePoolVipWorld(),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 10),
                   ],
                 ); // Closes ListView
               }, // Closes builder
@@ -521,7 +540,7 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget _buildTierSelection() {
-    final tiers = ['Premium+', 'VIP', 'Elite'];
+    final tiers = ['Premium+', 'VIP & Elite'];
     int selectedIndex = tiers.indexOf(_selectedTier);
     if (selectedIndex == -1) selectedIndex = 0;
 
@@ -534,15 +553,13 @@ class _FilterScreenState extends State<FilterScreen> {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final itemWidth = constraints.maxWidth / 3;
+          final itemWidth = constraints.maxWidth / 2;
 
           Color activeBorderColor = Colors.transparent;
           if (_selectedTier == 'Premium+') {
             activeBorderColor = const Color(0xFFE43A6A).withOpacity(0.3);
-          } else if (_selectedTier == 'VIP') {
+          } else if (_selectedTier == 'VIP & Elite') {
             activeBorderColor = const Color(0xFF9C27B0).withOpacity(0.3);
-          } else if (_selectedTier == 'Elite') {
-            activeBorderColor = Colors.black.withOpacity(0.2);
           }
 
           return Stack(
@@ -555,10 +572,19 @@ class _FilterScreenState extends State<FilterScreen> {
                 bottom: 0,
                 width: itemWidth,
                 child: Container(
+                  padding: const EdgeInsets.all(1.5),
                   decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: activeBorderColor, width: 1.5),
+                    gradient: _selectedTier == 'VIP & Elite'
+                        ? const LinearGradient(
+                            colors: [Color(0xFF9C27B0), Color(0xFFB8860B)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : null,
+                    color: _selectedTier != 'VIP & Elite'
+                        ? activeBorderColor
+                        : null,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.02),
@@ -566,6 +592,12 @@ class _FilterScreenState extends State<FilterScreen> {
                         offset: const Offset(0, 2),
                       ),
                     ],
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14.5),
+                    ),
                   ),
                 ),
               ),
@@ -586,21 +618,13 @@ class _FilterScreenState extends State<FilterScreen> {
                     titleColor = isSelected
                         ? const Color(0xFFE43A6A)
                         : Colors.grey.shade700;
-                  } else if (title == 'VIP') {
+                  } else if (title == 'VIP & Elite') {
                     subtitle = isSelected ? '✓ Active' : '⊘ Other world';
                     subtitleColor = isSelected
                         ? const Color(0xFF00C853)
                         : Colors.grey.shade400;
                     titleColor = isSelected
                         ? const Color(0xFF9C27B0)
-                        : Colors.grey.shade700;
-                  } else if (title == 'Elite') {
-                    subtitle = isSelected ? '✓ Active' : '⊘ Other world';
-                    subtitleColor = isSelected
-                        ? const Color(0xFF00C853)
-                        : Colors.grey.shade400;
-                    titleColor = isSelected
-                        ? Colors.black87
                         : Colors.grey.shade700;
                   }
 
@@ -611,16 +635,59 @@ class _FilterScreenState extends State<FilterScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 250),
-                            style: TextStyle(
-                              color: titleColor,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Inter',
+                          if (title == 'VIP & Elite')
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'VIP ',
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? const Color(0xFF9C27B0)
+                                          : Colors.grey.shade700,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '& ',
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.black87
+                                          : Colors.grey.shade700,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Elite',
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? const Color(
+                                              0xFFB8860B,
+                                            ) // Dark Goldenrod (mix of dark & yellow)
+                                          : Colors.grey.shade700,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            AnimatedDefaultTextStyle(
+                              duration: const Duration(milliseconds: 250),
+                              style: TextStyle(
+                                color: titleColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Inter',
+                              ),
+                              child: Text(title),
                             ),
-                            child: Text(title),
-                          ),
                           const SizedBox(height: 2),
                           AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 250),
@@ -728,43 +795,6 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildSlidingSegmentedControl(),
-                  const SizedBox(height: 16),
-                  Text(
-                    'LOOKING FOR',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade400,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      _buildSelectableWrapChip(
-                        'Any',
-                        disabled: _selectedTier != 'Premium+',
-                      ),
-                      _buildSelectableWrapChip(
-                        'Long-term relationship',
-                        disabled: _selectedTier != 'Premium+',
-                      ),
-                      _buildSelectableWrapChip(
-                        'Marriage',
-                        disabled: _selectedTier != 'Premium+',
-                      ),
-                      _buildSelectableWrapChip(
-                        'Open-minded',
-                        disabled: _selectedTier != 'Premium+',
-                      ),
-                      _buildSelectableWrapChip(
-                        'New friends',
-                        disabled: _selectedTier != 'Premium+',
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -922,47 +952,6 @@ class _FilterScreenState extends State<FilterScreen> {
                   )
                 else ...[
                   _buildVipSlidingSegmentedControl(),
-                  const SizedBox(height: 16),
-                  Text(
-                    'LOOKING FOR',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade600,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      _buildSelectableWrapChip(
-                        'Any',
-                        premiumStyle: _selectedTier,
-                      ),
-                      _buildSelectableWrapChip(
-                        'Long-term relationship',
-                        premiumStyle: _selectedTier,
-                      ),
-                      _buildSelectableWrapChip(
-                        'Marriage',
-                        premiumStyle: _selectedTier,
-                      ),
-                      _buildSelectableWrapChip(
-                        'Exclusive companionship',
-                        premiumStyle: _selectedTier,
-                      ),
-                      _buildSelectableWrapChip(
-                        'Travel companion',
-                        premiumStyle: _selectedTier,
-                      ),
-                      _buildSelectableWrapChip(
-                        'Networking',
-                        premiumStyle: _selectedTier,
-                      ),
-                    ],
-                  ),
                 ],
               ],
             ),
@@ -1124,23 +1113,44 @@ class _FilterScreenState extends State<FilterScreen> {
                       onTap: () =>
                           setState(() => _activeVipBrowsePool = options[index]),
                       child: Center(
-                        child: AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeOutCubic,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: isSelected
-                                ? (_selectedTier == 'Elite'
-                                      ? const Color(0xFFFFE066)
-                                      : Colors.purple)
-                                : Colors.black87,
-                            fontSize: 11,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.w600,
-                          ),
-                          child: Text(options[index]),
-                        ),
+                        child: isSelected && options[index] == 'Both'
+                            ? ShaderMask(
+                                shaderCallback: (bounds) =>
+                                    const LinearGradient(
+                                      colors: [
+                                        Colors.purple,
+                                        Color(0xFFB8860B),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ).createShader(bounds),
+                                child: Text(
+                                  options[index],
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            : AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeOutCubic,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? (options[index] == 'VIP Elite only'
+                                            ? const Color(0xFFB8860B)
+                                            : Colors.purple)
+                                      : Colors.black87,
+                                  fontSize: 11,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w600,
+                                ),
+                                child: Text(options[index]),
+                              ),
                       ),
                     ),
                   );
@@ -1255,13 +1265,18 @@ class _FilterScreenState extends State<FilterScreen> {
     String badgeText, {
     bool isUnlocked = false,
     bool isElite = false,
+    Widget? customBadge,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           if (!isUnlocked)
-            Icon(Icons.lock, size: 14, color: isElite ? Colors.black87 : badgeColor)
+            Icon(
+              Icons.lock,
+              size: 14,
+              color: isElite ? Colors.black87 : badgeColor,
+            )
           else
             const Text(
               '✓',
@@ -1272,47 +1287,50 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
             ),
           const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: isElite ? null : badgeColor.withOpacity(0.15),
-              gradient: isElite
-                  ? const LinearGradient(
-                      colors: [Color(0xFF4A4A4A), Color(0xFF1A1A1A)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : null,
-              border: isElite
-                  ? Border.all(color: badgeColor.withOpacity(0.5))
-                  : null,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              badgeText,
-              style: TextStyle(
-                color: badgeColor,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+          customBadge ??
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: isElite ? null : badgeColor.withOpacity(0.15),
+                  gradient: isElite
+                      ? const LinearGradient(
+                          colors: [Color(0xFF4A4A4A), Color(0xFF1A1A1A)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                      : null,
+                  border: isElite
+                      ? Border.all(color: badgeColor.withOpacity(0.5))
+                      : null,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  badgeText,
+                  style: TextStyle(
+                    color: badgeColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-          ),
           const SizedBox(width: 10),
           Text(
             title,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           ),
           const Spacer(),
-          Text(
-            isUnlocked ? '• Your world' : 'Other world • upgrade to unlock',
-            style: TextStyle(
-              fontSize: 10,
-              color: isUnlocked
-                  ? const Color(0xFF00C853)
-                  : Colors.grey.shade400,
-              fontWeight: isUnlocked ? FontWeight.bold : FontWeight.normal,
+          if (isUnlocked)
+            const Text(
+              '• Your world',
+              style: TextStyle(
+                fontSize: 10,
+                color: Color(0xFF00C853),
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
         ],
       ),
     );
