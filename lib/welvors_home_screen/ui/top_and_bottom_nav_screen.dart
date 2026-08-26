@@ -69,6 +69,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   late int _selectedIndex;
   bool _isRoseVisible = true;
   bool _isDrawerOpen = false;
+  bool _hasUnreadNotifications = true;
 
   @override
   void initState() {
@@ -468,7 +469,15 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const NotificationScreen()),
+          MaterialPageRoute(
+            builder: (context) => NotificationScreen(
+              onMarkAllRead: () {
+                setState(() {
+                  _hasUnreadNotifications = false;
+                });
+              },
+            ),
+          ),
         );
       },
       child: Container(
@@ -488,22 +497,24 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-          const Icon(Icons.notifications_none, size: 24, color: Colors.black54),
-          Positioned(
-            right: 8,
-            top: 8,
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
+            const Icon(Icons.notifications_none, size: 24, color: Colors.black54),
+            if (_hasUnreadNotifications)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   Widget _buildBottomNav() {

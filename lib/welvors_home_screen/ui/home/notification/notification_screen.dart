@@ -5,19 +5,21 @@ import 'bloc/notification_event.dart';
 import 'bloc/notification_state.dart';
 
 class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({super.key});
+  final VoidCallback? onMarkAllRead;
+  const NotificationScreen({super.key, this.onMarkAllRead});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => NotificationBloc()..add(LoadNotifications()),
-      child: const _NotificationScreenContent(),
+      child: _NotificationScreenContent(onMarkAllRead: onMarkAllRead),
     );
   }
 }
 
 class _NotificationScreenContent extends StatefulWidget {
-  const _NotificationScreenContent();
+  final VoidCallback? onMarkAllRead;
+  const _NotificationScreenContent({this.onMarkAllRead});
 
   @override
   State<_NotificationScreenContent> createState() =>
@@ -169,8 +171,11 @@ class _NotificationScreenContentState
                             context.read<NotificationBloc>().add(
                               MarkAllAsRead(),
                             );
+                            if (widget.onMarkAllRead != null) {
+                              widget.onMarkAllRead!();
+                            }
                           },
-                          child: Text(
+                          child: const Text(
                             'Mark all read',
                             style: TextStyle(
                               color: const Color(0xFFE43A6A),
