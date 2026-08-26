@@ -6,6 +6,7 @@ import 'manage_plan.dart';
 import '../../date_api_service/date_now_api_service.dart';
 import 'profile.dart';
 import 'boost.dart';
+import 'dart:async';
 
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
@@ -30,6 +31,33 @@ class _MyPlanScreenState extends State<MyPlanScreen>
 
   List<Map<String, dynamic>> _apiPlans = [];
   bool _isLoading = true;
+
+  bool _isBoosted = false;
+  DateTime? _boostEndTime;
+  Timer? _timer;
+
+  int _fakeViews = 2;
+  int _fakeRequests = 1;
+  int _fakeApproved = 0;
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          if (DateTime.now().second % 7 == 0) _fakeViews++;
+          if (DateTime.now().second % 13 == 0) _fakeRequests++;
+          if (DateTime.now().second % 29 == 0) _fakeApproved++;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -618,10 +646,127 @@ class _MyPlanScreenState extends State<MyPlanScreen>
     );
   }
 
+  String _getRemainingTime() {
+    if (_boostEndTime == null) return '0h 0m 0s';
+    final diff = _boostEndTime!.difference(DateTime.now());
+    if (diff.isNegative) return '0h 0m 0s';
+    final h = diff.inHours;
+    final m = diff.inMinutes % 60;
+    final s = diff.inSeconds % 60;
+    return '${h}h ${m}m ${s}s';
+  }
+
+  Widget _buildStatChip(String icon, String label, {bool isGreen = false}) {
+     return Container(
+       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+       decoration: BoxDecoration(
+         color: isGreen ? const Color(0xFFEFFFF4) : Colors.white,
+         border: Border.all(color: isGreen ? Colors.green.shade300 : Colors.grey.shade300, width: 0.5),
+         borderRadius: BorderRadius.circular(12),
+       ),
+       child: Row(
+         mainAxisSize: MainAxisSize.min,
+         children: [
+           Text(icon, style: const TextStyle(fontSize: 11)),
+           const SizedBox(width: 4),
+           Text(
+             label,
+             style: TextStyle(
+               fontSize: 11,
+               fontWeight: FontWeight.w600,
+               color: isGreen ? Colors.green.shade700 : Colors.black87,
+             ),
+           ),
+         ],
+       ),
+     );
+  }
+
+  Widget _buildActiveBoostSection() {
+     return Container(
+       width: double.infinity,
+       padding: const EdgeInsets.all(16),
+       decoration: BoxDecoration(
+         color: const Color(0xFFFFF7F2),
+         border: Border.all(color: const Color.fromRGBO(241, 182, 114, 1), width: 1.5),
+         borderRadius: BorderRadius.circular(16),
+       ),
+       child: Column(
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: [
+           Row(
+             children: [
+               Container(
+                 width: 8,
+                 height: 8,
+                 decoration: const BoxDecoration(
+                   color: Colors.orange,
+                   shape: BoxShape.circle,
+                 ),
+               ),
+               const SizedBox(width: 6),
+               const Text(
+                 '🚀 Pinned to top of feed',
+                 style: TextStyle(
+                   color: Color.fromRGBO(138, 90, 0, 1),
+                   fontWeight: FontWeight.bold,
+                   fontSize: 13,
+                 ),
+               ),
+             ],
+           ),
+           const SizedBox(height: 12),
+           Wrap(
+             spacing: 8,
+             runSpacing: 8,
+             children: [
+               _buildStatChip('⏱️', _getRemainingTime()),
+               _buildStatChip('👁️', '$_fakeViews views'),
+               _buildStatChip('✉️', '$_fakeRequests requests'),
+               _buildStatChip('✔️', '$_fakeApproved approved', isGreen: true),
+             ],
+           ),
+         ],
+       ),
+     );
+  }
+
   Widget _buildBoostSection(Map<String, dynamic> plan) {
+    if (_isBoosted) {
+      return _buildActiveBoostSection();
+    }
+    
     return GestureDetector(
-      onTap: () {
-        showBoostBottomSheet(context, plan);
+      onTap: () async {
+        final duration = await showBoostBottomSheet(context, plan);
+        if (duration != null && mounted) {
+          setState(() {
+            _isBoosted = true;
+            _boostEndTime = DateTime.now().add(Duration(hours: duration));
+            _startTimer();
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('🚀', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Boosted · pinned to top for $duration hrs',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color(0xFF1E1E1E),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              margin: const EdgeInsets.only(bottom: 20, left: 40, right: 40),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
       },
       child: DottedBorder(
         borderType: BorderType.RRect,

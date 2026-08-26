@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-void showBoostBottomSheet(BuildContext context, Map<String, dynamic> plan) {
-  showModalBottomSheet(
+Future<int?> showBoostBottomSheet(BuildContext context, Map<String, dynamic> plan) {
+  return showModalBottomSheet<int>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
@@ -347,12 +347,7 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
         GestureDetector(
           onTap: () {
             // TODO: Call API to activate boost
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Plan boosted for $_selectedDuration hours!'),
-              ),
-            );
+            Navigator.pop(context, _selectedDuration);
           },
           child: Container(
             width: double.infinity,
