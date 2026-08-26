@@ -5,6 +5,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'manage_plan.dart';
 import '../../date_api_service/date_now_api_service.dart';
 import 'profile.dart';
+import 'boost.dart';
 
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
@@ -342,7 +343,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildBoostSection(),
+                _buildBoostSection(plan),
                 const SizedBox(height: 24),
                 Row(
                   children: [
@@ -617,14 +618,18 @@ class _MyPlanScreenState extends State<MyPlanScreen>
     );
   }
 
-  Widget _buildBoostSection() {
-    return DottedBorder(
-      borderType: BorderType.RRect,
-      radius: const Radius.circular(16),
-      color: const Color.fromRGBO(241, 182, 114, 1),
-      strokeWidth: 1.5,
-      dashPattern: const [6, 4],
-      child: Container(
+  Widget _buildBoostSection(Map<String, dynamic> plan) {
+    return GestureDetector(
+      onTap: () {
+        showBoostBottomSheet(context, plan);
+      },
+      child: DottedBorder(
+        borderType: BorderType.RRect,
+        radius: const Radius.circular(16),
+        color: const Color.fromRGBO(241, 182, 114, 1),
+        strokeWidth: 1.5,
+        dashPattern: const [6, 4],
+        child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: const Color.fromRGBO(255, 246, 237, 1),
@@ -664,6 +669,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             ),
           ],
         ),
+      ),
       ),
     );
   }
