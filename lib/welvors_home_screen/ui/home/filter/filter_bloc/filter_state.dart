@@ -94,6 +94,8 @@ class FilterState extends Equatable {
   @override
   List<Object?> get props => [minAge, maxAge, distance, showMe, showMePreference, lookingFor, minHeight, maxHeight, education, languages, lifestyle, religion, profession, zodiac, minTrustScore, maxTrustScore, minIncome, maxIncome, networkingIntent, ambition];
 
+  bool get hasActiveFilters => this != const FilterState();
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
       "minAge": minAge.toInt(),

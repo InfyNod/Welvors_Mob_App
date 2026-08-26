@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home/filter/filter_bloc/filter_bloc.dart';
+import 'home/filter/filter_bloc/filter_state.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
@@ -422,10 +423,32 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                             ),
                           );
                         },
-                        child: _buildTopIcon(
-                          Icons.tune,
-                          color: Colors.black54,
-                          iconSize: 24,
+                        child: BlocBuilder<FilterBloc, FilterState>(
+                          builder: (context, filterState) {
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                _buildTopIcon(
+                                  Icons.tune,
+                                  color: Colors.black54,
+                                  iconSize: 24,
+                                ),
+                                if (filterState.hasActiveFilters)
+                                  Positioned(
+                                    right: 8,
+                                    top: 8,
+                                    child: Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 8),
