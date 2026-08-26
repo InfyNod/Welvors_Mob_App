@@ -18,6 +18,7 @@ import 'all_screen/trust_score.dart';
 import 'filter_bloc/filter_bloc.dart';
 import 'filter_bloc/filter_event.dart';
 import 'filter_bloc/filter_state.dart';
+import '../../../home_bloc/home_bloc.dart';
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -1512,6 +1513,12 @@ class _FilterScreenState extends State<FilterScreen> {
           ),
           child: ElevatedButton(
             onPressed: () {
+              final filterState = context.read<FilterBloc>().state;
+              debugPrint('====== [FILTER SCREEN] DISPATCHING EVENT ======');
+              debugPrint('Filters: ${filterState.toJson()}');
+              context.read<HomeBloc>().add(
+                LoadHomeDataEvent(isRefresh: true, filters: filterState.toJson()),
+              );
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
@@ -1524,7 +1531,7 @@ class _FilterScreenState extends State<FilterScreen> {
               elevation: 0,
             ),
             child: const Text(
-              'Show 248 profiles',
+              'Show profiles',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),

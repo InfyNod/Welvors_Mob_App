@@ -408,11 +408,15 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                       GestureDetector(
                         onTap: () {
                           final filterBloc = context.read<FilterBloc>();
+                          final homeBloc = context.read<HomeBloc>();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => BlocProvider.value(
-                                value: filterBloc,
+                              builder: (context) => MultiBlocProvider(
+                                providers: [
+                                  BlocProvider.value(value: filterBloc),
+                                  BlocProvider.value(value: homeBloc),
+                                ],
                                 child: const FilterScreen(),
                               ),
                             ),

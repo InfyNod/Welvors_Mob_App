@@ -9,6 +9,7 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final List<ProfileModel> _swipedProfiles = [];
   bool _isLoadingMore = false;
+  Map<String, dynamic>? _currentFilters;
 
   HomeBloc() : super(const HomeInitial()) {
     on<LoadHomeDataEvent>(_onLoadHomeData);
@@ -18,9 +19,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onLoadHomeData(LoadHomeDataEvent event, Emitter<HomeState> emit) async {
+    print('====== [HOME BLOC] RECEIVED LOAD DATA EVENT ======');
+    print('Is Refresh: ${event.isRefresh}, Filters: ${event.filters}');
     if (event.isRefresh) {
       _swipedProfiles.clear();
       _isLoadingMore = false;
+      if (event.filters != null) {
+        _currentFilters = event.filters;
+      }
       emit(const HomeLoading());
     } else if (state is HomeInitial) {
       emit(const HomeLoading());
@@ -34,24 +40,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       currentCursor = (state as HomeLoaded).cursor;
     }
 
-    final response = await HomeApiService.fetchFeed(limit: 10, cursor: currentCursor);
+    final response = await HomeApiService.fetchFeed(limit: 10, cursor: currentCursor, filters: _currentFilters);
     
     if (response != null && response['users'] != null) {
       final List<dynamic> usersJson = response['users'];
       final String? nextCursor = response['nextCursor'];
       
-      final List<ProfileModel> newProfiles = usersJson.map((json) => ProfileModel.fromFeedJson(json)).toList();
+      print('====== [HOME BLOC] PARSING ${usersJson.length} PROFILES ======');
+      try {
+        final List<ProfileModel> newProfiles = usersJson.map((json) => ProfileModel.fromFeedJson(json as Map<String, dynamic>)).toList();
+        print('====== [HOME BLOC] PARSED SUCCESSFULLY ======');
+        final updatedProfiles = [...currentProfiles, ...newProfiles];
+        print('====== [HOME BLOC] UPDATED PROFILES COUNT: ${updatedProfiles.length} ======');
       
-      final updatedProfiles = [...currentProfiles, ...newProfiles];
-      
-      if (updatedProfiles.isEmpty) {
+        if (updatedProfiles.isEmpty) {
         emit(HomeEmpty(remainingSwipes: state.remainingSwipes, cursor: nextCursor));
       } else {
+        print('====== [HOME BLOC] EMITTING HOMELOADED ======');
         emit(HomeLoaded(
           profiles: updatedProfiles,
           remainingSwipes: state.remainingSwipes,
           cursor: nextCursor,
         ));
+        print('====== [HOME BLOC] EMITTED HOMELOADED ======');
         
         // Auto-fetch details for the first few profiles if not loaded
         for (int i = 0; i < updatedProfiles.length && i < 3; i++) {
@@ -59,6 +70,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             add(FetchProfileDetailsEvent(updatedProfiles[i].id));
           }
         }
+        }
+      } catch(e, st) {
+        print('====== [HOME BLOC] ERROR PARSING JSON: $e ======');
+        print(st);
       }
     } else {
       if (currentProfiles.isEmpty) {

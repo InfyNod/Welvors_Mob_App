@@ -93,4 +93,53 @@ class FilterState extends Equatable {
 
   @override
   List<Object?> get props => [minAge, maxAge, distance, showMe, showMePreference, lookingFor, minHeight, maxHeight, education, languages, lifestyle, religion, profession, zodiac, minTrustScore, maxTrustScore, minIncome, maxIncome, networkingIntent, ambition];
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {
+      "minAge": minAge.toInt(),
+      "maxAge": maxAge.toInt(),
+    };
+
+    if (minHeight != null) data["minHeight"] = minHeight!.toInt();
+    if (maxHeight != null) data["maxHeight"] = maxHeight!.toInt();
+    
+    // For now we pass the strings as values since we don't have ID mappings.
+    // The backend might need exact IDs but this gets the structure right.
+    if (education.isNotEmpty) {
+      data["education"] = [
+        {"key": "education", "values": education}
+      ];
+    }
+    
+    if (languages.isNotEmpty) {
+      data["languages"] = [
+        {"key": "languages", "values": languages}
+      ];
+    }
+    
+    if (lifestyle.isNotEmpty) {
+      // Typically lifestyle is broken into sleep, diet, pets, etc. based on key.
+      // We'll pass it broadly or skip it until backend specifies.
+    }
+    
+    if (religion.isNotEmpty) {
+      // data["religionIds"] = religion; // needs mapping
+    }
+    
+    if (profession.isNotEmpty) {
+      // data["professionIds"] = profession; // needs mapping
+    }
+    
+    if (zodiac != 'Any') {
+      data["zodiac"] = [zodiac.toUpperCase()];
+    }
+    
+    // Add income if not max bounds
+    if (minIncome > 5 || maxIncome < 200) {
+      data["familyIncomeMin"] = (minIncome * 100000).toInt();
+      data["familyIncomeMax"] = (maxIncome * 100000).toInt();
+    }
+    
+    return data;
+  }
 }

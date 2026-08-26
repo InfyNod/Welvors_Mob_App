@@ -4,14 +4,20 @@ abstract class HomeEvent extends Equatable {
   const HomeEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadHomeDataEvent extends HomeEvent {
   final bool isRefresh;
-  const LoadHomeDataEvent({this.isRefresh = false});
+  final Map<String, dynamic>? filters;
+
+  const LoadHomeDataEvent({
+    this.isRefresh = false,
+    this.filters,
+  });
+
   @override
-  List<Object> get props => [isRefresh];
+  List<Object?> get props => [isRefresh, filters];
 }
 
 class SwipeProfileEvent extends HomeEvent {
@@ -19,7 +25,7 @@ class SwipeProfileEvent extends HomeEvent {
   const SwipeProfileEvent({required this.isRightSwipe});
 
   @override
-  List<Object> get props => [isRightSwipe];
+  List<Object?> get props => [isRightSwipe];
 }
 
 class UndoSwipeEvent extends HomeEvent {}
@@ -29,5 +35,5 @@ class FetchProfileDetailsEvent extends HomeEvent {
   const FetchProfileDetailsEvent(this.userId);
 
   @override
-  List<Object> get props => [userId];
+  List<Object?> get props => [userId];
 }
