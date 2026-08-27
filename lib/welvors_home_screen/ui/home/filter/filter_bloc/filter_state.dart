@@ -157,7 +157,7 @@ class FilterState extends Equatable {
     }
     
     if (profession.isNotEmpty) {
-      // data["professionIds"] = profession; // needs mapping
+      data["professionIds"] = profession.map((e) => e.split('|').first).toList();
     }
     
     if (zodiac != 'Any') {

@@ -134,4 +134,30 @@ class ServiceFilter {
     }
     return null;
   }
+
+  /// Fetches options for the "Profession" filter
+  static Future<List<dynamic>?> fetchProfessionOptions() async {
+    try {
+      final url = Uri.parse('$baseUrl/onboarding/professions/get');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      
+      debugPrint('====== [PROFESSION API RESPONSE] ======');
+      debugPrint('STATUS: ${response.statusCode}');
+      
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['professions'] != null) {
+          return decoded['professions'] as List; // It's usually 'data' or 'professions'
+        } else if (decoded['success'] == true && decoded['data'] != null) {
+          return decoded['data'] as List;
+        }
+      }
+    } catch (e) {
+      debugPrint('====== [PROFESSION API ERROR] ======');
+      debugPrint(e.toString());
+    }
+    return null;
+  }
 }

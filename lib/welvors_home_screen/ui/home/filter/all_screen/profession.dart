@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import '../service/service_filter.dart';
 
 class ProfessionScreen extends StatefulWidget {
   const ProfessionScreen({super.key});
@@ -13,41 +14,61 @@ class ProfessionScreen extends StatefulWidget {
 class _ProfessionScreenState extends State<ProfessionScreen> {
   final List<String> _selectedProfession = [];
 
-  final Map<String, List<String>> _professionCategories = {
-    'TECH & PRODUCT': [
-      'Software engineer', 'Tech lead', 'Engineering manager', 'Product manager', 
-      'Data scientist', 'Data analyst', 'DevOps engineer', 'QA engineer', 
-      'UI / UX designer', 'Civil engineer', 'Mechanical engineer', 'Electrical engineer'
-    ],
-    'HEALTHCARE': [
-      'Doctor (MBBS)', 'Surgeon', 'Dentist', 'Physiotherapist', 'Nurse', 
-      'Psychologist', 'Pharmacist', 'Veterinarian'
-    ],
-    'FINANCE & BUSINESS': [
-      'Chartered accountant', 'Company secretary', 'Investment banker', 
-      'Financial analyst', 'Auditor', 'Management consultant', 
-      'Business analyst', 'Founder / entrepreneur', 'Marketing manager', 
-      'Sales manager', 'HR manager', 'Operations manager'
-    ],
-    'LAW & PUBLIC SERVICE': [
-      'Lawyer / advocate', 'Judge', 'IAS / IPS officer', 'Armed forces officer', 
-      'Police officer', 'Government officer', 'Social worker'
-    ],
-    'CREATIVE': [
-      'Graphic designer', 'Interior designer', 'Architect', 'Fashion designer', 
-      'Photographer', 'Filmmaker', 'Content writer', 'Journalist', 
-      'Musician', 'Actor'
-    ],
-    'ACADEMIA & OTHER': [
-      'Professor', 'School teacher', 'Scientist / researcher', 'Pilot', 
-      'Cabin crew', 'Chef', 'Hotel manager', 'Fitness trainer', 
-      'Sportsperson', 'Freelancer', 'Student', 'Between jobs'
-    ],
-  };
+  bool _isLoading = true;
+  List<dynamic> _apiData = [];
+  final Map<String, List<Map<String, dynamic>>> _parsedCategories = {};
+
+  Future<void> _fetchOptions() async {
+    final data = await ServiceFilter.fetchProfessionOptions();
+    if (data != null && mounted) {
+      _parseData(data);
+      setState(() {
+        _apiData = data;
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _parseData(List<dynamic> data) {
+    _parsedCategories.clear();
+    
+    if (data.isNotEmpty && data[0] is Map && (data[0].containsKey('options') || data[0].containsKey('professions'))) {
+      for (var category in data) {
+        String catName = category['title'] ?? category['name'] ?? category['category'] ?? 'Profession';
+        List options = category['options'] ?? category['professions'] ?? [];
+        List<Map<String, dynamic>> parsedOptions = [];
+        
+        for (var opt in options) {
+          if (opt is Map) {
+            String id = opt['id']?.toString() ?? '';
+            String name = opt['label'] ?? opt['name'] ?? opt['title'] ?? opt['option'] ?? opt['value'] ?? 'Unknown';
+            parsedOptions.add({'id': id, 'name': name});
+          }
+        }
+        if (parsedOptions.isNotEmpty) {
+          _parsedCategories[catName.toUpperCase()] = parsedOptions;
+        }
+      }
+    } 
+    else if (data.isNotEmpty && data[0] is Map) {
+      List<Map<String, dynamic>> parsedOptions = [];
+      for (var opt in data) {
+        String id = opt['id']?.toString() ?? '';
+        String name = opt['label'] ?? opt['name'] ?? opt['title'] ?? opt['option'] ?? opt['value'] ?? 'Unknown';
+        parsedOptions.add({'id': id, 'name': name});
+      }
+      _parsedCategories[''] = parsedOptions;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     final currentState = context.read<FilterBloc>().state;
     _selectedProfession.addAll(currentState.profession);
   }
@@ -104,65 +125,49 @@ class _ProfessionScreenState extends State<ProfessionScreen> {
     );
   }
 
-  Widget _buildCategory(String categoryName, List<String> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
-          child: Text(
-            categoryName,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey,
-              letterSpacing: 0.8,
+  Widget _buildProfessionChips(List<Map<String, dynamic>> items) {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 12.0,
+      children: items.map((item) {
+        final id = item['id'] as String;
+        final name = item['name'] as String;
+        final optionStr = '$id|$name';
+
+        final isSelected = _selectedProfession.contains(optionStr);
+        return GestureDetector(
+          onTap: () => _toggleProfession(optionStr),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                width: 1,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      )
+                    ]
+                  : null,
+            ),
+            child: Text(
+              name,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black87,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 12.0,
-            children: items.map((item) {
-              final isSelected = _selectedProfession.contains(item);
-              return GestureDetector(
-                onTap: () => _toggleProfession(item),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                      width: 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFFE43A6A).withOpacity(0.3),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            )
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    item,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black87,
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 
@@ -284,30 +289,56 @@ class _ProfessionScreenState extends State<ProfessionScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSectionHeader(),
-              ..._professionCategories.entries.map((entry) => _buildCategory(entry.key, entry.value)),
-              const SizedBox(height: 12),
-              _buildInfoCard(
-                '💼',
-                'Verified employers show a badge',
-                'Profession verification adds +8 to a member’s trust score.',
+      body: _isLoading
+        ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+        : _parsedCategories.isEmpty
+            ? const Center(child: Text("No professions found."))
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildSectionHeader(),
+                      ..._parsedCategories.entries.map((entry) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (entry.key.isNotEmpty) ...[
+                                Text(
+                                  entry.key,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black54,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                              _buildProfessionChips(entry.value),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      const SizedBox(height: 12),
+                      _buildInfoCard(
+                        '💼',
+                        'Profession helps spark conversations',
+                        'It’s easier to find common ground when you know what someone does.',
+                      ),
+                      _buildInfoCard(
+                        '✨',
+                        'Select broadly',
+                        'You can choose entire industries to cast a wider net.',
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
               ),
-              _buildInfoCard(
-                '✨',
-                'Keep it broad',
-                'Pick a field or two — filtering on one role hides good matches.',
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

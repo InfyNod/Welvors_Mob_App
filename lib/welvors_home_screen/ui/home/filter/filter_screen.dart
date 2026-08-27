@@ -333,7 +333,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Profession',
                       state.profession.isEmpty
                           ? 'Any'
-                          : state.profession.join(', '),
+                          : state.profession.map((e) => e.split('|').last).join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
