@@ -105,11 +105,16 @@ class FilterState extends Equatable {
     if (minHeight != null) data["minHeight"] = minHeight!.toInt();
     if (maxHeight != null) data["maxHeight"] = maxHeight!.toInt();
     
-    // For now we pass the strings as values since we don't have ID mappings.
-    // The backend might need exact IDs but this gets the structure right.
+    // The backend needs exact IDs. We store "ID|Title" in the state for UI purposes.
+    if (lookingFor.isNotEmpty) {
+      data["lookingFor"] = [
+        {"key": "lookingFor", "values": lookingFor.map((e) => e.split('|').first).toList()}
+      ];
+    }
+    
     if (education.isNotEmpty) {
       data["education"] = [
-        {"key": "education", "values": education}
+        {"key": "education", "values": education.map((e) => e.split('|').first).toList()}
       ];
     }
     

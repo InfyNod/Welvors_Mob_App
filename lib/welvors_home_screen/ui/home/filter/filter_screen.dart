@@ -211,7 +211,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Looking for',
                       state.lookingFor.isEmpty
                           ? 'Any'
-                          : state.lookingFor.join(', '),
+                          : state.lookingFor.map((e) => e.split('|').last).join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(

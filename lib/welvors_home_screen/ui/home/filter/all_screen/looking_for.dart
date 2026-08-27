@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import 'package:http/http.dart' as __http;
+import 'dart:convert' as dart_convert;
+import '../service/service_filter.dart';
 
 class LookingForScreen extends StatefulWidget {
   const LookingForScreen({super.key});
@@ -12,39 +15,46 @@ class LookingForScreen extends StatefulWidget {
 
 class _LookingForScreenState extends State<LookingForScreen> {
   final Set<String> _selectedOptions = {};
+  List<Map<String, dynamic>> _options = [];
 
-  final List<Map<String, dynamic>> _options = [
-    {
-      'icon': '💝',
-      'title': 'Long-term relationship',
-      'subtitle': 'Building something that lasts, no rush',
-      'iconBgColor': const Color(0xFFFCE9EE), // Soft pink
-    },
-    {
-      'icon': '💍',
-      'title': 'Marriage',
-      'subtitle': 'Ready to marry when it feels right',
-      'iconBgColor': const Color(0xFFE8F0FE), // Soft blue
-    },
-    {
-      'icon': '✨',
-      'title': 'Open-minded',
-      'subtitle': 'Open, honest, no labels yet',
-      'iconBgColor': const Color(0xFFFFF9E6), // Soft gold
-    },
-    {
-      'icon': '🤝',
-      'title': 'New friends',
-      'subtitle': 'Good company and real conversations',
-      'iconBgColor': const Color(0xFFE6F4EA), // Soft green
-    },
-  ];
+  bool _isLoading = true;
+  String _headerTitle = "What are you here for?";
+  String _headerSubtitle = "However you love, you belong here";
 
   @override
   void initState() {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
     _selectedOptions.addAll(currentState.lookingFor);
+    _fetchOptions();
+  }
+
+  Future<void> _fetchOptions() async {
+    try {
+      final data = await ServiceFilter.fetchLookingForOptions();
+      
+      if (data != null) {
+        if (mounted) {
+          setState(() {
+            _headerTitle = data['title'];
+            _headerSubtitle = data['subtitle'];
+            _options = data['options'];
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+    } catch (e) {
+      print('====== [LOOKING FOR API ERROR] ======');
+      print(e);
+    }
+    
+    // Fallback if failed
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _onDone() {
@@ -115,12 +125,14 @@ class _LookingForScreenState extends State<LookingForScreen> {
       padding: const EdgeInsets.symmetric(vertical: 24),
       child: Row(
         children: [
-          const Text(
-            'What are you here for?',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+          Expanded(
+            child: Text(
+              _headerTitle,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -146,19 +158,22 @@ class _LookingForScreenState extends State<LookingForScreen> {
   }
 
   Widget _buildOptionCard(Map<String, dynamic> option) {
+    final id = option['id'] as String;
     final title = option['title'] as String;
     final subtitle = option['subtitle'] as String;
     final iconText = option['icon'] as String;
     final iconBgColor = option['iconBgColor'] as Color;
-    final isSelected = _selectedOptions.contains(title);
+    
+    final optionKey = '$id|$title';
+    final isSelected = _selectedOptions.contains(optionKey);
 
     return GestureDetector(
       onTap: () {
         setState(() {
           if (isSelected) {
-            _selectedOptions.remove(title);
+            _selectedOptions.remove(optionKey);
           } else {
-            _selectedOptions.add(title);
+            _selectedOptions.add(optionKey);
           }
         });
       },
@@ -366,9 +381,22 @@ class _LookingForScreenState extends State<LookingForScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildTopCard(),
+              const SizedBox(height: 16),
               _buildSectionHeader(),
-              ..._options.map((option) => _buildOptionCard(option)),
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.all(40),
+                  child: Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))),
+                )
+              else if (_options.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(40),
+                  child: Center(child: Text("No options found")),
+                )
+              else
+                ..._options.map((opt) => _buildOptionCard(opt)).toList(),
               _buildInfoCard(),
+              const SizedBox(height: 100), // Bottom padding
             ],
           ),
         ),
