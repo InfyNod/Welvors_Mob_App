@@ -109,4 +109,29 @@ class ServiceFilter {
     }
     return null;
   }
+
+  /// Fetches options for the "Religion" filter
+  static Future<List<dynamic>?> fetchReligionOptions() async {
+    try {
+      final url = Uri.parse('$baseUrl/religion/get');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      
+      debugPrint('====== [RELIGION API RESPONSE] ======');
+      debugPrint('STATUS: ${response.statusCode}');
+      debugPrint('BODY: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return decoded['data'] as List;
+        }
+      }
+    } catch (e) {
+      debugPrint('====== [RELIGION API ERROR] ======');
+      debugPrint(e.toString());
+    }
+    return null;
+  }
 }

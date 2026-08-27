@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import '../service/service_filter.dart';
 
 class ReligionCommunityScreen extends StatefulWidget {
   const ReligionCommunityScreen({super.key});
@@ -13,15 +14,67 @@ class ReligionCommunityScreen extends StatefulWidget {
 class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
   final List<String> _selectedReligion = [];
 
-  final List<String> _religionOptions = [
-    'Hindu', 'Muslim', 'Sikh', 'Christian',
-    'Jain', 'Buddhist', 'Parsi', 'Jewish',
-    'Spiritual, no religion', 'Atheist', 'Other'
-  ];
+  bool _isLoading = true;
+  List<dynamic> _apiData = [];
+  
+  // Example structure we might build:
+  // _parsedReligions = [{'id': '1', 'name': 'Hindu', 'communities': [{'id':'2', 'name':'Brahmin'}]}]
+  final List<Map<String, dynamic>> _parsedReligions = [];
+  
+  // We'll store religion IDs without prefix for easier checking
+  // _selectedReligion will contain things like 'R|id|name' or 'C|id|name'
+
+
+  Future<void> _fetchOptions() async {
+    final data = await ServiceFilter.fetchReligionOptions();
+    if (data != null && mounted) {
+      _parseData(data);
+      setState(() {
+        _apiData = data;
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _parseData(List<dynamic> data) {
+    _parsedReligions.clear();
+    // For now just dumping the structure to help understand it:
+    debugPrint('====== RELIGION PARSER INPUT ======');
+    debugPrint(data.toString());
+    
+    // We will assume the API returns a list of objects with 'name' and possibly nested 'community' or 'caste' or 'options'
+    for (var rel in data) {
+      if (rel is Map) {
+        String id = rel['id']?.toString() ?? '';
+        String name = rel['name'] ?? rel['title'] ?? rel['label'] ?? 'Unknown';
+        
+        List communities = rel['communities'] ?? rel['community'] ?? rel['options'] ?? rel['castes'] ?? rel['caste'] ?? [];
+        List<Map<String, dynamic>> parsedCommunities = [];
+        for (var c in communities) {
+          if (c is Map) {
+            String cid = c['id']?.toString() ?? '';
+            String cname = c['name'] ?? c['title'] ?? c['label'] ?? 'Unknown';
+            parsedCommunities.add({'id': cid, 'name': cname});
+          }
+        }
+        
+        _parsedReligions.add({
+          'id': id,
+          'name': name,
+          'communities': parsedCommunities
+        });
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     final currentState = context.read<FilterBloc>().state;
     _selectedReligion.addAll(currentState.religion);
   }
@@ -84,10 +137,30 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
       child: Wrap(
         spacing: 8.0,
         runSpacing: 12.0,
-        children: _religionOptions.map((option) {
-          final isSelected = _selectedReligion.contains(option);
+        children: _parsedReligions.map((rel) {
+          final id = rel['id']?.toString() ?? '';
+          final name = rel['name'] as String;
+          final optionStr = 'R|$id|$name';
+          
+          final isSelected = _selectedReligion.contains(optionStr);
+
           return GestureDetector(
-            onTap: () => _toggleReligion(option),
+            onTap: () {
+              setState(() {
+                if (isSelected) {
+                  _selectedReligion.remove(optionStr);
+                  // Also remove all communities belonging to this religion
+                  final comms = rel['communities'] as List;
+                  for (var c in comms) {
+                    final cid = c['id']?.toString() ?? '';
+                    final cname = c['name'] as String;
+                    _selectedReligion.remove('C|$cid|$cname');
+                  }
+                } else {
+                  _selectedReligion.add(optionStr);
+                }
+              });
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -109,7 +182,7 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
                     : null,
               ),
               child: Text(
-                option,
+                name,
                 style: TextStyle(
                   color: isSelected ? Colors.white : Colors.black87,
                   fontSize: 13,
@@ -120,6 +193,127 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
           );
         }).toList(),
       ),
+    );
+  }
+
+  Widget _buildCommunitiesSection() {
+    // Find all selected religions that have communities
+    final List<Map<String, dynamic>> selectedReligionsWithComms = [];
+    for (var rel in _parsedReligions) {
+      final id = rel['id']?.toString() ?? '';
+      final name = rel['name'] as String;
+      final optionStr = 'R|$id|$name';
+      if (_selectedReligion.contains(optionStr)) {
+        final comms = rel['communities'] as List;
+        if (comms.isNotEmpty) {
+          selectedReligionsWithComms.add(rel);
+        }
+      }
+    }
+
+    if (selectedReligionsWithComms.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Text(
+              'Caste / community',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F0F0),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Text(
+                'OPTIONAL',
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ...selectedReligionsWithComms.map((rel) {
+          final relName = rel['name'] as String;
+          final comms = rel['communities'] as List;
+          
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  relName.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 12.0,
+                  children: comms.map((c) {
+                    final cid = c['id']?.toString() ?? '';
+                    final cname = c['name'] as String;
+                    final commOptionStr = 'C|$cid|$cname';
+                    
+                    final isSelected = _selectedReligion.contains(commOptionStr);
+
+                    return GestureDetector(
+                      onTap: () => _toggleReligion(commOptionStr),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                            width: 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  )
+                                ]
+                              : null,
+                        ),
+                        child: Text(
+                          cname,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black87,
+                            fontSize: 13,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
     );
   }
 
@@ -241,30 +435,35 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSectionHeader(),
-              _buildChips(),
-              const SizedBox(height: 12),
-              _buildInfoCard(
-                '🕊️',
-                'Pick a religion to add community',
-                'Caste or sect options appear once you choose Hindu, Muslim, Sikh, Christian, Jain or Buddhist.',
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+        : _parsedReligions.isEmpty
+            ? const Center(child: Text("No religions found."))
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildSectionHeader(),
+                      _buildChips(),
+                      _buildCommunitiesSection(),
+                      const SizedBox(height: 12),
+                      _buildInfoCard(
+                        '🕊️',
+                        'Pick a religion to add community',
+                        'Caste or sect options appear once you choose Hindu, Muslim, Sikh, Christian, Jain or Buddhist.',
+                      ),
+                      _buildInfoCard(
+                        '🕊️',
+                        'Faith is optional to share',
+                        'Many members keep this private — select more than one if you are open.',
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
               ),
-              _buildInfoCard(
-                '🕊️',
-                'Faith is optional to share',
-                'Many members keep this private — select more than one if you are open.',
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

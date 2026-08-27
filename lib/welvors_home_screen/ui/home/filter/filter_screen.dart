@@ -314,7 +314,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Religion & community',
                       state.religion.isEmpty
                           ? 'Any'
-                          : state.religion.join(', '),
+                          : state.religion.map((e) => e.split('|').last).join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(

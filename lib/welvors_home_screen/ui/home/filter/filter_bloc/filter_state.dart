@@ -143,7 +143,17 @@ class FilterState extends Equatable {
     }
     
     if (religion.isNotEmpty) {
-      // data["religionIds"] = religion; // needs mapping
+      final List<String> rIds = [];
+      final List<String> cIds = [];
+      for (var r in religion) {
+        if (r.startsWith('R|')) {
+          rIds.add(r.split('|')[1]);
+        } else if (r.startsWith('C|')) {
+          cIds.add(r.split('|')[1]);
+        }
+      }
+      if (rIds.isNotEmpty) data["religionIds"] = rIds;
+      if (cIds.isNotEmpty) data["communityIds"] = cIds;
     }
     
     if (profession.isNotEmpty) {
