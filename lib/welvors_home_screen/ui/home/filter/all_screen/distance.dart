@@ -11,9 +11,9 @@ class DistanceScreen extends StatefulWidget {
 }
 
 class _DistanceScreenState extends State<DistanceScreen> {
-  double _currentDistance = 26.0;
+  double _currentDistance = 100.0;
   final List<double> _predefinedDistances = [5, 10, 25, 50, 100];
-  double _selectedDistanceChip = 25.0;
+  double _selectedDistanceChip = 100.0;
 
   @override
   void initState() {

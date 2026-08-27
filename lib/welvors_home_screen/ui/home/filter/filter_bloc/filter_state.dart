@@ -23,10 +23,10 @@ class FilterState extends Equatable {
   final List<String> ambition;
 
   const FilterState({
-    this.minAge = 19.0,
+    this.minAge = 18.0,
     this.maxAge = 32.0,
-    this.distance = 26.0,
-    this.showMe = 'WOMEN',
+    this.distance = 100.0,
+    this.showMe = 'EVERYONE',
     this.showMePreference = '',
     this.lookingFor = const [],
     this.minHeight,
@@ -97,19 +97,27 @@ class FilterState extends Equatable {
   bool get hasActiveFilters => this != const FilterState();
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {
-      "minAge": minAge.toInt(),
-      "maxAge": maxAge.toInt(),
-    };
+    final Map<String, dynamic> data = {};
+    
+    // Only send if they differ from the default values
+    if (minAge != 18.0 || maxAge != 32.0) {
+      data["minAge"] = minAge.toInt();
+      data["maxAge"] = maxAge.toInt();
+    }
+    
+    if (distance != 100.0) {
+      data["distance"] = distance.toInt();
+    }
 
     if (minHeight != null) data["minHeight"] = minHeight!.toInt();
     if (maxHeight != null) data["maxHeight"] = maxHeight!.toInt();
     
-    if (showMe.isNotEmpty && showMe != 'Any') {
+    if (showMe.isNotEmpty && showMe != 'Any' && showMe != 'EVERYONE') {
       data["gender"] = [
         {"key": "gender", "values": [showMe]}
       ];
     }
+
     
     if (showMePreference.isNotEmpty) {
       data["sexualOrientation"] = [

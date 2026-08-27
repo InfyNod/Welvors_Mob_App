@@ -1520,10 +1520,11 @@ class _FilterScreenState extends State<FilterScreen> {
           child: ElevatedButton(
             onPressed: () {
               final filterState = context.read<FilterBloc>().state;
+              final payload = filterState.hasActiveFilters ? filterState.toJson() : null;
               debugPrint('====== [FILTER SCREEN] DISPATCHING EVENT ======');
-              debugPrint('Filters: ${filterState.toJson()}');
+              debugPrint('Filters: $payload');
               context.read<HomeBloc>().add(
-                LoadHomeDataEvent(isRefresh: true, filters: filterState.toJson()),
+                LoadHomeDataEvent(isRefresh: true, filters: payload),
               );
               Navigator.pop(context);
             },

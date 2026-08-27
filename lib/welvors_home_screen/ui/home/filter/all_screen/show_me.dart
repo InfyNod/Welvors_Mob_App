@@ -13,7 +13,7 @@ class ShowMeScreen extends StatefulWidget {
 }
 
 class _ShowMeScreenState extends State<ShowMeScreen> {
-  String _selectedShowMe = 'WOMEN';
+  String _selectedShowMe = 'EVERYONE';
   final Set<String> _selectedPreferences = {};
 
   // Display map for UI (Backend Key : Display Name)
@@ -36,7 +36,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
     final currentState = context.read<FilterBloc>().state;
     _selectedShowMe = ['WOMEN', 'MEN', 'EVERYONE'].contains(currentState.showMe)
         ? currentState.showMe
-        : 'WOMEN';
+        : 'EVERYONE';
         
     if (currentState.showMePreference.isNotEmpty) {
       _selectedPreferences.add(currentState.showMePreference);
