@@ -1,9 +1,18 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'filter_event.dart';
 import 'filter_state.dart';
 
 class FilterBloc extends Bloc<FilterEvent, FilterState> {
   FilterBloc() : super(const FilterState()) {
+    _initPrefs();
+
+    on<LoadSavedFilter>((event, emit) {
+      emit(event.savedState);
+    });
+
     on<ResetFilter>((event, emit) {
       emit(const FilterState()); // Reset to default state
     });
@@ -102,5 +111,34 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         ambition: event.ambition,
       ));
     });
+  }
+
+  Future<void> _initPrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? savedState = prefs.getString('filter_state_cache');
+      if (savedState != null) {
+        final decoded = jsonDecode(savedState);
+        final loadedState = FilterState.fromMap(decoded);
+        add(LoadSavedFilter(loadedState));
+      }
+    } catch (e) {
+      debugPrint('Error loading saved filter state: $e');
+    }
+  }
+
+  @override
+  void onChange(Change<FilterState> change) {
+    super.onChange(change);
+    _saveStateToPrefs(change.nextState);
+  }
+
+  Future<void> _saveStateToPrefs(FilterState state) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('filter_state_cache', jsonEncode(state.toMap()));
+    } catch (e) {
+      debugPrint('Error saving filter state: $e');
+    }
   }
 }

@@ -91,6 +91,56 @@ class FilterState extends Equatable {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'minAge': minAge,
+      'maxAge': maxAge,
+      'distance': distance,
+      'showMe': showMe,
+      'showMePreference': showMePreference,
+      'lookingFor': lookingFor,
+      'minHeight': minHeight,
+      'maxHeight': maxHeight,
+      'education': education,
+      'languages': languages,
+      'lifestyle': lifestyle,
+      'religion': religion,
+      'profession': profession,
+      'zodiac': zodiac,
+      'minTrustScore': minTrustScore,
+      'maxTrustScore': maxTrustScore,
+      'minIncome': minIncome,
+      'maxIncome': maxIncome,
+      'networkingIntent': networkingIntent,
+      'ambition': ambition,
+    };
+  }
+
+  factory FilterState.fromMap(Map<String, dynamic> map) {
+    return FilterState(
+      minAge: map['minAge']?.toDouble() ?? 18.0,
+      maxAge: map['maxAge']?.toDouble() ?? 32.0,
+      distance: map['distance']?.toDouble() ?? 100.0,
+      showMe: map['showMe'] ?? 'EVERYONE',
+      showMePreference: map['showMePreference'] ?? '',
+      lookingFor: List<String>.from(map['lookingFor'] ?? []),
+      minHeight: map['minHeight']?.toDouble(),
+      maxHeight: map['maxHeight']?.toDouble(),
+      education: List<String>.from(map['education'] ?? []),
+      languages: List<String>.from(map['languages'] ?? []),
+      lifestyle: List<String>.from(map['lifestyle'] ?? []),
+      religion: List<String>.from(map['religion'] ?? []),
+      profession: List<String>.from(map['profession'] ?? []),
+      zodiac: map['zodiac'] ?? 'Any',
+      minTrustScore: map['minTrustScore']?.toDouble() ?? 0.0,
+      maxTrustScore: map['maxTrustScore']?.toDouble() ?? 20.0,
+      minIncome: map['minIncome']?.toDouble() ?? 5.0,
+      maxIncome: map['maxIncome']?.toDouble() ?? 200.0,
+      networkingIntent: List<String>.from(map['networkingIntent'] ?? []),
+      ambition: List<String>.from(map['ambition'] ?? []),
+    );
+  }
+
   @override
   List<Object?> get props => [minAge, maxAge, distance, showMe, showMePreference, lookingFor, minHeight, maxHeight, education, languages, lifestyle, religion, profession, zodiac, minTrustScore, maxTrustScore, minIncome, maxIncome, networkingIntent, ambition];
 

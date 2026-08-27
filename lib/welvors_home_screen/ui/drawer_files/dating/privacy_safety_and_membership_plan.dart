@@ -39,20 +39,18 @@ class _PrivacySafetyAndMembershipState
           ),
           child: Column(
             children: [
-              // Header: AI Avatar Studio
+              // Header: SafeFace
               Row(
                 children: [
                   Container(
                     width: 44,
                     height: 44,
                     decoration: const BoxDecoration(
-                      color: Color(
-                        0xFFF7F5EC,
-                      ), // Very light beige/cream color for robot
+                      color: Color(0xFFEBF2F8), // Very light blue background
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
-                    child: const Text('🤖', style: TextStyle(fontSize: 22)),
+                    child: const Text('🛡️', style: TextStyle(fontSize: 22)),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -60,7 +58,7 @@ class _PrivacySafetyAndMembershipState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'AI Avatar Studio',
+                          'SafeFace',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
@@ -69,7 +67,7 @@ class _PrivacySafetyAndMembershipState
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Keep your real photo private behind an avatar',
+                          'Hide your real photo behind an avatar',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
@@ -79,6 +77,7 @@ class _PrivacySafetyAndMembershipState
                       ],
                     ),
                   ),
+                  const Icon(Icons.chevron_right, size: 20, color: Colors.black26),
                 ],
               ),
               const SizedBox(height: 16),
@@ -102,13 +101,11 @@ class _PrivacySafetyAndMembershipState
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Create an avatar to enable',
+                          'Show avatar until you choose to reveal',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
-                            color: Colors
-                                .grey
-                                .shade500, // Lighter grey indicating it's disabled
+                            color: Colors.grey.shade600,
                           ),
                         ),
                       ],
@@ -145,39 +142,6 @@ class _PrivacySafetyAndMembershipState
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 16),
-              // Create Avatar Button
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFFE85A7A),
-                    width: 1.5,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFFE85A7A),
-                      size: 16,
-                    ), // ✦ icon
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Create Avatar',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE85A7A),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'filter_state.dart';
 
 abstract class FilterEvent extends Equatable {
   const FilterEvent();
@@ -8,6 +9,14 @@ abstract class FilterEvent extends Equatable {
 }
 
 class ResetFilter extends FilterEvent {}
+
+class LoadSavedFilter extends FilterEvent {
+  final FilterState savedState;
+  const LoadSavedFilter(this.savedState);
+
+  @override
+  List<Object> get props => [savedState];
+}
 
 class UpdateAgeRange extends FilterEvent {
   final double startAge;
