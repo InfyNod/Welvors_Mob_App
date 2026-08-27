@@ -13,26 +13,18 @@ class EducationScreen extends StatefulWidget {
 class _EducationScreenState extends State<EducationScreen> {
   final List<String> _selectedEducation = [];
 
-  final List<String> _educationOptions = [
-    'High school',
-    'Diploma',
-    'Undergraduate',
-    'Bachelors',
-    'Postgraduate',
-    'Masters',
-    'MPhil',
-    'PhD',
-    'Post-doctorate',
-    'CA / CS / CFA',
-    'MBBS / MD',
-    'LLB / LLM',
-    'MBA',
-    'IIT / NIT / BITS',
-    'IIM / ISB',
-    'NIFT / NID',
-    'Currently studying',
-    'Other',
-  ];
+  final Map<String, String> _educationOptions = {
+    'HIGH_SCHOOL': 'High school',
+    'ITI': 'ITI',
+    'DIPLOMA': 'Diploma',
+    'UNDERGRADUATE': 'Undergraduate',
+    'BACHELOR': 'Bachelor',
+    'POSTGRADUATE': 'Postgraduate',
+    'MASTER': 'Master',
+    'MPHIL': 'MPhil',
+    'PHD': 'PhD',
+    'POST_DOCTORATE': 'Post-doctorate',
+  };
 
   @override
   void initState() {
@@ -98,10 +90,11 @@ class _EducationScreenState extends State<EducationScreen> {
     return Wrap(
       spacing: 8.0,
       runSpacing: 12.0,
-      children: _educationOptions.map((option) {
-        final isSelected = _selectedEducation.contains(option);
+      children: _educationOptions.entries.map((entry) {
+        final optionStr = '${entry.key}|${entry.value}';
+        final isSelected = _selectedEducation.contains(optionStr);
         return GestureDetector(
-          onTap: () => _toggleEducation(option),
+          onTap: () => _toggleEducation(optionStr),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -123,7 +116,7 @@ class _EducationScreenState extends State<EducationScreen> {
                   : null,
             ),
             child: Text(
-              option,
+              entry.value,
               style: TextStyle(
                 color: isSelected ? Colors.white : Colors.black87,
                 fontSize: 13,

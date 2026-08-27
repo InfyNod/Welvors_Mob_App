@@ -255,7 +255,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Education',
                       state.education.isEmpty
                           ? 'Any'
-                          : state.education.join(', '),
+                          : state.education.map((e) => e.split('|').last).join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
