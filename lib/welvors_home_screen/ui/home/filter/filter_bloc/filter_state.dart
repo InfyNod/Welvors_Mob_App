@@ -26,7 +26,7 @@ class FilterState extends Equatable {
     this.minAge = 19.0,
     this.maxAge = 32.0,
     this.distance = 26.0,
-    this.showMe = 'Women',
+    this.showMe = 'WOMEN',
     this.showMePreference = '',
     this.lookingFor = const [],
     this.minHeight,
@@ -104,6 +104,18 @@ class FilterState extends Equatable {
 
     if (minHeight != null) data["minHeight"] = minHeight!.toInt();
     if (maxHeight != null) data["maxHeight"] = maxHeight!.toInt();
+    
+    if (showMe.isNotEmpty && showMe != 'Any') {
+      data["gender"] = [
+        {"key": "gender", "values": [showMe]}
+      ];
+    }
+    
+    if (showMePreference.isNotEmpty) {
+      data["sexualOrientation"] = [
+        {"key": "sexualOrientation", "values": [showMePreference]}
+      ];
+    }
     
     // The backend needs exact IDs. We store "ID|Title" in the state for UI purposes.
     if (lookingFor.isNotEmpty) {

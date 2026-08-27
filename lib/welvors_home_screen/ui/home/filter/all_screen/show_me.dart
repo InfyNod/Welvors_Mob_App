@@ -13,20 +13,31 @@ class ShowMeScreen extends StatefulWidget {
 }
 
 class _ShowMeScreenState extends State<ShowMeScreen> {
-  String _selectedShowMe = 'Women';
+  String _selectedShowMe = 'WOMEN';
   final Set<String> _selectedPreferences = {};
 
-  final Map<String, List<String>> _preferencesMap = {
-    'Women': ['Open to all', 'Cis women', 'Trans women', 'Intersex women'],
-    'Men': ['Open to all', 'Cis men', 'Trans men', 'Intersex men'],
-    'Everyone': ['Open to all', 'Cisgender', 'Transgender', 'Non-binary'],
+  // Display map for UI (Backend Key : Display Name)
+  final Map<String, String> _orientationDisplayNames = {
+    'STRAIGHT': 'Straight',
+    'GAY': 'Gay',
+    'LESBIAN': 'Lesbian',
+    'AROMATIC': 'Aromantic',
+    'ASEXUAL': 'Asexual',
+    'BISEXUAL': 'Bisexual',
+    'DEMISEXUAL': 'Demisexual',
+    'PANSEXUAL': 'Pansexual',
+    'QUEER': 'Queer',
+    'NOT_LISTED': 'Not listed',
   };
 
   @override
   void initState() {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
-    _selectedShowMe = currentState.showMe;
+    _selectedShowMe = ['WOMEN', 'MEN', 'EVERYONE'].contains(currentState.showMe)
+        ? currentState.showMe
+        : 'WOMEN';
+        
     if (currentState.showMePreference.isNotEmpty) {
       _selectedPreferences.add(currentState.showMePreference);
     }
@@ -130,7 +141,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
     );
   }
 
-  Widget _buildExpandedPreferences(String category) {
+  Widget _buildExpandedPreferences() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,7 +154,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
               Row(
                 children: [
                   const Text(
-                    'Any preference?',
+                    'Sexual orientation',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -173,7 +184,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: (_preferencesMap[category] ?? []).map((pref) {
+                children: _orientationDisplayNames.keys.map((pref) {
                   final isSelected = _selectedPreferences.contains(pref);
                   return GestureDetector(
                     onTap: () {
@@ -204,7 +215,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                         ] : null,
                       ),
                       child: Text(
-                        pref,
+                        _orientationDisplayNames[pref]!,
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.black87,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -301,14 +312,14 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                 icon: Icons.female,
                 iconColor: AppColors.pinkDeep,
                 iconBg: AppColors.pinkSoft,
-                isSelected: _selectedShowMe == 'Women',
+                isSelected: _selectedShowMe == 'WOMEN',
                 onTap: () {
                   setState(() {
-                    _selectedShowMe = 'Women';
+                    _selectedShowMe = 'WOMEN';
                     _selectedPreferences.clear();
                   });
                 },
-                expandedContent: _buildExpandedPreferences('Women'),
+                expandedContent: _buildExpandedPreferences(),
               ),
               _buildCard(
                 title: 'Men',
@@ -316,14 +327,14 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                 icon: Icons.male,
                 iconColor: AppColors.blue,
                 iconBg: AppColors.blue.withOpacity(0.15),
-                isSelected: _selectedShowMe == 'Men',
+                isSelected: _selectedShowMe == 'MEN',
                 onTap: () {
                   setState(() {
-                    _selectedShowMe = 'Men';
+                    _selectedShowMe = 'MEN';
                     _selectedPreferences.clear();
                   });
                 },
-                expandedContent: _buildExpandedPreferences('Men'),
+                expandedContent: _buildExpandedPreferences(),
               ),
               _buildCard(
                 title: 'Everyone',
@@ -331,13 +342,14 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                 icon: Icons.transgender,
                 iconColor: AppColors.gold,
                 iconBg: AppColors.gold.withOpacity(0.15),
-                isSelected: _selectedShowMe == 'Everyone',
+                isSelected: _selectedShowMe == 'EVERYONE',
                 onTap: () {
                   setState(() {
-                    _selectedShowMe = 'Everyone';
+                    _selectedShowMe = 'EVERYONE';
                     _selectedPreferences.clear();
                   });
                 },
+                // No expanded content for 'Everyone' as requested
               ),
             ],
           ),

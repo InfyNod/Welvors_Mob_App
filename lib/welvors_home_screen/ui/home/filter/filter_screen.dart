@@ -192,7 +192,13 @@ class _FilterScreenState extends State<FilterScreen> {
                     _buildDivider(),
                     _buildPreferenceRow(
                       'Show me',
-                      state.showMe,
+                      {
+                        'MEN': 'Men',
+                        'WOMEN': 'Women',
+                        'NON_BINARY': 'Non-binary',
+                        'PREFER_NOT_TO_SAY': 'Prefer not to say',
+                        'EVERYONE': 'Everyone',
+                      }[state.showMe] ?? state.showMe,
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
