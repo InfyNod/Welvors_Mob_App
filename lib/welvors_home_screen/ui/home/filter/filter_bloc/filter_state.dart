@@ -113,16 +113,15 @@ class FilterState extends Equatable {
     if (maxHeight != null) data["maxHeight"] = maxHeight!.toInt();
     
     if (showMe.isNotEmpty && showMe != 'Any' && showMe != 'EVERYONE') {
-      data["gender"] = [
-        {"key": "gender", "values": [showMe]}
-      ];
+      String interestedIn = 'Everyone';
+      if (showMe == 'WOMEN') interestedIn = 'Women';
+      if (showMe == 'MEN') interestedIn = 'Men';
+      data["interestedIn"] = interestedIn;
     }
 
     
     if (showMePreference.isNotEmpty) {
-      data["sexualOrientation"] = [
-        {"key": "sexualOrientation", "values": [showMePreference]}
-      ];
+      data["sexualOrientation"] = showMePreference;
     }
     
     // The backend needs exact IDs. We store "ID|Title" in the state for UI purposes.
