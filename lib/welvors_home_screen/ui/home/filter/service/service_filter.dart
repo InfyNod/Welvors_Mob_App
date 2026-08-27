@@ -160,4 +160,73 @@ class ServiceFilter {
     }
     return null;
   }
+
+  /// Fetches options for the "Family Income" filter
+  static Future<List<Map<String, dynamic>>> fetchFamilyIncomes() async {
+    try {
+      final url = Uri.parse('$baseUrl/admin/family-incomes/get-all');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final dataArray = decoded['data'] as List;
+          return List<Map<String, dynamic>>.from(dataArray);
+        }
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching family incomes: $e');
+      return [];
+    }
+  }
+
+  /// Fetches options for the "Networking Intent" filter
+  static Future<List<Map<String, dynamic>>> fetchNetworkingIntentOptions() async {
+    try {
+      final url = Uri.parse('$baseUrl/question/fetch?category=DATING&screen=NETWORKING_INTENT');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final dataArray = decoded['data'] as List;
+          if (dataArray.isNotEmpty) {
+            final optionsList = dataArray[0]['options'] as List;
+            return List<Map<String, dynamic>>.from(optionsList);
+          }
+        }
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching networking intent: $e');
+      return [];
+    }
+  }
+
+  /// Fetches options for the "Ambition" filter
+  static Future<List<Map<String, dynamic>>> fetchAmbitionOptions() async {
+    try {
+      final url = Uri.parse('$baseUrl/admin/ambitions/get');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final dataArray = decoded['data'] as List;
+          return List<Map<String, dynamic>>.from(dataArray);
+        }
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching ambition options: $e');
+      return [];
+    }
+  }
 }

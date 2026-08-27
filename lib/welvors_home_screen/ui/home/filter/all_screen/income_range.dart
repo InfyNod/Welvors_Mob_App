@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import '../service/service_filter.dart';
 
 class IncomeRangeScreen extends StatefulWidget {
   const IncomeRangeScreen({super.key});
@@ -14,13 +15,8 @@ class IncomeRangeScreen extends StatefulWidget {
 class _IncomeRangeScreenState extends State<IncomeRangeScreen> {
   double _minIncome = 5.0;
   double _maxIncome = 200.0;
-  final List<String> _predefinedRanges = [
-    '10-20 L',
-    '20-50 L',
-    '50 L-1 Cr',
-    '1-2 Cr',
-  ];
-  String _selectedRange = '';
+  List<Map<String, dynamic>> _apiRanges = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -28,20 +24,23 @@ class _IncomeRangeScreenState extends State<IncomeRangeScreen> {
     final state = context.read<FilterBloc>().state;
     _minIncome = state.minIncome;
     _maxIncome = state.maxIncome;
-    _updateSelectedRangeState();
+    _loadData();
   }
 
-  void _updateSelectedRangeState() {
-    if (_minIncome == 10.0 && _maxIncome == 20.0)
-      _selectedRange = '10-20 L';
-    else if (_minIncome == 20.0 && _maxIncome == 50.0)
-      _selectedRange = '20-50 L';
-    else if (_minIncome == 50.0 && _maxIncome == 100.0)
-      _selectedRange = '50 L-1 Cr';
-    else if (_minIncome == 100.0 && _maxIncome == 200.0)
-      _selectedRange = '1-2 Cr';
-    else
-      _selectedRange = '';
+  Future<void> _loadData() async {
+    final data = await ServiceFilter.fetchFamilyIncomes();
+    if (mounted) {
+      setState(() {
+        _apiRanges = data;
+        // Sort by priority if needed
+        _apiRanges.sort(
+          (a, b) => (a['priority'] as int? ?? 0).compareTo(
+            b['priority'] as int? ?? 0,
+          ),
+        );
+        _isLoading = false;
+      });
+    }
   }
 
   String _formatIncome(double value) {
@@ -199,7 +198,6 @@ class _IncomeRangeScreenState extends State<IncomeRangeScreen> {
                   setState(() {
                     _minIncome = values.start;
                     _maxIncome = values.end;
-                    _updateSelectedRangeState();
                   });
                 },
               ),
@@ -229,99 +227,79 @@ class _IncomeRangeScreenState extends State<IncomeRangeScreen> {
 
             const SizedBox(height: 20),
 
-            // Predefined Chips
-            Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final itemWidth =
-                      constraints.maxWidth / _predefinedRanges.length;
-                  final selectedIndex = _predefinedRanges.indexOf(
-                    _selectedRange,
-                  );
+            // API Driven Chips
+            if (_isLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                ),
+              )
+            else if (_apiRanges.isNotEmpty)
+              Wrap(
+                spacing: 8,
+                runSpacing: 12,
+                children: _apiRanges.map((range) {
+                  final String title = range['title'] ?? '';
+                  final double minLakh = ((range['minAmount'] ?? 0) / 100000)
+                      .toDouble();
+                  // For maxAmount = null, set to 200
+                  final double maxLakh = range['maxAmount'] != null
+                      ? ((range['maxAmount']) / 100000).toDouble()
+                      : 200.0;
 
-                  return Stack(
-                    children: [
-                      if (selectedIndex != -1)
-                        AnimatedPositioned(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOutCubic,
-                          left: selectedIndex * itemWidth,
-                          top: 0,
-                          bottom: 0,
-                          width: itemWidth,
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE43A6A),
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFFE43A6A,
-                                    ).withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      Row(
-                        children: _predefinedRanges.map((range) {
-                          final isSelected = _selectedRange == range;
-                          return Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                setState(() {
-                                  _selectedRange = range;
-                                  if (range == '10-20 L') {
-                                    _minIncome = 10.0;
-                                    _maxIncome = 20.0;
-                                  } else if (range == '20-50 L') {
-                                    _minIncome = 20.0;
-                                    _maxIncome = 50.0;
-                                  } else if (range == '50 L-1 Cr') {
-                                    _minIncome = 50.0;
-                                    _maxIncome = 100.0;
-                                  } else if (range == '1-2 Cr') {
-                                    _minIncome = 100.0;
-                                    _maxIncome = 200.0;
-                                  }
-                                });
-                              },
-                              child: Center(
-                                child: AnimatedDefaultTextStyle(
-                                  duration: const Duration(milliseconds: 200),
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Colors.black87,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                    fontSize: 12,
-                                  ),
-                                  child: Text(range),
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                  final isSelected =
+                      _minIncome == minLakh && _maxIncome == maxLakh;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _minIncome = minLakh.clamp(5.0, 200.0);
+                        _maxIncome = maxLakh.clamp(5.0, 200.0);
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
                       ),
-                    ],
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFFE43A6A)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFFE43A6A)
+                              : Colors.grey.shade300,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFFE43A6A,
+                                  ).withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black87,
+                          fontSize: 13,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                      ),
+                    ),
                   );
-                },
+                }).toList(),
               ),
-            ),
 
             const SizedBox(height: 20),
 

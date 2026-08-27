@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import '../service/service_filter.dart';
 
 class NetworkingIntentScreen extends StatefulWidget {
   const NetworkingIntentScreen({super.key});
@@ -12,27 +13,25 @@ class NetworkingIntentScreen extends StatefulWidget {
 
 class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
   final List<String> _selectedIntents = [];
-
-  final Map<String, List<String>> _intentCategories = {
-    'WHAT THEY WANT': [
-      'Mentorship', 'Find a mentor', 'Career advice', 'Co-founder', 
-      'Hiring', 'Job referrals', 'Investor intros', 'Fundraising'
-    ],
-    'CIRCLES': [
-      'Founder circles', 'Startup ecosystem', 'Corporate leaders', 'Creators', 
-      'Investors / VC', 'Consultants', 'Doctors', 'Legal & finance'
-    ],
-    'HOW THEY CONNECT': [
-      'Coffee chats', 'Curated dinners', 'Mastermind groups', 'Panels & talks', 
-      'Conferences', 'Only if it clicks'
-    ],
-  };
+  List<Map<String, dynamic>> _apiOptions = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
     _selectedIntents.addAll(currentState.networkingIntent);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ServiceFilter.fetchNetworkingIntentOptions();
+    if (mounted) {
+      setState(() {
+        _apiOptions = data;
+        _isLoading = false;
+      });
+    }
   }
 
   void _onDone() {
@@ -84,68 +83,6 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCategory(String categoryName, List<String> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
-          child: Text(
-            categoryName,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey,
-              letterSpacing: 0.8,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 12.0,
-            children: items.map((item) {
-              final isSelected = _selectedIntents.contains(item);
-              return GestureDetector(
-                onTap: () => _toggleIntent(item),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                      width: 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFFE43A6A).withOpacity(0.3),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            )
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    item,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black87,
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
     );
   }
 
@@ -267,32 +204,79 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSectionHeader(),
-              ..._intentCategories.entries.map((entry) => _buildCategory(entry.key, entry.value)),
-              const SizedBox(height: 12),
-              _buildInfoCard(
-                '🤝',
-                'Dating first, network second',
-                'Networking intent only shapes suggestions — it never turns your profile into a business listing.',
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildSectionHeader(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 12.0,
+                        children: _apiOptions.map((itemMap) {
+                          final String itemId = itemMap['id'].toString();
+                          final String itemTitle = itemMap['label'] ?? itemMap['value'] ?? '';
+                          final String item = '$itemId|$itemTitle';
+                          final isSelected = _selectedIntents.contains(item);
+                          
+                          return GestureDetector(
+                            onTap: () => _toggleIntent(item),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 3),
+                                        )
+                                      ]
+                                    : null,
+                              ),
+                              child: Text(
+                                itemTitle,
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.black87,
+                                  fontSize: 13,
+                                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildInfoCard(
+                      '🤝',
+                      'Dating first, network second',
+                      'Networking intent only shapes suggestions — it never turns your profile into a business listing.',
+                    ),
+                    _buildInfoCard(
+                      '👑',
+                      'VIP & VIP Elite only',
+                      'Members outside the VIP world never see these preferences.',
+                      bgColor: const Color(0xFFFFF9E6),
+                      borderColor: const Color(0xFFFFD700).withOpacity(0.3),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-              _buildInfoCard(
-                '👑',
-                'VIP & VIP Elite only',
-                'Members outside the VIP world never see these preferences.',
-                bgColor: Colors.grey.shade50,
-                borderColor: Colors.grey.shade200,
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import '../service/service_filter.dart';
 
 class AmbitionScreen extends StatefulWidget {
   const AmbitionScreen({super.key});
@@ -12,16 +13,25 @@ class AmbitionScreen extends StatefulWidget {
 
 class _AmbitionScreenState extends State<AmbitionScreen> {
   final List<String> _selectedAmbition = [];
-
-  final List<String> _ambitionOptions = [
-    'Founder', 'Executive', 'Creator', 'Investor'
-  ];
+  List<Map<String, dynamic>> _apiOptions = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
     _selectedAmbition.addAll(currentState.ambition);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ServiceFilter.fetchAmbitionOptions();
+    if (mounted) {
+      setState(() {
+        _apiOptions = data;
+        _isLoading = false;
+      });
+    }
   }
 
   void _onDone() {
@@ -149,60 +159,65 @@ class _AmbitionScreenState extends State<AmbitionScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSectionHeader(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Wrap(
-                  spacing: 8.0,
-                  runSpacing: 12.0,
-                  children: _ambitionOptions.map((item) {
-                    final isSelected = _selectedAmbition.contains(item);
-                    return GestureDetector(
-                      onTap: () => _toggleAmbition(item),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                            width: 1,
-                          ),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: const Color(0xFFE43A6A).withOpacity(0.3),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 3),
-                                  )
-                                ]
-                              : null,
-                        ),
-                        child: Text(
-                          item,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black87,
-                            fontSize: 13,
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                          ),
-                        ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildSectionHeader(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 12.0,
+                        children: _apiOptions.map((itemMap) {
+                          final String itemId = itemMap['id'].toString();
+                          final String itemTitle = itemMap['title'] ?? itemMap['name'] ?? '';
+                          final String item = '$itemId|$itemTitle';
+                          final isSelected = _selectedAmbition.contains(item);
+                          return GestureDetector(
+                            onTap: () => _toggleAmbition(item),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 3),
+                                        )
+                                      ]
+                                    : null,
+                              ),
+                              child: Text(
+                                itemTitle,
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.black87,
+                                  fontSize: 13,
+                                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
                 ),
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
