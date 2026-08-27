@@ -274,7 +274,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Languages',
                       state.languages.isEmpty
                           ? 'Any'
-                          : state.languages.join(', '),
+                          : state.languages.map((e) => e.split('|').last).join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -294,7 +294,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       state.lifestyle.isEmpty
                           ? 'Any'
                           : state.lifestyle
-                                .map((e) => e.split(':').last)
+                                .map((e) => e.split('|').last)
                                 .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();

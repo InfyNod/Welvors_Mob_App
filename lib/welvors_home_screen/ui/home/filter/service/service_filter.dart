@@ -60,4 +60,53 @@ class ServiceFilter {
     }
     return null;
   }
+
+  /// Fetches options for the "Languages" filter
+  static Future<List<dynamic>?> fetchLanguages() async {
+    try {
+      final url = Uri.parse('$baseUrl/admin/languages/get-All');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      
+      debugPrint('====== [LANGUAGES API RESPONSE] ======');
+      debugPrint('STATUS: ${response.statusCode}');
+      debugPrint('BODY: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return decoded['data'] as List;
+        }
+      }
+    } catch (e) {
+      debugPrint('====== [LANGUAGES API ERROR] ======');
+      debugPrint(e.toString());
+    }
+    return null;
+  }
+
+  /// Fetches options for the "Lifestyle" filter
+  static Future<List<dynamic>?> fetchLifestyleOptions() async {
+    try {
+      final url = Uri.parse('$baseUrl/question/fetch?category=DATING&screen=LIFESTYLE');
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      
+      debugPrint('====== [LIFESTYLE API RESPONSE] ======');
+      debugPrint('STATUS: ${response.statusCode}');
+      
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          return decoded['data'] as List;
+        }
+      }
+    } catch (e) {
+      debugPrint('====== [LIFESTYLE API ERROR] ======');
+      debugPrint(e.toString());
+    }
+    return null;
+  }
 }

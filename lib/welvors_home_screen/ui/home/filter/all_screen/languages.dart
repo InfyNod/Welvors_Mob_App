@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import '../service/service_filter.dart';
 
 class LanguagesScreen extends StatefulWidget {
   const LanguagesScreen({super.key});
@@ -13,23 +14,90 @@ class LanguagesScreen extends StatefulWidget {
 class _LanguagesScreenState extends State<LanguagesScreen> {
   final List<String> _selectedLanguages = [];
 
-  final Map<String, List<String>> _languageCategories = {
-    'MOST SPOKEN': ['English', 'Hindi'],
-    'NORTH & WEST': ['Marathi', 'Gujarati', 'Punjabi', 'Rajasthani', 'Haryanvi', 'Sindhi', 'Kashmiri', 'Urdu'],
-    'SOUTH': ['Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Tulu', 'Konkani'],
-    'EAST & NORTH-EAST': ['Bengali', 'Odia', 'Assamese', 'Bhojpuri', 'Nepali', 'Manipuri'],
-    'INTERNATIONAL': ['French', 'Spanish', 'German', 'Arabic', 'Japanese', 'Mandarin'],
-  };
+  bool _isLoading = true;
+  List<dynamic> _apiData = [];
+
+  // We'll store parsed categories here for rendering
+  final Map<String, List<Map<String, dynamic>>> _parsedCategories = {};
+
+  Future<void> _fetchOptions() async {
+    final data = await ServiceFilter.fetchLanguages();
+    if (data != null && mounted) {
+      _parseData(data);
+      setState(() {
+        _apiData = data;
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _parseData(List<dynamic> data) {
+    _parsedCategories.clear();
+
+    // Attempt to guess the structure
+    // Case 1: List of categories with nested options (like lookingFor)
+    if (data.isNotEmpty &&
+        data[0] is Map &&
+        (data[0].containsKey('options') || data[0].containsKey('languages'))) {
+      for (var category in data) {
+        String catName =
+            category['title'] ??
+            category['name'] ??
+            category['category'] ??
+            'Languages';
+        List options = category['options'] ?? category['languages'] ?? [];
+        List<Map<String, dynamic>> parsedOptions = [];
+
+        for (var opt in options) {
+          if (opt is Map) {
+            String id = opt['id']?.toString() ?? '';
+            String name =
+                opt['name'] ??
+                opt['title'] ??
+                opt['option'] ??
+                opt['language'] ??
+                'Unknown';
+            parsedOptions.add({'id': id, 'name': name});
+          }
+        }
+        if (parsedOptions.isNotEmpty) {
+          _parsedCategories[catName.toUpperCase()] = parsedOptions;
+        }
+      }
+    }
+    // Case 2: Flat list of languages
+    else if (data.isNotEmpty && data[0] is Map) {
+      List<Map<String, dynamic>> parsedOptions = [];
+      for (var opt in data) {
+        String id = opt['id']?.toString() ?? '';
+        String name =
+            opt['name'] ??
+            opt['title'] ??
+            opt['option'] ??
+            opt['language'] ??
+            'Unknown';
+        parsedOptions.add({'id': id, 'name': name});
+      }
+      _parsedCategories[''] = parsedOptions;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     final currentState = context.read<FilterBloc>().state;
     _selectedLanguages.addAll(currentState.languages);
   }
 
   void _onDone() {
-    context.read<FilterBloc>().add(UpdateLanguages(_selectedLanguages.toList()));
+    context.read<FilterBloc>().add(
+      UpdateLanguages(_selectedLanguages.toList()),
+    );
     Navigator.pop(context);
   }
 
@@ -81,65 +149,52 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
     );
   }
 
-  Widget _buildCategory(String categoryName, List<String> languages) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
-          child: Text(
-            categoryName,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey,
-              letterSpacing: 0.8,
+  Widget _buildLanguageChips(List<Map<String, dynamic>> languages) {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 12.0,
+      children: languages.map((lang) {
+        // Store as ID|Name for FilterState parsing
+        final id = lang['id'] as String;
+        final name = lang['name'] as String;
+        final optionStr = '$id|$name';
+
+        final isSelected = _selectedLanguages.contains(optionStr);
+        return GestureDetector(
+          onTap: () => _toggleLanguage(optionStr),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isSelected
+                    ? const Color(0xFFE43A6A)
+                    : Colors.grey.shade300,
+                width: 1,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Text(
+              name,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black87,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 12.0,
-            children: languages.map((language) {
-              final isSelected = _selectedLanguages.contains(language);
-              return GestureDetector(
-                onTap: () => _toggleLanguage(language),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                      width: 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFFE43A6A).withOpacity(0.3),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            )
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    language,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black87,
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 
@@ -252,39 +307,64 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
               ),
               child: const Text(
                 'Done',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
             ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSectionHeader(),
-              ..._languageCategories.entries.map((entry) => _buildCategory(entry.key, entry.value)),
-              const SizedBox(height: 12),
-              _buildInfoCard(
-                '🗣️',
-                'Shared language, easier start',
-                'Members who share a mother tongue reply noticeably more often.',
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+            )
+          : _parsedCategories.isEmpty
+          ? const Center(child: Text("No languages found."))
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildSectionHeader(),
+                    ..._parsedCategories.entries.map((entry) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (entry.key.isNotEmpty) ...[
+                              Text(
+                                entry.key,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                            _buildLanguageChips(entry.value),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    const SizedBox(height: 12),
+                    _buildInfoCard(
+                      '🗣️',
+                      'Shared language, easier start',
+                      'Members who share a mother tongue reply noticeably more often.',
+                    ),
+                    _buildInfoCard(
+                      '✨',
+                      'Pick two or three',
+                      'Too many selections makes the filter meaningless — too few narrows the pool.',
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-              _buildInfoCard(
-                '✨',
-                'Pick two or three',
-                'Too many selections makes the filter meaningless — too few narrows the pool.',
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

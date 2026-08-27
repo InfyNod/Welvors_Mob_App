@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
+import '../service/service_filter.dart';
 
 class LifestyleScreen extends StatefulWidget {
   const LifestyleScreen({super.key});
@@ -13,19 +14,61 @@ class LifestyleScreen extends StatefulWidget {
 class _LifestyleScreenState extends State<LifestyleScreen> {
   final List<String> _selectedLifestyle = [];
 
-  final Map<String, List<String>> _lifestyleCategories = {
-    'DIET': ['Vegetarian', 'Eggetarian', 'Non-vegetarian', 'Vegan', 'Jain food'],
-    'DRINKING': ['Never', 'Socially', 'Regularly'],
-    'SMOKING': ['Non-smoker', 'Socially', 'Regularly'],
-    'FITNESS': ['Gym 4x/week', 'Yoga', 'Trekking', 'Running', 'Sports', 'Rarely works out'],
-    'TRAVEL': ['1–2 trips/year', '4–5 trips/year', 'Travels monthly'],
-    'PETS': ['Cat parent', 'Dog parent', 'Wants pets', 'No pets'],
-    'SLEEP': ['Early Bird', 'Night Owl'],
-  };
+  bool _isLoading = true;
+  List<dynamic> _apiData = [];
+  final Map<String, List<Map<String, dynamic>>> _parsedCategories = {};
+
+  Future<void> _fetchOptions() async {
+    final data = await ServiceFilter.fetchLifestyleOptions();
+    if (data != null && mounted) {
+      _parseData(data);
+      setState(() {
+        _apiData = data;
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _parseData(List<dynamic> data) {
+    _parsedCategories.clear();
+    
+    if (data.isNotEmpty && data[0] is Map && (data[0].containsKey('options') || data[0].containsKey('lifestyle'))) {
+      for (var category in data) {
+        String catName = category['title'] ?? category['name'] ?? category['category'] ?? 'Lifestyle';
+        List options = category['options'] ?? category['lifestyle'] ?? [];
+        List<Map<String, dynamic>> parsedOptions = [];
+        
+        for (var opt in options) {
+          if (opt is Map) {
+            String id = opt['id']?.toString() ?? '';
+            String name = opt['label'] ?? opt['name'] ?? opt['title'] ?? opt['option'] ?? opt['value'] ?? 'Unknown';
+            parsedOptions.add({'id': id, 'name': name});
+          }
+        }
+        if (parsedOptions.isNotEmpty) {
+          _parsedCategories[catName.toUpperCase()] = parsedOptions;
+        }
+      }
+    } 
+    else if (data.isNotEmpty && data[0] is Map) {
+      List<Map<String, dynamic>> parsedOptions = [];
+      for (var opt in data) {
+        String id = opt['id']?.toString() ?? '';
+        String name = opt['label'] ?? opt['name'] ?? opt['title'] ?? opt['option'] ?? opt['value'] ?? 'Unknown';
+        parsedOptions.add({'id': id, 'name': name});
+      }
+      _parsedCategories[''] = parsedOptions;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _fetchOptions();
     final currentState = context.read<FilterBloc>().state;
     _selectedLifestyle.addAll(currentState.lifestyle);
   }
@@ -82,66 +125,50 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
     );
   }
 
-  Widget _buildCategory(String categoryName, List<String> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
-          child: Text(
-            categoryName,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey,
-              letterSpacing: 0.8,
+  Widget _buildLifestyleChips(List<Map<String, dynamic>> items) {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 12.0,
+      children: items.map((item) {
+        // Store as ID|Name for FilterState parsing
+        final id = item['id'] as String;
+        final name = item['name'] as String;
+        final optionStr = '$id|$name';
+        
+        final isSelected = _selectedLifestyle.contains(optionStr);
+        return GestureDetector(
+          onTap: () => _toggleLifestyle(optionStr),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                width: 1,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      )
+                    ]
+                  : null,
+            ),
+            child: Text(
+              name,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black87,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 12.0,
-            children: items.map((item) {
-              final uniqueItemKey = '${categoryName}:$item';
-              final isSelected = _selectedLifestyle.contains(uniqueItemKey);
-              return GestureDetector(
-                onTap: () => _toggleLifestyle(uniqueItemKey),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
-                      width: 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFFE43A6A).withOpacity(0.3),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            )
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    item,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black87,
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 
@@ -263,30 +290,56 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSectionHeader(),
-              ..._lifestyleCategories.entries.map((entry) => _buildCategory(entry.key, entry.value)),
-              const SizedBox(height: 12),
-              _buildInfoCard(
-                '🥗',
-                'Daily habits matter most',
-                'Diet, drinking and sleep rhythm decide how easily two lives fit together.',
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)))
+        : _parsedCategories.isEmpty
+            ? const Center(child: Text("No lifestyle options found."))
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildSectionHeader(),
+                      ..._parsedCategories.entries.map((entry) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (entry.key.isNotEmpty) ...[
+                                Text(
+                                  entry.key,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black54,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                              _buildLifestyleChips(entry.value),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      const SizedBox(height: 12),
+                      _buildInfoCard(
+                        '🥗',
+                        'Be authentic',
+                        'Sharing your lifestyle helps find people with similar habits.',
+                      ),
+                      _buildInfoCard(
+                        '✨',
+                        'Update anytime',
+                        'Your lifestyle changes, and so can these filters.',
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
               ),
-              _buildInfoCard(
-                '✨',
-                'Three or four is the sweet spot',
-                'Filter only on what you truly cannot compromise on.',
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

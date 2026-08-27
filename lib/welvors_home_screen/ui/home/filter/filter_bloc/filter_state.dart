@@ -132,13 +132,14 @@ class FilterState extends Equatable {
     
     if (languages.isNotEmpty) {
       data["languages"] = [
-        {"key": "languages", "values": languages}
+        {"key": "languages", "values": languages.map((e) => e.split('|').first).toList()}
       ];
     }
     
     if (lifestyle.isNotEmpty) {
-      // Typically lifestyle is broken into sleep, diet, pets, etc. based on key.
-      // We'll pass it broadly or skip it until backend specifies.
+      data["lifestyle"] = [
+        {"key": "lifestyle", "values": lifestyle.map((e) => e.split('|').first).toList()}
+      ];
     }
     
     if (religion.isNotEmpty) {
