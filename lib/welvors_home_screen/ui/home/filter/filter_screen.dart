@@ -350,7 +350,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     _buildDivider(),
                     _buildPreferenceRow(
                       'Zodiac',
-                      state.zodiac,
+                      state.zodiac == 'Any' ? 'Any' : state.zodiac.substring(0, 1) + state.zodiac.substring(1).toLowerCase(),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(

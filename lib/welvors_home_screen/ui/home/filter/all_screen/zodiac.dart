@@ -15,18 +15,18 @@ class _ZodiacScreenState extends State<ZodiacScreen> {
 
   final List<String> _zodiacOptions = [
     'Any',
-    'Aries',
-    'Taurus',
-    'Gemini',
-    'Cancer',
-    'Leo',
-    'Virgo',
-    'Libra',
-    'Scorpio',
-    'Sagittarius',
-    'Capricorn',
-    'Aquarius',
-    'Pisces'
+    'ARIES',
+    'TAURUS',
+    'GEMINI',
+    'CANCER',
+    'LEO',
+    'VIRGO',
+    'LIBRA',
+    'SCORPIO',
+    'SAGITTARIUS',
+    'CAPRICORN',
+    'AQUARIUS',
+    'PISCES'
   ];
 
   @override
@@ -107,11 +107,11 @@ class _ZodiacScreenState extends State<ZodiacScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              option,
+              option == 'Any' ? option : option.substring(0, 1) + option.substring(1).toLowerCase(),
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: Colors.black87,
+                color: isSelected ? const Color(0xFFE43A6A) : Colors.black87,
+                fontSize: 15,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
             Container(
