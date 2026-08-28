@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
 class EventItineraryAndLocationSection extends StatelessWidget {
-  const EventItineraryAndLocationSection({super.key});
+  final List<dynamic>? itinerary;
+  final String? locationTitle;
+  final String? fullAddress;
+
+  const EventItineraryAndLocationSection({
+    super.key,
+    this.itinerary,
+    this.locationTitle,
+    this.fullAddress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,26 +33,37 @@ class EventItineraryAndLocationSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            children: [
-              _buildTimelineItem(
-                time: '7:00 PM',
-                title: 'Welcome Drinks',
-                subtitle: 'Arrival and complimentary sparkling wine',
-                isLast: false,
-              ),
-              _buildTimelineItem(
-                time: '8:00 PM',
-                title: 'Icebreaker Rounds',
-                subtitle: 'Guided 5-minute curated conversations',
-                isLast: false,
-              ),
-              _buildTimelineItem(
-                time: '9:30 PM',
-                title: 'Open Socializing',
-                subtitle: 'Free mixing with live DJ and appetizers',
-                isLast: true,
-              ),
-            ],
+            children: itinerary != null && itinerary!.isNotEmpty
+                ? itinerary!.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    return _buildTimelineItem(
+                      time: item['time'] ?? '',
+                      title: item['title'] ?? '',
+                      subtitle: item['description'] ?? '', // Subtitle could be empty
+                      isLast: index == itinerary!.length - 1,
+                    );
+                  }).toList()
+                : [
+                    _buildTimelineItem(
+                      time: '7:00 PM',
+                      title: 'Welcome Drinks',
+                      subtitle: 'Arrival and complimentary sparkling wine',
+                      isLast: false,
+                    ),
+                    _buildTimelineItem(
+                      time: '8:00 PM',
+                      title: 'Icebreaker Rounds',
+                      subtitle: 'Guided 5-minute curated conversations',
+                      isLast: false,
+                    ),
+                    _buildTimelineItem(
+                      time: '9:30 PM',
+                      title: 'Open Socializing',
+                      subtitle: 'Free mixing with live DJ and appetizers',
+                      isLast: true,
+                    ),
+                  ],
           ),
         ),
         const SizedBox(height: 10),
@@ -78,9 +98,9 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'The Rooftop Lounge',
-                      style: TextStyle(
+                    Text(
+                      locationTitle ?? 'The Rooftop Lounge',
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -88,7 +108,7 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '452 Linking Road, Floor 12, Bandra West, Mumbai',
+                      fullAddress ?? '452 Linking Road, Floor 12, Bandra West, Mumbai',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey.shade600,
@@ -159,15 +179,17 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Colors.black54,
-                      height: 1.3,
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.black54,
+                        height: 1.3,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

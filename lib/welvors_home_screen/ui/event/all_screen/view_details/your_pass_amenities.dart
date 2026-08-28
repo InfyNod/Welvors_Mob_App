@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 
 class YourPassAndAmenitiesSection extends StatelessWidget {
   final String price;
-  const YourPassAndAmenitiesSection({super.key, required this.price});
+  final List<dynamic>? safetyFeatures;
+  final List<dynamic>? amenities;
+
+  const YourPassAndAmenitiesSection({
+    super.key, 
+    required this.price,
+    this.safetyFeatures,
+    this.amenities,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -166,38 +174,30 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSafetyItem(
-                          Icons.shield_outlined,
-                          'Verified Staff',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildSafetyItem(
-                          Icons.verified_user_outlined,
-                          'ID Verification',
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSafetyItem(Icons.lock_outline, 'Secure Entry'),
-                        const SizedBox(height: 12),
-                        _buildSafetyItem(
-                          Icons.visibility_outlined,
-                          'Private Venue',
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              GridView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: (safetyFeatures != null && safetyFeatures!.isNotEmpty) ? safetyFeatures!.length : 4,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 12,
+                  mainAxisExtent: 32, // Height for safety item
+                ),
+                itemBuilder: (context, index) {
+                  if (safetyFeatures != null && safetyFeatures!.isNotEmpty) {
+                    return _buildSafetyItem(Icons.check_circle_outline, safetyFeatures![index]['title'] ?? '');
+                  }
+                  // Dummy data
+                  final dummy = [
+                    {'icon': Icons.shield_outlined, 'text': 'Verified Staff'},
+                    {'icon': Icons.lock_outline, 'text': 'Secure Entry'},
+                    {'icon': Icons.verified_user_outlined, 'text': 'ID Verification'},
+                    {'icon': Icons.visibility_outlined, 'text': 'Private Venue'},
+                  ];
+                  return _buildSafetyItem(dummy[index]['icon'] as IconData, dummy[index]['text'] as String);
+                },
               ),
             ],
           ),
@@ -219,36 +219,43 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(child: _buildAmenityCard('🍸', 'Welcome cocktail')),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildAmenityCard('🎷', 'Live jazz band')),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildAmenityCard('🍽️', 'Gourmet\nappetizers'),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildAmenityCard('📸', 'Photo corner')),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(child: _buildAmenityCard('🅿️', 'Valet parking')),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildAmenityCard('👩', 'Female-led host\nteam'),
-                  ),
-                ],
-              ),
-            ],
+          child: GridView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: (amenities != null && amenities!.isNotEmpty) ? amenities!.length : 6,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              mainAxisExtent: 60, // Fixed height for cards
+            ),
+            itemBuilder: (context, index) {
+              if (amenities != null && amenities!.isNotEmpty) {
+                final amenityName = amenities![index]['name'] ?? amenities![index]['title'] ?? '';
+                final iconName = amenities![index]['icon']?.toString().toLowerCase() ?? '';
+                
+                String emoji = '✨';
+                if (iconName.contains('drink') || iconName.contains('cocktail') || iconName.contains('bar')) emoji = '🍸';
+                else if (iconName.contains('music') || iconName.contains('dj') || iconName.contains('band')) emoji = '🎷';
+                else if (iconName.contains('food') || iconName.contains('meal') || iconName.contains('appetizer')) emoji = '🍽️';
+                else if (iconName.contains('photo') || iconName.contains('camera')) emoji = '📸';
+                else if (iconName.contains('park') || iconName.contains('car')) emoji = '🅿️';
+                else if (iconName.contains('host') || iconName.contains('staff') || iconName.contains('team')) emoji = '👩';
+
+                return _buildAmenityCard(emoji, amenityName);
+              }
+              // Dummy data
+              final dummy = [
+                {'emoji': '🍸', 'text': 'Welcome cocktail'},
+                {'emoji': '🎷', 'text': 'Live jazz band'},
+                {'emoji': '🍽️', 'text': 'Gourmet\nappetizers'},
+                {'emoji': '📸', 'text': 'Photo corner'},
+                {'emoji': '🅿️', 'text': 'Valet parking'},
+                {'emoji': '👩', 'text': 'Female-led host\nteam'},
+              ];
+              return _buildAmenityCard(dummy[index]['emoji']!, dummy[index]['text']!);
+            },
           ),
         ),
       ],
@@ -267,12 +274,16 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
           child: Icon(icon, size: 14, color: const Color(0xFFE43A6A)),
         ),
         const SizedBox(width: 8),
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black87,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
