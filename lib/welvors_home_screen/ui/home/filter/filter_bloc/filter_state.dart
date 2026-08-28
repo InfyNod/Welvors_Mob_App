@@ -176,9 +176,7 @@ class FilterState extends Equatable {
     
     // The backend needs exact IDs. We store "ID|Title" in the state for UI purposes.
     if (lookingFor.isNotEmpty) {
-      data["lookingFor"] = [
-        {"key": "lookingFor", "values": lookingFor.map((e) => e.split('|').first).toList()}
-      ];
+      data["intentionOption"] = lookingFor.map((e) => e.split('|').first).toList();
     }
     
     if (education.isNotEmpty) {
