@@ -851,7 +851,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
       ),
     );
   }
-
+  
   Widget _buildAvatar(double leftPos, String imgUrl) {
     return Positioned(
       left: leftPos,
