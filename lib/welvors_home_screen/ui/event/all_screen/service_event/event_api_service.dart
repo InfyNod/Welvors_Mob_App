@@ -30,4 +30,21 @@ class EventApiService {
       return null;
     }
   }
+
+  static Future<Map<String, dynamic>?> getEventDetails(String eventId) async {
+    try {
+      final url = Uri.parse('$baseUrl/admin/events/details/$eventId');
+      final response = await http.get(url, headers: _headers);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to get event details: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error getting event details: $e');
+      return null;
+    }
+  }
 }

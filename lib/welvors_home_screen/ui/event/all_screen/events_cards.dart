@@ -178,6 +178,7 @@ class _EventsCardsState extends State<EventsCards> {
           context,
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
+              eventId: 'dummy_id',
               title: 'Rooftop Singles Night',
               date: 'This weekend',
               location: 'Mumbai',
@@ -309,6 +310,7 @@ class _EventsCardsState extends State<EventsCards> {
           context,
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
+              eventId: 'dummy_id',
               title: 'Speed Dating · 25–32',
               date: 'Sat, Oct 19',
               location: 'Bandra',
@@ -476,12 +478,15 @@ class _EventsCardsState extends State<EventsCards> {
     final interestedCount = event['interested'] ?? 0;
     final dateStr = _formatApiDate(event['eventDate'], event['startTime']);
 
+    final eventId = event['id'] ?? '';
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
+              eventId: eventId,
               title: title,
               date: dateStr,
               location: location,
@@ -773,6 +778,7 @@ class _EventsCardsState extends State<EventsCards> {
           context,
           MaterialPageRoute(
             builder: (context) => EventDetailsScreen(
+              eventId: 'dummy_id',
               title: 'Sandakphu Ridge Trek',
               date: 'Nov 14–17',
               location: 'Darjeeling, WB',

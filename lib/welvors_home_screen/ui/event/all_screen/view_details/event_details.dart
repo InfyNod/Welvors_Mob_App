@@ -10,7 +10,11 @@ import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eve
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/abouthost_frequently.dart';
 import 'booking_confirm.dart';
 
-class EventDetailsScreen extends StatelessWidget {
+import '../service_event/event_api_service.dart';
+import 'package:intl/intl.dart';
+
+class EventDetailsScreen extends StatefulWidget {
+  final String eventId;
   final String title;
   final String date;
   final String location;
@@ -22,6 +26,7 @@ class EventDetailsScreen extends StatelessWidget {
 
   const EventDetailsScreen({
     super.key,
+    required this.eventId,
     required this.title,
     required this.date,
     required this.location,
@@ -33,7 +38,83 @@ class EventDetailsScreen extends StatelessWidget {
   });
 
   @override
+  State<EventDetailsScreen> createState() => _EventDetailsScreenState();
+}
+
+class _EventDetailsScreenState extends State<EventDetailsScreen> {
+  bool _isLoading = true;
+  Map<String, dynamic>? _eventData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDetails();
+  }
+
+  Future<void> _fetchDetails() async {
+    final data = await EventApiService.getEventDetails(widget.eventId);
+    if (mounted) {
+      setState(() {
+        if (data != null && data['success'] == true) {
+          _eventData = data['data'];
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  String _formatApiDate(String? isoDate, String? startTime) {
+    if (isoDate == null) return widget.date;
+    try {
+      final date = DateTime.parse(isoDate).toLocal();
+      String formattedDate = DateFormat('EEE, MMM d').format(date);
+      if (startTime != null && startTime.contains(':')) {
+        final timeParts = startTime.split(':');
+        final timeObj = DateTime(2020, 1, 1, int.parse(timeParts[0]), int.parse(timeParts[1]));
+        final formattedTime = DateFormat('h:mm a').format(timeObj);
+        return '$formattedDate · $formattedTime';
+      }
+      return formattedDate;
+    } catch (e) {
+      return widget.date; // fallback
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Determine which data to show (Fallback to widget fields if API data is null)
+    final title = _eventData?['title'] ?? widget.title;
+    final date = _eventData != null ? _formatApiDate(_eventData!['eventDate'], _eventData!['startTime']) : widget.date;
+    final location = _eventData?['fullAddress'] ?? widget.location;
+    final heroImageRaw = _eventData?['heroImage'];
+    final imageUrl = (heroImageRaw != null && heroImageRaw.toString().isNotEmpty) ? heroImageRaw : widget.imageUrl;
+    final status = _eventData != null ? (_eventData!['eventType'] ?? 'UPCOMING').toString().replaceAll('_', ' ').toUpperCase() : widget.status;
+    final price = _eventData?['entryPrice'] != null ? '₹${_eventData!['entryPrice']}' : widget.price;
+    final spotsLeft = _eventData?['leftSpot'] ?? widget.spotsLeft;
+    final capacity = _eventData?['capacity'] ?? 60;
+    final interested = _eventData?['interested'] ?? 0;
+    final isOfficial = _eventData?['officialPartner'] == true;
+    final hostName = _eventData?['eventPartner']?['businessName'] ?? 'Spark Official Events';
+
+    String timeStr = date.contains('·') ? date.split('·').last.trim() : 'TBA';
+    if (_eventData != null && _eventData!['startTime'] != null && _eventData!['endTime'] != null) {
+      try {
+        final st = _eventData!['startTime'].split(':');
+        final et = _eventData!['endTime'].split(':');
+        final stD = DateTime(2020, 1, 1, int.parse(st[0]), int.parse(st[1]));
+        final etD = DateTime(2020, 1, 1, int.parse(et[0]), int.parse(et[1]));
+        
+        final stFmt = DateFormat('h:mm a').format(stD).replaceAll(':00', '');
+        final etFmt = DateFormat('h:mm a').format(etD).replaceAll(':00', '');
+        
+        if (stFmt.endsWith('AM') == etFmt.endsWith('AM') && stFmt.endsWith('PM') == etFmt.endsWith('PM')) {
+          timeStr = '${stFmt.substring(0, stFmt.length - 3)}–$etFmt';
+        } else {
+          timeStr = '$stFmt–$etFmt';
+        }
+      } catch (_) {}
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: Container(
@@ -198,13 +279,13 @@ class EventDetailsScreen extends StatelessWidget {
                         width: 1,
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.star, color: Color(0xFFE43A6A), size: 12),
-                        SizedBox(width: 4),
+                        const Icon(Icons.star, color: Color(0xFFE43A6A), size: 12),
+                        const SizedBox(width: 4),
                         Text(
-                          'OFFICIAL BRAND EVENT',
-                          style: TextStyle(
+                          status,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -273,7 +354,7 @@ class EventDetailsScreen extends StatelessWidget {
                                   Row(
                                     children: [
                                       Text(
-                                        'Hosted by Spark Official Events • ',
+                                        'Hosted by $hostName • ',
                                         style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
@@ -306,12 +387,15 @@ class EventDetailsScreen extends StatelessWidget {
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
-                          children: [
-                            _buildTag('Verified profiles only'),
-                            _buildTag('Age 25-32'),
-                            _buildTag('Solo welcome'),
-                            _buildTag('Smart casual'),
-                          ],
+                          children: (_eventData?['safetyFeatures'] as List?)
+                                  ?.map((feature) => _buildTag(feature['title'].toString()))
+                                  .toList() ??
+                              [
+                                _buildTag('Verified profiles only'),
+                                _buildTag('Age 25-32'),
+                                _buildTag('Solo welcome'),
+                                _buildTag('Smart casual'),
+                              ],
                         ),
                         const SizedBox(height: 24),
 
@@ -336,25 +420,25 @@ class EventDetailsScreen extends StatelessWidget {
                               _buildStatItem(
                                 Icons.calendar_today,
                                 'DATE',
-                                date.split('·').first.trim(),
+                                date.contains('·') ? date.split('·').first.trim() : date,
                               ),
                               _buildVerticalDivider(),
                               _buildStatItem(
                                 Icons.access_time,
                                 'TIME',
-                                '7-10 PM',
+                                timeStr,
                               ),
                               _buildVerticalDivider(),
                               _buildStatItem(
                                 Icons.confirmation_num_outlined,
                                 'ENTRY',
-                                '₹1,250',
+                                price,
                               ),
                               _buildVerticalDivider(),
                               _buildStatItem(
                                 Icons.people_outline,
                                 'CROWD',
-                                '60 singles',
+                                '$capacity singles',
                               ),
                             ],
                           ),
@@ -589,6 +673,9 @@ class EventDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   EventMoreDetailsSection(
                     isTrekkingEvent: title.toLowerCase().contains('trek'),
+                    aboutEvent: _eventData?['aboutEvent'],
+                    galleryImages: _eventData?['galleryImages'] as List?,
+                    whyShouldCome: _eventData?['whyShouldCome'] as List?,
                   ),
                   const SizedBox(height: 20),
                   YourPassAndAmenitiesSection(price: price),

@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 
 class EventMoreDetailsSection extends StatelessWidget {
   final bool isTrekkingEvent;
+  final String? aboutEvent;
+  final List<dynamic>? galleryImages;
+  final List<dynamic>? whyShouldCome;
 
-  const EventMoreDetailsSection({super.key, this.isTrekkingEvent = false});
+  const EventMoreDetailsSection({
+    super.key, 
+    this.isTrekkingEvent = false,
+    this.aboutEvent,
+    this.galleryImages,
+    this.whyShouldCome,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +37,19 @@ class EventMoreDetailsSection extends StatelessWidget {
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildPhotoCard(
-                'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=300&q=80',
-              ),
-              _buildPhotoCard(
-                'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=300&q=80',
-              ),
-              _buildPhotoCard(
-                'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=300&q=80',
-              ),
-            ],
+            children: galleryImages != null && galleryImages!.isNotEmpty
+                ? galleryImages!.map((img) => _buildPhotoCard(img.toString())).toList()
+                : [
+                    _buildPhotoCard(
+                      'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=300&q=80',
+                    ),
+                    _buildPhotoCard(
+                      'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=300&q=80',
+                    ),
+                    _buildPhotoCard(
+                      'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=300&q=80',
+                    ),
+                  ],
           ),
         ),
         const SizedBox(height: 20),
@@ -56,11 +67,11 @@ class EventMoreDetailsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'An exclusive evening of meaningful connections at Bandra\'s most elegant rooftop lounge. Curated for verified professionals — signature cocktails, live ambient jazz, and our "connection icebreakers" designed to spark real conversation.',
-            style: TextStyle(fontSize: 14, color: Colors.black54, height: 1.5),
+            aboutEvent ?? 'An exclusive evening of meaningful connections at Bandra\'s most elegant rooftop lounge. Curated for verified professionals — signature cocktails, live ambient jazz, and our "connection icebreakers" designed to spark real conversation.',
+            style: const TextStyle(fontSize: 14, color: Colors.black54, height: 1.5),
           ),
         ),
         const SizedBox(height: 20),
@@ -89,39 +100,56 @@ class EventMoreDetailsSection extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade200),
           ),
           child: Column(
-            children: [
-              _buildWhyItem(
-                icon: const Text('💭', style: TextStyle(fontSize: 18)),
-                iconBgColor: const Color(0xFFF3E5F5), // Light purple
-                title: 'Meet matches in real life',
-                subtitle:
-                    'Skip weeks of chatting — a 5-minute conversation tells you more than 100 messages.',
-              ),
-              Divider(height: 1, color: Colors.grey.shade100),
-              _buildWhyItem(
-                icon: const Icon(Icons.check, size: 18, color: Colors.black87),
-                iconBgColor: const Color(0xFFE8F5E9), // Light green
-                title: '100% verified guests',
-                subtitle:
-                    'Every attendee is ID-verified. No fake profiles, no surprises.',
-              ),
-              Divider(height: 1, color: Colors.grey.shade100),
-              _buildWhyItem(
-                icon: const Text('🎯', style: TextStyle(fontSize: 18)),
-                iconBgColor: const Color(0xFFFFF3E0), // Light orange
-                title: 'Curated compatibility',
-                subtitle:
-                    'Guest list is matched by age range, interests and intent — you\'ll fit right in.',
-              ),
-              Divider(height: 1, color: Colors.grey.shade100),
-              _buildWhyItem(
-                icon: const Text('🤝', style: TextStyle(fontSize: 18)),
-                iconBgColor: const Color(0xFFE3F2FD), // Light blue
-                title: 'Icebreakers that work',
-                subtitle:
-                    'Hosted rounds mean you never stand alone — 78% of guests leave with a connection.',
-              ),
-            ],
+            children: whyShouldCome != null && whyShouldCome!.isNotEmpty
+                ? whyShouldCome!.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    return Column(
+                      children: [
+                        _buildWhyItem(
+                          icon: const Icon(Icons.check_circle_outline, size: 18, color: Colors.black87),
+                          iconBgColor: const Color(0xFFF3E5F5),
+                          title: item['title'] ?? '',
+                          subtitle: item['description'] ?? '',
+                        ),
+                        if (index < whyShouldCome!.length - 1)
+                          Divider(height: 1, color: Colors.grey.shade100),
+                      ],
+                    );
+                  }).toList()
+                : [
+                    _buildWhyItem(
+                      icon: const Text('💭', style: TextStyle(fontSize: 18)),
+                      iconBgColor: const Color(0xFFF3E5F5), // Light purple
+                      title: 'Meet matches in real life',
+                      subtitle:
+                          'Skip weeks of chatting — a 5-minute conversation tells you more than 100 messages.',
+                    ),
+                    Divider(height: 1, color: Colors.grey.shade100),
+                    _buildWhyItem(
+                      icon: const Icon(Icons.check, size: 18, color: Colors.black87),
+                      iconBgColor: const Color(0xFFE8F5E9), // Light green
+                      title: '100% verified guests',
+                      subtitle:
+                          'Every attendee is ID-verified. No fake profiles, no surprises.',
+                    ),
+                    Divider(height: 1, color: Colors.grey.shade100),
+                    _buildWhyItem(
+                      icon: const Text('🎯', style: TextStyle(fontSize: 18)),
+                      iconBgColor: const Color(0xFFFFF3E0), // Light orange
+                      title: 'Curated compatibility',
+                      subtitle:
+                          'Guest list is matched by age range, interests and intent — you\'ll fit right in.',
+                    ),
+                    Divider(height: 1, color: Colors.grey.shade100),
+                    _buildWhyItem(
+                      icon: const Text('🤝', style: TextStyle(fontSize: 18)),
+                      iconBgColor: const Color(0xFFE3F2FD), // Light blue
+                      title: 'Icebreakers that work',
+                      subtitle:
+                          'Our hosts facilitate low-pressure activities to get the conversation flowing naturally.',
+                    ),
+                  ],
           ),
         ),
       ],
@@ -173,15 +201,17 @@ class EventMoreDetailsSection extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 2), // Reduced spacing
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
-                    height: 1.3, // Tighter line height
+                if (subtitle.isNotEmpty) ...[
+                  const SizedBox(height: 2), // Reduced spacing
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                      height: 1.3, // Tighter line height
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

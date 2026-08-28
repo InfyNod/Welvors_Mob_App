@@ -590,6 +590,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => EventDetailsScreen(
+                                      eventId: 'dummy_id',
                                       title: title,
                                       date: date,
                                       location: location,
