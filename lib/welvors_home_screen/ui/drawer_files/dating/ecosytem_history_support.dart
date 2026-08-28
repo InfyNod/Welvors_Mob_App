@@ -6,6 +6,7 @@ import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_scr
 import 'core_ecosystem/trust_verification/trust_verification_screen.dart';
 import 'commitment_management.dart/commitment_screen.dart';
 import 'commitment_management.dart/commitment_bloc/commitment_bloc.dart';
+import '../../event/all_screen/my_ticket.dart';
 
 class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
@@ -131,11 +132,27 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
         Row(
           children: [
             Expanded(
-              child: _buildActivityCard(
-                icon: '📅',
-                iconBgColor: const Color(0xFFF5F5F5),
-                title: 'My Bookings',
-                subtitle: '2 UPCOMING EVENTS',
+              child: Builder(
+                builder: (context) {
+                  final upcomingCount = MyTicketScreen.allTickets
+                      .where((t) => t['status'] == 'Confirmed')
+                      .length;
+                  
+                  return _buildActivityCard(
+                    icon: '📅',
+                    iconBgColor: const Color(0xFFF5F5F5),
+                    title: 'My Bookings',
+                    subtitle: '$upcomingCount UPCOMING EVENT${upcomingCount == 1 ? '' : 'S'}',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyTicketScreen(),
+                        ),
+                      );
+                    },
+                  );
+                }
               ),
             ),
             const SizedBox(width: 12),
@@ -334,15 +351,18 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
     required Color iconBgColor,
     required String title,
     required String subtitle,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100, width: 1.5),
-        boxShadow: AppColors.shadow,
-      ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade100, width: 1.5),
+          boxShadow: AppColors.shadow,
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -383,6 +403,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

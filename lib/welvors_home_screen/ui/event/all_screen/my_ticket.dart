@@ -6,6 +6,33 @@ import 'cancel/cancel_drawer.dart';
 class MyTicketScreen extends StatefulWidget {
   const MyTicketScreen({super.key});
 
+  static final List<Map<String, dynamic>> allTickets = [
+    {
+      'title': 'Sunset Soirée for Singles',
+      'date': 'Wed, Aug 19 · 7:00 PM',
+      'location': 'The Rooftop Lounge, Bandra',
+      'imageUrl': 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
+      'status': 'Confirmed',
+      'categories': ['Mixers', 'This Month'],
+    },
+    {
+      'title': 'Speed Dating: Creative Professionals',
+      'date': 'Sat, Oct 28 · 6:30 PM',
+      'location': 'Artisan Loft, Lower Parel',
+      'imageUrl': 'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80',
+      'status': 'Confirmed',
+      'categories': ['Speed Dating', 'This Month'],
+    },
+    {
+      'title': 'Acoustic Night & Cocktails',
+      'date': 'Fri, Nov 3 · 8:00 PM',
+      'location': 'The Velvet Room, Juhu',
+      'imageUrl': 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
+      'status': 'Cancelled',
+      'categories': ['Mixers'],
+    },
+  ];
+
   @override
   State<MyTicketScreen> createState() => _MyTicketScreenState();
 }
@@ -25,36 +52,6 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   bool _isSearching = false;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
-
-  final List<Map<String, dynamic>> _allTickets = [
-    {
-      'title': 'Sunset Soirée for Singles',
-      'date': 'Wed, Aug 19 · 7:00 PM', // Set to near date for testing non-eligible
-      'location': 'The Rooftop Lounge, Bandra',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
-      'status': 'Confirmed',
-      'categories': ['Mixers', 'This Month'],
-    },
-    {
-      'title': 'Speed Dating: Creative Professionals',
-      'date': 'Sat, Oct 28 · 6:30 PM', // Set to future date for testing eligible
-      'location': 'Artisan Loft, Lower Parel',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80',
-      'status': 'Confirmed',
-      'categories': ['Speed Dating', 'This Month'],
-    },
-    {
-      'title': 'Acoustic Night & Cocktails',
-      'date': 'Fri, Nov 3 · 8:00 PM',
-      'location': 'The Velvet Room, Juhu',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
-      'status': 'Cancelled',
-      'categories': ['Mixers'],
-    },
-  ];
 
   @override
   void initState() {
@@ -266,7 +263,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  ..._allTickets
+                  ...MyTicketScreen.allTickets
                       .where((ticket) {
                         // Search Filter
                         if (_searchQuery.isNotEmpty &&
@@ -300,7 +297,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                         );
                       }),
                   // Show empty message if nothing matches
-                  if (_allTickets.where((ticket) {
+                  if (MyTicketScreen.allTickets.where((ticket) {
                     if (_searchQuery.isNotEmpty &&
                         !ticket['title'].toString().toLowerCase().contains(
                           _searchQuery.toLowerCase(),
