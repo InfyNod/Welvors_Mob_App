@@ -6,6 +6,8 @@ import '../events_bloc/events_bloc.dart';
 import '../events_bloc/events_state.dart';
 import '../events_bloc/events_event.dart';
 import 'view_details/event_details.dart';
+import 'service_event/event_api_service.dart';
+import 'package:intl/intl.dart';
 
 class EventsCards extends StatefulWidget {
   const EventsCards({super.key});
@@ -15,6 +17,41 @@ class EventsCards extends StatefulWidget {
 }
 
 class _EventsCardsState extends State<EventsCards> {
+  List<dynamic> _apiEvents = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchEvents();
+  }
+
+  Future<void> _fetchEvents() async {
+    try {
+      // Need to import EventApiService
+      final response = await EventApiService.getEvents();
+      if (response != null && response['success'] == true) {
+        if (mounted) {
+          setState(() {
+            _apiEvents = response['data'] ?? [];
+            _isLoading = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   void _shareEvent(BuildContext context, String eventName) async {
     try {
@@ -100,6 +137,21 @@ class _EventsCardsState extends State<EventsCards> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
+                    // Render API events
+                    if (_isLoading)
+                      const Padding(
+                        padding: EdgeInsets.all(32),
+                        child: CircularProgressIndicator(),
+                      )
+                    else ...[
+                      for (var event in _apiEvents) ...[
+                        // We will build an API event card here
+                        _buildApiEventCard(event, state),
+                        const SizedBox(height: 24),
+                      ],
+                    ],
+                    
+                    // Render Dummy events
                     if (showCard1) ...[
                       _buildStandardCard(),
                       const SizedBox(height: 24),
@@ -116,7 +168,7 @@ class _EventsCardsState extends State<EventsCards> {
                       _buildStandardCard4(),
                       const SizedBox(height: 24),
                     ],
-                    if (!showCard1 && !showCard2 && !showCard3 && !showCard4)
+                    if (!showCard1 && !showCard2 && !showCard3 && !showCard4 && _apiEvents.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 32),
                         child: Text(
@@ -406,6 +458,329 @@ class _EventsCardsState extends State<EventsCards> {
     ),
     );
   }
+
+  String _formatApiDate(String? isoDate, String? startTime) {
+    if (isoDate == null) return 'Upcoming';
+    try {
+      final date = DateTime.parse(isoDate).toLocal();
+      String formattedDate = DateFormat('EEE, MMM d').format(date);
+      if (startTime != null && startTime.contains(':')) {
+        final timeParts = startTime.split(':');
+        final timeObj = DateTime(2020, 1, 1, int.parse(timeParts[0]), int.parse(timeParts[1]));
+        final formattedTime = DateFormat('h:mm a').format(timeObj);
+        return '$formattedDate · $formattedTime';
+      }
+      return formattedDate;
+    } catch (e) {
+      return isoDate; // fallback
+    }
+  }
+
+  Widget _buildApiEventCard(dynamic event, EventsState state) {
+    final title = event['title'] ?? 'Event Title';
+    final location = event['fullAddress'] ?? 'Location TBA';
+    
+    // Check for null heroImage and provide a fallback
+    final heroImageRaw = event['heroImage'];
+    final imageUrl = (heroImageRaw != null && heroImageRaw.toString().isNotEmpty) 
+        ? heroImageRaw 
+        : 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80';
+        
+    final status = (event['eventType'] ?? 'UPCOMING').toString().replaceAll('_', ' ').toUpperCase();
+    final price = event['entryPrice'] != null ? '₹${event['entryPrice']}' : 'Free';
+    final interestedCount = event['interested'] ?? 0;
+    final dateStr = _formatApiDate(event['eventDate'], event['startTime']);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              title: title,
+              date: dateStr,
+              location: location,
+              imageUrl: imageUrl,
+              status: status.toString().toUpperCase(),
+              price: price,
+            ),
+          ),
+        );
+      },
+      child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top Image
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: Image.network(
+                  imageUrl,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                    );
+                  },
+                ),
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        status.toString().toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xFFE43A6A),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              PriceBadge(price: price),
+            ],
+          ),
+
+          // Action Icons Row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.star_border,
+                  color: Color(0xFFE85A7A),
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '$interestedCount',
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(width: 24),
+                const Icon(
+                  Icons.chat_bubble_outline,
+                  color: Color(0xFFE85A7A),
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '0',
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+                const Spacer(),
+                _buildShareIcon(context, title),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(height: 1, color: Colors.grey.shade200),
+          ),
+
+          // Content Details
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Avatars & Interested
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 72, // 4 avatars
+                      height: 24,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            left: 0,
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundImage: const NetworkImage(
+                                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80',
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 16,
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: 10.5,
+                                backgroundImage: const NetworkImage(
+                                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 32,
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: 10.5,
+                                backgroundImage: const NetworkImage(
+                                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 48,
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: 10.5,
+                                backgroundColor: const Color(0xFFE85A7A),
+                                child: Text(
+                                  '+$interestedCount',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$interestedCount+ ',
+                            style: const TextStyle(
+                              color: Color(0xFFE85A7A),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const TextSpan(
+                            text: 'interested',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Title & Price
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+
+                // Date
+                Row(
+                  children: [
+                    const Text('📅', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Text(
+                      dateStr,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+
+                // Location
+                Row(
+                  children: [
+                    const Text('📍', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Text(
+                      location,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+    );
+  }
+
   Widget _buildStandardCard() {
     return GestureDetector(
       onTap: () {
