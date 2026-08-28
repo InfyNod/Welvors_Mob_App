@@ -210,6 +210,14 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
         })
         .toList();
 
+    filteredPlans.sort((a, b) {
+      final aStatus = a['status']?.toString().toUpperCase() ?? '';
+      final bStatus = b['status']?.toString().toUpperCase() ?? '';
+      final aIsApproved = aStatus == 'APPROVED' ? 1 : 0;
+      final bIsApproved = bStatus == 'APPROVED' ? 1 : 0;
+      return bIsApproved.compareTo(aIsApproved);
+    });
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -803,21 +811,41 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   ),
                 ),
                 const SizedBox(height: 8),
-                // Status Box
+                // Status Box (Premium Slim Design)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
-                    color: isApproved
-                        ? const Color(0xFFE8F5E9)
-                        : const Color(0xFFFFF3E0),
+                    gradient: isApproved
+                        ? LinearGradient(
+                            colors: [
+                              const Color(0xFFE8F5E9),
+                              const Color(0xFFC8E6C9).withOpacity(0.5),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : LinearGradient(
+                            colors: [
+                              const Color(0xFFFFF3E0),
+                              const Color(0xFFFFE0B2).withOpacity(0.5),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isApproved
+                          ? const Color(0xFFA5D6A7).withOpacity(0.5)
+                          : const Color(0xFFFFCC80).withOpacity(0.5),
+                      width: 1,
+                    ),
                   ),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        isApproved ? '🎉' : '⏳',
+                        isApproved ? '🥳' : '⏳',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(width: 8),
@@ -826,11 +854,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                           plan['statusMessage'],
                           style: TextStyle(
                             color: isApproved
-                                ? const Color(0xFF2E7D32)
+                                ? const Color(0xFF1B5E20)
                                 : const Color(0xFFE65100),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            height: 1.4,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

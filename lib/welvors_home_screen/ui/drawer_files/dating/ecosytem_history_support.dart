@@ -3,10 +3,13 @@ import 'help_support/help_support_screen.dart';
 import 'legal_policies/legal_policy_screen.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
-import 'core_ecosystem/trust_verification/trust_verification_screen.dart';
 import 'commitment_management.dart/commitment_screen.dart';
-import 'commitment_management.dart/commitment_bloc/commitment_bloc.dart';
 import '../../event/all_screen/my_ticket.dart';
+import '../../date_now/date_now_2/requests_sent/requests_sent_screen.dart';
+import 'commitment_management.dart/commitment_bloc/commitment_bloc.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../../date_now/date_api_service/date_now_api_service.dart';
 
 class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
@@ -17,6 +20,47 @@ class EcosystemHistorySupport extends StatefulWidget {
 }
 
 class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
+  int _myPlansCount = 0;
+  int _approvedRequestsCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDatesCount();
+  }
+
+  Future<void> _fetchDatesCount() async {
+    // Fetch my plans
+    final res = await DateNowApiService.getMyPlans(period: 'Today');
+    if (res != null && res['success'] == true) {
+      final List<dynamic> data = res['data'] ?? [];
+      _myPlansCount = data.length;
+    }
+    
+    // Fetch sent requests
+    try {
+      const String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+      final url = Uri.parse('https://api.welvors.com/api/user/my-date-plan-requests');
+      final response = await http.get(url, headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'});
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['success'] == true && data['data'] != null) {
+          final List<dynamic> items = data['data'];
+          _approvedRequestsCount = items.where((item) {
+            final status = item['status']?.toString().toUpperCase() ?? '';
+            return status == 'APPROVED';
+          }).length;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching requests: $e');
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -157,11 +201,25 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildActivityCard(
-                icon: '⏱️',
-                iconBgColor: const Color(0xFFF5F5F5),
-                title: 'My Dates',
-                subtitle: '8 PAST DATES',
+              child: Builder(
+                builder: (context) {
+                  final totalDatesCount = _myPlansCount + _approvedRequestsCount;
+
+                  return _buildActivityCard(
+                    icon: '⏱️',
+                    iconBgColor: const Color(0xFFF5F5F5),
+                    title: 'My Dates',
+                    subtitle: '$totalDatesCount UPCOMING DATE${totalDatesCount == 1 ? '' : 'S'}',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RequestsSentScreen(),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],
