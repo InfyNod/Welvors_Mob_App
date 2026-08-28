@@ -46,11 +46,23 @@ class _PrivacySafetyAndMembershipState
                     width: 44,
                     height: 44,
                     decoration: const BoxDecoration(
-                      color: Color(0xFFEBF2F8), // Very light blue background
+                      color: Color.fromARGB(
+                        255,
+                        251,
+                        219,
+                        236,
+                      ), // Very light pink
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
-                    child: const Text('🛡️', style: TextStyle(fontSize: 22)),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/safefacee.png',
+                        width: 44,
+                        height: 44,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -77,7 +89,11 @@ class _PrivacySafetyAndMembershipState
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right, size: 20, color: Colors.black26),
+                  const Icon(
+                    Icons.chevron_right,
+                    size: 20,
+                    color: Colors.black26,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
