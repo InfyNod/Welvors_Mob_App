@@ -137,12 +137,11 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
   Widget _buildToggle() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      height: 50,
-      padding: const EdgeInsets.all(3),
+      height: 48,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
+        color: const Color(0xFFEBEBEB),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Stack(
         children: [
@@ -158,10 +157,10 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withOpacity(0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
