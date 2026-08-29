@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'admirers_bloc/admirers_bloc.dart';
 import 'admirers_bloc/admirers_event.dart';
 import 'admirers_bloc/admirers_state.dart';
@@ -68,21 +69,91 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
                     Expanded(
                       child: Container(
                         color: const Color(0xFFFAFAFA),
-                        child: PageView(
-                          controller: _pageController,
-                          onPageChanged: (index) {
-                            context.read<AdmirersBloc>().add(
-                              ChangeAdmirersTab(_tabKeys[index]),
-                            );
-                          },
-                          children: const [
-                            ReceivedLikesScreen(),
-                            ReceivedRosesScreen(),
-                            VipReceivedScreen(),
-                          ],
+                        child: CustomRefreshIndicator(
+                              offsetToArmed: 80,
+                              onRefresh: () async {
+                                context.read<AdmirersBloc>().add(LoadAdmirersData());
+                                await Future.delayed(const Duration(milliseconds: 1500)); // Smooth loading experience
+                              },
+                              notificationPredicate: (ScrollNotification notification) {
+                                return notification.metrics.axis == Axis.vertical;
+                              },
+                              builder: (BuildContext context, Widget child, IndicatorController controller) {
+                                return Stack(
+                                  children: [
+                                    child, // Keeps the list in place (does not push it far down)
+
+                                    Positioned(
+                                      top: -50 + (controller.value * 70), // Gently drops from just under the tabs
+                                      left: 0,
+                                      right: 0,
+                                      child: Center(
+                                        child: AnimatedBuilder(
+                                          animation: controller,
+                                          builder: (context, _) {
+                                            // Smooth heartbeat effect
+                                            double scale = controller.isDragging || controller.isArmed
+                                                ? controller.value.clamp(0.0, 1.0)
+                                                : (controller.isLoading ? 1.05 : 0.0);
+
+                                            return Transform.scale(
+                                              scale: scale,
+                                              child: Container(
+                                                height: 46,
+                                                width: 46,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xFFE85A7A).withOpacity(0.2),
+                                                      blurRadius: 10,
+                                                      spreadRadius: 2,
+                                                      offset: const Offset(0, 3),
+                                                    )
+                                                  ],
+                                                ),
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    if (!controller.isIdle)
+                                                      SizedBox(
+                                                        width: 46,
+                                                        height: 46,
+                                                        child: CircularProgressIndicator(
+                                                          value: controller.isLoading ? null : controller.value.clamp(0.0, 1.0),
+                                                          strokeWidth: 2.5,
+                                                          valueColor: const AlwaysStoppedAnimation(Color(0xFFE85A7A)),
+                                                        ),
+                                                      ),
+                                                    const Text('🌹', style: TextStyle(fontSize: 20)),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                              child: PageView(
+                                controller: _pageController,
+                                onPageChanged: (index) {
+                                  context.read<AdmirersBloc>().add(
+                                    ChangeAdmirersTab(_tabKeys[index]),
+                                  );
+                                },
+                                children: const [
+                                  ReceivedLikesScreen(),
+                                  ReceivedRosesScreen(),
+                                  VipReceivedScreen(),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
                   ],
                 );
               }
