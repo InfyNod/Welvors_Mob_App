@@ -16,7 +16,7 @@ class ReceivedLikesScreen extends StatefulWidget {
 
 class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
   int _selectedTab = 0; // 0 for Received, 1 for Sent
-  
+
   List<Map<String, dynamic>> _likeCards = [];
   bool _isInitialized = false;
 
@@ -31,7 +31,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
       _isInitialized = true;
     }
   }
-  
+
   void _handleAction(dynamic id, String popupText) {
     final index = _likeCards.indexWhere((card) => card['id'] == id);
     if (index >= 0) {
@@ -226,7 +226,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
         ),
       );
     }
-    
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -248,8 +248,12 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
           distance: card['distance'],
           imageUrl: card['imageUrl'],
           badgeText: card['badgeText'],
-          badgeColor: card['badgeColor'] != null ? Color(card['badgeColor']) : null,
-          badgeTextColor: card['badgeTextColor'] != null ? Color(card['badgeTextColor']) : null,
+          badgeColor: card['badgeColor'] != null
+              ? Color(card['badgeColor'])
+              : null,
+          badgeTextColor: card['badgeTextColor'] != null
+              ? Color(card['badgeTextColor'])
+              : null,
           isBlurred: card['isBlurred'],
           onRevealAction: () {
             setState(() {
@@ -489,20 +493,37 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
             Positioned(
               bottom: 12,
               left: 12,
-              right: isBlurred ? 12 : 56, // Only leave space for Heart button if not blurred
+              right: isBlurred
+                  ? 12
+                  : 56, // Only leave space for Heart button if not blurred
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!isBlurred)
-                    Text(
-                      '$name, $age',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          ' $age',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   if (!isBlurred) const SizedBox(height: 2),
                   Text.rich(
