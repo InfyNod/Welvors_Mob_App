@@ -47,4 +47,20 @@ class EventApiService {
       return null;
     }
   }
+  static Future<Map<String, dynamic>?> getChatConversations() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/chat/conversations');
+      final response = await http.get(url, headers: _headers);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to get chat conversations: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error getting chat conversations: $e');
+      return null;
+    }
+  }
 }
