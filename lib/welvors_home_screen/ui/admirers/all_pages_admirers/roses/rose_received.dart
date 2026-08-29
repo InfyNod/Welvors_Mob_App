@@ -38,7 +38,8 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
       final removedCard = _roseCards.removeAt(index);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildRemovedItem(removedCard, animation, isAccepted: isAccepted),
+        (context, animation) =>
+            _buildRemovedItem(removedCard, animation, isAccepted: isAccepted),
         duration: const Duration(milliseconds: 600),
       );
       // Dispatch to BLoC to update the tab count
@@ -98,8 +99,6 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildInfoBanner(),
-          const SizedBox(height: 16),
           AnimatedList(
             key: _listKey,
             shrinkWrap: true,
@@ -121,6 +120,8 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                 ),
               ),
             ),
+          const SizedBox(height: 16),
+          _buildInfoBanner(),
         ],
       ),
     );
@@ -146,7 +147,11 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
     );
   }
 
-  Widget _buildRemovedItem(Map<String, dynamic> card, Animation<double> animation, {bool isAccepted = true}) {
+  Widget _buildRemovedItem(
+    Map<String, dynamic> card,
+    Animation<double> animation, {
+    bool isAccepted = true,
+  }) {
     return SizeTransition(
       sizeFactor: CurvedAnimation(
         parent: animation,
@@ -158,18 +163,24 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
           curve: const Interval(0.5, 1.0),
         ),
         child: SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset(isAccepted ? 1.5 : -1.5, 0), // slides out right if accepted, left if rejected
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeInBack, // snapping effect
-          )),
+          position:
+              Tween<Offset>(
+                begin: Offset(
+                  isAccepted ? 1.5 : -1.5,
+                  0,
+                ), // slides out right if accepted, left if rejected
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInBack, // snapping effect
+                ),
+              ),
           child: RotationTransition(
-            turns: Tween<double>(begin: isAccepted ? 0.05 : -0.05, end: 0.0).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeIn,
-            )),
+            turns: Tween<double>(
+              begin: isAccepted ? 0.05 : -0.05,
+              end: 0.0,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeIn)),
             child: Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _buildRoseCard(
@@ -186,6 +197,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
       ),
     );
   }
+
   Widget _buildToggle() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -319,7 +331,6 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
     required String message,
     required String imageUrl,
   }) {
-
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -362,7 +373,10 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(
@@ -453,84 +467,85 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
 
                   // Action Buttons
                   Row(
-                  children: [
-                    // Like Back Button
-                    GestureDetector(
-                      onTap: () {
-                        _handleAction(id, "It's a match! 💖", isAccepted: true);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20, // Increased horizontal padding
-                          vertical: 10, // Increased height
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE85A7A), // Pink for Like back
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFFE85A7A,
-                              ).withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '❤️',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            SizedBox(width: 6),
-                            Text(
-                              'Like back',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
+                    children: [
+                      // Like Back Button
+                      GestureDetector(
+                        onTap: () {
+                          _handleAction(
+                            id,
+                            "It's a match! 💖",
+                            isAccepted: true,
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20, // Increased horizontal padding
+                            vertical: 10, // Increased height
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFFE85A7A,
+                            ), // Pink for Like back
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFE85A7A).withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Reject Button
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        _handleAction(id, "Rejected ❌", isAccepted: false);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10, // Increased height
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Text(
-                          'Reject',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('❤️', style: TextStyle(fontSize: 14)),
+                              SizedBox(width: 6),
+                              Text(
+                                'Like back',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+
+                      // Reject Button
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: () {
+                          _handleAction(id, "Rejected ❌", isAccepted: false);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10, // Increased height
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Text(
+                            'Reject',
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

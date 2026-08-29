@@ -57,7 +57,8 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
       final removedCard = _vipCards.removeAt(index);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildRemovedItem(removedCard, animation, isAccepted: isAccepted),
+        (context, animation) =>
+            _buildRemovedItem(removedCard, animation, isAccepted: isAccepted),
         duration: const Duration(milliseconds: 600),
       );
       setState(() {});
@@ -357,7 +358,10 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
         child: SlideTransition(
           position:
               Tween<Offset>(
-                begin: Offset(isAccepted ? 1.5 : -1.5, 0), // slides out left if declined, right if accepted
+                begin: Offset(
+                  isAccepted ? 1.5 : -1.5,
+                  0,
+                ), // slides out left if declined, right if accepted
                 end: Offset.zero,
               ).animate(
                 CurvedAnimation(
@@ -463,7 +467,10 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
                     const SizedBox(width: 8),
                     // Pill
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFEFF4), // Light pink bg
                         borderRadius: BorderRadius.circular(12),
@@ -508,7 +515,11 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    _handleAction(id, "Proposal Accepted! 💍", isAccepted: true);
+                    _handleAction(
+                      id,
+                      "Proposal Accepted! 💍",
+                      isAccepted: true,
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
