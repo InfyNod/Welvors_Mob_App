@@ -41,14 +41,20 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
           child: BlocConsumer<AdmirersBloc, AdmirersState>(
             listener: (context, state) {
               if (state is AdmirersLoaded) {
-                final targetIndex = _tabKeys.indexOf(state.activeTab);
-                if (_pageController.hasClients &&
-                    _pageController.page?.round() != targetIndex) {
-                  _pageController.animateToPage(
-                    targetIndex,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
+                final index = _tabKeys.indexOf(state.activeTab);
+                if (_pageController.hasClients) {
+                  final currentIndex = _pageController.page?.round() ?? 0;
+                  if (currentIndex != index) {
+                    if ((currentIndex - index).abs() > 1) {
+                      _pageController.jumpToPage(index);
+                    } else {
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  }
                 }
               }
             },
