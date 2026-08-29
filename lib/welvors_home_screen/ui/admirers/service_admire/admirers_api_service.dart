@@ -51,4 +51,27 @@ class AdmirersApiService {
       throw Exception('Error fetching sent admirers: $e');
     }
   }
+
+  /// Fetches Received Roses
+  Future<Map<String, dynamic>> getReceivedRoses({int page = 1, int limit = 10}) async {
+    final url = Uri.parse('$baseUrl?type=ROSE&direction=RECEIVED&page=$page&limit=$limit');
+    
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to load received roses. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching received roses: $e');
+    }
+  }
 }

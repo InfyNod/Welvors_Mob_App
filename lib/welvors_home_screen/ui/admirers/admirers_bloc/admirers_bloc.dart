@@ -21,15 +21,18 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
       final responses = await Future.wait([
         _apiService.getReceivedLikes(),
         _apiService.getSentLikes(),
+        _apiService.getReceivedRoses(),
       ]);
       
       final Map<String, dynamic> receivedResponse = responses[0];
       final Map<String, dynamic> sentResponse = responses[1];
+      final Map<String, dynamic> roseResponse = responses[2];
       
       final List<dynamic> rawReceivedData = receivedResponse['data'] ?? [];
       final bool isLocked = receivedResponse['isLocked'] ?? false;
       
       final List<dynamic> rawSentData = sentResponse['data'] ?? [];
+      final List<dynamic> rawRoseData = roseResponse['data'] ?? [];
 
       // Map Received Likes API response
       final List<Map<String, dynamic>> mappedLikes = rawReceivedData.map((item) {
@@ -66,11 +69,25 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         };
       }).toList();
 
+      // Map Received Roses API response
+      final List<Map<String, dynamic>> mappedRoses = rawRoseData.map((item) {
+        final user = item['user'] ?? {};
+        
+        return {
+          'id': item['interactionId'] ?? user['id'] ?? DateTime.now().millisecondsSinceEpoch,
+          'name': user['name'] ?? 'Unknown',
+          'age': (user['age'] ?? '25').toString(),
+          'distance': '${user['distanceKm'] ?? 5} km',
+          'message': item['message'] ?? '"Your profile caught my eye! ✨"', // Fallback since API currently lacks this
+          'imageUrl': user['profileImage'] ?? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
+        };
+      }).toList();
+
       emit(AdmirersLoaded(
         coins: 1280,
         likes: [...mappedLikes, ..._getMockLikes()], // Added dummy data for testing
         sentLikes: [...mappedSentLikes, ..._getMockSentLikes()], // Added dummy data for testing
-        roses: _getMockRoses(),
+        roses: [...mappedRoses, ..._getMockRoses()], // Added dummy data for testing
         activeTab: 'likes',
       ));
     } catch (e) {

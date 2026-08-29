@@ -345,109 +345,115 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Profile Image with Rose Icon
-          Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  imageUrl,
-                  width: 72,
-                  height: 75,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(
-                    8,
-                  ), // Square with rounded corners
-                  border: Border.all(
-                    color: const Color(0xFFF8C6D1),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(
-                        0xFFE85A7A,
-                      ).withOpacity(0.4), // Pink glow
-                      blurRadius: 10,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Text('🌹', style: TextStyle(fontSize: 20)),
-              ),
-            ],
-          ),
-          const SizedBox(width: 20),
-
-          // Card Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Profile Image with Rose Icon
+            Column(
               children: [
-                // Top Badge
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    imageUrl,
+                    width: 72,
+                    height: 75,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE85A7A), // Pink background
-                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(
+                      8,
+                    ), // Square with rounded corners
+                    border: Border.all(
+                      color: const Color(0xFFF8C6D1),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(
+                          0xFFE85A7A,
+                        ).withOpacity(0.4), // Pink glow
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
+                  child: const Text('🌹', style: TextStyle(fontSize: 20)),
+                ),
+              ],
+            ),
+            const SizedBox(width: 20),
+
+            // Card Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('🌹', style: TextStyle(fontSize: 8)),
-                      SizedBox(width: 4),
+                      // Top Badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE85A7A), // Pink background
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('🌹', style: TextStyle(fontSize: 8)),
+                            SizedBox(width: 4),
+                            Text(
+                              'SENT YOU A ROSE',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+
+                      // Name, Age, Distance
                       Text(
-                        'SENT YOU A ROSE',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 8,
+                        '$name, $age · $distance',
+                        style: const TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+
+                      // Message
+                      Text(
+                        message,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey.shade600,
+                          height: 1.3,
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 6),
 
-                // Name, Age, Distance
-                Text(
-                  '$name, $age · $distance',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 4),
-
-                // Message
-                Text(
-                  message,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.grey.shade600,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Action Buttons
-                Row(
+                  // Action Buttons
+                  Row(
                   children: [
                     // Like Back Button
                     GestureDetector(
@@ -525,6 +531,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
