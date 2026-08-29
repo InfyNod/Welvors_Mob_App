@@ -9,6 +9,7 @@ class AdmirersLoaded extends AdmirersState {
   final List<Map<String, dynamic>> likes;
   final List<Map<String, dynamic>> sentLikes; // newly added
   final List<Map<String, dynamic>> roses;
+  final List<Map<String, dynamic>> sentRoses; // newly added
   final String activeTab; // 'likes', 'roses', 'vip'
 
   int get likesCount => likes.length;
@@ -19,6 +20,7 @@ class AdmirersLoaded extends AdmirersState {
     required this.likes,
     required this.sentLikes,
     required this.roses,
+    required this.sentRoses,
     required this.activeTab,
   });
 
@@ -27,6 +29,7 @@ class AdmirersLoaded extends AdmirersState {
     List<Map<String, dynamic>>? likes,
     List<Map<String, dynamic>>? sentLikes,
     List<Map<String, dynamic>>? roses,
+    List<Map<String, dynamic>>? sentRoses,
     String? activeTab,
   }) {
     return AdmirersLoaded(
@@ -34,6 +37,7 @@ class AdmirersLoaded extends AdmirersState {
       likes: likes ?? this.likes,
       sentLikes: sentLikes ?? this.sentLikes,
       roses: roses ?? this.roses,
+      sentRoses: sentRoses ?? this.sentRoses,
       activeTab: activeTab ?? this.activeTab,
     );
   }

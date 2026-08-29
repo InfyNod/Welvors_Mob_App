@@ -22,17 +22,20 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         _apiService.getReceivedLikes(),
         _apiService.getSentLikes(),
         _apiService.getReceivedRoses(),
+        _apiService.getSentRoses(),
       ]);
       
       final Map<String, dynamic> receivedResponse = responses[0];
       final Map<String, dynamic> sentResponse = responses[1];
       final Map<String, dynamic> roseResponse = responses[2];
+      final Map<String, dynamic> sentRoseResponse = responses[3];
       
       final List<dynamic> rawReceivedData = receivedResponse['data'] ?? [];
       final bool isLocked = receivedResponse['isLocked'] ?? false;
       
       final List<dynamic> rawSentData = sentResponse['data'] ?? [];
       final List<dynamic> rawRoseData = roseResponse['data'] ?? [];
+      final List<dynamic> rawSentRoseData = sentRoseResponse['data'] ?? [];
 
       // Map Received Likes API response
       final List<Map<String, dynamic>> mappedLikes = rawReceivedData.map((item) {
@@ -83,11 +86,29 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         };
       }).toList();
 
+      // Map Sent Roses API response
+      final List<Map<String, dynamic>> mappedSentRoses = rawSentRoseData.map((item) {
+        final user = item['user'] ?? {};
+        final bool isMatch = item['isMatch'] ?? false;
+        
+        return {
+          'id': item['interactionId'] ?? user['id'] ?? DateTime.now().millisecondsSinceEpoch,
+          'name': user['name'] ?? 'Unknown',
+          'age': (user['age'] ?? '25').toString(),
+          'timeInfo': '${item['timeAgo'] ?? 'Recently'}', // Not adding matchScore since sent roses UI doesn't seem to have it, but let's see. Wait, "Sent you a rose", we'll just put timeAgo for now. Actually, looking at the JSON, they have matchScore 0. We'll just show timeAgo and status.
+          'imageUrl': user['profileImage'] ?? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
+          'statusText': isMatch ? '✓ Matched · Chat' : '○ Pending',
+          'statusTextColor': isMatch ? 0xFF2CAF6B : 0xFF757575,
+          'statusBgColor': isMatch ? 0xFFE9F7EF : 0xFFEEEEEE,
+        };
+      }).toList();
+
       emit(AdmirersLoaded(
         coins: 1280,
         likes: [...mappedLikes, ..._getMockLikes()], // Added dummy data for testing
         sentLikes: [...mappedSentLikes, ..._getMockSentLikes()], // Added dummy data for testing
         roses: [...mappedRoses, ..._getMockRoses()], // Added dummy data for testing
+        sentRoses: [...mappedSentRoses, ..._getMockSentRoses()], // Added dummy data for testing
         activeTab: 'likes',
       ));
     } catch (e) {
@@ -98,6 +119,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         likes: _getMockLikes(),
         sentLikes: _getMockSentLikes(),
         roses: _getMockRoses(),
+        sentRoses: _getMockSentRoses(),
         activeTab: 'likes',
       ));
     }
@@ -216,6 +238,31 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'statusText': '• Seen',
         'statusTextColor': 0xFF3F8CFF,
         'statusBgColor': 0xFFEBF3FF,
+      },
+    ];
+  }
+
+  List<Map<String, dynamic>> _getMockSentRoses() {
+    return [
+      {
+        'id': 0,
+        'name': 'Priya',
+        'age': '26',
+        'timeInfo': '4h ago',
+        'imageUrl': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80',
+        'statusText': '○ Pending',
+        'statusTextColor': 0xFF757575,
+        'statusBgColor': 0xFFEEEEEE,
+      },
+      {
+        'id': 1,
+        'name': 'Neha',
+        'age': '24',
+        'timeInfo': 'Yesterday',
+        'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80',
+        'statusText': '✓ Matched · Chat',
+        'statusTextColor': 0xFF2CAF6B,
+        'statusBgColor': 0xFFE9F7EF,
       },
     ];
   }

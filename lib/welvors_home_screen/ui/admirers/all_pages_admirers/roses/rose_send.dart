@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../drawer_files/dating/roses/roses_screen.dart';
+import '../../admirers_bloc/admirers_bloc.dart';
+import '../../admirers_bloc/admirers_state.dart';
 
 class RoseSendScreen extends StatefulWidget {
   const RoseSendScreen({super.key});
@@ -36,33 +39,49 @@ class _RoseSendScreenState extends State<RoseSendScreen> {
             ),
           ),
 
-          // Sent Item 1: Matched
-          _buildSentCard(
-            imageUrl:
-                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80',
-            name: 'Aanya',
-            age: '25',
-            subtitle: '2h ago · Matched within 14 min 🎉',
-            statusWidget: _buildStatusPill(
-              text: '✓ Matched · Chat',
-              color: const Color(0xFF2CAF6B),
-              bgColor: const Color(0xFFE8F5E9),
-            ),
-          ),
-          const SizedBox(height: 12),
+          // Sent Roses List via BLoC
+          BlocBuilder<AdmirersBloc, AdmirersState>(
+            builder: (context, state) {
+              if (state is AdmirersLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is AdmirersLoaded) {
+                final sentCards = state.sentRoses;
 
-          // Sent Item 2: Seen
-          _buildSentCard(
-            imageUrl:
-                'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
-            name: 'Chloe',
-            age: '26',
-            subtitle: 'Yesterday · Viewed your profile',
-            statusWidget: _buildStatusPill(
-              text: '• Seen',
-              color: const Color(0xFF4285F4),
-              bgColor: const Color(0xFFE3F2FD),
-            ),
+                if (sentCards.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Center(
+                      child: Text(
+                        'No sent roses yet',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: sentCards.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final card = sentCards[index];
+                    return _buildSentCard(
+                      name: card['name'],
+                      age: card['age'],
+                      subtitle: card['timeInfo'],
+                      imageUrl: card['imageUrl'],
+                      statusWidget: _buildStatusPill(
+                        text: card['statusText'],
+                        color: Color(card['statusTextColor']),
+                        bgColor: Color(card['statusBgColor']),
+                      ),
+                    );
+                  },
+                );
+              }
+              return const SizedBox();
+            },
           ),
           const SizedBox(height: 16),
 
