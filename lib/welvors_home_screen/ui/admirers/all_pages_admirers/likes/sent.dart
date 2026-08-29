@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../admirers_bloc/admirers_bloc.dart';
+import '../../admirers_bloc/admirers_state.dart';
 class SentLikesScreen extends StatelessWidget {
   const SentLikesScreen({super.key});
 
@@ -27,37 +29,46 @@ class SentLikesScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _buildSentCard(
-            name: 'Elena',
-            age: '23',
-            timeInfo: '3h ago · 95% Match',
-            imageUrl:
-                'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
-            statusText: '✓ Matched · Chat',
-            statusTextColor: const Color(0xFF2CAF6B),
-            statusBgColor: const Color(0xFFE9F7EF),
-          ),
-          const SizedBox(height: 12),
-          _buildSentCard(
-            name: 'Shraddha',
-            age: '21',
-            timeInfo: 'Yesterday · 74% Match',
-            imageUrl:
-                'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80',
-            statusText: '○ Pending',
-            statusTextColor: Colors.grey.shade600,
-            statusBgColor: Colors.grey.shade200,
-          ),
-          const SizedBox(height: 12),
-          _buildSentCard(
-            name: 'Tanya',
-            age: '25',
-            timeInfo: '2 days ago · 81% Match',
-            imageUrl:
-                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
-            statusText: '• Seen',
-            statusTextColor: const Color(0xFF3F8CFF),
-            statusBgColor: const Color(0xFFEBF3FF),
+          BlocBuilder<AdmirersBloc, AdmirersState>(
+            builder: (context, state) {
+              if (state is AdmirersLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is AdmirersLoaded) {
+                final sentCards = state.sentLikes;
+
+                if (sentCards.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text(
+                        'No sent likes yet',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: sentCards.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final card = sentCards[index];
+                    return _buildSentCard(
+                      name: card['name'],
+                      age: card['age'],
+                      timeInfo: card['timeInfo'],
+                      imageUrl: card['imageUrl'],
+                      statusText: card['statusText'],
+                      statusTextColor: Color(card['statusTextColor']),
+                      statusBgColor: Color(card['statusBgColor']),
+                    );
+                  },
+                );
+              }
+              return const SizedBox();
+            },
           ),
         ],
       ),

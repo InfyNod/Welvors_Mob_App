@@ -18,12 +18,21 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
     emit(AdmirersLoading());
 
     try {
-      final Map<String, dynamic> response = await _apiService.getReceivedLikes();
-      final List<dynamic> rawData = response['data'] ?? [];
-      final bool isLocked = response['isLocked'] ?? false;
+      final responses = await Future.wait([
+        _apiService.getReceivedLikes(),
+        _apiService.getSentLikes(),
+      ]);
       
-      // Map API response to the format expected by the UI
-      final List<Map<String, dynamic>> mappedLikes = rawData.map((item) {
+      final Map<String, dynamic> receivedResponse = responses[0];
+      final Map<String, dynamic> sentResponse = responses[1];
+      
+      final List<dynamic> rawReceivedData = receivedResponse['data'] ?? [];
+      final bool isLocked = receivedResponse['isLocked'] ?? false;
+      
+      final List<dynamic> rawSentData = sentResponse['data'] ?? [];
+
+      // Map Received Likes API response
+      final List<Map<String, dynamic>> mappedLikes = rawReceivedData.map((item) {
         final user = item['user'] ?? {};
         
         return {
@@ -40,9 +49,27 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         };
       }).toList();
 
+      // Map Sent Likes API response
+      final List<Map<String, dynamic>> mappedSentLikes = rawSentData.map((item) {
+        final user = item['user'] ?? {};
+        final bool isMatch = item['isMatch'] ?? false;
+        
+        return {
+          'id': item['interactionId'] ?? user['id'] ?? DateTime.now().millisecondsSinceEpoch,
+          'name': user['name'] ?? 'Unknown',
+          'age': (user['age'] ?? '25').toString(),
+          'timeInfo': '${item['timeAgo'] ?? 'Recently'} · ${user['matchScore'] ?? 0}% Match',
+          'imageUrl': user['profileImage'] ?? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
+          'statusText': isMatch ? '✓ Matched · Chat' : '○ Pending',
+          'statusTextColor': isMatch ? 0xFF2CAF6B : 0xFF757575, // Green or Grey
+          'statusBgColor': isMatch ? 0xFFE9F7EF : 0xFFEEEEEE,
+        };
+      }).toList();
+
       emit(AdmirersLoaded(
         coins: 1280,
         likes: [...mappedLikes, ..._getMockLikes()], // Added dummy data for testing
+        sentLikes: [...mappedSentLikes, ..._getMockSentLikes()], // Added dummy data for testing
         roses: _getMockRoses(),
         activeTab: 'likes',
       ));
@@ -52,6 +79,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
       emit(AdmirersLoaded(
         coins: 1280,
         likes: _getMockLikes(),
+        sentLikes: _getMockSentLikes(),
         roses: _getMockRoses(),
         activeTab: 'likes',
       ));
@@ -136,6 +164,41 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'distance': '11 km',
         'message': '"Saw you love indie music — Prateek Kuhad gig next month?"',
         'imageUrl': 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=80',
+      },
+    ];
+  }
+
+  List<Map<String, dynamic>> _getMockSentLikes() {
+    return [
+      {
+        'id': 0,
+        'name': 'Elena',
+        'age': '23',
+        'timeInfo': '3h ago · 95% Match',
+        'imageUrl': 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
+        'statusText': '✓ Matched · Chat',
+        'statusTextColor': 0xFF2CAF6B,
+        'statusBgColor': 0xFFE9F7EF,
+      },
+      {
+        'id': 1,
+        'name': 'Shraddha',
+        'age': '21',
+        'timeInfo': 'Yesterday · 74% Match',
+        'imageUrl': 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80',
+        'statusText': '○ Pending',
+        'statusTextColor': 0xFF757575,
+        'statusBgColor': 0xFFEEEEEE,
+      },
+      {
+        'id': 2,
+        'name': 'Tanya',
+        'age': '25',
+        'timeInfo': '2 days ago · 81% Match',
+        'imageUrl': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
+        'statusText': '• Seen',
+        'statusTextColor': 0xFF3F8CFF,
+        'statusBgColor': 0xFFEBF3FF,
       },
     ];
   }

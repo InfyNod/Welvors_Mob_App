@@ -7,6 +7,7 @@ class AdmirersLoading extends AdmirersState {}
 class AdmirersLoaded extends AdmirersState {
   final int coins;
   final List<Map<String, dynamic>> likes;
+  final List<Map<String, dynamic>> sentLikes; // newly added
   final List<Map<String, dynamic>> roses;
   final String activeTab; // 'likes', 'roses', 'vip'
 
@@ -16,6 +17,7 @@ class AdmirersLoaded extends AdmirersState {
   AdmirersLoaded({
     required this.coins,
     required this.likes,
+    required this.sentLikes,
     required this.roses,
     required this.activeTab,
   });
@@ -23,12 +25,14 @@ class AdmirersLoaded extends AdmirersState {
   AdmirersLoaded copyWith({
     int? coins,
     List<Map<String, dynamic>>? likes,
+    List<Map<String, dynamic>>? sentLikes,
     List<Map<String, dynamic>>? roses,
     String? activeTab,
   }) {
     return AdmirersLoaded(
       coins: coins ?? this.coins,
       likes: likes ?? this.likes,
+      sentLikes: sentLikes ?? this.sentLikes,
       roses: roses ?? this.roses,
       activeTab: activeTab ?? this.activeTab,
     );
