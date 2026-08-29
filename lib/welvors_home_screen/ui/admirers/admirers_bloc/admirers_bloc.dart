@@ -15,6 +15,11 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
   }
 
   Future<void> _onLoadAdmirersData(LoadAdmirersData event, Emitter<AdmirersState> emit) async {
+    String currentActiveTab = 'likes';
+    if (state is AdmirersLoaded) {
+      currentActiveTab = (state as AdmirersLoaded).activeTab;
+    }
+
     emit(AdmirersLoading());
 
     try {
@@ -109,7 +114,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         sentLikes: [...mappedSentLikes, ..._getMockSentLikes()], // Added dummy data for testing
         roses: [...mappedRoses, ..._getMockRoses()], // Added dummy data for testing
         sentRoses: [...mappedSentRoses, ..._getMockSentRoses()], // Added dummy data for testing
-        activeTab: 'likes',
+        activeTab: currentActiveTab,
       ));
     } catch (e) {
       // If API fails, fallback to mock data so UI doesn't break
@@ -120,7 +125,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         sentLikes: _getMockSentLikes(),
         roses: _getMockRoses(),
         sentRoses: _getMockSentRoses(),
-        activeTab: 'likes',
+        activeTab: currentActiveTab,
       ));
     }
   }
