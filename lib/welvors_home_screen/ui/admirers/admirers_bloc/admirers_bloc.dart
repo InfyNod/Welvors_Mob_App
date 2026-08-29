@@ -33,7 +33,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
           'matchPercent': '${user['matchScore'] ?? 85}%',
           'distance': '${user['distanceKm'] ?? 5} km',
           'imageUrl': user['profileImage'] ?? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
-          'badgeText': item['timeAgo'], // e.g. 'Yesterday'
+          'badgeText': '💬 Sent a note', // Backend team is not sending real badge data yet, so keeping it static
           'badgeColor': 0xFFFFFFFF,
           'badgeTextColor': 0xDD000000,
           'isBlurred': isLocked,
@@ -42,7 +42,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
 
       emit(AdmirersLoaded(
         coins: 1280,
-        likes: mappedLikes,
+        likes: [...mappedLikes, ..._getMockLikes()], // Added dummy data for testing
         roses: _getMockRoses(),
         activeTab: 'likes',
       ));
