@@ -250,9 +250,9 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'age': '26',
         'timeInfo': '4h ago',
         'imageUrl': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80',
-        'statusText': '○ Pending',
-        'statusTextColor': 0xFF757575,
-        'statusBgColor': 0xFFEEEEEE,
+        'statusText': '• Seen',
+        'statusTextColor': 0xFF3F8CFF,
+        'statusBgColor': 0xFFEBF3FF,
       },
       {
         'id': 1,
