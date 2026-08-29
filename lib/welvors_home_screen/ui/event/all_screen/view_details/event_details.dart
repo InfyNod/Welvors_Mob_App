@@ -451,226 +451,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   const _FillingFastCard(),
                   const SizedBox(height: 24),
 
-                  // Who's Coming Section
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      "Who's Coming",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Balanced gender ratio',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              '60 verified guests',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        // Ratio Bar
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 52,
-                              child: Container(
-                                height: 12,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFFFA9EB5),
-                                      Color(0xFFE43A6A),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(6),
-                                    bottomLeft: Radius.circular(6),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 48,
-                              child: Container(
-                                height: 12,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFF6BB5F6),
-                                      Color(0xFF2C74C9),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(6),
-                                    bottomRight: Radius.circular(6),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 3,
-                                  backgroundColor: Color(0xFFFA6A85),
-                                ),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Women 52%',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFFFA6A85),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  'Men 48%',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4A90E2),
-                                  ),
-                                ),
-                                SizedBox(width: 6),
-                                CircleAvatar(
-                                  radius: 3,
-                                  backgroundColor: Color(0xFF4A90E2),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Divider(height: 1, color: Colors.grey.shade200),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            const Expanded(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '25–32',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Age range',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              height: 30,
-                              width: 1,
-                              color: Colors.grey.shade200,
-                            ),
-                            const Expanded(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '100%',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'ID verified',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              height: 30,
-                              width: 1,
-                              color: Colors.grey.shade200,
-                            ),
-                            const Expanded(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '7',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Your matches',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+
                   EventMoreDetailsSection(
                     isTrekkingEvent: title.toLowerCase().contains('trek'),
                     aboutEvent: _eventData?['aboutEvent'],
@@ -941,6 +722,103 @@ class _FillingFastCardState extends State<_FillingFastCard>
                     ],
                   ),
                 ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Balanced gender ratio
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Balanced gender ratio',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFDE2957),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // Ratio Bar
+          Row(
+            children: [
+              Expanded(
+                flex: 52,
+                child: Container(
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFFFA9EB5),
+                        Color(0xFFE43A6A),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(4),
+                      bottomLeft: Radius.circular(4),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 48,
+                child: Container(
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFF6BB5F6),
+                        Color(0xFF2C74C9),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(4),
+                      bottomRight: Radius.circular(4),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 3,
+                    backgroundColor: Color(0xFFFA6A85),
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    'Women 52%',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFA6A85),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    'Men 48%',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A90E2),
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  CircleAvatar(
+                    radius: 3,
+                    backgroundColor: Color(0xFF4A90E2),
+                  ),
+                ],
               ),
             ],
           ),

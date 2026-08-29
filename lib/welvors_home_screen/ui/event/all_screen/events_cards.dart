@@ -112,21 +112,49 @@ class _EventsCardsState extends State<EventsCards> {
         builder: (context, state) {
           final showCard4 = _matches(state, categories: [5, 6], filters: [0, 1, 3], searchData: "sandakphu ridge trek trekking");
 
+          // Separate events based on tag
+          final promotedTags = ['BRAND', 'PROMOTED', 'FEATURED'];
+          final promotedEvents = _apiEvents.where((e) {
+            final tag = (e['eventTag'] ?? '').toString().toUpperCase();
+            return promotedTags.contains(tag);
+          }).toList();
+          
+          final regularEvents = _apiEvents.where((e) {
+            final tag = (e['eventTag'] ?? '').toString().toUpperCase();
+            return !promotedTags.contains(tag);
+          }).toList();
+
           return Column(
             children: [
               // Highlighted / Promoted Events (Horizontal Scroll)
-              SizedBox(
-                height: 150,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
-                    _buildPromotedCard(),
-                    const SizedBox(width: 12),
-                    _buildFeaturedCard(),
-                  ],
+              if (promotedEvents.isNotEmpty)
+                SizedBox(
+                  height: 150,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: promotedEvents.length,
+                    separatorBuilder: (context, index) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      return _buildHorizontalApiEventCard(promotedEvents[index], state);
+                    },
+                  ),
+                )
+              else if (!showCard4 && _apiEvents.isEmpty) ...[
+                // Fallback to dummy horizontal cards if completely empty
+                SizedBox(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: [
+                      _buildPromotedCard(),
+                      const SizedBox(width: 12),
+                      _buildFeaturedCard(),
+                    ],
+                  ),
                 ),
-              ),
+              ],
               const SizedBox(height: 24),
 
               // Standard Events (Vertical)
@@ -141,8 +169,7 @@ class _EventsCardsState extends State<EventsCards> {
                         child: CircularProgressIndicator(),
                       )
                     else ...[
-                      for (var event in _apiEvents) ...[
-                        // We will build an API event card here
+                      for (var event in regularEvents) ...[
                         _buildApiEventCard(event, state),
                         const SizedBox(height: 24),
                       ],
@@ -461,6 +488,187 @@ class _EventsCardsState extends State<EventsCards> {
     } catch (e) {
       return isoDate; // fallback
     }
+  }
+
+  Widget _buildHorizontalApiEventCard(dynamic event, EventsState state) {
+    final title = event['title'] ?? 'Event Title';
+    final locationTitle = event['fullAddress']?.split(',').first ?? 'Location TBA';
+    
+    final heroImageRaw = event['heroImage'];
+    final imageUrl = (heroImageRaw != null && heroImageRaw.toString().isNotEmpty) 
+        ? heroImageRaw 
+        : 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80';
+        
+    final tagRaw = event['eventTag'] ?? 'PROMOTED';
+    final tagLabel = tagRaw.toString().toUpperCase();
+    final isBrand = tagLabel == 'BRAND';
+    final isFeatured = tagLabel == 'FEATURED';
+    final isPromoted = tagLabel == 'PROMOTED';
+
+    final dateStr = _formatApiDate(event['eventDate'], event['startTime']);
+    final eventId = event['id'] ?? '';
+    final capacity = event['capacity'] ?? 'Limited';
+    final eventType = (event['eventType'] ?? 'Event').toString().replaceAll('_', ' ').toUpperCase();
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsScreen(
+              eventId: eventId,
+              title: title,
+              date: dateStr,
+              location: locationTitle,
+              imageUrl: imageUrl,
+              status: tagLabel,
+              price: event['entryPrice'] != null ? '₹${event['entryPrice']}' : 'Free',
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 270,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Colors.black.withOpacity(0.9),
+                Colors.black.withOpacity(0.1),
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Event tag
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isBrand ? const Color(0xFFE85A7A).withOpacity(0.95) : 
+                         (isFeatured || isPromoted) ? null : const Color(0xFF424242).withOpacity(0.95), // Fallback dark grey
+                  gradient: isFeatured
+                      ? const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFFFED86A), // rgba(254, 216, 106)
+                            Color(0xFFE9A73F), // rgba(233, 167, 63)
+                          ],
+                        )
+                      : isPromoted 
+                          ? const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFF00C6FF), // Bright Cyan
+                                Color(0xFF0072FF), // Deep Blue
+                              ],
+                            ) 
+                          : null,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isFeatured)
+                      const Text('✦', style: TextStyle(color: Colors.black87, fontSize: 10))
+                    else if (isBrand)
+                      const Icon(Icons.star, size: 10, color: Colors.white)
+                    else if (isPromoted)
+                      const Icon(Icons.rocket_launch, size: 10, color: Colors.white)
+                    else
+                      const Icon(Icons.auto_awesome, size: 10, color: Colors.white),
+                    const SizedBox(width: 4),
+                    Text(
+                      tagLabel,
+                      style: TextStyle(
+                        color: isFeatured ? Colors.black87 : Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '$dateStr · $locationTitle',
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '$capacity singles · $eventType',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 10,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'View details',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildApiEventCard(dynamic event, EventsState state) {

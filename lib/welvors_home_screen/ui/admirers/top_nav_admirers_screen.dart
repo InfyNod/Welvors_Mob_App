@@ -7,8 +7,28 @@ import 'all_pages_admirers/likes/received.dart';
 import 'all_pages_admirers/roses/rose_received.dart';
 import 'all_pages_admirers/vip+/vip_received.dart';
 
-class TopNavAdmirersScreen extends StatelessWidget {
+class TopNavAdmirersScreen extends StatefulWidget {
   const TopNavAdmirersScreen({super.key});
+
+  @override
+  State<TopNavAdmirersScreen> createState() => _TopNavAdmirersScreenState();
+}
+
+class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
+  late PageController _pageController;
+  final List<String> _tabKeys = ['likes', 'roses', 'vip'];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: 0);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +37,20 @@ class TopNavAdmirersScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xFFFAFAFA),
         body: SafeArea(
-          child: BlocBuilder<AdmirersBloc, AdmirersState>(
+          child: BlocConsumer<AdmirersBloc, AdmirersState>(
+            listener: (context, state) {
+              if (state is AdmirersLoaded) {
+                final targetIndex = _tabKeys.indexOf(state.activeTab);
+                if (_pageController.hasClients &&
+                    _pageController.page?.round() != targetIndex) {
+                  _pageController.animateToPage(
+                    targetIndex,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              }
+            },
             builder: (context, state) {
               if (state is AdmirersLoading || state is AdmirersInitial) {
                 return const Center(child: CircularProgressIndicator());
@@ -31,11 +64,23 @@ class TopNavAdmirersScreen extends StatelessWidget {
                     const SizedBox(height: 2),
                     _buildTabs(context, state),
                     const Divider(height: 1, color: Color(0xFFF0F0F0)),
-                    // Dynamic content based on tab
+                    // Dynamic content based on tab via PageView
                     Expanded(
                       child: Container(
                         color: const Color(0xFFFAFAFA),
-                        child: _buildTabContent(state),
+                        child: PageView(
+                          controller: _pageController,
+                          onPageChanged: (index) {
+                            context.read<AdmirersBloc>().add(
+                              ChangeAdmirersTab(_tabKeys[index]),
+                            );
+                          },
+                          children: const [
+                            ReceivedLikesScreen(),
+                            ReceivedRosesScreen(),
+                            VipReceivedScreen(),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -47,19 +92,6 @@ class TopNavAdmirersScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildTabContent(AdmirersLoaded state) {
-    switch (state.activeTab) {
-      case 'likes':
-        return const ReceivedLikesScreen();
-      case 'roses':
-        return const ReceivedRosesScreen();
-      case 'vip':
-        return const VipReceivedScreen();
-      default:
-        return const SizedBox();
-    }
   }
 
   Widget _buildHeader(AdmirersLoaded state) {
@@ -108,23 +140,19 @@ class TopNavAdmirersScreen extends StatelessWidget {
   Widget _buildTabs(BuildContext context, AdmirersLoaded state) {
     final tabs = [
       {
-        'label': '❤️ Likes',
+        'label': '❤️Likes',
         'count': state.likesCount.toString(),
         'key': 'likes',
       },
       {
-        'label': '🌹 Roses',
+        'label': '🌹Roses',
         'count': state.rosesCount.toString(),
         'key': 'roses',
       },
-      {'label': '👑 VIP+', 'count': '', 'key': 'vip'},
+      {'label': '👑VIP+', 'count': '', 'key': 'vip'},
     ];
 
-    final int selectedIndex = [
-      'likes',
-      'roses',
-      'vip',
-    ].indexOf(state.activeTab);
+    final int selectedIndex = _tabKeys.indexOf(state.activeTab);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -135,11 +163,11 @@ class TopNavAdmirersScreen extends StatelessWidget {
 
           double indicatorWidth;
           if (selectedIndex == 0) {
-            indicatorWidth = 70; // "❤️ Likes 36"
+            indicatorWidth = 90; // "❤️Likes 36"
           } else if (selectedIndex == 1) {
-            indicatorWidth = 65; // "🌹 Roses 3"
+            indicatorWidth = 85; // "🌹Roses 3"
           } else {
-            indicatorWidth = 60; // "👑 VIP+"
+            indicatorWidth = 60; // "👑VIP+"
           }
 
           double indicatorCenter =
@@ -182,10 +210,10 @@ class TopNavAdmirersScreen extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 tab['count']!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFFE85A7A),
+                                  color: Color(0xFFE85A7A),
                                 ),
                               ),
                             ],
@@ -206,8 +234,8 @@ class TopNavAdmirersScreen extends StatelessWidget {
                   curve: Curves.easeInOut,
                   height: 3,
                   width: indicatorWidth,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE85A7A),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE85A7A),
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(3),
                     ),

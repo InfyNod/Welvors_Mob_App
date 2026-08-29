@@ -230,48 +230,65 @@ class AboutHostAndFAQSection extends StatelessWidget {
         // Frequently Asked
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Frequently Asked',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'FREQUENTLY ASKED',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Colors.black54,
+                letterSpacing: 1.2,
+              ),
             ),
           ),
         ),
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              const FaqExpandableCard(
-                question: 'Can I come alone?',
-                answer:
-                    'Yes! Most of our guests come solo. Our icebreakers are designed to make it easy to meet everyone.',
-              ),
-              const SizedBox(height: 12),
-              const FaqExpandableCard(
-                question: 'What\'s the refund policy?',
-                answer:
-                    'Full refund on cancellations made 3+ days before the event.',
-              ),
-              const SizedBox(height: 12),
-              const FaqExpandableCard(
-                question: 'Is alcohol included?',
-                answer:
-                    'Yes, standard entry includes one welcome cocktail. Additional drinks can be purchased at the bar.',
-              ),
-              const SizedBox(height: 12),
-              const FaqExpandableCard(
-                question: 'Is there a dress code?',
-                answer:
-                    'Smart casual is recommended. Right of admission is reserved by the venue.',
-              ),
-            ],
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 20,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                const _EventFaqItem(
+                  question: 'Can I come alone?',
+                  answer:
+                      'Yes! Most of our guests come solo. Our icebreakers are designed to make it easy to meet everyone.',
+                ),
+                _buildFaqDivider(),
+                const _EventFaqItem(
+                  question: 'What\'s the refund policy?',
+                  answer:
+                      'Full refund on cancellations made 3+ days before the event.',
+                ),
+                _buildFaqDivider(),
+                const _EventFaqItem(
+                  question: 'Is alcohol included?',
+                  answer:
+                      'Some events include a welcome drink. Please check the "Your Pass & Amenities" section for specifics.',
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 32),
-
         // TERMS & CONDITIONS
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -307,8 +324,18 @@ class AboutHostAndFAQSection extends StatelessWidget {
             ],
           ),
         ),
-        hSized0,  
+        const SizedBox(height: 16),
       ],
+    );
+  }
+
+  Widget _buildFaqDivider() {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: Colors.grey.shade100,
+      indent: 16,
+      endIndent: 16,
     );
   }
 
@@ -424,84 +451,81 @@ class AboutHostAndFAQSection extends StatelessWidget {
   }
 }
 
-class FaqExpandableCard extends StatefulWidget {
+class _EventFaqItem extends StatefulWidget {
   final String question;
   final String answer;
 
-  const FaqExpandableCard({
-    super.key,
-    required this.question,
-    required this.answer,
-  });
+  const _EventFaqItem({required this.question, required this.answer});
 
   @override
-  State<FaqExpandableCard> createState() => _FaqExpandableCardState();
+  State<_EventFaqItem> createState() => _EventFaqItemState();
 }
 
-class _FaqExpandableCardState extends State<FaqExpandableCard> {
+class _EventFaqItemState extends State<_EventFaqItem> {
   bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _isExpanded
-              ? const Color(0xFFE43A6A).withOpacity(0.3)
-              : Colors.grey.shade200,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
+      },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
                     widget.question,
                     style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                Icon(
-                  _isExpanded ? Icons.remove : Icons.add,
-                  color: const Color(0xFFE43A6A),
-                  size: 20,
+                const SizedBox(width: 16),
+                AnimatedRotation(
+                  turns: _isExpanded ? 0.125 : 0,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  child: Icon(
+                    Icons.add,
+                    color: _isExpanded ? Colors.pink.shade300 : Colors.grey.shade400,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
-            if (_isExpanded) ...[
-              const SizedBox(height: 12),
-              Text(
-                widget.answer,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade700,
-                  height: 1.4,
-                ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: double.infinity,
+                child: _isExpanded
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          widget.answer,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            height: 1.5,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ),
-            ],
+            ),
           ],
         ),
       ),
