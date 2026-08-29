@@ -2,18 +2,64 @@ import 'package:flutter/material.dart';
 
 class YourPassAndAmenitiesSection extends StatelessWidget {
   final String price;
+  final Map<String, dynamic>? eventData;
+  final String userGender;
   final List<dynamic>? safetyFeatures;
   final List<dynamic>? amenities;
 
   const YourPassAndAmenitiesSection({
     super.key, 
     required this.price,
+    this.eventData,
+    this.userGender = 'woman',
     this.safetyFeatures,
     this.amenities,
   });
 
   @override
   Widget build(BuildContext context) {
+    final String gender = userGender.toLowerCase();
+    
+    // Parse prices
+    double originalPrice = 0;
+    double discountedPrice = 0;
+    
+    if (eventData != null) {
+      if (gender == 'woman') {
+        originalPrice = double.tryParse(eventData!['womenEntryPrice']?.toString() ?? '0') ?? 0;
+        discountedPrice = double.tryParse(eventData!['womenDiscountedPrice']?.toString() ?? '0') ?? 0;
+      } else if (gender == 'man') {
+        originalPrice = double.tryParse(eventData!['menEntryPrice']?.toString() ?? '0') ?? 0;
+        discountedPrice = double.tryParse(eventData!['menDiscountedPrice']?.toString() ?? '0') ?? 0;
+      } else {
+        originalPrice = double.tryParse(eventData!['otherEntryPrice']?.toString() ?? '0') ?? 0;
+        discountedPrice = double.tryParse(eventData!['otherDiscountedPrice']?.toString() ?? '0') ?? 0;
+      }
+    }
+
+    if (originalPrice == 0 && discountedPrice == 0) {
+       // fallback to the `price` string if not found, stripping ₹
+       final num = double.tryParse(price.replaceAll(RegExp(r'[^0-9.]'), ''));
+       if (num != null) originalPrice = num;
+       discountedPrice = originalPrice;
+    }
+    
+    final bool hasDiscount = discountedPrice < originalPrice && discountedPrice > 0;
+    final String displayPrice = hasDiscount ? '₹${discountedPrice.toStringAsFixed(0)}' : (discountedPrice > 0 ? '₹${discountedPrice.toStringAsFixed(0)}' : (originalPrice > 0 ? '₹${originalPrice.toStringAsFixed(0)}' : price));
+    final String originalPriceText = hasDiscount ? '₹${originalPrice.toStringAsFixed(0)}' : '';
+    final String discountPercentage = eventData?['discountPercentage']?.toString() ?? '';
+    
+    IconData genderIcon = Icons.female;
+    String genderLabel = 'Woman';
+    
+    if (gender == 'man') {
+       genderIcon = Icons.male;
+       genderLabel = 'Man';
+    } else if (gender != 'woman') {
+       genderIcon = Icons.transgender;
+       genderLabel = 'Other';
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -30,174 +76,235 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+        // Premium Pass Card
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE43A6A), width: 1.5),
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFFFFF0F5), // Very light soft pink
+                Colors.white,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE43A6A).withOpacity(0.12),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
+                color: const Color(0xFFE43A6A).withOpacity(0.15),
+                blurRadius: 24,
+                spreadRadius: 2,
+                offset: const Offset(0, 8),
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Standard Entry',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Welcome drink + all access',
-                        style: TextStyle(fontSize: 12, color: Colors.black54),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE43A6A)),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.female,
-                          color: Color(0xFFE43A6A),
-                          size: 16,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          'Woman',
-                          style: TextStyle(
-                            color: Color(0xFFE43A6A),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Divider(height: 1, color: Colors.grey.shade200),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        price,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black87,
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      'Price for your profile',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        // Safety & Security
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade200),
-            boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.04),
-                blurRadius: 12,
+                blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
+            border: Border.all(
+              color: const Color(0xFFE43A6A).withOpacity(0.3),
+              width: 1.5,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
-                children: [
-                  Text('🛡️', style: TextStyle(fontSize: 18)),
-                  SizedBox(width: 8),
-                  Text(
-                    'Safety & Security',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+              // Top Section (Ticket Info)
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE43A6A).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.confirmation_num_outlined, // Premium Ticket Icon
+                                  color: Color(0xFFE43A6A),
+                                  size: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Standard Pass',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black87,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Welcome drink + all access',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              GridView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: (safetyFeatures != null && safetyFeatures!.isNotEmpty) ? safetyFeatures!.length : 4,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 12,
-                  mainAxisExtent: 32, // Height for safety item
+                    // Gender Badge with subtle premium look
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFE43A6A).withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                        border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            genderIcon,
+                            color: const Color(0xFFE43A6A),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            genderLabel,
+                            style: const TextStyle(
+                              color: Color(0xFFE43A6A),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                itemBuilder: (context, index) {
-                  if (safetyFeatures != null && safetyFeatures!.isNotEmpty) {
-                    return _buildSafetyItem(Icons.check_circle_outline, safetyFeatures![index]['title'] ?? '');
-                  }
-                  // Dummy data
-                  final dummy = [
-                    {'icon': Icons.shield_outlined, 'text': 'Verified Staff'},
-                    {'icon': Icons.lock_outline, 'text': 'Secure Entry'},
-                    {'icon': Icons.verified_user_outlined, 'text': 'ID Verification'},
-                    {'icon': Icons.visibility_outlined, 'text': 'Private Venue'},
-                  ];
-                  return _buildSafetyItem(dummy[index]['icon'] as IconData, dummy[index]['text'] as String);
-                },
+              ),
+              
+              // Premium Dashed Divider
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Flex(
+                      direction: Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+                      children: List.generate(
+                        (constraints.constrainWidth() / 8).floor(),
+                        (index) => SizedBox(
+                          width: 4,
+                          height: 1.5,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE43A6A).withOpacity(0.3),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              
+              // Bottom Section (Price Info)
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          displayPrice,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black87,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                        if (hasDiscount) ...[
+                          const SizedBox(width: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: Text(
+                              originalPriceText,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black45,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                          ),
+                          if (discountPercentage.isNotEmpty && discountPercentage != '0') ...[
+                            const SizedBox(width: 8),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFE43A6A), Color(0xFFFF758C)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  '$discountPercentage% OFF',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        'Price for your profile',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -235,26 +342,20 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                 final amenityName = amenities![index]['name'] ?? amenities![index]['title'] ?? '';
                 final iconName = amenities![index]['icon']?.toString().toLowerCase() ?? '';
                 
-                String emoji = '✨';
-                if (iconName.contains('drink') || iconName.contains('cocktail') || iconName.contains('bar')) emoji = '🍸';
-                else if (iconName.contains('music') || iconName.contains('dj') || iconName.contains('band')) emoji = '🎷';
-                else if (iconName.contains('food') || iconName.contains('meal') || iconName.contains('appetizer')) emoji = '🍽️';
-                else if (iconName.contains('photo') || iconName.contains('camera')) emoji = '📸';
-                else if (iconName.contains('park') || iconName.contains('car')) emoji = '🅿️';
-                else if (iconName.contains('host') || iconName.contains('staff') || iconName.contains('team')) emoji = '👩';
+                final iconData = _getAmenityIcon(iconName);
 
-                return _buildAmenityCard(emoji, amenityName);
+                return _buildAmenityCard(iconData, amenityName);
               }
               // Dummy data
               final dummy = [
-                {'emoji': '🍸', 'text': 'Welcome cocktail'},
-                {'emoji': '🎷', 'text': 'Live jazz band'},
-                {'emoji': '🍽️', 'text': 'Gourmet\nappetizers'},
-                {'emoji': '📸', 'text': 'Photo corner'},
-                {'emoji': '🅿️', 'text': 'Valet parking'},
-                {'emoji': '👩', 'text': 'Female-led host\nteam'},
+                {'icon': Icons.local_bar, 'text': 'Welcome cocktail'},
+                {'icon': Icons.music_note, 'text': 'Live jazz band'},
+                {'icon': Icons.restaurant, 'text': 'Gourmet\\nappetizers'},
+                {'icon': Icons.camera_alt, 'text': 'Photo corner'},
+                {'icon': Icons.directions_car, 'text': 'Valet parking'},
+                {'icon': Icons.person, 'text': 'Female-led host\\nteam'},
               ];
-              return _buildAmenityCard(dummy[index]['emoji']!, dummy[index]['text']!);
+              return _buildAmenityCard(dummy[index]['icon'] as IconData, dummy[index]['text'] as String);
             },
           ),
         ),
@@ -290,7 +391,45 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
     );
   }
 
-  Widget _buildAmenityCard(String emoji, String text) {
+
+  IconData _getAmenityIcon(String? iconName) {
+    switch (iconName?.toLowerCase()) {
+      case 'drink':
+      case 'cocktail':
+      case 'bar':
+        return Icons.local_bar;
+      case 'music':
+      case 'dj':
+      case 'band':
+        return Icons.music_note;
+      case 'food':
+      case 'meal':
+      case 'appetizer':
+        return Icons.restaurant;
+      case 'photo':
+      case 'camera':
+        return Icons.camera_alt;
+      case 'park':
+      case 'car':
+        return Icons.directions_car;
+      case 'host':
+      case 'staff':
+      case 'team':
+        return Icons.person;
+      case 'users':
+        return Icons.people;
+      case 'building':
+        return Icons.business;
+      case 'star':
+        return Icons.star_border;
+      case 'check':
+        return Icons.check;
+      default:
+        return Icons.star;
+    }
+  }
+
+  Widget _buildAmenityCard(IconData iconData, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
@@ -318,7 +457,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
               color: Color(0xFFF8F9FA),
               shape: BoxShape.circle,
             ),
-            child: Text(emoji, style: const TextStyle(fontSize: 18)),
+            child: Icon(iconData, size: 20, color: const Color(0xFFE43A6A)),
           ),
           const SizedBox(width: 10),
           Expanded(

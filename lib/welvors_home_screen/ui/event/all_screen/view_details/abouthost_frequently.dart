@@ -4,7 +4,8 @@ import 'Invite_match_drawer.dart';
 
 class AboutHostAndFAQSection extends StatelessWidget {
   final String? termsConditions;
-  const AboutHostAndFAQSection({super.key, this.termsConditions});
+  final Map<String, dynamic>? eventPartner;
+  const AboutHostAndFAQSection({super.key, this.termsConditions, this.eventPartner});
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +50,21 @@ class AboutHostAndFAQSection extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFDDE6), // Slightly darker pink
                       borderRadius: BorderRadius.circular(12),
+                      image: (eventPartner?['logo'] != null && eventPartner!['logo'].toString().isNotEmpty)
+                          ? DecorationImage(
+                              image: NetworkImage(eventPartner!['logo']),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
-                    child: const Text('🥂', style: TextStyle(fontSize: 24)),
+                    child: (eventPartner?['logo'] == null || eventPartner!['logo'].toString().isEmpty)
+                        ? const Center(child: Text('🥂', style: TextStyle(fontSize: 24)))
+                        : null,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -66,10 +73,10 @@ class AboutHostAndFAQSection extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Flexible(
+                            Flexible(
                               child: Text(
-                                'Spark Official Events',
-                                style: TextStyle(
+                                eventPartner?['businessName'] ?? 'Spark Official Events',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
@@ -79,16 +86,16 @@ class AboutHostAndFAQSection extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Icon(
+                            const Icon(
                               Icons.verified,
-                              color: const Color(0xFFE43A6A),
+                              color: Color(0xFFE43A6A),
                               size: 16,
                             ),
                           ],
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Curating singles events since 2021 · Mumbai',
+                          eventPartner?['address'] ?? 'Curating singles events since 2021 · Mumbai',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,

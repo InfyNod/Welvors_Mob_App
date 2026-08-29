@@ -38,29 +38,35 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                     final index = entry.key;
                     final item = entry.value;
                     return _buildTimelineItem(
-                      time: item['time'] ?? '',
-                      title: item['title'] ?? '',
-                      subtitle: item['description'] ?? '', // Subtitle could be empty
+                      item: item,
                       isLast: index == itinerary!.length - 1,
                     );
                   }).toList()
                 : [
                     _buildTimelineItem(
-                      time: '7:00 PM',
-                      title: 'Welcome Drinks',
-                      subtitle: 'Arrival and complimentary sparkling wine',
+                      item: {
+                        'time': '7:00 PM',
+                        'title': 'Welcome Drinks',
+                        'description':
+                            'Arrival and complimentary sparkling wine',
+                      },
                       isLast: false,
                     ),
                     _buildTimelineItem(
-                      time: '8:00 PM',
-                      title: 'Icebreaker Rounds',
-                      subtitle: 'Guided 5-minute curated conversations',
+                      item: {
+                        'time': '8:00 PM',
+                        'title': 'Icebreaker Rounds',
+                        'description': 'Guided 5-minute curated conversations',
+                      },
                       isLast: false,
                     ),
                     _buildTimelineItem(
-                      time: '9:30 PM',
-                      title: 'Open Socializing',
-                      subtitle: 'Free mixing with live DJ and appetizers',
+                      item: {
+                        'time': '9:30 PM',
+                        'title': 'Open Socializing',
+                        'description':
+                            'Free mixing with live DJ and appetizers',
+                      },
                       isLast: true,
                     ),
                   ],
@@ -108,7 +114,8 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      fullAddress ?? '452 Linking Road, Floor 12, Bandra West, Mumbai',
+                      fullAddress ??
+                          '452 Linking Road, Floor 12, Bandra West, Mumbai',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey.shade600,
@@ -127,11 +134,39 @@ class EventItineraryAndLocationSection extends StatelessWidget {
   }
 
   Widget _buildTimelineItem({
-    required String time,
-    required String title,
-    required String subtitle,
+    required Map<String, dynamic> item,
     required bool isLast,
   }) {
+    final String timeStr = item['time']?.toString() ?? '';
+    final String title = item['title']?.toString() ?? '';
+    final String subtitle = item['description']?.toString() ?? '';
+
+    final String? dayNumber = item['dayNumber']?.toString();
+    final String? date = item['date']?.toString();
+    final String? elevation = item['elevation']?.toString();
+    final String? distance = item['distance']?.toString();
+    final String? meals = item['meals']?.toString();
+    final String? accommodation = item['accommodation']?.toString();
+    final String? location = item['location']?.toString();
+
+    String headerText = '';
+    if (dayNumber != null && dayNumber != 'null' && dayNumber.isNotEmpty) {
+      headerText += 'Day $dayNumber';
+    }
+    if (timeStr.isNotEmpty) {
+      if (headerText.isNotEmpty) headerText += ' · ';
+      headerText += timeStr;
+    }
+
+    final hasExtraDetails =
+        (elevation != null && elevation != 'null' && elevation.isNotEmpty) ||
+        (distance != null && distance != 'null' && distance.isNotEmpty) ||
+        (meals != null && meals != 'null' && meals.isNotEmpty) ||
+        (accommodation != null &&
+            accommodation != 'null' &&
+            accommodation.isNotEmpty) ||
+        (location != null && location != 'null' && location.isNotEmpty);
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,11 +202,13 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                         color: Colors.black87,
                       ),
                       children: [
-                        TextSpan(
-                          text: time,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const TextSpan(text: ' · '),
+                        if (headerText.isNotEmpty) ...[
+                          TextSpan(
+                            text: headerText,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const TextSpan(text: ' · '),
+                        ],
                         TextSpan(
                           text: title,
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -190,8 +227,63 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                       ),
                     ),
                   ],
+                  if (hasExtraDetails) ...[
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        if (location != null &&
+                            location != 'null' &&
+                            location.isNotEmpty)
+                          _buildItineraryChip(Icons.location_on, location),
+                        if (distance != null &&
+                            distance != 'null' &&
+                            distance.isNotEmpty)
+                          _buildItineraryChip(Icons.directions_walk, distance),
+                        if (elevation != null &&
+                            elevation != 'null' &&
+                            elevation.isNotEmpty)
+                          _buildItineraryChip(Icons.terrain, elevation),
+                        if (meals != null &&
+                            meals != 'null' &&
+                            meals.isNotEmpty)
+                          _buildItineraryChip(Icons.restaurant, meals),
+                        if (accommodation != null &&
+                            accommodation != 'null' &&
+                            accommodation.isNotEmpty)
+                          _buildItineraryChip(Icons.hotel, accommodation),
+                      ],
+                    ),
+                  ],
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItineraryChip(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: const Color(0xFFE43A6A)),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
             ),
           ),
         ],

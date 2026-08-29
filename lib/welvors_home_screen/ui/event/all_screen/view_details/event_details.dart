@@ -527,6 +527,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   const SizedBox(height: 20),
                   YourPassAndAmenitiesSection(
                     price: price,
+                    eventData: _eventData,
+                    userGender: context.read<ProfileEditCubit>().state.gender,
                     safetyFeatures: _eventData?['safetyFeatures'] as List?,
                     amenities: _eventData?['amenities'] as List?,
                   ),
@@ -543,6 +545,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   const SizedBox(height: 20),
                   AboutHostAndFAQSection(
                     termsConditions: _eventData?['termsConditions'] as String?,
+                    eventPartner: _eventData?['eventPartner'] as Map<String, dynamic>?,
                   ),
                   const SizedBox(height: 20),
                 ],
