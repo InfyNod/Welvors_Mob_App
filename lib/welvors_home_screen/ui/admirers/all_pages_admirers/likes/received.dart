@@ -306,7 +306,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
@@ -316,7 +316,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                     color: Colors.white.withOpacity(0.7),
                     fontSize: 12,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -489,7 +489,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
             Positioned(
               bottom: 12,
               left: 12,
-              right: 84, // Leave space for action buttons
+              right: isBlurred ? 12 : 56, // Only leave space for Heart button if not blurred
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -505,36 +505,32 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   if (!isBlurred) const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '$matchPercent Match',
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$matchPercent Match',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      const Text(
-                        ' · ',
-                        style: TextStyle(color: Colors.white70, fontSize: 10),
-                      ),
-                      Flexible(
-                        child: Text(
-                          distance,
+                        const TextSpan(
+                          text: ' · ',
+                          style: TextStyle(color: Colors.white70, fontSize: 10),
+                        ),
+                        TextSpan(
+                          text: distance,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
