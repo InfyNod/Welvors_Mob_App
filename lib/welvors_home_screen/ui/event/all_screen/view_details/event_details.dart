@@ -678,6 +678,21 @@ class _FillingFastCardState extends State<_FillingFastCard>
     final Color bgColor = const Color(0xFFFFF0F3);
     final Color borderColor = const Color(0xFFE43A6A).withOpacity(0.15);
     final Color textColor = const Color(0xFFDE2957);
+    int menCapacity = stats['menCapacity'] ?? 0;
+    int womenCapacity = stats['womenCapacity'] ?? 0;
+    int otherCapacity = stats['otherCapacity'] ?? 0;
+
+    if (menCapacity == 0 && womenCapacity == 0 && otherCapacity == 0) {
+      // Fallback dummy values to keep UI visible if API hasn't populated data yet
+      menCapacity = 50;
+      womenCapacity = 40;
+      otherCapacity = 10;
+    }
+
+    final int totalGenderCapacity = menCapacity + womenCapacity + otherCapacity;
+    final int menFlex = totalGenderCapacity > 0 ? (menCapacity * 100 / totalGenderCapacity).round() : 0;
+    final int womenFlex = totalGenderCapacity > 0 ? (womenCapacity * 100 / totalGenderCapacity).round() : 0;
+    final int otherFlex = totalGenderCapacity > 0 ? (otherCapacity * 100 / totalGenderCapacity).round() : 0;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -855,89 +870,122 @@ class _FillingFastCardState extends State<_FillingFastCard>
           ),
           const SizedBox(height: 16),
           // Balanced gender ratio
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Balanced gender ratio',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFDE2957),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // Ratio Bar
-          Row(
-            children: [
-              Expanded(
-                flex: 52,
-                child: Container(
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFFFA9EB5), Color(0xFFE43A6A)],
-                    ),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(4),
-                      bottomLeft: Radius.circular(4),
-                    ),
+          if (totalGenderCapacity > 0) ...[
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Balanced gender ratio',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFDE2957),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 48,
-                child: Container(
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF6BB5F6), Color(0xFF2C74C9)],
-                    ),
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(4),
-                      bottomRight: Radius.circular(4),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Ratio Bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Row(
                 children: [
-                  CircleAvatar(radius: 3, backgroundColor: Color(0xFFFA6A85)),
-                  SizedBox(width: 4),
-                  Text(
-                    'Women 52%',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFA6A85),
+                  if (womenCapacity > 0)
+                    Expanded(
+                      flex: womenCapacity,
+                      child: Container(
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFFA9EB5), Color(0xFFE43A6A)],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  if (menCapacity > 0)
+                    Expanded(
+                      flex: menCapacity,
+                      child: Container(
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF6BB5F6), Color(0xFF2C74C9)],
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (otherCapacity > 0)
+                    Expanded(
+                      flex: otherCapacity,
+                      child: Container(
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFCE93D8), Color(0xFF8E24AA)],
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
-              Row(
-                children: [
-                  Text(
-                    'Men 48%',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A90E2),
-                    ),
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                if (womenCapacity > 0)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircleAvatar(radius: 3, backgroundColor: Color(0xFFFA6A85)),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Women $womenFlex%',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFFA6A85),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 4),
-                  CircleAvatar(radius: 3, backgroundColor: Color(0xFF4A90E2)),
-                ],
-              ),
-            ],
-          ),
+                if (menCapacity > 0)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircleAvatar(radius: 3, backgroundColor: Color(0xFF4A90E2)),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Men $menFlex%',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A90E2),
+                        ),
+                      ),
+                    ],
+                  ),
+                if (otherCapacity > 0)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircleAvatar(radius: 3, backgroundColor: Color(0xFF8E24AA)),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Other $otherFlex%',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF8E24AA),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ]
         ],
       ),
     );

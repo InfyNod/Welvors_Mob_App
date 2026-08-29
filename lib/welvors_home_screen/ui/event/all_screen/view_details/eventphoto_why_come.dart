@@ -38,7 +38,15 @@ class EventMoreDetailsSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             children: galleryImages != null && galleryImages!.isNotEmpty
-                ? galleryImages!.map((img) => _buildPhotoCard(img.toString())).toList()
+                ? galleryImages!.map((img) {
+                    String url = '';
+                    if (img is Map) {
+                      url = img['imageUrl']?.toString() ?? '';
+                    } else {
+                      url = img.toString();
+                    }
+                    return _buildPhotoCard(url);
+                  }).toList()
                 : [
                     _buildPhotoCard(
                       'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=300&q=80',
@@ -104,11 +112,15 @@ class EventMoreDetailsSection extends StatelessWidget {
                 ? whyShouldCome!.asMap().entries.map((entry) {
                     final index = entry.key;
                     final item = entry.value;
+                    final iconName = item['icon'] as String?;
+                    final iconData = _getIconForString(iconName);
+                    final bgColor = _getIconBgColor(index);
+                    
                     return Column(
                       children: [
                         _buildWhyItem(
-                          icon: const Icon(Icons.check_circle_outline, size: 18, color: Colors.black87),
-                          iconBgColor: const Color(0xFFF3E5F5),
+                          icon: Icon(iconData, size: 18, color: Colors.black87),
+                          iconBgColor: bgColor,
                           title: item['title'] ?? '',
                           subtitle: item['description'] ?? '',
                         ),
@@ -154,6 +166,48 @@ class EventMoreDetailsSection extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  IconData _getIconForString(String? iconName) {
+    switch (iconName?.toLowerCase()) {
+      case 'users':
+        return Icons.people_outline;
+      case 'building':
+        return Icons.business;
+      case 'star':
+        return Icons.star_border;
+      case 'check':
+        return Icons.check;
+      case 'heart':
+        return Icons.favorite_border;
+      case 'music':
+        return Icons.music_note;
+      case 'drink':
+        return Icons.local_bar;
+      case 'food':
+        return Icons.restaurant;
+      case 'map':
+        return Icons.map_outlined;
+      case 'date':
+        return Icons.calendar_today;
+      case 'time':
+        return Icons.access_time;
+      case 'shield':
+        return Icons.shield_outlined;
+      default:
+        return Icons.check_circle_outline;
+    }
+  }
+
+  Color _getIconBgColor(int index) {
+    const colors = [
+      Color(0xFFF3E5F5), // Light purple
+      Color(0xFFE8F5E9), // Light green
+      Color(0xFFFFF3E0), // Light orange
+      Color(0xFFE3F2FD), // Light blue
+      Color(0xFFFFEBEE), // Light red
+    ];
+    return colors[index % colors.length];
   }
 
   Widget _buildPhotoCard(String url) {
