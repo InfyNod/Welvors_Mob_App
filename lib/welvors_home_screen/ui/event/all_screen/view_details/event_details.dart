@@ -690,7 +690,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     fullAddress: _eventData?['fullAddress'] ?? 'Venue details will be shared',
                   ),
                   const SizedBox(height: 20),
-                  const AboutHostAndFAQSection(),
+                  AboutHostAndFAQSection(
+                    termsConditions: _eventData?['termsConditions'] as String?,
+                  ),
                   const SizedBox(height: 20),
                 ],
               ),

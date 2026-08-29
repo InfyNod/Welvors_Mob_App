@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 import 'Invite_match_drawer.dart';
 
 class AboutHostAndFAQSection extends StatelessWidget {
-  const AboutHostAndFAQSection({super.key});
+  final String? termsConditions;
+  const AboutHostAndFAQSection({super.key, this.termsConditions});
 
   @override
   Widget build(BuildContext context) {
@@ -286,22 +288,26 @@ class AboutHostAndFAQSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildTermText(
-                'Entry only with valid photo ID matching your verified profile',
-              ),
-              _buildTermText(
-                'Full refund on cancellations made 3+ days before the event',
-              ),
-              _buildTermText(
-                'Dress code: Smart casual · Right of admission reserved',
-              ),
-              _buildTermText(
-                'Zero-tolerance policy for harassment — instant removal',
-              ),
+              if (termsConditions != null && termsConditions!.isNotEmpty)
+                _buildTermText(termsConditions!)
+              else ...[
+                _buildTermText(
+                  'Entry only with valid photo ID matching your verified profile',
+                ),
+                _buildTermText(
+                  'Full refund on cancellations made 3+ days before the event',
+                ),
+                _buildTermText(
+                  'Dress code: Smart casual · Right of admission reserved',
+                ),
+                _buildTermText(
+                  'Zero-tolerance policy for harassment — instant removal',
+                ),
+              ],
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        hSized0,  
       ],
     );
   }
