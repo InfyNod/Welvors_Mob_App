@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../admirers_bloc/admirers_bloc.dart';
+import '../../admirers_bloc/admirers_event.dart';
+import '../../admirers_bloc/admirers_state.dart';
 import 'rose_send.dart';
 
 class ReceivedRosesScreen extends StatefulWidget {
@@ -13,33 +17,20 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
 
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
-  // Dynamic list of cards so they can be removed
-  final List<Map<String, dynamic>> _roseCards = [
-    {
-      'id': 0,
-      'name': 'Dev',
-      'age': '27',
-      'distance': '3 km',
-      'message': '"Your trekking photos are amazing — Ladakh next year?"',
-      'imageUrl': 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80',
-    },
-    {
-      'id': 1,
-      'name': 'Arjun',
-      'age': '28',
-      'distance': '6 km',
-      'message': '"Fellow IIM grad here — chai > coffee, agree?"',
-      'imageUrl': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
-    },
-    {
-      'id': 2,
-      'name': 'Kabir',
-      'age': '30',
-      'distance': '11 km',
-      'message': '"Saw you love indie music — Prateek Kuhad gig next month?"',
-      'imageUrl': 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=80',
-    },
-  ];
+  List<Map<String, dynamic>> _roseCards = [];
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final bloc = context.read<AdmirersBloc>();
+      if (bloc.state is AdmirersLoaded) {
+        _roseCards = List.from((bloc.state as AdmirersLoaded).roses);
+      }
+      _isInitialized = true;
+    }
+  }
 
   void _handleAction(int id, String popupText, {bool isAccepted = true}) {
     final index = _roseCards.indexWhere((card) => card['id'] == id);
@@ -50,6 +41,8 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
         (context, animation) => _buildRemovedItem(removedCard, animation, isAccepted: isAccepted),
         duration: const Duration(milliseconds: 600),
       );
+      // Dispatch to BLoC to update the tab count
+      context.read<AdmirersBloc>().add(RemoveRose(id));
       setState(() {});
     }
 

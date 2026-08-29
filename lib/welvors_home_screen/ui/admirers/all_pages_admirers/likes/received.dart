@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../admirers_bloc/admirers_bloc.dart';
+import '../../admirers_bloc/admirers_event.dart';
+import '../../admirers_bloc/admirers_state.dart';
 import 'reveal_drawer.dart';
 import 'sent.dart';
 
@@ -12,8 +16,93 @@ class ReceivedLikesScreen extends StatefulWidget {
 
 class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
   int _selectedTab = 0; // 0 for Received, 1 for Sent
-  bool _isCard3Revealed = false;
-  bool _isCard4Revealed = false;
+  
+  List<Map<String, dynamic>> _likeCards = [];
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final bloc = context.read<AdmirersBloc>();
+      if (bloc.state is AdmirersLoaded) {
+        _likeCards = List.from((bloc.state as AdmirersLoaded).likes);
+      }
+      _isInitialized = true;
+    }
+  }
+  
+  void _handleAction(int id, String popupText) {
+    final index = _likeCards.indexWhere((card) => card['id'] == id);
+    if (index >= 0) {
+      _likeCards.removeAt(index);
+      context.read<AdmirersBloc>().add(RemoveLike(id));
+      setState(() {});
+    }
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A2A),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Text(
+                popupText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 16),
+        duration: const Duration(milliseconds: 2000),
+      ),
+    );
+  }
+
+  void _showRevealedSnackbar(BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('💛', style: TextStyle(fontSize: 16)),
+            SizedBox(width: 8),
+            Text(
+              'Revealed · like them back!',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF2A2A2A),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        margin: const EdgeInsets.only(
+          bottom: 16,
+          left: 60,
+          right: 60,
+        ), // Increased horizontal margin to reduce width
+        duration: const Duration(milliseconds: 2000), // Faster duration
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +113,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
           _buildToggle(),
           const SizedBox(height: 16),
           _selectedTab == 0 ? _buildReceivedGrid() : const SentLikesScreen(),
-          if (_selectedTab == 0) _buildPremiumBanner(),
+          if (_selectedTab == 0 && _likeCards.isNotEmpty) _buildPremiumBanner(),
           const SizedBox(height: 24), // Bottom padding for scrolling
         ],
       ),
@@ -124,107 +213,55 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
   }
 
   Widget _buildReceivedGrid() {
-    return GridView.count(
+    if (_likeCards.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Text(
+          'No more likes',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey.shade500,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
+    }
+    
+    return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 0.74, // Changed from 0.72 to 0.85 to make cards shorter
-      children: [
-        _buildProfileCard(
-          name: 'Marcus',
-          age: '29',
-          matchPercent: '75%',
-          distance: '8 km',
-          imageUrl:
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
-          badgeText: '💬 Sent a note',
-          badgeColor: Colors.white,
-          badgeTextColor: Colors.black87,
-          isBlurred: false,
-        ),
-        _buildProfileCard(
-          name: 'Jordan',
-          age: '27',
-          matchPercent: '88%',
-          distance: '5 km',
-          imageUrl:
-              'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80',
-          badgeText: '✓ VERIFIED',
-          badgeColor: const Color(0xFF2CAF6B),
-          badgeTextColor: Colors.white,
-          isBlurred: false,
-        ),
-        _buildProfileCard(
-          name: _isCard3Revealed ? 'Sarah' : '',
-          age: _isCard3Revealed ? '25' : '',
-          matchPercent: '92%',
-          distance: '3 km',
-          imageUrl:
-              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
-          badgeText: _isCard3Revealed ? '✓ REVEALED' : null,
-          badgeColor: const Color(0xFF2CAF6B),
-          badgeTextColor: Colors.white,
-          isBlurred: !_isCard3Revealed,
-          onRevealAction: () {
-            setState(() {
-              _isCard3Revealed = true;
-            });
-            _showRevealedSnackbar(context);
-          },
-        ),
-        _buildProfileCard(
-          name: _isCard4Revealed ? 'Emily' : '',
-          age: _isCard4Revealed ? '23' : '',
-          matchPercent: '81%',
-          distance: '6 km',
-          imageUrl:
-              'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80',
-          badgeText: _isCard4Revealed ? '✓ REVEALED' : null,
-          badgeColor: const Color(0xFF2CAF6B),
-          badgeTextColor: Colors.white,
-          isBlurred: !_isCard4Revealed,
-          onRevealAction: () {
-            setState(() {
-              _isCard4Revealed = true;
-            });
-            _showRevealedSnackbar(context);
-          },
-        ),
-      ],
-    );
-  }
-
-  void _showRevealedSnackbar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('💛', style: TextStyle(fontSize: 16)),
-            SizedBox(width: 8),
-            Text(
-              'Revealed · like them back!',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: const Color(0xFF2A2A2A),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        margin: const EdgeInsets.only(
-          bottom: 16,
-          left: 60,
-          right: 60,
-        ), // Increased horizontal margin to reduce width
-        duration: const Duration(milliseconds: 2000), // Faster duration
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.74,
       ),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      itemCount: _likeCards.length,
+      itemBuilder: (context, index) {
+        final card = _likeCards[index];
+        return _buildProfileCard(
+          id: card['id'],
+          name: card['isBlurred'] ? '' : card['name'],
+          age: card['isBlurred'] ? '' : card['age'],
+          matchPercent: card['matchPercent'],
+          distance: card['distance'],
+          imageUrl: card['imageUrl'],
+          badgeText: card['badgeText'],
+          badgeColor: card['badgeColor'] != null ? Color(card['badgeColor']) : null,
+          badgeTextColor: card['badgeTextColor'] != null ? Color(card['badgeTextColor']) : null,
+          isBlurred: card['isBlurred'],
+          onRevealAction: () {
+            setState(() {
+              card['isBlurred'] = false;
+              card['badgeText'] = '✓ REVEALED';
+              card['badgeColor'] = 0xFF2CAF6B;
+              card['badgeTextColor'] = 0xFFFFFFFF;
+            });
+            _showRevealedSnackbar(context);
+          },
+        );
+      },
     );
   }
 
@@ -263,7 +300,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  '34 more people like you',
+                  'More people like you',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -302,6 +339,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
   }
 
   Widget _buildProfileCard({
+    required int id,
     required String name,
     required String age,
     required String matchPercent,
@@ -490,43 +528,53 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                 right: 12,
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.close_rounded,
-                        color: Colors.black54,
-                        size: 16,
+                    GestureDetector(
+                      onTap: () {
+                        _handleAction(id, "Rejected ❌");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.black54,
+                          size: 16,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE43A6A), // Pink
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.favorite_rounded,
-                        color: Colors.white,
-                        size: 16,
+                    GestureDetector(
+                      onTap: () {
+                        _handleAction(id, "It's a match! 💖");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE43A6A), // Pink
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.favorite_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        ),
                       ),
                     ),
                   ],
