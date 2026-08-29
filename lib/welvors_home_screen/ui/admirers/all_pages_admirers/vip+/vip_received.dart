@@ -102,8 +102,6 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
       child: Column(
         children: [
           const SizedBox(height: 16),
-          _buildInfoBanner(),
-          const SizedBox(height: 16),
           _buildToggle(),
           const SizedBox(height: 16),
           _selectedTab == 0 ? _buildReceivedContent() : const VipSendScreen(),
@@ -224,7 +222,6 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
 
   Widget _buildInfoBanner() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -312,6 +309,8 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
                 ),
               ),
             ),
+          const SizedBox(height: 20),
+          _buildInfoBanner(),
           const SizedBox(height: 20),
         ],
       ),
@@ -428,11 +427,11 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(32),
                 child: Image.network(
                   imageUrl,
-                  width: 48,
-                  height: 48,
+                  width: 64,
+                  height: 64,
                   fit: BoxFit.cover,
                 ),
               ),
