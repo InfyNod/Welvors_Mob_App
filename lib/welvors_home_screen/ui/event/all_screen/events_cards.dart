@@ -8,6 +8,7 @@ import '../events_bloc/events_state.dart';
 import 'view_details/event_details.dart';
 import 'service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
+import '../../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
 class EventsCards extends StatefulWidget {
   const EventsCards({super.key});
@@ -51,6 +52,26 @@ class _EventsCardsState extends State<EventsCards> {
         });
       }
     }
+  }
+
+  String _getEventPrice(BuildContext context, Map<String, dynamic> event) {
+    if (event['entryPrice'] != null && event['entryPrice'].toString().isNotEmpty && event['entryPrice'].toString() != 'null') {
+      return '₹${event['entryPrice']}';
+    }
+
+    final userGender = context.read<ProfileEditCubit>().state.gender; // "Man", "Woman", "Non-binary", etc.
+    String priceStr = '0';
+    
+    if (userGender.toLowerCase() == 'woman') {
+      priceStr = event['womenEntryPrice']?.toString() ?? '0';
+    } else if (userGender.toLowerCase() == 'man') {
+      priceStr = event['menEntryPrice']?.toString() ?? '0';
+    } else {
+      priceStr = event['otherEntryPrice']?.toString() ?? '0';
+    }
+
+    int price = int.tryParse(priceStr) ?? 0;
+    return price > 0 ? '₹$price' : 'Free';
   }
 
   void _shareEvent(BuildContext context, String eventName) async {
@@ -522,7 +543,8 @@ class _EventsCardsState extends State<EventsCards> {
               location: locationTitle,
               imageUrl: imageUrl,
               status: tagLabel,
-              price: event['entryPrice'] != null ? '₹${event['entryPrice']}' : 'Free',
+              price: _getEventPrice(context, event),
+              featureTags: event['featureTags'],
             ),
           ),
         );
@@ -682,7 +704,7 @@ class _EventsCardsState extends State<EventsCards> {
         : 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80';
         
     final status = (event['eventType'] ?? 'UPCOMING').toString().replaceAll('_', ' ').toUpperCase();
-    final price = event['entryPrice'] != null ? '₹${event['entryPrice']}' : 'Free';
+    final price = _getEventPrice(context, event);
     final interestedCount = event['interested'] ?? 0;
     final dateStr = _formatApiDate(event['eventDate'], event['startTime']);
 
@@ -701,6 +723,7 @@ class _EventsCardsState extends State<EventsCards> {
               imageUrl: imageUrl,
               status: status.toString().toUpperCase(),
               price: price,
+              featureTags: event['featureTags'],
             ),
           ),
         );
@@ -708,16 +731,21 @@ class _EventsCardsState extends State<EventsCards> {
       child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
+            color: const Color(0xFFE85A7A).withOpacity(0.06),
+            blurRadius: 24,
+            spreadRadius: 4,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: const Color(0xFFE85A7A).withOpacity(0.1), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -727,8 +755,8 @@ class _EventsCardsState extends State<EventsCards> {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
                 ),
                 child: Image.network(
                   imageUrl,
@@ -776,32 +804,11 @@ class _EventsCardsState extends State<EventsCards> {
 
           // Action Icons Row
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
             child: Row(
               children: [
-                const Icon(
-                  Icons.star_border,
-                  color: Color(0xFFE85A7A),
-                  size: 22,
-                ),
-                const SizedBox(width: 8),
                 Text(
-                  '$interestedCount',
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(width: 24),
-                const Icon(
-                  Icons.chat_bubble_outline,
-                  color: Color(0xFFE85A7A),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '0',
+                  '$interestedCount interested',
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.w700,
@@ -816,106 +823,16 @@ class _EventsCardsState extends State<EventsCards> {
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(height: 1, color: Colors.grey.shade200),
+            child: Divider(height: 1, color: Colors.grey.shade100),
           ),
 
           // Content Details
           Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Avatars & Interested
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 72, // 4 avatars
-                      height: 24,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 0,
-                            child: CircleAvatar(
-                              radius: 12,
-                              backgroundImage: const NetworkImage(
-                                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80',
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 16,
-                            child: CircleAvatar(
-                              radius: 12,
-                              backgroundColor: Colors.white,
-                              child: CircleAvatar(
-                                radius: 10.5,
-                                backgroundImage: const NetworkImage(
-                                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 32,
-                            child: CircleAvatar(
-                              radius: 12,
-                              backgroundColor: Colors.white,
-                              child: CircleAvatar(
-                                radius: 10.5,
-                                backgroundImage: const NetworkImage(
-                                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 48,
-                            child: CircleAvatar(
-                              radius: 12,
-                              backgroundColor: Colors.white,
-                              child: CircleAvatar(
-                                radius: 10.5,
-                                backgroundColor: const Color(0xFFE85A7A),
-                                child: Text(
-                                  '+$interestedCount',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '$interestedCount+ ',
-                            style: const TextStyle(
-                              color: Color(0xFFE85A7A),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const TextSpan(
-                            text: 'interested',
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
+
 
                 // Title & Price
                 Row(
@@ -957,15 +874,18 @@ class _EventsCardsState extends State<EventsCards> {
 
                 // Location
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('📍', style: TextStyle(fontSize: 14)),
                     const SizedBox(width: 8),
-                    Text(
-                      location,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Text(
+                        location,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -1000,16 +920,21 @@ class _EventsCardsState extends State<EventsCards> {
       child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
+            color: const Color(0xFFE85A7A).withOpacity(0.06),
+            blurRadius: 24,
+            spreadRadius: 4,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: const Color(0xFFE85A7A).withOpacity(0.1), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1019,8 +944,8 @@ class _EventsCardsState extends State<EventsCards> {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
                 ),
                 child: Image.network(
                   'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80', // Trekking image
@@ -1061,32 +986,11 @@ class _EventsCardsState extends State<EventsCards> {
 
           // Action Icons Row
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
             child: Row(
               children: [
-                const Icon(
-                  Icons.star_border,
-                  color: Color(0xFFE85A7A),
-                  size: 22,
-                ),
-                const SizedBox(width: 8),
                 Text(
-                  '210',
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(width: 24),
-                const Icon(
-                  Icons.chat_bubble_outline,
-                  color: Color(0xFFE85A7A),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '85',
+                  '210 interested',
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.w700,
@@ -1094,19 +998,19 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
                 const Spacer(),
-                _buildShareIcon(context, 'Himalayan Adventure Trek'),
+                _buildShareIcon(context, 'Trek to Sandakphu Ridge'),
               ],
             ),
           ),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(height: 1, color: Colors.grey.shade200),
+            child: Divider(height: 1, color: Colors.grey.shade100),
           ),
 
           // Content Details
           Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1163,15 +1067,18 @@ class _EventsCardsState extends State<EventsCards> {
 
                 // Location
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('📍', style: TextStyle(fontSize: 14)),
                     const SizedBox(width: 8),
-                    Text(
-                      'Darjeeling, WB',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Text(
+                        'Darjeeling, WB',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],

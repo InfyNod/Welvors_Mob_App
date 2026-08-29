@@ -191,14 +191,15 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                     _buildDivider(),
                     _buildPreferenceRow(
-                      'Show me',
+                      'Interested in',
                       {
-                        'MEN': 'Men',
-                        'WOMEN': 'Women',
-                        'NON_BINARY': 'Non-binary',
-                        'PREFER_NOT_TO_SAY': 'Prefer not to say',
-                        'EVERYONE': 'Everyone',
-                      }[state.showMe] ?? state.showMe,
+                            'MEN': 'Men',
+                            'WOMEN': 'Women',
+                            'NON_BINARY': 'Non-binary',
+                            'PREFER_NOT_TO_SAY': 'Prefer not to say',
+                            'EVERYONE': 'Everyone',
+                          }[state.showMe] ??
+                          state.showMe,
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -217,7 +218,9 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Looking for',
                       state.lookingFor.isEmpty
                           ? 'Any'
-                          : state.lookingFor.map((e) => e.split('|').last).join(', '),
+                          : state.lookingFor
+                                .map((e) => e.split('|').last)
+                                .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -255,7 +258,9 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Education',
                       state.education.isEmpty
                           ? 'Any'
-                          : state.education.map((e) => e.split('|').last).join(', '),
+                          : state.education
+                                .map((e) => e.split('|').last)
+                                .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -274,7 +279,9 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Languages',
                       state.languages.isEmpty
                           ? 'Any'
-                          : state.languages.map((e) => e.split('|').last).join(', '),
+                          : state.languages
+                                .map((e) => e.split('|').last)
+                                .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -314,7 +321,9 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Religion & community',
                       state.religion.isEmpty
                           ? 'Any'
-                          : state.religion.map((e) => e.split('|').last).join(', '),
+                          : state.religion
+                                .map((e) => e.split('|').last)
+                                .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -333,7 +342,9 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Profession',
                       state.profession.isEmpty
                           ? 'Any'
-                          : state.profession.map((e) => e.split('|').last).join(', '),
+                          : state.profession
+                                .map((e) => e.split('|').last)
+                                .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -350,7 +361,10 @@ class _FilterScreenState extends State<FilterScreen> {
                     _buildDivider(),
                     _buildPreferenceRow(
                       'Zodiac',
-                      state.zodiac == 'Any' ? 'Any' : state.zodiac.substring(0, 1) + state.zodiac.substring(1).toLowerCase(),
+                      state.zodiac == 'Any'
+                          ? 'Any'
+                          : state.zodiac.substring(0, 1) +
+                                state.zodiac.substring(1).toLowerCase(),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
                         Navigator.push(
@@ -555,8 +569,8 @@ class _FilterScreenState extends State<FilterScreen> {
       height: 60,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(20),
+        color: const Color.fromARGB(255, 243, 243, 243),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -581,7 +595,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(1.5),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(26),
                     gradient: _selectedTier == 'VIP & Elite'
                         ? const LinearGradient(
                             colors: [Color(0xFF9C27B0), Color(0xFFB8860B)],
@@ -594,7 +608,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         : null,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withOpacity(0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -603,7 +617,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(14.5),
+                      borderRadius: BorderRadius.circular(24.5),
                     ),
                   ),
                 ),
@@ -1520,7 +1534,9 @@ class _FilterScreenState extends State<FilterScreen> {
           child: ElevatedButton(
             onPressed: () {
               final filterState = context.read<FilterBloc>().state;
-              final payload = filterState.hasActiveFilters ? filterState.toJson() : null;
+              final payload = filterState.hasActiveFilters
+                  ? filterState.toJson()
+                  : null;
               debugPrint('====== [FILTER SCREEN] DISPATCHING EVENT ======');
               debugPrint('Filters: $payload');
               context.read<HomeBloc>().add(

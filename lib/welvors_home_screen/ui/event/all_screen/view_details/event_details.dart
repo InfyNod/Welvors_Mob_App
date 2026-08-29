@@ -9,9 +9,9 @@ import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/you
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_itinerary_location.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/abouthost_frequently.dart';
 import 'booking_confirm.dart';
-
 import '../service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   final String eventId;
@@ -23,6 +23,7 @@ class EventDetailsScreen extends StatefulWidget {
   final List<String>? categories;
   final String price;
   final int spotsLeft;
+  final List<dynamic>? featureTags;
 
   const EventDetailsScreen({
     super.key,
@@ -35,6 +36,7 @@ class EventDetailsScreen extends StatefulWidget {
     required this.price,
     this.spotsLeft = 8,
     this.categories,
+    this.featureTags,
   });
 
   @override
@@ -70,7 +72,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       String formattedDate = DateFormat('EEE, MMM d').format(date);
       if (startTime != null && startTime.contains(':')) {
         final timeParts = startTime.split(':');
-        final timeObj = DateTime(2020, 1, 1, int.parse(timeParts[0]), int.parse(timeParts[1]));
+        final timeObj = DateTime(
+          2020,
+          1,
+          1,
+          int.parse(timeParts[0]),
+          int.parse(timeParts[1]),
+        );
         final formattedTime = DateFormat('h:mm a').format(timeObj);
         return '$formattedDate · $formattedTime';
       }
@@ -80,34 +88,75 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     }
   }
 
+  String _getEventPrice(BuildContext context, Map<String, dynamic> event) {
+    if (event['entryPrice'] != null &&
+        event['entryPrice'].toString().isNotEmpty &&
+        event['entryPrice'].toString() != 'null') {
+      return '₹${event['entryPrice']}';
+    }
+
+    final userGender = context
+        .read<ProfileEditCubit>()
+        .state
+        .gender; // "Man", "Woman", "Non-binary", etc.
+    String priceStr = '0';
+
+    if (userGender.toLowerCase() == 'woman') {
+      priceStr = event['womenEntryPrice']?.toString() ?? '0';
+    } else if (userGender.toLowerCase() == 'man') {
+      priceStr = event['menEntryPrice']?.toString() ?? '0';
+    } else {
+      priceStr = event['otherEntryPrice']?.toString() ?? '0';
+    }
+
+    int price = int.tryParse(priceStr) ?? 0;
+    return price > 0 ? '₹$price' : 'Free';
+  }
+
   @override
   Widget build(BuildContext context) {
     // Determine which data to show (Fallback to widget fields if API data is null)
     final title = _eventData?['title'] ?? widget.title;
-    final date = _eventData != null ? _formatApiDate(_eventData!['eventDate'], _eventData!['startTime']) : widget.date;
+    final date = _eventData != null
+        ? _formatApiDate(_eventData!['eventDate'], _eventData!['startTime'])
+        : widget.date;
     final location = _eventData?['fullAddress'] ?? widget.location;
     final heroImageRaw = _eventData?['heroImage'];
-    final imageUrl = (heroImageRaw != null && heroImageRaw.toString().isNotEmpty) ? heroImageRaw : widget.imageUrl;
-    final status = _eventData != null ? (_eventData!['eventType'] ?? 'UPCOMING').toString().replaceAll('_', ' ').toUpperCase() : widget.status;
-    final price = _eventData?['entryPrice'] != null ? '₹${_eventData!['entryPrice']}' : widget.price;
+    final imageUrl =
+        (heroImageRaw != null && heroImageRaw.toString().isNotEmpty)
+        ? heroImageRaw
+        : widget.imageUrl;
+    final status = _eventData != null
+        ? (_eventData!['eventType'] ?? 'UPCOMING')
+              .toString()
+              .replaceAll('_', ' ')
+              .toUpperCase()
+        : widget.status;
+    final price = _eventData != null
+        ? _getEventPrice(context, _eventData!)
+        : widget.price;
     final spotsLeft = _eventData?['leftSpot'] ?? widget.spotsLeft;
     final capacity = _eventData?['capacity'] ?? 60;
     final interested = _eventData?['interested'] ?? 0;
     final isOfficial = _eventData?['officialPartner'] == true;
-    final hostName = _eventData?['eventPartner']?['businessName'] ?? 'Spark Official Events';
+    final hostName =
+        _eventData?['eventPartner']?['businessName'] ?? 'Spark Official Events';
 
     String timeStr = date.contains('·') ? date.split('·').last.trim() : 'TBA';
-    if (_eventData != null && _eventData!['startTime'] != null && _eventData!['endTime'] != null) {
+    if (_eventData != null &&
+        _eventData!['startTime'] != null &&
+        _eventData!['endTime'] != null) {
       try {
         final st = _eventData!['startTime'].split(':');
         final et = _eventData!['endTime'].split(':');
         final stD = DateTime(2020, 1, 1, int.parse(st[0]), int.parse(st[1]));
         final etD = DateTime(2020, 1, 1, int.parse(et[0]), int.parse(et[1]));
-        
+
         final stFmt = DateFormat('h:mm a').format(stD).replaceAll(':00', '');
         final etFmt = DateFormat('h:mm a').format(etD).replaceAll(':00', '');
-        
-        if (stFmt.endsWith('AM') == etFmt.endsWith('AM') && stFmt.endsWith('PM') == etFmt.endsWith('PM')) {
+
+        if (stFmt.endsWith('AM') == etFmt.endsWith('AM') &&
+            stFmt.endsWith('PM') == etFmt.endsWith('PM')) {
           timeStr = '${stFmt.substring(0, stFmt.length - 3)}–$etFmt';
         } else {
           timeStr = '$stFmt–$etFmt';
@@ -147,21 +196,28 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: isBooked ? null : () {
-                              context.read<EventsBloc>().add(BookEventEvent(title));
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BookingConfirmationScreen(
-                                    title: title,
-                                    date: date,
-                                    location: location,
-                                  ),
-                                ),
-                              );
-                            },
+                            onPressed: isBooked
+                                ? null
+                                : () {
+                                    context.read<EventsBloc>().add(
+                                      BookEventEvent(title),
+                                    );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            BookingConfirmationScreen(
+                                              title: title,
+                                              date: date,
+                                              location: location,
+                                            ),
+                                      ),
+                                    );
+                                  },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isBooked ? Colors.grey : const Color(0xFFE43A6A),
+                              backgroundColor: isBooked
+                                  ? Colors.grey
+                                  : const Color(0xFFE43A6A),
                               foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -173,7 +229,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               isBooked
                                   ? '✅ Booked'
                                   : '🎟️ Book Now · $price — $spotsLeft spots left',
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -281,7 +340,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.star, color: Color(0xFFE43A6A), size: 12),
+                        const Icon(
+                          Icons.star,
+                          color: Color(0xFFE43A6A),
+                          size: 12,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           status,
@@ -307,15 +370,12 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 children: [
                   // Flat Content
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 24,
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      top: 24,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Title & Host
-                        Row(
+                    child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
@@ -381,26 +441,31 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                  ),
+                  const SizedBox(height: 20),
 
-                        // Tags
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: (_eventData?['safetyFeatures'] as List?)
-                                  ?.map((feature) => _buildTag(feature['title'].toString()))
-                                  .toList() ??
-                              [
-                                _buildTag('Verified profiles only'),
-                                _buildTag('Age 25-32'),
-                                _buildTag('Solo welcome'),
-                                _buildTag('Smart casual'),
-                              ],
-                        ),
-                        const SizedBox(height: 24),
+                  // Tags
+                  if ((_eventData?['featureTags'] != null && (_eventData!['featureTags'] as List).isNotEmpty) || 
+                      (widget.featureTags != null && widget.featureTags!.isNotEmpty)) ...[
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: (_eventData?['featureTags'] as List? ?? widget.featureTags!)
+                            .map((feature) => Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: _buildTag(feature['label']?.toString() ?? ''),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
 
-                        // Stats Grid
-                        Container(
+                  // Stats Grid
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
+                    child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -420,7 +485,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               _buildStatItem(
                                 Icons.calendar_today,
                                 'DATE',
-                                date.contains('·') ? date.split('·').first.trim() : date,
+                                date.contains('·')
+                                    ? date.split('·').first.trim()
+                                    : date,
                               ),
                               _buildVerticalDivider(),
                               _buildStatItem(
@@ -443,14 +510,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             ],
                           ),
                         ),
-                      ],
-                    ),
                   ),
 
                   // Filling Fast Section
                   const _FillingFastCard(),
                   const SizedBox(height: 24),
-
 
                   EventMoreDetailsSection(
                     isTrekkingEvent: title.toLowerCase().contains('trek'),
@@ -467,8 +531,12 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   const SizedBox(height: 20),
                   EventItineraryAndLocationSection(
                     itinerary: _eventData?['itinerary'] as List?,
-                    locationTitle: _eventData?['fullAddress']?.split(',').first ?? 'Location',
-                    fullAddress: _eventData?['fullAddress'] ?? 'Venue details will be shared',
+                    locationTitle:
+                        _eventData?['fullAddress']?.split(',').first ??
+                        'Location',
+                    fullAddress:
+                        _eventData?['fullAddress'] ??
+                        'Venue details will be shared',
                   ),
                   const SizedBox(height: 20),
                   AboutHostAndFAQSection(
@@ -750,10 +818,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                   height: 8,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFFA9EB5),
-                        Color(0xFFE43A6A),
-                      ],
+                      colors: [Color(0xFFFA9EB5), Color(0xFFE43A6A)],
                     ),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(4),
@@ -768,10 +833,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                   height: 8,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        Color(0xFF6BB5F6),
-                        Color(0xFF2C74C9),
-                      ],
+                      colors: [Color(0xFF6BB5F6), Color(0xFF2C74C9)],
                     ),
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(4),
@@ -788,10 +850,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
             children: [
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 3,
-                    backgroundColor: Color(0xFFFA6A85),
-                  ),
+                  CircleAvatar(radius: 3, backgroundColor: Color(0xFFFA6A85)),
                   SizedBox(width: 4),
                   Text(
                     'Women 52%',
@@ -814,10 +873,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                     ),
                   ),
                   SizedBox(width: 4),
-                  CircleAvatar(
-                    radius: 3,
-                    backgroundColor: Color(0xFF4A90E2),
-                  ),
+                  CircleAvatar(radius: 3, backgroundColor: Color(0xFF4A90E2)),
                 ],
               ),
             ],
@@ -826,7 +882,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
       ),
     );
   }
-  
+
   Widget _buildAvatar(double leftPos, String imgUrl) {
     return Positioned(
       left: leftPos,
