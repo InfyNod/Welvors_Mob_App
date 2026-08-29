@@ -32,7 +32,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
     }
   }
 
-  void _handleAction(int id, String popupText, {bool isAccepted = true}) {
+  void _handleAction(dynamic id, String popupText, {bool isAccepted = true}) {
     final index = _roseCards.indexWhere((card) => card['id'] == id);
     if (index >= 0) {
       final removedCard = _roseCards.removeAt(index);
@@ -313,7 +313,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
   }
 
   Widget _buildRoseCard({
-    required int id,
+    required dynamic id,
     required String name,
     required String age,
     required String distance,

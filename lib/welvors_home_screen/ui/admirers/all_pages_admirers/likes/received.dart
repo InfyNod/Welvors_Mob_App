@@ -32,7 +32,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
     }
   }
   
-  void _handleAction(int id, String popupText) {
+  void _handleAction(dynamic id, String popupText) {
     final index = _likeCards.indexWhere((card) => card['id'] == id);
     if (index >= 0) {
       _likeCards.removeAt(index);
@@ -346,7 +346,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
   }
 
   Widget _buildProfileCard({
-    required int id,
+    required dynamic id,
     required String name,
     required String age,
     required String matchPercent,

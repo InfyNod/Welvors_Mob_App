@@ -8,11 +8,11 @@ class ChangeAdmirersTab extends AdmirersEvent {
 }
 
 class RemoveLike extends AdmirersEvent {
-  final int id;
+  final dynamic id;
   RemoveLike(this.id);
 }
 
 class RemoveRose extends AdmirersEvent {
-  final int id;
+  final dynamic id;
   RemoveRose(this.id);
 }
