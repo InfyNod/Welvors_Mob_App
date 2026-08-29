@@ -22,7 +22,13 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: 0);
+    int initialIndex = 0;
+    final state = context.read<AdmirersBloc>().state;
+    if (state is AdmirersLoaded) {
+      initialIndex = _tabKeys.indexOf(state.activeTab);
+      if (initialIndex == -1) initialIndex = 0;
+    }
+    _pageController = PageController(initialPage: initialIndex);
   }
 
   @override
@@ -33,12 +39,10 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AdmirersBloc()..add(LoadAdmirersData()),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFFAFAFA),
-        body: SafeArea(
-          child: BlocConsumer<AdmirersBloc, AdmirersState>(
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
+      body: SafeArea(
+        child: BlocConsumer<AdmirersBloc, AdmirersState>(
             listener: (context, state) {
               if (state is AdmirersLoaded) {
                 final index = _tabKeys.indexOf(state.activeTab);
@@ -167,8 +171,7 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
             },
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildHeader(AdmirersLoaded state) {

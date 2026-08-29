@@ -6,7 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home/filter/filter_bloc/filter_bloc.dart';
 import 'home/filter/filter_bloc/filter_state.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/admirers/admirers_bloc/admirers_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/admirers/admirers_bloc/admirers_event.dart';
 import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
 import '../home_bloc/home_bloc.dart';
 import 'home/home_screen.dart';
@@ -48,6 +49,7 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
       providers: [
         BlocProvider(create: (context) => HomeBloc()..add(LoadHomeDataEvent())),
         BlocProvider(create: (context) => FilterBloc()),
+        BlocProvider(create: (context) => AdmirersBloc()..add(LoadAdmirersData())),
       ],
       child: _TopAndBottomNavView(
         isPreview: widget.isPreview,
