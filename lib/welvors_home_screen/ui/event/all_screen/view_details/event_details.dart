@@ -136,7 +136,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         ? _getEventPrice(context, _eventData!)
         : widget.price;
     final spotsLeft = _eventData?['leftSpot'] ?? widget.spotsLeft;
-    final capacity = _eventData?['capacity'] ?? 60;
+    final capacity = _eventData?['totalCapacity'] ?? _eventData?['capacity'] ?? 60;
     final interested = _eventData?['interested'] ?? 0;
     final isOfficial = _eventData?['officialPartner'] == true;
     final hostName =
@@ -513,8 +513,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   ),
 
                   // Filling Fast Section
-                  const _FillingFastCard(),
-                  const SizedBox(height: 24),
+                  if (_eventData?['bookingStats'] != null)
+                    _FillingFastCard(bookingStats: _eventData!['bookingStats']),
+                  if (_eventData?['bookingStats'] != null)
+                    const SizedBox(height: 24),
 
                   EventMoreDetailsSection(
                     isTrekkingEvent: title.toLowerCase().contains('trek'),
@@ -631,7 +633,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 }
 
 class _FillingFastCard extends StatefulWidget {
-  const _FillingFastCard();
+  final Map<String, dynamic> bookingStats;
+  const _FillingFastCard({super.key, required this.bookingStats});
 
   @override
   State<_FillingFastCard> createState() => _FillingFastCardState();
@@ -663,13 +666,33 @@ class _FillingFastCardState extends State<_FillingFastCard>
 
   @override
   Widget build(BuildContext context) {
+    final stats = widget.bookingStats;
+    final bool fillingFast = stats['fillingFast'] == true;
+    final String fillingFastText = stats['fillingFastText'] ?? 'Filling fast';
+    final int spotsLeft = stats['spotsLeft'] ?? 0;
+    final double bookingPercentage = (stats['bookingPercentage'] ?? 0).toDouble();
+    final String bookingSummary = stats['bookingSummary'] ?? '';
+    final String last24HoursText = stats['last24HoursText'] ?? '';
+
+    final Color mainColor = const Color(0xFFE43A6A);
+    final Color bgColor = const Color(0xFFFFF0F3);
+    final Color borderColor = const Color(0xFFE43A6A).withOpacity(0.15);
+    final Color textColor = const Color(0xFFDE2957);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF0F3),
+        color: bgColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.1)),
+        border: Border.all(color: borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: mainColor.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -677,44 +700,70 @@ class _FillingFastCardState extends State<_FillingFastCard>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Text('🔥', style: TextStyle(fontSize: 18)),
-                  SizedBox(width: 8),
+                  fillingFast
+                      ? const Text('🔥', style: TextStyle(fontSize: 18))
+                      : Icon(Icons.confirmation_num_outlined, color: mainColor, size: 20),
+                  const SizedBox(width: 8),
                   Text(
-                    'Filling fast',
+                    fillingFast ? fillingFastText : 'Booking Open',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFDE2957),
+                      color: textColor,
                     ),
                   ),
                 ],
               ),
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+              if (fillingFast)
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: mainColor,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: mainColor.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      'Only $spotsLeft spots left',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE43A6A),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: borderColor),
                   ),
-                  child: const Text(
-                    'Only 8 spots left',
+                  child: Text(
+                    '$spotsLeft spots available',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: mainColor,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
-              ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           // Animated Progress Bar
           LayoutBuilder(
             builder: (context, constraints) {
@@ -722,24 +771,31 @@ class _FillingFastCardState extends State<_FillingFastCard>
               return Stack(
                 children: [
                   Container(
-                    height: 8,
+                    height: 6,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE43A6A).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(4),
+                      color: mainColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   TweenAnimationBuilder<double>(
-                    tween: Tween<double>(begin: 0.0, end: maxWidth * (52 / 60)),
+                    tween: Tween<double>(begin: 0.0, end: maxWidth * (bookingPercentage / 100)),
                     duration: const Duration(seconds: 2),
                     curve: Curves.easeOutCubic,
                     builder: (context, value, child) {
                       return Container(
-                        height: 8,
+                        height: 6,
                         width: value,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE43A6A),
-                          borderRadius: BorderRadius.circular(4),
+                          color: mainColor,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: mainColor.withOpacity(0.4),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -775,18 +831,22 @@ class _FillingFastCardState extends State<_FillingFastCard>
               const SizedBox(width: 8),
               Expanded(
                 child: RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     style: TextStyle(
                       fontSize: 11,
-                      color: Color(0xFFDE2957),
+                      color: textColor,
                       fontWeight: FontWeight.w600,
                     ),
                     children: [
-                      TextSpan(text: '52 of 60 spots booked · '),
-                      TextSpan(
-                        text: '12 people booked in the last 24 hours',
-                        style: TextStyle(fontWeight: FontWeight.normal),
-                      ),
+                      TextSpan(text: bookingSummary + (last24HoursText.isNotEmpty ? ' · ' : '')),
+                      if (last24HoursText.isNotEmpty)
+                        TextSpan(
+                          text: last24HoursText,
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: textColor.withOpacity(0.8),
+                          ),
+                        ),
                     ],
                   ),
                 ),

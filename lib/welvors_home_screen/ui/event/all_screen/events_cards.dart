@@ -528,7 +528,7 @@ class _EventsCardsState extends State<EventsCards> {
 
     final dateStr = _formatApiDate(event['eventDate'], event['startTime']);
     final eventId = event['id'] ?? '';
-    final capacity = event['capacity'] ?? 'Limited';
+    final capacity = event['totalCapacity'] ?? event['capacity'] ?? 'Limited';
     final eventType = (event['eventType'] ?? 'Event').toString().replaceAll('_', ' ').toUpperCase();
 
     return GestureDetector(
