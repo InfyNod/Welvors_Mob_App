@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'check_out.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../events_bloc/events_bloc.dart';
 import '../../events_bloc/events_state.dart';
@@ -205,15 +206,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               context.read<EventsBloc>().add(
                                 BookEventEvent(title),
                               );
+                              double parsedPrice = double.tryParse(price.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      BookingConfirmationScreen(
-                                        title: title,
-                                        date: date,
-                                        location: location,
-                                      ),
+                                  builder: (context) => CheckoutScreen(
+                                    title: title,
+                                    date: date,
+                                    location: location,
+                                    imageUrl: imageUrl,
+                                    basePrice: parsedPrice,
+                                  ),
                                 ),
                               );
                             },
