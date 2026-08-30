@@ -294,7 +294,7 @@ class BookingConfirmationScreen extends StatelessWidget {
 
           // --- FIXED BOTTOM BUTTONS ---
           Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 5),
             decoration: BoxDecoration(
               color: Colors.white, // Matches Scaffold background
               boxShadow: [
@@ -310,96 +310,99 @@ class BookingConfirmationScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                // Share Button
-                Container(
-                  width: double.infinity,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
+                  // Share Button
+                  Container(
+                    width: double.infinity,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.link, color: Colors.white, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'Share Ticket',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                          ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFE43A6A).withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // View Bookings Button
-                Container(
-                  width: double.infinity,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFFF0F5), Colors.white],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.pink.shade50, width: 1.5),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MyTicketScreen(),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ),
-                    child: const Text(
-                      'View My Bookings',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.link, color: Colors.white, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'Share Ticket',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+
+                  // View Bookings Button
+                  Container(
+                    width: double.infinity,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFF0F5), Colors.white],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.pink.shade50,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyTicketScreen(),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'View My Bookings',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
         ],
       ),
     );
