@@ -8,7 +8,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
   final List<dynamic>? amenities;
 
   const YourPassAndAmenitiesSection({
-    super.key, 
+    super.key,
     required this.price,
     this.eventData,
     this.userGender = 'woman',
@@ -19,45 +19,73 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String gender = userGender.toLowerCase();
-    
+
     // Parse prices
     double originalPrice = 0;
     double discountedPrice = 0;
-    
+
     if (eventData != null) {
       if (gender == 'woman') {
-        originalPrice = double.tryParse(eventData!['womenEntryPrice']?.toString() ?? '0') ?? 0;
-        discountedPrice = double.tryParse(eventData!['womenDiscountedPrice']?.toString() ?? '0') ?? 0;
+        originalPrice =
+            double.tryParse(eventData!['womenEntryPrice']?.toString() ?? '0') ??
+            0;
+        discountedPrice =
+            double.tryParse(
+              eventData!['womenDiscountedPrice']?.toString() ?? '0',
+            ) ??
+            0;
       } else if (gender == 'man') {
-        originalPrice = double.tryParse(eventData!['menEntryPrice']?.toString() ?? '0') ?? 0;
-        discountedPrice = double.tryParse(eventData!['menDiscountedPrice']?.toString() ?? '0') ?? 0;
+        originalPrice =
+            double.tryParse(eventData!['menEntryPrice']?.toString() ?? '0') ??
+            0;
+        discountedPrice =
+            double.tryParse(
+              eventData!['menDiscountedPrice']?.toString() ?? '0',
+            ) ??
+            0;
       } else {
-        originalPrice = double.tryParse(eventData!['otherEntryPrice']?.toString() ?? '0') ?? 0;
-        discountedPrice = double.tryParse(eventData!['otherDiscountedPrice']?.toString() ?? '0') ?? 0;
+        originalPrice =
+            double.tryParse(eventData!['otherEntryPrice']?.toString() ?? '0') ??
+            0;
+        discountedPrice =
+            double.tryParse(
+              eventData!['otherDiscountedPrice']?.toString() ?? '0',
+            ) ??
+            0;
       }
     }
 
     if (originalPrice == 0 && discountedPrice == 0) {
-       // fallback to the `price` string if not found, stripping ₹
-       final num = double.tryParse(price.replaceAll(RegExp(r'[^0-9.]'), ''));
-       if (num != null) originalPrice = num;
-       discountedPrice = originalPrice;
+      // fallback to the `price` string if not found, stripping ₹
+      final num = double.tryParse(price.replaceAll(RegExp(r'[^0-9.]'), ''));
+      if (num != null) originalPrice = num;
+      discountedPrice = originalPrice;
     }
-    
-    final bool hasDiscount = discountedPrice < originalPrice && discountedPrice > 0;
-    final String displayPrice = hasDiscount ? '₹${discountedPrice.toStringAsFixed(0)}' : (discountedPrice > 0 ? '₹${discountedPrice.toStringAsFixed(0)}' : (originalPrice > 0 ? '₹${originalPrice.toStringAsFixed(0)}' : price));
-    final String originalPriceText = hasDiscount ? '₹${originalPrice.toStringAsFixed(0)}' : '';
-    final String discountPercentage = eventData?['discountPercentage']?.toString() ?? '';
-    
+
+    final bool hasDiscount =
+        discountedPrice < originalPrice && discountedPrice > 0;
+    final String displayPrice = hasDiscount
+        ? '₹${discountedPrice.toStringAsFixed(0)}'
+        : (discountedPrice > 0
+              ? '₹${discountedPrice.toStringAsFixed(0)}'
+              : (originalPrice > 0
+                    ? '₹${originalPrice.toStringAsFixed(0)}'
+                    : price));
+    final String originalPriceText = hasDiscount
+        ? '₹${originalPrice.toStringAsFixed(0)}'
+        : '';
+    final String discountPercentage =
+        eventData?['discountPercentage']?.toString() ?? '';
+
     IconData genderIcon = Icons.female;
     String genderLabel = 'Woman';
-    
+
     if (gender == 'man') {
-       genderIcon = Icons.male;
-       genderLabel = 'Man';
+      genderIcon = Icons.male;
+      genderLabel = 'Man';
     } else if (gender != 'woman') {
-       genderIcon = Icons.transgender;
-       genderLabel = 'Other';
+      genderIcon = Icons.transgender;
+      genderLabel = 'Other';
     }
 
     return Column(
@@ -112,7 +140,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
             children: [
               // Top Section (Ticket Info)
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,11 +154,14 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFE43A6A).withOpacity(0.1),
+                                  color: const Color(
+                                    0xFFE43A6A,
+                                  ).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
-                                  Icons.confirmation_num_outlined, // Premium Ticket Icon
+                                  Icons
+                                      .confirmation_num_outlined, // Premium Ticket Icon
                                   color: Color(0xFFE43A6A),
                                   size: 16,
                                 ),
@@ -161,7 +192,10 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                     ),
                     // Gender Badge with subtle premium look
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -172,7 +206,9 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                             offset: const Offset(0, 2),
                           ),
                         ],
-                        border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.2)),
+                        border: Border.all(
+                          color: const Color(0xFFE43A6A).withOpacity(0.2),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -197,10 +233,10 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // Premium Dashed Divider
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return Flex(
@@ -223,16 +259,19 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                   },
                 ),
               ),
-              
+
               // Bottom Section (Price Info)
               Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      spacing: 8,
                       children: [
                         Text(
                           displayPrice,
@@ -244,7 +283,6 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                           ),
                         ),
                         if (hasDiscount) ...[
-                          const SizedBox(width: 8),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 5),
                             child: Text(
@@ -257,22 +295,30 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (discountPercentage.isNotEmpty && discountPercentage != '0') ...[
-                            const SizedBox(width: 8),
+                          if (discountPercentage.isNotEmpty &&
+                              discountPercentage != '0')
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFFE43A6A), Color(0xFFFF758C)],
+                                    colors: [
+                                      Color(0xFFE43A6A),
+                                      Color(0xFFFF758C),
+                                    ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                      color: const Color(
+                                        0xFFE43A6A,
+                                      ).withOpacity(0.3),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -288,7 +334,6 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ],
                         ],
                       ],
                     ),
@@ -309,56 +354,49 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 25),
-
         // Amenities
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Amenities',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+        if (amenities != null && amenities!.isNotEmpty) ...[
+          const SizedBox(height: 25),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Amenities',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: GridView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: (amenities != null && amenities!.isNotEmpty) ? amenities!.length : 6,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              mainAxisExtent: 60, // Fixed height for cards
-            ),
-            itemBuilder: (context, index) {
-              if (amenities != null && amenities!.isNotEmpty) {
-                final amenityName = amenities![index]['name'] ?? amenities![index]['title'] ?? '';
-                final iconName = amenities![index]['icon']?.toString().toLowerCase() ?? '';
-                
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: GridView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: amenities!.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                mainAxisExtent: 60, // Fixed height for cards
+              ),
+              itemBuilder: (context, index) {
+                final amenityName =
+                    amenities![index]['name'] ??
+                    amenities![index]['title'] ??
+                    '';
+                final iconName =
+                    amenities![index]['icon']?.toString().toLowerCase() ?? '';
+
                 final iconData = _getAmenityIcon(iconName);
 
                 return _buildAmenityCard(iconData, amenityName);
-              }
-              // Dummy data
-              final dummy = [
-                {'icon': Icons.local_bar, 'text': 'Welcome cocktail'},
-                {'icon': Icons.music_note, 'text': 'Live jazz band'},
-                {'icon': Icons.restaurant, 'text': 'Gourmet\\nappetizers'},
-                {'icon': Icons.camera_alt, 'text': 'Photo corner'},
-                {'icon': Icons.directions_car, 'text': 'Valet parking'},
-                {'icon': Icons.person, 'text': 'Female-led host\\nteam'},
-              ];
-              return _buildAmenityCard(dummy[index]['icon'] as IconData, dummy[index]['text'] as String);
-            },
+              },
+            ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -390,7 +428,6 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
       ],
     );
   }
-
 
   IconData _getAmenityIcon(String? iconName) {
     switch (iconName?.toLowerCase()) {

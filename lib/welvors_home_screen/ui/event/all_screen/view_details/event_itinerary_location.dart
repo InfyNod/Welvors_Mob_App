@@ -18,117 +18,95 @@ class EventItineraryAndLocationSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Event Itinerary
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Event Itinerary',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+        if (itinerary != null && itinerary!.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Event Itinerary',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: itinerary != null && itinerary!.isNotEmpty
-                ? itinerary!.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final item = entry.value;
-                    return _buildTimelineItem(
-                      item: item,
-                      isLast: index == itinerary!.length - 1,
-                    );
-                  }).toList()
-                : [
-                    _buildTimelineItem(
-                      item: {
-                        'time': '7:00 PM',
-                        'title': 'Welcome Drinks',
-                        'description':
-                            'Arrival and complimentary sparkling wine',
-                      },
-                      isLast: false,
-                    ),
-                    _buildTimelineItem(
-                      item: {
-                        'time': '8:00 PM',
-                        'title': 'Icebreaker Rounds',
-                        'description': 'Guided 5-minute curated conversations',
-                      },
-                      isLast: false,
-                    ),
-                    _buildTimelineItem(
-                      item: {
-                        'time': '9:30 PM',
-                        'title': 'Open Socializing',
-                        'description':
-                            'Free mixing with live DJ and appetizers',
-                      },
-                      isLast: true,
-                    ),
-                  ],
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: itinerary!.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return _buildTimelineItem(
+                  item: item,
+                  isLast: index == itinerary!.length - 1,
+                );
+              }).toList(),
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
+          const SizedBox(height: 10),
+        ],
 
         // Location
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Location',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+        if ((locationTitle != null && locationTitle!.isNotEmpty) ||
+            (fullAddress != null && fullAddress!.isNotEmpty)) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Location',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        _buildStylizedMap(),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                Icons.map_outlined,
-                color: Color(0xFFE43A6A), // Pink icon
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      locationTitle ?? 'The Rooftop Lounge',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      fullAddress ??
-                          '452 Linking Road, Floor 12, Bandra West, Mumbai',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
+          const SizedBox(height: 16),
+          _buildStylizedMap(),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.map_outlined,
+                  color: Color(0xFFE43A6A), // Pink icon
+                  size: 24,
                 ),
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (locationTitle != null && locationTitle!.isNotEmpty) ...[
+                        Text(
+                          locationTitle!,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                      if (fullAddress != null && fullAddress!.isNotEmpty)
+                        Text(
+                          fullAddress!,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                            height: 1.4,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
+          const SizedBox(height: 20),
+        ],
       ],
     );
   }
