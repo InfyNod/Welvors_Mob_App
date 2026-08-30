@@ -305,41 +305,28 @@ class AboutHostAndFAQSection extends StatelessWidget {
           const SizedBox(height: 32),
         ],
         // TERMS & CONDITIONS
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'TERMS & CONDITIONS',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 114, 113, 113),
-                  letterSpacing: 1.2,
+        if (termsConditions != null && termsConditions!.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'TERMS & CONDITIONS',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 114, 113, 113),
+                    letterSpacing: 1.2,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              if (termsConditions != null && termsConditions!.isNotEmpty)
-                _buildTermText(termsConditions!)
-              else ...[
-                _buildTermText(
-                  'Entry only with valid photo ID matching your verified profile',
-                ),
-                _buildTermText(
-                  'Full refund on cancellations made 3+ days before the event',
-                ),
-                _buildTermText(
-                  'Dress code: Smart casual · Right of admission reserved',
-                ),
-                _buildTermText(
-                  'Zero-tolerance policy for harassment — instant removal',
-                ),
+                const SizedBox(height: 12),
+                _buildTermText(termsConditions!),
               ],
-            ],
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
+          const SizedBox(height: 16),
+        ],
       ],
     );
   }

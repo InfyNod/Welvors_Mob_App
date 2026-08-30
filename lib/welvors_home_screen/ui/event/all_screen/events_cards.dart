@@ -929,7 +929,7 @@ class _EventsCardsState extends State<EventsCards> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
 
                   // Date
                   Row(
@@ -938,10 +938,10 @@ class _EventsCardsState extends State<EventsCards> {
                       const SizedBox(width: 8),
                       Text(
                         dateStr,
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
+                        style: const TextStyle(
+                          color: Color(0xFFE43A6A), // Highlighted date/time
                           fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -1136,10 +1136,10 @@ class _EventsCardsState extends State<EventsCards> {
                       const SizedBox(width: 8),
                       Text(
                         'Nov 14–17 · 4 days',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
+                        style: const TextStyle(
+                          color: Color(0xFFE43A6A), // Highlighted date/time
                           fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
