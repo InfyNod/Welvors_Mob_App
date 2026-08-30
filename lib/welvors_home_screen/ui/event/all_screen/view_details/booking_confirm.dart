@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import '../my_ticket.dart';
 
 class BookingConfirmationScreen extends StatelessWidget {
   final String title;
@@ -372,8 +373,12 @@ class BookingConfirmationScreen extends StatelessWidget {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      // Navigate to bookings or pop to root
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyTicketScreen(),
+                        ),
+                      );
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.transparent,
