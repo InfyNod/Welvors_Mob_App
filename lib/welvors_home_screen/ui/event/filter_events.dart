@@ -160,7 +160,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                   // Hero Banner
                   SliverToBoxAdapter(
                     child: Container(
-                      height: 220,
+                      height: 200,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         image: DecorationImage(

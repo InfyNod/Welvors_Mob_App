@@ -433,7 +433,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                         },
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 10)),
 
                     // Filters
                     SliverPersistentHeader(
@@ -441,7 +441,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       delegate: _TopNavStickyFiltersDelegate(
                         child: Container(
                           color: Colors.white,
-                          padding: const EdgeInsets.only(top: 20, bottom: 8),
+                          padding: const EdgeInsets.only(top: 8, bottom: 8),
                           child: SizedBox(
                             height: 36,
                             child: BlocBuilder<EventsBloc, EventsState>(
@@ -530,10 +530,10 @@ class _TopNavStickyFiltersDelegate extends SliverPersistentHeaderDelegate {
   _TopNavStickyFiltersDelegate({required this.child});
 
   @override
-  double get minExtent => 64.0;
+  double get minExtent => 52.0;
 
   @override
-  double get maxExtent => 64.0;
+  double get maxExtent => 52.0;
 
   @override
   Widget build(
