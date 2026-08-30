@@ -89,12 +89,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   String _getEventPrice(BuildContext context, Map<String, dynamic> event) {
-    if (event['entryPrice'] != null &&
-        event['entryPrice'].toString().isNotEmpty &&
-        event['entryPrice'].toString() != 'null') {
-      return '₹${event['entryPrice']}';
-    }
-
     final userGender = context
         .read<ProfileEditCubit>()
         .state
@@ -102,15 +96,27 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     String priceStr = '0';
 
     if (userGender.toLowerCase() == 'woman') {
-      priceStr = event['womenEntryPrice']?.toString() ?? '0';
+      priceStr =
+          event['womenDiscountedPrice']?.toString() ??
+          event['womenEntryPrice']?.toString() ??
+          event['entryPrice']?.toString() ??
+          '0';
     } else if (userGender.toLowerCase() == 'man') {
-      priceStr = event['menEntryPrice']?.toString() ?? '0';
+      priceStr =
+          event['menDiscountedPrice']?.toString() ??
+          event['menEntryPrice']?.toString() ??
+          event['entryPrice']?.toString() ??
+          '0';
     } else {
-      priceStr = event['otherEntryPrice']?.toString() ?? '0';
+      priceStr =
+          event['otherDiscountedPrice']?.toString() ??
+          event['otherEntryPrice']?.toString() ??
+          event['entryPrice']?.toString() ??
+          '0';
     }
 
-    int price = int.tryParse(priceStr) ?? 0;
-    return price > 0 ? '₹$price' : 'Free';
+    double price = double.tryParse(priceStr) ?? 0.0;
+    return price > 0 ? '₹${price.toInt()}' : 'Free';
   }
 
   @override
@@ -191,33 +197,28 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 width: double.infinity,
                 child: BlocBuilder<EventsBloc, EventsState>(
                   builder: (context, state) {
-                    final isBooked = state.bookedEvents.contains(title);
                     return Row(
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: isBooked
-                                ? null
-                                : () {
-                                    context.read<EventsBloc>().add(
-                                      BookEventEvent(title),
-                                    );
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            BookingConfirmationScreen(
-                                              title: title,
-                                              date: date,
-                                              location: location,
-                                            ),
+                            onPressed: () {
+                              context.read<EventsBloc>().add(
+                                BookEventEvent(title),
+                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      BookingConfirmationScreen(
+                                        title: title,
+                                        date: date,
+                                        location: location,
                                       ),
-                                    );
-                                  },
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isBooked
-                                  ? Colors.grey
-                                  : const Color(0xFFE43A6A),
+                              backgroundColor: const Color(0xFFE43A6A),
                               foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -225,14 +226,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: Text(
-                              isBooked
-                                  ? '✅ Booked'
-                                  : '🎟️ Book Now · $price — $spotsLeft spots left',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.local_activity_outlined,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Book Now · $price',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
