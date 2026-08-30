@@ -9,133 +9,145 @@ class AboutHostAndFAQSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasHost = eventPartner != null && 
+        eventPartner!['businessName'] != null && 
+        eventPartner!['businessName'].toString().trim().isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // About the Host
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'About the Host',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+        if (hasHost) ...[
+          // About the Host
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'About the Host',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+          const SizedBox(height: 16),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 57, 46, 38), // Soft Premium Mocha
+                  Color(0xFF2C221C), // Deep Espresso
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFDDE6), // Slightly darker pink
-                      borderRadius: BorderRadius.circular(12),
-                      image: (eventPartner?['logo'] != null && eventPartner!['logo'].toString().isNotEmpty)
-                          ? DecorationImage(
-                              image: NetworkImage(eventPartner!['logo']),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    child: (eventPartner?['logo'] == null || eventPartner!['logo'].toString().isEmpty)
-                        ? const Center(child: Text('🥂', style: TextStyle(fontSize: 24)))
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: Colors.white, 
+                    borderRadius: BorderRadius.circular(16),
+                    image: (eventPartner?['logo'] != null && eventPartner!['logo'].toString().isNotEmpty)
+                        ? DecorationImage(
+                            image: NetworkImage(eventPartner!['logo']),
+                            fit: BoxFit.cover,
+                          )
                         : null,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                eventPartner?['businessName'] ?? 'Spark Official Events',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                  child: (eventPartner?['logo'] == null || eventPartner!['logo'].toString().isEmpty)
+                      ? const Center(
+                          child: Icon(
+                            Icons.business,
+                            color: Colors.grey,
+                            size: 28,
+                          ),
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              eventPartner!['businessName'],
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: 0.3,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.verified,
-                              color: Color(0xFFE43A6A),
-                              size: 16,
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 6),
+                          const Icon(
+                            Icons.verified,
+                            color: Color(0xFFE43A6A),
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                      if (eventPartner?['contactPerson'] != null && eventPartner!['contactPerson'].toString().isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
-                          eventPartner?['address'] ?? 'Curating singles events since 2021 · Mumbai',
+                          'Contact: ${eventPartner!['contactPerson']}',
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
+                            fontSize: 13,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
-                    ),
+                      if (eventPartner?['city'] != null && eventPartner!['city'].toString().isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on, size: 14, color: Colors.white54),
+                            const SizedBox(width: 4),
+                            Text(
+                              eventPartner!['city'],
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white70,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(child: _buildStatItem('128', 'EVENTS HOSTED')),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildStatItem('4.8 ⭐', 'AVG RATING')),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildStatItem('9.2k', 'GUESTS MET')),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _buildReview(
-                name: 'Ananya',
-                age: '27',
-                review:
-                    '"Actually met someone I clicked with. Felt safe the whole time — staff were great."',
-                imageUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-              ),
-              const SizedBox(height: 16),
-              _buildReview(
-                name: 'Karan',
-                age: '30',
-                review:
-                    '"Way better than swiping. Good crowd, well organised, icebreakers weren\'t cringe."',
-                imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
+          const SizedBox(height: 24),
+        ],
         // Invite a match
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -346,93 +358,7 @@ class AboutHostAndFAQSection extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String val, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F7F9),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200, width: 0.5),
-      ),
-      child: Column(
-        children: [
-          Text(
-            val,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-              letterSpacing: 0.3,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildReview({
-    required String name,
-    required String age,
-    required String review,
-    required String imageUrl,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CircleAvatar(radius: 16, backgroundImage: NetworkImage(imageUrl)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    '$name, $age',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Row(
-                    children: List.generate(
-                      5,
-                      (index) => const Icon(
-                        Icons.star,
-                        size: 10,
-                        color: Color(0xFFFFC107),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                review,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade700,
-                  height: 1.4,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildTermText(String text) {
     return Padding(
