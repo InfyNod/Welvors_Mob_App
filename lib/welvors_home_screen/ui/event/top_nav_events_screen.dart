@@ -7,6 +7,7 @@ import 'events_bloc/events_state.dart';
 import 'all_screen/events_cards.dart';
 import 'all_screen/events_location.dart';
 import 'all_screen/my_ticket.dart';
+import 'filter_events.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -26,13 +27,78 @@ class _EventsScreenView extends StatefulWidget {
 
 class _EventsScreenViewState extends State<_EventsScreenView> {
   final List<Map<String, String>> _categories = const [
-    {'icon': '✨', 'name': 'All'},
-    {'icon': '🍸', 'name': 'Mixers'},
-    {'icon': '💘', 'name': 'Speed\nDating'},
-    {'icon': '🎶', 'name': 'Parties'},
-    {'icon': '🍽', 'name': 'Dining'},
-    {'icon': '🎳', 'name': 'Activities'},
-    {'icon': '🥾', 'name': 'Trekking'},
+    {
+      'name': 'All events',
+      'image':
+          'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFFFEFF4',
+    },
+    {
+      'name': 'Singles\nMixer',
+      'image':
+          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFFFF5E6',
+    },
+    {
+      'name': 'Speed\nDates',
+      'image':
+          'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFE6F3FF',
+    },
+    {
+      'name': 'Singles\nNight',
+      'image':
+          'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFF0FFF0',
+    },
+    {
+      'name': 'Dinner\nDates',
+      'image':
+          'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFFFF0F5',
+    },
+    {
+      'name': 'Learn &\nMatch',
+      'image':
+          'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFFDF5E6',
+    },
+    {
+      'name': 'Play &\nMatch',
+      'image':
+          'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFF5FFFA',
+    },
+    {
+      'name': 'Fit\nDates',
+      'image':
+          'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFF8F8FF',
+    },
+    {
+      'name': 'Trek\nDates',
+      'image':
+          'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFFFF5EE',
+    },
+    {
+      'name': 'The\nReserve',
+      'image':
+          'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFF0F8FF',
+    },
+    {
+      'name': 'Professionals\nMeet',
+      'image':
+          'https://images.unsplash.com/photo-1515169067868-5387ec356754?auto=format&fit=crop&w=500&q=80',
+      'color': '0xFFE0FFFF',
+    },
+    {
+      'name': 'Matched\nfor You',
+      'image':
+          'https://cdn0.hitched.co.uk/article/6290/3_2/1280/jpg/100926-signs-youve-found-the-one.jpeg',
+      'color': '0xFFFFF8DC',
+    },
   ];
 
   final List<String> _filters = const [
@@ -41,8 +107,6 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
     'Free events',
     'This Month',
   ];
-
-  final ScrollController _categoryScrollController = ScrollController();
   late final List<GlobalKey> _filterKeys;
   String _currentCity = 'Mumbai';
 
@@ -54,26 +118,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
 
   @override
   void dispose() {
-    _categoryScrollController.dispose();
     super.dispose();
-  }
-
-  void _scrollToCenter(int index) {
-    if (!_categoryScrollController.hasClients) return;
-
-    final screenWidth = MediaQuery.of(context).size.width;
-    // item width is 72 + 8 margin = 80. ListView padding is 12.
-    final itemCenter = 12.0 + (index * 80.0) + 40.0;
-    final targetOffset = itemCenter - (screenWidth / 2);
-
-    _categoryScrollController.animateTo(
-      targetOffset.clamp(
-        0.0,
-        _categoryScrollController.position.maxScrollExtent,
-      ),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
   }
 
   void _scrollToFilterCenter(int index) {
@@ -161,7 +206,9 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const MyTicketScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const MyTicketScreen(),
+                          ),
                         );
                       },
                       child: Container(
@@ -220,7 +267,9 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: TextField(
                               onChanged: (value) {
-                                context.read<EventsBloc>().add(SearchQueryEvent(value));
+                                context.read<EventsBloc>().add(
+                                  SearchQueryEvent(value),
+                                );
                               },
                               decoration: InputDecoration(
                                 hintText: 'Search comedy, mixers, parties...',
@@ -277,128 +326,113 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       ),
                     ),
 
-                    // Categories
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _StickyCategoriesDelegate(
-                        child: Container(
-                          color: Colors.white,
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 80,
-                                child: BlocBuilder<EventsBloc, EventsState>(
-                                  buildWhen: (previous, current) =>
-                                      previous.selectedCategoryIndex !=
-                                      current.selectedCategoryIndex,
-                                  builder: (context, state) {
-                                    return ListView.builder(
-                                      controller: _categoryScrollController,
-                                      scrollDirection: Axis.horizontal,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
+                    // Categories (New 2-Row Horizontal Scroll Grid)
+                    SliverToBoxAdapter(
+                      child: BlocBuilder<EventsBloc, EventsState>(
+                        buildWhen: (previous, current) =>
+                            previous.selectedCategoryIndex !=
+                            current.selectedCategoryIndex,
+                        builder: (context, state) {
+                          return SizedBox(
+                            height: 160,
+                            child: GridView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              physics: const BouncingScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: 12,
+                                    crossAxisSpacing: 12,
+                                    mainAxisExtent: 160,
+                                  ),
+                              itemCount: _categories.length,
+                              itemBuilder: (context, index) {
+                                final isSelected =
+                                    state.selectedCategoryIndex == index;
+                                final category = _categories[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (index == 0) {
+                                      context.read<EventsBloc>().add(
+                                        SelectCategoryEvent(index),
+                                      );
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => FilterEventsScreen(
+                                            category: category,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Color(
+                                        int.parse(category['color']!),
                                       ),
-                                      itemCount: _categories.length,
-                                      itemBuilder: (context, index) {
-                                        final isSelected =
-                                            state.selectedCategoryIndex ==
-                                            index;
-                                        final category = _categories[index];
-                                        return GestureDetector(
-                                          onTap: () {
-                                            context.read<EventsBloc>().add(
-                                              SelectCategoryEvent(index),
-                                            );
-                                            _scrollToCenter(index);
-                                          },
-                                          child: Container(
-                                            width: 64,
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 4,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: isSelected
+                                          ? Border.all(
+                                              color: const Color(0xFFE85A7A),
+                                              width: 1.5,
+                                            )
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 12,
+                                              right: 4,
                                             ),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  width: 50,
-                                                  height: 50,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          18,
-                                                        ),
-                                                    border: isSelected
-                                                        ? Border.all(
-                                                            color: const Color(
-                                                              0xFFE85A7A,
-                                                            ),
-                                                            width: 1.5,
-                                                          )
-                                                        : Border.all(
-                                                            color: Colors
-                                                                .grey
-                                                                .shade300,
-                                                            width: 1,
-                                                          ),
-                                                    boxShadow: [
-                                                      if (isSelected)
-                                                        BoxShadow(
-                                                          color: const Color(
-                                                            0xFFE85A7A,
-                                                          ).withOpacity(0.25),
-                                                          blurRadius: 10,
-                                                          spreadRadius: 1,
-                                                          offset: const Offset(0, 4),
-                                                        )
-                                                      else
-                                                        BoxShadow(
-                                                          color: Colors.black
-                                                              .withOpacity(0.04),
-                                                          blurRadius: 8,
-                                                          offset: const Offset(0, 3),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    category['icon']!,
-                                                    style: const TextStyle(
-                                                      fontSize: 20,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 6),
-                                                Text(
-                                                  category['name']!,
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: isSelected
-                                                        ? FontWeight.bold
-                                                        : FontWeight.w600,
-                                                    color: isSelected
-                                                        ? const Color(
-                                                            0xFFE85A7A,
-                                                          )
-                                                        : Colors.grey.shade800,
-                                                    height: 1.1,
-                                                  ),
-                                                ),
-                                              ],
+                                            child: Text(
+                                              category['name']!,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: isSelected
+                                                    ? const Color(0xFFE85A7A)
+                                                    : Colors.black87,
+                                                height: 1.2,
+                                              ),
                                             ),
                                           ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                            ],
-                          ),
-                        ),
+                                        ),
+                                        Expanded(
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                  topRight: Radius.circular(
+                                                    14.5,
+                                                  ),
+                                                  bottomRight: Radius.circular(
+                                                    14.5,
+                                                  ),
+                                                ),
+                                            child: Image.network(
+                                              category['image']!,
+                                              fit: BoxFit.cover,
+                                              height: double.infinity,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
                     // Filters
                     SliverToBoxAdapter(
@@ -485,31 +519,5 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
         ),
       ),
     );
-  }
-}
-
-class _StickyCategoriesDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
-
-  _StickyCategoriesDelegate({required this.child});
-
-  @override
-  double get minExtent => 92.0;
-
-  @override
-  double get maxExtent => 92.0;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return child;
-  }
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
   }
 }
