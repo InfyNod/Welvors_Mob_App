@@ -14,11 +14,10 @@ class FilterEventsScreen extends StatefulWidget {
 class _FilterEventsScreenState extends State<FilterEventsScreen> {
   int _selectedFilterIndex = 0;
   final List<String> _filters = const [
-    'All',
+    'Today',
     'This Weekend',
-    'Next Week',
-    'Under ₹1,000',
-    'Available',
+    'This Month',
+    'Free events',
   ];
 
   late final ScrollController _filterScrollController;
@@ -66,6 +65,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // Custom Header
@@ -213,15 +213,18 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                     ),
                   ),
 
+                  // Spacing below the image
+                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
                   // Sticky Filters
                   SliverPersistentHeader(
                     pinned: true,
                     delegate: _StickyFiltersDelegate(
                       child: Container(
                         color: Colors.white,
-                        padding: const EdgeInsets.only(top: 20, bottom: 8),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         child: SizedBox(
-                          height: 36,
+                          height: 34,
                           child: ListView.builder(
                             controller: _filterScrollController,
                             scrollDirection: Axis.horizontal,
@@ -243,7 +246,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                                   ),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 20,
-                                    vertical: 8,
+                                    vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
                                     color: isSelected
@@ -296,10 +299,10 @@ class _StickyFiltersDelegate extends SliverPersistentHeaderDelegate {
   _StickyFiltersDelegate({required this.child});
 
   @override
-  double get minExtent => 64.0;
+  double get minExtent => 50.0;
 
   @override
-  double get maxExtent => 64.0;
+  double get maxExtent => 50.0;
 
   @override
   Widget build(

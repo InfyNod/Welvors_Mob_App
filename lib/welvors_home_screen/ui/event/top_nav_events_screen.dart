@@ -104,8 +104,8 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
   final List<String> _filters = const [
     'Today',
     'This Weekend',
-    'Free events',
     'This Month',
+    'Free events',
   ];
   late final List<GlobalKey> _filterKeys;
   String _currentCity = 'Mumbai';
@@ -433,7 +433,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                         },
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 15)),
 
                     // Filters
                     SliverPersistentHeader(
@@ -441,9 +441,9 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       delegate: _TopNavStickyFiltersDelegate(
                         child: Container(
                           color: Colors.white,
-                          padding: const EdgeInsets.only(top: 8, bottom: 8),
+                          padding: const EdgeInsets.only(top: 0, bottom: 8),
                           child: SizedBox(
-                            height: 36,
+                            height: 34,
                             child: BlocBuilder<EventsBloc, EventsState>(
                               buildWhen: (previous, current) =>
                                   previous.selectedFilterIndex !=
@@ -472,7 +472,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                         ),
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 20,
-                                          vertical: 8,
+                                          vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
                                           color: isSelected
@@ -530,10 +530,10 @@ class _TopNavStickyFiltersDelegate extends SliverPersistentHeaderDelegate {
   _TopNavStickyFiltersDelegate({required this.child});
 
   @override
-  double get minExtent => 52.0;
+  double get minExtent => 42.0;
 
   @override
-  double get maxExtent => 52.0;
+  double get maxExtent => 42.0;
 
   @override
   Widget build(
