@@ -99,6 +99,9 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
       child: Column(
         children: [
           const SizedBox(height: 16),

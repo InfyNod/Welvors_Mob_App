@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_state.dart';
+
 class SentLikesScreen extends StatelessWidget {
   const SentLikesScreen({super.key});
 
@@ -52,7 +53,8 @@ class SentLikesScreen extends StatelessWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: sentCards.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final card = sentCards[index];
                     return _buildSentCard(
@@ -103,10 +105,7 @@ class SentLikesScreen extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundImage: NetworkImage(imageUrl),
-              ),
+              CircleAvatar(radius: 24, backgroundImage: NetworkImage(imageUrl)),
               Positioned(
                 bottom: -2,
                 right: -2,
@@ -156,10 +155,7 @@ class SentLikesScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   timeInfo,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
             ),

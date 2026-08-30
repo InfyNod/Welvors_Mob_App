@@ -9,10 +9,8 @@ void showRevealDrawer(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) => RevealDrawer(
-      matchPercent: matchPercent,
-      onReveal: onReveal,
-    ),
+    builder: (context) =>
+        RevealDrawer(matchPercent: matchPercent, onReveal: onReveal),
   );
 }
 
@@ -171,7 +169,9 @@ class RevealDrawer extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
-                borderRadius: BorderRadius.circular(16), // Made it square-ish with 16 radius
+                borderRadius: BorderRadius.circular(
+                  16,
+                ), // Made it square-ish with 16 radius
 
                 boxShadow: [
                   BoxShadow(

@@ -82,6 +82,9 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
       child: Column(
         children: [
           const SizedBox(height: 16),

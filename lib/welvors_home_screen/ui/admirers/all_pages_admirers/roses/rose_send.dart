@@ -63,7 +63,8 @@ class _RoseSendScreenState extends State<RoseSendScreen> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: sentCards.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final card = sentCards[index];
                     return _buildSentCard(
