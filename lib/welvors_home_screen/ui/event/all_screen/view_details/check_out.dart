@@ -221,18 +221,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      206,
-                                      202,
-                                      203,
+                                    color: const Color.fromRGBO(
+                                      233,
+                                      247,
+                                      240,
+                                      1,
                                     ),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: const Icon(
                                     Icons.local_activity,
                                     size: 10,
-                                    color: Color(0xFFE43A6A),
+                                    color: Color.fromRGBO(44, 175, 107, 1),
                                   ),
                                 ),
                                 const SizedBox(width: 6),
@@ -240,7 +240,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   'WELVORS100 applied',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Color(0xFF4CAF50),
+                                    color: Color.fromRGBO(44, 175, 107, 1),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -250,7 +250,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               '-${_currencyFormat.format(_discount)}',
                               style: const TextStyle(
                                 fontSize: 13,
-                                color: Color(0xFF4CAF50),
+                                color: Color.fromRGBO(44, 175, 107, 1),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

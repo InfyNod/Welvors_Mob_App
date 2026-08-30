@@ -55,6 +55,7 @@ class _SplashScreenBookState extends State<SplashScreenBook> {
                     title: widget.title,
                     date: widget.date,
                     location: widget.location,
+                    totalPayable: widget.totalPayable,
                   ),
                 ),
               );
