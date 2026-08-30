@@ -466,54 +466,55 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   ],
 
                   // Stats Grid
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom: 24,
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 12,
-                            spreadRadius: 1,
-                            offset: const Offset(0, 0),
-                          ),
-                        ],
+                  if (_eventData != null)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: 24,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildStatItem(
-                            Icons.calendar_today,
-                            'DATE',
-                            date.contains('·')
-                                ? date.split('·').first.trim()
-                                : date,
-                          ),
-                          _buildVerticalDivider(),
-                          _buildStatItem(Icons.access_time, 'TIME', timeStr),
-                          _buildVerticalDivider(),
-                          _buildStatItem(
-                            Icons.confirmation_num_outlined,
-                            'ENTRY',
-                            price,
-                          ),
-                          _buildVerticalDivider(),
-                          _buildStatItem(
-                            Icons.people_outline,
-                            'CROWD',
-                            '$capacity singles',
-                          ),
-                        ],
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 12,
+                              spreadRadius: 1,
+                              offset: const Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildStatItem(
+                              Icons.calendar_today,
+                              'DATE',
+                              date.contains('·')
+                                  ? date.split('·').first.trim()
+                                  : date,
+                            ),
+                            _buildVerticalDivider(),
+                            _buildStatItem(Icons.access_time, 'TIME', timeStr),
+                            _buildVerticalDivider(),
+                            _buildStatItem(
+                              Icons.confirmation_num_outlined,
+                              'ENTRY',
+                              price,
+                            ),
+                            _buildVerticalDivider(),
+                            _buildStatItem(
+                              Icons.people_outline,
+                              'CROWD',
+                              '$capacity singles',
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
                   // Filling Fast Section
                   if (_eventData?['bookingStats'] != null)
@@ -522,7 +523,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     const SizedBox(height: 24),
 
                   EventMoreDetailsSection(
-                    isTrekkingEvent: title.toLowerCase().contains('trek'),
                     aboutEvent: _eventData?['aboutEvent'],
                     galleryImages: _eventData?['galleryImages'] as List?,
                     whyShouldCome: _eventData?['whyShouldCome'] as List?,
