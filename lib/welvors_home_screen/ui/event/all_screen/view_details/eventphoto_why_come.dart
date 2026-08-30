@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class EventMoreDetailsSection extends StatelessWidget {
@@ -33,18 +34,22 @@ class EventMoreDetailsSection extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             height: 90,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: galleryImages!.map((img) {
-                String url = '';
-                if (img is Map) {
-                  url = img['imageUrl']?.toString() ?? '';
-                } else {
-                  url = img.toString();
-                }
-                return _buildPhotoCard(url);
-              }).toList(),
+            child: Builder(
+              builder: (context) {
+                final allUrls = galleryImages!.map((img) {
+                  if (img is Map) return img['imageUrl']?.toString() ?? '';
+                  return img.toString();
+                }).toList();
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: allUrls.length,
+                  itemBuilder: (context, index) {
+                    return _buildPhotoCard(context, allUrls, index);
+                  },
+                );
+              },
             ),
           ),
           const SizedBox(height: 20),
@@ -169,13 +174,117 @@ class EventMoreDetailsSection extends StatelessWidget {
     return colors[index % colors.length];
   }
 
-  Widget _buildPhotoCard(String url) {
-    return Container(
-      width: 130,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
+  Widget _buildPhotoCard(
+    BuildContext context,
+    List<String> allUrls,
+    int initialIndex,
+  ) {
+    String currentUrl = allUrls[initialIndex];
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          useSafeArea: false,
+          builder: (context) {
+            final pageController = PageController(initialPage: initialIndex);
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return Dialog(
+                  backgroundColor: Colors.black,
+                  insetPadding: EdgeInsets.zero,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      PageView.builder(
+                        controller: pageController,
+                        itemCount: allUrls.length,
+                        onPageChanged: (index) {
+                          setState(() {});
+                        },
+                        itemBuilder: (context, idx) {
+                          return Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              // Blurred Background
+                              Image.network(allUrls[idx], fit: BoxFit.cover),
+                              BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                                child: Container(color: Colors.black.withOpacity(0.6)),
+                              ),
+                              // Contained Foreground Image
+                              InteractiveViewer(
+                                panEnabled: true,
+                                minScale: 1.0,
+                                maxScale: 4.0,
+                                child: Image.network(
+                                  allUrls[idx],
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+
+                      // Cancel Button
+                      Positioned(
+                        top: MediaQuery.of(context).padding.top + 10,
+                        right: 16,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+
+                      // Page Indicators (Dots)
+                      if (allUrls.length > 1)
+                        Positioned(
+                          bottom: MediaQuery.of(context).padding.bottom + 20,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(allUrls.length, (index) {
+                              final isCurrent = pageController.hasClients
+                                  ? (pageController.page?.round() == index)
+                                  : (initialIndex == index);
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                height: 8,
+                                width: isCurrent ? 24 : 8,
+                                decoration: BoxDecoration(
+                                  color: isCurrent
+                                      ? const Color(0xFFE43A6A)
+                                      : Colors.white54,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+      child: Container(
+        width: 130,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: DecorationImage(
+            image: NetworkImage(currentUrl),
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
