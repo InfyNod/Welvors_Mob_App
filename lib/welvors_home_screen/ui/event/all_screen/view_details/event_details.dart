@@ -562,6 +562,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     termsConditions: _eventData?['termsConditions'] as String?,
                     eventPartner:
                         _eventData?['eventPartner'] as Map<String, dynamic>?,
+                    faqs: _eventData?['faqs'] as List<dynamic>?,
                   ),
                   const SizedBox(height: 20),
                 ],

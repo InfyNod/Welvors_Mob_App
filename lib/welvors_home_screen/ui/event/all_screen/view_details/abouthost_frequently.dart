@@ -5,7 +5,8 @@ import 'Invite_match_drawer.dart';
 class AboutHostAndFAQSection extends StatelessWidget {
   final String? termsConditions;
   final Map<String, dynamic>? eventPartner;
-  const AboutHostAndFAQSection({super.key, this.termsConditions, this.eventPartner});
+  final List<dynamic>? faqs;
+  const AboutHostAndFAQSection({super.key, this.termsConditions, this.eventPartner, this.faqs});
 
   @override
   Widget build(BuildContext context) {
@@ -247,67 +248,62 @@ class AboutHostAndFAQSection extends StatelessWidget {
         const SizedBox(height: 32),
 
         // Frequently Asked
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'FREQUENTLY ASKED',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Colors.black54,
-                letterSpacing: 1.2,
+        if (faqs != null && faqs!.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'FREQUENTLY ASKED',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black54,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 20,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                const _EventFaqItem(
-                  question: 'Can I come alone?',
-                  answer:
-                      'Yes! Most of our guests come solo. Our icebreakers are designed to make it easy to meet everyone.',
-                ),
-                _buildFaqDivider(),
-                const _EventFaqItem(
-                  question: 'What\'s the refund policy?',
-                  answer:
-                      'Full refund on cancellations made 3+ days before the event.',
-                ),
-                _buildFaqDivider(),
-                const _EventFaqItem(
-                  question: 'Is alcohol included?',
-                  answer:
-                      'Some events include a welcome drink. Please check the "Your Pass & Amenities" section for specifics.',
-                ),
-              ],
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 20,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: List.generate(faqs!.length, (index) {
+                  final faq = faqs![index];
+                  return Column(
+                    children: [
+                      _EventFaqItem(
+                        question: faq['question']?.toString() ?? '',
+                        answer: faq['answer']?.toString() ?? '',
+                      ),
+                      if (index < faqs!.length - 1) _buildFaqDivider(),
+                    ],
+                  );
+                }),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 32),
+          const SizedBox(height: 32),
+        ],
         // TERMS & CONDITIONS
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
