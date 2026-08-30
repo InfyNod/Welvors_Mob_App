@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class EventItineraryAndLocationSection extends StatelessWidget {
+class EventItineraryAndLocationSection extends StatefulWidget {
   final List<dynamic>? itinerary;
   final String? locationTitle;
   final String? fullAddress;
@@ -13,12 +13,40 @@ class EventItineraryAndLocationSection extends StatelessWidget {
   });
 
   @override
+  State<EventItineraryAndLocationSection> createState() =>
+      _EventItineraryAndLocationSectionState();
+}
+
+class _EventItineraryAndLocationSectionState
+    extends State<EventItineraryAndLocationSection> {
+  final Map<String, bool> _expandedGroups = {};
+
+  @override
   Widget build(BuildContext context) {
+    Map<String, List<dynamic>> groupedItinerary = {};
+    if (widget.itinerary != null && widget.itinerary!.isNotEmpty) {
+      for (var item in widget.itinerary!) {
+        final dayNumber = item['dayNumber']?.toString();
+        final date = item['date']?.toString();
+        String groupKey = '';
+
+        if (dayNumber != null && dayNumber != 'null' && dayNumber.isNotEmpty) {
+          groupKey = 'Day $dayNumber';
+        } else if (date != null && date != 'null' && date.isNotEmpty) {
+          groupKey = date;
+        } else {
+          groupKey = 'Schedule';
+        }
+
+        groupedItinerary.putIfAbsent(groupKey, () => []).add(item);
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Event Itinerary
-        if (itinerary != null && itinerary!.isNotEmpty) ...[
+        if (widget.itinerary != null && widget.itinerary!.isNotEmpty) ...[
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
@@ -34,22 +62,139 @@ class EventItineraryAndLocationSection extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
-              children: itinerary!.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                return _buildTimelineItem(
-                  item: item,
-                  isLast: index == itinerary!.length - 1,
+              children: groupedItinerary.entries.map((entry) {
+                final groupKey = entry.key;
+                final items = entry.value;
+                final isExpanded = _expandedGroups[groupKey] ?? false;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header for the Group (only if it's explicitly a Day or we have multiple groups)
+                      if (groupedItinerary.length > 1 || groupKey != 'Schedule')
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: const BoxDecoration(
+                            color: Color(
+                              0xFFFFF0F5,
+                            ), // Light pink background for header
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            ),
+                          ),
+                          child: Text(
+                            groupKey,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFE43A6A),
+                            ),
+                          ),
+                        ),
+                      // Items inside the group
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          alignment: Alignment.topCenter,
+                          child: Column(
+                            children: [
+                              ...items
+                                  .asMap()
+                                  .entries
+                                  .where((itemEntry) {
+                                    return isExpanded || itemEntry.key < 1;
+                                  })
+                                  .map((itemEntry) {
+                                    final index = itemEntry.key;
+                                    final item = itemEntry.value;
+                                    final isLastVisible = isExpanded
+                                        ? index == items.length - 1
+                                        : (index == 0 ||
+                                              index == items.length - 1);
+                                    return _buildTimelineItem(
+                                      item: item as Map<String, dynamic>,
+                                      isLast: isLastVisible,
+                                    );
+                                  })
+                                  .toList(),
+                              if (items.length > 1)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _expandedGroups[groupKey] = !isExpanded;
+                                      });
+                                    },
+                                    behavior: HitTestBehavior.opaque,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 4,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            isExpanded
+                                                ? 'Show Less'
+                                                : 'Show More',
+                                            style: const TextStyle(
+                                              color: Color(0xFFE43A6A),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            isExpanded
+                                                ? Icons.keyboard_arrow_up
+                                                : Icons.keyboard_arrow_down,
+                                            color: const Color(0xFFE43A6A),
+                                            size: 16,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               }).toList(),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
         ],
 
         // Location
-        if ((locationTitle != null && locationTitle!.isNotEmpty) ||
-            (fullAddress != null && fullAddress!.isNotEmpty)) ...[
+        if ((widget.locationTitle != null &&
+                widget.locationTitle!.isNotEmpty) ||
+            (widget.fullAddress != null && widget.fullAddress!.isNotEmpty)) ...[
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
@@ -79,9 +224,10 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (locationTitle != null && locationTitle!.isNotEmpty) ...[
+                      if (widget.locationTitle != null &&
+                          widget.locationTitle!.isNotEmpty) ...[
                         Text(
-                          locationTitle!,
+                          widget.locationTitle!,
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -90,9 +236,10 @@ class EventItineraryAndLocationSection extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                       ],
-                      if (fullAddress != null && fullAddress!.isNotEmpty)
+                      if (widget.fullAddress != null &&
+                          widget.fullAddress!.isNotEmpty)
                         Text(
-                          fullAddress!,
+                          widget.fullAddress!,
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.grey.shade600,
@@ -105,7 +252,7 @@ class EventItineraryAndLocationSection extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
         ],
       ],
     );
@@ -127,14 +274,7 @@ class EventItineraryAndLocationSection extends StatelessWidget {
     final String? accommodation = item['accommodation']?.toString();
     final String? location = item['location']?.toString();
 
-    String headerText = '';
-    if (dayNumber != null && dayNumber != 'null' && dayNumber.isNotEmpty) {
-      headerText += 'Day $dayNumber';
-    }
-    if (timeStr.isNotEmpty) {
-      if (headerText.isNotEmpty) headerText += ' · ';
-      headerText += timeStr;
-    }
+    String headerText = timeStr;
 
     final hasExtraDetails =
         (elevation != null && elevation != 'null' && elevation.isNotEmpty) ||
@@ -169,7 +309,7 @@ class EventItineraryAndLocationSection extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: EdgeInsets.only(bottom: isLast ? 8 : 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
