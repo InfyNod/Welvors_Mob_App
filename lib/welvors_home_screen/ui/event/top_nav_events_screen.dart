@@ -363,9 +363,10 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => FilterEventsScreen(
-                                            category: category,
-                                          ),
+                                          builder: (context) =>
+                                              FilterEventsScreen(
+                                                category: category,
+                                              ),
                                         ),
                                       );
                                     }
@@ -435,11 +436,13 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                     const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
                     // Filters
-                    SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _TopNavStickyFiltersDelegate(
+                        child: Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.only(top: 20, bottom: 8),
+                          child: SizedBox(
                             height: 36,
                             child: BlocBuilder<EventsBloc, EventsState>(
                               buildWhen: (previous, current) =>
@@ -504,13 +507,12 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 12),
-
-                          // Event Cards
-                          const EventsCards(),
-                        ],
+                        ),
                       ),
                     ),
+
+                    // Event Cards
+                    const SliverToBoxAdapter(child: EventsCards()),
                   ],
                 ),
               ),
@@ -519,5 +521,31 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
         ),
       ),
     );
+  }
+}
+
+class _TopNavStickyFiltersDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _TopNavStickyFiltersDelegate({required this.child});
+
+  @override
+  double get minExtent => 64.0;
+
+  @override
+  double get maxExtent => 64.0;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
   }
 }

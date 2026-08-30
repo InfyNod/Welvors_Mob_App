@@ -55,13 +55,18 @@ class _EventsCardsState extends State<EventsCards> {
   }
 
   String _getEventPrice(BuildContext context, Map<String, dynamic> event) {
-    if (event['entryPrice'] != null && event['entryPrice'].toString().isNotEmpty && event['entryPrice'].toString() != 'null') {
+    if (event['entryPrice'] != null &&
+        event['entryPrice'].toString().isNotEmpty &&
+        event['entryPrice'].toString() != 'null') {
       return '₹${event['entryPrice']}';
     }
 
-    final userGender = context.read<ProfileEditCubit>().state.gender; // "Man", "Woman", "Non-binary", etc.
+    final userGender = context
+        .read<ProfileEditCubit>()
+        .state
+        .gender; // "Man", "Woman", "Non-binary", etc.
     String priceStr = '0';
-    
+
     if (userGender.toLowerCase() == 'woman') {
       priceStr = event['womenEntryPrice']?.toString() ?? '0';
     } else if (userGender.toLowerCase() == 'man') {
@@ -99,19 +104,21 @@ class _EventsCardsState extends State<EventsCards> {
           borderRadius: BorderRadius.circular(20),
           child: const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.ios_share,
-              color: Color(0xFFE85A7A),
-              size: 22,
-            ),
+            child: Icon(Icons.ios_share, color: Color(0xFFE85A7A), size: 22),
           ),
         );
       },
     );
   }
 
-  bool _matches(EventsState state, {required List<int> categories, required List<int> filters, required String searchData}) {
-    if (state.selectedCategoryIndex != 0 && !categories.contains(state.selectedCategoryIndex)) {
+  bool _matches(
+    EventsState state, {
+    required List<int> categories,
+    required List<int> filters,
+    required String searchData,
+  }) {
+    if (state.selectedCategoryIndex != 0 &&
+        !categories.contains(state.selectedCategoryIndex)) {
       return false;
     }
     if (!filters.contains(state.selectedFilterIndex)) {
@@ -131,7 +138,12 @@ class _EventsCardsState extends State<EventsCards> {
       padding: const EdgeInsets.only(top: 8, bottom: 24),
       child: BlocBuilder<EventsBloc, EventsState>(
         builder: (context, state) {
-          final showCard4 = _matches(state, categories: [5, 6], filters: [0, 1, 3], searchData: "sandakphu ridge trek trekking");
+          final showCard4 = _matches(
+            state,
+            categories: [5, 6],
+            filters: [0, 1, 3],
+            searchData: "sandakphu ridge trek trekking",
+          );
 
           // Separate events based on tag
           final promotedTags = ['BRAND', 'PROMOTED', 'FEATURED'];
@@ -139,7 +151,7 @@ class _EventsCardsState extends State<EventsCards> {
             final tag = (e['eventTag'] ?? '').toString().toUpperCase();
             return promotedTags.contains(tag);
           }).toList();
-          
+
           final regularEvents = _apiEvents.where((e) {
             final tag = (e['eventTag'] ?? '').toString().toUpperCase();
             return !promotedTags.contains(tag);
@@ -155,9 +167,13 @@ class _EventsCardsState extends State<EventsCards> {
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: promotedEvents.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 12),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 12),
                     itemBuilder: (context, index) {
-                      return _buildHorizontalApiEventCard(promotedEvents[index], state);
+                      return _buildHorizontalApiEventCard(
+                        promotedEvents[index],
+                        state,
+                      );
                     },
                   ),
                 )
@@ -176,7 +192,9 @@ class _EventsCardsState extends State<EventsCards> {
                   ),
                 ),
               ],
-              const SizedBox(height: 24),
+              if (promotedEvents.isNotEmpty ||
+                  (!showCard4 && _apiEvents.isEmpty))
+                const SizedBox(height: 24),
 
               // Standard Events (Vertical)
               Padding(
@@ -195,7 +213,7 @@ class _EventsCardsState extends State<EventsCards> {
                         const SizedBox(height: 24),
                       ],
                     ],
-                    
+
                     // Render Dummy events
                     if (showCard4) ...[
                       _buildStandardCard4(),
@@ -238,119 +256,126 @@ class _EventsCardsState extends State<EventsCards> {
         );
       },
       child: Container(
-      width: 270,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        image: const DecorationImage(
-          image: AssetImage('assets/concert.jpeg'),
-          fit: BoxFit.cover,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE85A7A).withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
+        width: 270,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              Colors.black.withOpacity(0.9),
-              Colors.black.withOpacity(0.1),
-            ],
+          image: const DecorationImage(
+            image: AssetImage('assets/concert.jpeg'),
+            fit: BoxFit.cover,
           ),
-        ),
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // PROMOTED tag
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE85A7A).withOpacity(0.95),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.star, size: 10, color: Colors.white),
-                  SizedBox(width: 4),
-                  Text(
-                    'PROMOTED',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Spacer(),
-            const Text(
-              'This weekend · Mumbai',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 2),
-            const Text(
-              'Rooftop Singles Night',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                height: 1.2,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '60 verified singles · Live music · Limited seats',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 10,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Book now',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
-                ],
-              ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFE85A7A).withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Colors.black.withOpacity(0.9),
+                Colors.black.withOpacity(0.1),
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // PROMOTED tag
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE85A7A).withOpacity(0.95),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.star, size: 10, color: Colors.white),
+                    SizedBox(width: 4),
+                    Text(
+                      'PROMOTED',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              const Text(
+                'This weekend · Mumbai',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                'Rooftop Singles Night',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '60 verified singles · Live music · Limited seats',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 10,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Book now',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
     );
   }
+
   Widget _buildFeaturedCard() {
     return GestureDetector(
       onTap: () {
@@ -370,127 +395,133 @@ class _EventsCardsState extends State<EventsCards> {
         );
       },
       child: Container(
-      width: 270,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        image: const DecorationImage(
-          image: AssetImage('assets/speed.jpeg'),
-          fit: BoxFit.cover,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
+        width: 270,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              Colors.black.withOpacity(0.9),
-              Colors.black.withOpacity(0.1),
-            ],
+          image: const DecorationImage(
+            image: AssetImage('assets/speed.jpeg'),
+            fit: BoxFit.cover,
           ),
-        ),
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // FEATURED tag
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFFED86A), // rgba(254, 216, 106)
-                    Color(0xFFE9A73F), // rgba(233, 167, 63)
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '✦',
-                    style: TextStyle(color: Colors.black87, fontSize: 10),
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    'FEATURED',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Spacer(),
-            const Text(
-              'Sat, Oct 19 · Bandra',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 2),
-            const Text(
-              'Speed Dating · 25–32',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                height: 1.2,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '15 curated matches in one evening',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 10,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'View details',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
-                ],
-              ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Colors.black.withOpacity(0.9),
+                Colors.black.withOpacity(0.1),
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // FEATURED tag
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFFED86A), // rgba(254, 216, 106)
+                      Color(0xFFE9A73F), // rgba(233, 167, 63)
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '✦',
+                      style: TextStyle(color: Colors.black87, fontSize: 10),
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      'FEATURED',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              const Text(
+                'Sat, Oct 19 · Bandra',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                'Speed Dating · 25–32',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '15 curated matches in one evening',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 10,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'View details',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
     );
   }
 
@@ -501,7 +532,13 @@ class _EventsCardsState extends State<EventsCards> {
       String formattedDate = DateFormat('EEE, MMM d').format(date);
       if (startTime != null && startTime.contains(':')) {
         final timeParts = startTime.split(':');
-        final timeObj = DateTime(2020, 1, 1, int.parse(timeParts[0]), int.parse(timeParts[1]));
+        final timeObj = DateTime(
+          2020,
+          1,
+          1,
+          int.parse(timeParts[0]),
+          int.parse(timeParts[1]),
+        );
         final formattedTime = DateFormat('h:mm a').format(timeObj);
         return '$formattedDate · $formattedTime';
       }
@@ -513,13 +550,15 @@ class _EventsCardsState extends State<EventsCards> {
 
   Widget _buildHorizontalApiEventCard(dynamic event, EventsState state) {
     final title = event['title'] ?? 'Event Title';
-    final locationTitle = event['fullAddress']?.split(',').first ?? 'Location TBA';
-    
+    final locationTitle =
+        event['fullAddress']?.split(',').first ?? 'Location TBA';
+
     final heroImageRaw = event['heroImage'];
-    final imageUrl = (heroImageRaw != null && heroImageRaw.toString().isNotEmpty) 
-        ? heroImageRaw 
+    final imageUrl =
+        (heroImageRaw != null && heroImageRaw.toString().isNotEmpty)
+        ? heroImageRaw
         : 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80';
-        
+
     final tagRaw = event['eventTag'] ?? 'PROMOTED';
     final tagLabel = tagRaw.toString().toUpperCase();
     final isBrand = tagLabel == 'BRAND';
@@ -529,7 +568,10 @@ class _EventsCardsState extends State<EventsCards> {
     final dateStr = _formatApiDate(event['eventDate'], event['startTime']);
     final eventId = event['id'] ?? '';
     final capacity = event['totalCapacity'] ?? event['capacity'] ?? 'Limited';
-    final eventType = (event['eventType'] ?? 'Event').toString().replaceAll('_', ' ').toUpperCase();
+    final eventType = (event['eventType'] ?? 'Event')
+        .toString()
+        .replaceAll('_', ' ')
+        .toUpperCase();
 
     return GestureDetector(
       onTap: () {
@@ -583,10 +625,18 @@ class _EventsCardsState extends State<EventsCards> {
             children: [
               // Event tag
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: isBrand ? const Color(0xFFE85A7A).withOpacity(0.95) : 
-                         (isFeatured || isPromoted) ? null : const Color(0xFF424242).withOpacity(0.95), // Fallback dark grey
+                  color: isBrand
+                      ? const Color(0xFFE85A7A).withOpacity(0.95)
+                      : (isFeatured || isPromoted)
+                      ? null
+                      : const Color(
+                          0xFF424242,
+                        ).withOpacity(0.95), // Fallback dark grey
                   gradient: isFeatured
                       ? const LinearGradient(
                           begin: Alignment.topLeft,
@@ -596,29 +646,40 @@ class _EventsCardsState extends State<EventsCards> {
                             Color(0xFFE9A73F), // rgba(233, 167, 63)
                           ],
                         )
-                      : isPromoted 
-                          ? const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFF00C6FF), // Bright Cyan
-                                Color(0xFF0072FF), // Deep Blue
-                              ],
-                            ) 
-                          : null,
+                      : isPromoted
+                      ? const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF00C6FF), // Bright Cyan
+                            Color(0xFF0072FF), // Deep Blue
+                          ],
+                        )
+                      : null,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (isFeatured)
-                      const Text('✦', style: TextStyle(color: Colors.black87, fontSize: 10))
+                      const Text(
+                        '✦',
+                        style: TextStyle(color: Colors.black87, fontSize: 10),
+                      )
                     else if (isBrand)
                       const Icon(Icons.star, size: 10, color: Colors.white)
                     else if (isPromoted)
-                      const Icon(Icons.rocket_launch, size: 10, color: Colors.white)
+                      const Icon(
+                        Icons.rocket_launch,
+                        size: 10,
+                        color: Colors.white,
+                      )
                     else
-                      const Icon(Icons.auto_awesome, size: 10, color: Colors.white),
+                      const Icon(
+                        Icons.auto_awesome,
+                        size: 10,
+                        color: Colors.white,
+                      ),
                     const SizedBox(width: 4),
                     Text(
                       tagLabel,
@@ -665,7 +726,10 @@ class _EventsCardsState extends State<EventsCards> {
               ),
               const SizedBox(height: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -696,14 +760,18 @@ class _EventsCardsState extends State<EventsCards> {
   Widget _buildApiEventCard(dynamic event, EventsState state) {
     final title = event['title'] ?? 'Event Title';
     final location = event['fullAddress'] ?? 'Location TBA';
-    
+
     // Check for null heroImage and provide a fallback
     final heroImageRaw = event['heroImage'];
-    final imageUrl = (heroImageRaw != null && heroImageRaw.toString().isNotEmpty) 
-        ? heroImageRaw 
+    final imageUrl =
+        (heroImageRaw != null && heroImageRaw.toString().isNotEmpty)
+        ? heroImageRaw
         : 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80';
-        
-    final status = (event['eventType'] ?? 'UPCOMING').toString().replaceAll('_', ' ').toUpperCase();
+
+    final status = (event['eventType'] ?? 'UPCOMING')
+        .toString()
+        .replaceAll('_', ' ')
+        .toUpperCase();
     final price = _getEventPrice(context, event);
     final interestedCount = event['interested'] ?? 0;
     final dateStr = _formatApiDate(event['eventDate'], event['startTime']);
@@ -729,173 +797,181 @@ class _EventsCardsState extends State<EventsCards> {
         );
       },
       child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE85A7A).withOpacity(0.06),
-            blurRadius: 24,
-            spreadRadius: 4,
-            offset: const Offset(0, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFE85A7A).withOpacity(0.06),
+              blurRadius: 24,
+              spreadRadius: 4,
+              offset: const Offset(0, 12),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: const Color(0xFFE85A7A).withOpacity(0.1),
+            width: 1.5,
           ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: const Color(0xFFE85A7A).withOpacity(0.1), width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top Image
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Image
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  child: Image.network(
+                    imageUrl,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 200,
+                        color: Colors.grey.shade200,
+                        child: const Icon(
+                          Icons.image,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                  ),
                 ),
-                child: Image.network(
-                  imageUrl,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 200,
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.image, size: 50, color: Colors.grey),
-                    );
-                  },
-                ),
-              ),
-              Positioned(
-                top: 12,
-                left: 12,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.85),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        status.toString().toUpperCase(),
-                        style: const TextStyle(
-                          color: Color(0xFFE43A6A),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.85),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          status.toString().toUpperCase(),
+                          style: const TextStyle(
+                            color: Color(0xFFE43A6A),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.0,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              PriceBadge(price: price),
-            ],
-          ),
-
-          // Action Icons Row
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-            child: Row(
-              children: [
-                Text(
-                  '$interestedCount interested',
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-                const Spacer(),
-                _buildShareIcon(context, title),
+                PriceBadge(price: price),
               ],
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(height: 1, color: Colors.grey.shade100),
-          ),
+            // Action Icons Row
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+              child: Row(
+                children: [
+                  Text(
+                    '$interestedCount interested',
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const Spacer(),
+                  _buildShareIcon(context, title),
+                ],
+              ),
+            ),
 
-          // Content Details
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(height: 1, color: Colors.grey.shade100),
+            ),
 
-
-                // Title & Price
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+            // Content Details
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title & Price
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
 
-                // Date
-                Row(
-                  children: [
-                    const Text('📅', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 8),
-                    Text(
-                      dateStr,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-
-                // Location
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('📍', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        location,
+                  // Date
+                  Row(
+                    children: [
+                      const Text('📅', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Text(
+                        dateStr,
                         style: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Location
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('📍', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          location,
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -910,7 +986,8 @@ class _EventsCardsState extends State<EventsCards> {
               title: 'Sandakphu Ridge Trek',
               date: 'Nov 14–17',
               location: 'Darjeeling, WB',
-              imageUrl: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80',
+              imageUrl:
+                  'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80',
               status: '🥾 TREKKING',
               price: '₹8,900',
             ),
@@ -918,180 +995,182 @@ class _EventsCardsState extends State<EventsCards> {
         );
       },
       child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE85A7A).withOpacity(0.06),
-            blurRadius: 24,
-            spreadRadius: 4,
-            offset: const Offset(0, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFE85A7A).withOpacity(0.06),
+              blurRadius: 24,
+              spreadRadius: 4,
+              offset: const Offset(0, 12),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: const Color(0xFFE85A7A).withOpacity(0.1),
+            width: 1.5,
           ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: const Color(0xFFE85A7A).withOpacity(0.1), width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top Image
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Image
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  child: Image.network(
+                    'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80', // Trekking image
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Image.network(
-                  'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80', // Trekking image
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                top: 12,
-                left: 12,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.85),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '🥾 TREKKING',
-                        style: const TextStyle(
-                          color: Color(0xFFE43A6A),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.85),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '🥾 TREKKING',
+                          style: const TextStyle(
+                            color: Color(0xFFE43A6A),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.0,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const PriceBadge(price: '₹8,900'),
-            ],
-          ),
-
-          // Action Icons Row
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-            child: Row(
-              children: [
-                Text(
-                  '210 interested',
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-                const Spacer(),
-                _buildShareIcon(context, 'Trek to Sandakphu Ridge'),
+                const PriceBadge(price: '₹8,900'),
               ],
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(height: 1, color: Colors.grey.shade100),
-          ),
-
-          // Content Details
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Info Text
-                Text(
-                  '4-day guided trek · small group',
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+            // Action Icons Row
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+              child: Row(
+                children: [
+                  Text(
+                    '210 interested',
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
+                  const Spacer(),
+                  _buildShareIcon(context, 'Trek to Sandakphu Ridge'),
+                ],
+              ),
+            ),
 
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(height: 1, color: Colors.grey.shade100),
+            ),
 
+            // Content Details
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Info Text
+                  Text(
+                    '4-day guided trek · small group',
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
 
-                // Title & Price
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        'Sandakphu Ridge Trek',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                  // Title & Price
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Sandakphu Ridge Trek',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
 
-                // Date
-                Row(
-                  children: [
-                    const Text('📅', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Nov 14–17 · 4 days',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-
-                // Location
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('📍', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Darjeeling, WB',
+                  // Date
+                  Row(
+                    children: [
+                      const Text('📅', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Nov 14–17 · 4 days',
                         style: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                
+                    ],
+                  ),
+                  const SizedBox(height: 4),
 
-              ],
+                  // Location
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('📍', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Darjeeling, WB',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }
@@ -1120,7 +1199,10 @@ class PriceBadge extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.5),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.4),
+                width: 1.5,
+              ),
             ),
             child: Text(
               price,
@@ -1139,4 +1221,3 @@ class PriceBadge extends StatelessWidget {
     );
   }
 }
-

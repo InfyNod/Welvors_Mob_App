@@ -219,7 +219,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                     delegate: _StickyFiltersDelegate(
                       child: Container(
                         color: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.only(top: 20, bottom: 8),
                         child: SizedBox(
                           height: 36,
                           child: ListView.builder(
@@ -296,10 +296,10 @@ class _StickyFiltersDelegate extends SliverPersistentHeaderDelegate {
   _StickyFiltersDelegate({required this.child});
 
   @override
-  double get minExtent => 68.0;
+  double get minExtent => 64.0;
 
   @override
-  double get maxExtent => 68.0;
+  double get maxExtent => 64.0;
 
   @override
   Widget build(
