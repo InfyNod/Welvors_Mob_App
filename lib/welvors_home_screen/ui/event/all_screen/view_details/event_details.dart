@@ -136,11 +136,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         ? _getEventPrice(context, _eventData!)
         : widget.price;
     final spotsLeft = _eventData?['leftSpot'] ?? widget.spotsLeft;
-    final capacity = _eventData?['totalCapacity'] ?? _eventData?['capacity'] ?? 60;
+    final capacity =
+        _eventData?['totalCapacity'] ?? _eventData?['capacity'] ?? 0;
     final interested = _eventData?['interested'] ?? 0;
     final isOfficial = _eventData?['officialPartner'] == true;
-    final hostName =
-        _eventData?['eventPartner']?['businessName'] ?? 'Spark Official Events';
+    final hostName = _eventData?['eventPartner']?['businessName'] ?? 'Host';
 
     String timeStr = date.contains('·') ? date.split('·').last.trim() : 'TBA';
     if (_eventData != null &&
@@ -376,87 +376,90 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       top: 24,
                     ),
                     child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFF0F3),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: const Color(
-                                    0xFFE43A6A,
-                                  ).withOpacity(0.3),
-                                ),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  '🥂',
-                                  style: TextStyle(fontSize: 24),
-                                ),
-                              ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF0F3),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xFFE43A6A).withOpacity(0.3),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          ),
+                          child: const Center(
+                            child: Text('🥂', style: TextStyle(fontSize: 24)),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
                                 children: [
                                   Text(
-                                    title,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.black87,
+                                    'Hosted by $hostName • ',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade600,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Hosted by $hostName • ',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade600,
-                                        ),
-                                      ),
-                                      const Icon(
-                                        Icons.check,
-                                        color: Color(0xFFE43A6A),
-                                        size: 12,
-                                      ),
-                                      const Text(
-                                        ' Verified',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFFE43A6A),
-                                        ),
-                                      ),
-                                    ],
+                                  const Icon(
+                                    Icons.check,
+                                    color: Color(0xFFE43A6A),
+                                    size: 12,
+                                  ),
+                                  const Text(
+                                    ' Verified',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFFE43A6A),
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
 
                   // Tags
-                  if ((_eventData?['featureTags'] != null && (_eventData!['featureTags'] as List).isNotEmpty) || 
-                      (widget.featureTags != null && widget.featureTags!.isNotEmpty)) ...[
+                  if ((_eventData?['featureTags'] != null &&
+                          (_eventData!['featureTags'] as List).isNotEmpty) ||
+                      (widget.featureTags != null &&
+                          widget.featureTags!.isNotEmpty)) ...[
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
-                        children: (_eventData?['featureTags'] as List? ?? widget.featureTags!)
-                            .map((feature) => Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: _buildTag(feature['label']?.toString() ?? ''),
-                                ))
-                            .toList(),
+                        children:
+                            (_eventData?['featureTags'] as List? ??
+                                    widget.featureTags!)
+                                .map(
+                                  (feature) => Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: _buildTag(
+                                      feature['label']?.toString() ?? '',
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -464,57 +467,57 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
                   // Stats Grid
                   Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20, bottom: 24),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      bottom: 24,
+                    ),
                     child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
-                                blurRadius: 12,
-                                spreadRadius: 1,
-                                offset: const Offset(0, 0),
-                              ),
-                            ],
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 12,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 0),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildStatItem(
-                                Icons.calendar_today,
-                                'DATE',
-                                date.contains('·')
-                                    ? date.split('·').first.trim()
-                                    : date,
-                              ),
-                              _buildVerticalDivider(),
-                              _buildStatItem(
-                                Icons.access_time,
-                                'TIME',
-                                timeStr,
-                              ),
-                              _buildVerticalDivider(),
-                              _buildStatItem(
-                                Icons.confirmation_num_outlined,
-                                'ENTRY',
-                                price,
-                              ),
-                              _buildVerticalDivider(),
-                              _buildStatItem(
-                                Icons.people_outline,
-                                'CROWD',
-                                '$capacity singles',
-                              ),
-                            ],
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildStatItem(
+                            Icons.calendar_today,
+                            'DATE',
+                            date.contains('·')
+                                ? date.split('·').first.trim()
+                                : date,
                           ),
-                        ),
+                          _buildVerticalDivider(),
+                          _buildStatItem(Icons.access_time, 'TIME', timeStr),
+                          _buildVerticalDivider(),
+                          _buildStatItem(
+                            Icons.confirmation_num_outlined,
+                            'ENTRY',
+                            price,
+                          ),
+                          _buildVerticalDivider(),
+                          _buildStatItem(
+                            Icons.people_outline,
+                            'CROWD',
+                            '$capacity singles',
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
 
                   // Filling Fast Section
                   if (_eventData?['bookingStats'] != null)
-                    _FillingFastCard(bookingStats: _eventData!['bookingStats']),
+                    _FillingFastCard(eventData: _eventData!),
                   if (_eventData?['bookingStats'] != null)
                     const SizedBox(height: 24),
 
@@ -545,7 +548,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   const SizedBox(height: 20),
                   AboutHostAndFAQSection(
                     termsConditions: _eventData?['termsConditions'] as String?,
-                    eventPartner: _eventData?['eventPartner'] as Map<String, dynamic>?,
+                    eventPartner:
+                        _eventData?['eventPartner'] as Map<String, dynamic>?,
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -636,8 +640,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 }
 
 class _FillingFastCard extends StatefulWidget {
-  final Map<String, dynamic> bookingStats;
-  const _FillingFastCard({super.key, required this.bookingStats});
+  final Map<String, dynamic> eventData;
+  const _FillingFastCard({super.key, required this.eventData});
 
   @override
   State<_FillingFastCard> createState() => _FillingFastCardState();
@@ -669,11 +673,13 @@ class _FillingFastCardState extends State<_FillingFastCard>
 
   @override
   Widget build(BuildContext context) {
-    final stats = widget.bookingStats;
+    final eventData = widget.eventData;
+    final stats = eventData['bookingStats'] ?? {};
     final bool fillingFast = stats['fillingFast'] == true;
     final String fillingFastText = stats['fillingFastText'] ?? 'Filling fast';
     final int spotsLeft = stats['spotsLeft'] ?? 0;
-    final double bookingPercentage = (stats['bookingPercentage'] ?? 0).toDouble();
+    final double bookingPercentage = (stats['bookingPercentage'] ?? 0)
+        .toDouble();
     final String bookingSummary = stats['bookingSummary'] ?? '';
     final String last24HoursText = stats['last24HoursText'] ?? '';
 
@@ -681,21 +687,16 @@ class _FillingFastCardState extends State<_FillingFastCard>
     final Color bgColor = const Color(0xFFFFF0F3);
     final Color borderColor = const Color(0xFFE43A6A).withOpacity(0.15);
     final Color textColor = const Color(0xFFDE2957);
-    int menCapacity = stats['menCapacity'] ?? 0;
-    int womenCapacity = stats['womenCapacity'] ?? 0;
-    int otherCapacity = stats['otherCapacity'] ?? 0;
+    int menCapacity = eventData['menCapacity'] ?? 0;
+    int womenCapacity = eventData['womenCapacity'] ?? 0;
 
-    if (menCapacity == 0 && womenCapacity == 0 && otherCapacity == 0) {
-      // Fallback dummy values to keep UI visible if API hasn't populated data yet
-      menCapacity = 50;
-      womenCapacity = 40;
-      otherCapacity = 10;
-    }
-
-    final int totalGenderCapacity = menCapacity + womenCapacity + otherCapacity;
-    final int menFlex = totalGenderCapacity > 0 ? (menCapacity * 100 / totalGenderCapacity).round() : 0;
-    final int womenFlex = totalGenderCapacity > 0 ? (womenCapacity * 100 / totalGenderCapacity).round() : 0;
-    final int otherFlex = totalGenderCapacity > 0 ? (otherCapacity * 100 / totalGenderCapacity).round() : 0;
+    final int totalGenderCapacity = menCapacity + womenCapacity;
+    final int menFlex = totalGenderCapacity > 0
+        ? (menCapacity * 100 / totalGenderCapacity).round()
+        : 0;
+    final int womenFlex = totalGenderCapacity > 0
+        ? (womenCapacity * 100 / totalGenderCapacity).round()
+        : 0;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -722,7 +723,11 @@ class _FillingFastCardState extends State<_FillingFastCard>
                 children: [
                   fillingFast
                       ? const Text('🔥', style: TextStyle(fontSize: 18))
-                      : Icon(Icons.confirmation_num_outlined, color: mainColor, size: 20),
+                      : Icon(
+                          Icons.confirmation_num_outlined,
+                          color: mainColor,
+                          size: 20,
+                        ),
                   const SizedBox(width: 8),
                   Text(
                     fillingFast ? fillingFastText : 'Booking Open',
@@ -738,7 +743,10 @@ class _FillingFastCardState extends State<_FillingFastCard>
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: mainColor,
                       borderRadius: BorderRadius.circular(20),
@@ -763,7 +771,10 @@ class _FillingFastCardState extends State<_FillingFastCard>
                 )
               else
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -797,7 +808,10 @@ class _FillingFastCardState extends State<_FillingFastCard>
                     ),
                   ),
                   TweenAnimationBuilder<double>(
-                    tween: Tween<double>(begin: 0.0, end: maxWidth * (bookingPercentage / 100)),
+                    tween: Tween<double>(
+                      begin: 0.0,
+                      end: maxWidth * (bookingPercentage / 100),
+                    ),
                     duration: const Duration(seconds: 2),
                     curve: Curves.easeOutCubic,
                     builder: (context, value, child) {
@@ -856,7 +870,11 @@ class _FillingFastCardState extends State<_FillingFastCard>
                       fontWeight: FontWeight.w600,
                     ),
                     children: [
-                      TextSpan(text: bookingSummary + (last24HoursText.isNotEmpty ? ' · ' : '')),
+                      TextSpan(
+                        text:
+                            bookingSummary +
+                            (last24HoursText.isNotEmpty ? ' · ' : ''),
+                      ),
                       if (last24HoursText.isNotEmpty)
                         TextSpan(
                           text: last24HoursText,
@@ -917,18 +935,6 @@ class _FillingFastCardState extends State<_FillingFastCard>
                         ),
                       ),
                     ),
-                  if (otherCapacity > 0)
-                    Expanded(
-                      flex: otherCapacity,
-                      child: Container(
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFFCE93D8), Color(0xFF8E24AA)],
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -942,7 +948,10 @@ class _FillingFastCardState extends State<_FillingFastCard>
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const CircleAvatar(radius: 3, backgroundColor: Color(0xFFFA6A85)),
+                      const CircleAvatar(
+                        radius: 3,
+                        backgroundColor: Color(0xFFFA6A85),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Women $womenFlex%',
@@ -958,7 +967,10 @@ class _FillingFastCardState extends State<_FillingFastCard>
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const CircleAvatar(radius: 3, backgroundColor: Color(0xFF4A90E2)),
+                      const CircleAvatar(
+                        radius: 3,
+                        backgroundColor: Color(0xFF4A90E2),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Men $menFlex%',
@@ -970,25 +982,9 @@ class _FillingFastCardState extends State<_FillingFastCard>
                       ),
                     ],
                   ),
-                if (otherCapacity > 0)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const CircleAvatar(radius: 3, backgroundColor: Color(0xFF8E24AA)),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Other $otherFlex%',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF8E24AA),
-                        ),
-                      ),
-                    ],
-                  ),
               ],
             ),
-          ]
+          ],
         ],
       ),
     );
