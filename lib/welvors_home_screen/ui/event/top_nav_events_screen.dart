@@ -309,12 +309,11 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                           ),
                           const SizedBox(height: 14),
 
-                          // Title
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              "What's hot in Mumbai",
-                              style: TextStyle(
+                              "What's hot in $_currentCity",
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
