@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shimmer/shimmer.dart';
 import '../events_bloc/events_bloc.dart';
 import '../events_bloc/events_state.dart';
 // import '../events_bloc/events_event.dart';
@@ -29,6 +30,7 @@ class EventsCards extends StatefulWidget {
 class _EventsCardsState extends State<EventsCards> {
   List<dynamic> _apiEvents = [];
   bool _isLoading = true;
+  bool _isInitialLoad = true;
 
   @override
   void initState() {
@@ -71,12 +73,14 @@ class _EventsCardsState extends State<EventsCards> {
           setState(() {
             _apiEvents = response['data'] ?? [];
             _isLoading = false;
+            _isInitialLoad = false;
           });
         }
       } else {
         if (mounted) {
           setState(() {
             _isLoading = false;
+            _isInitialLoad = false;
           });
         }
       }
@@ -84,6 +88,7 @@ class _EventsCardsState extends State<EventsCards> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _isInitialLoad = false;
         });
       }
     }
@@ -173,24 +178,31 @@ class _EventsCardsState extends State<EventsCards> {
             children: [
               // Highlighted / Promoted Events (Horizontal Scroll)
               if (promotedEvents.isNotEmpty)
-                SizedBox(
-                  height: 150,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: promotedEvents.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(width: 12),
-                    itemBuilder: (context, index) {
-                      return _buildHorizontalApiEventCard(
-                        promotedEvents[index],
-                        state,
-                      );
-                    },
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: _isLoading ? 0.4 : 1.0,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 150,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: promotedEvents.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            return _buildHorizontalApiEventCard(
+                              promotedEvents[index],
+                              state,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
                 ),
-              if (promotedEvents.isNotEmpty)
-                const SizedBox(height: 24),
 
               // Standard Events (Vertical)
               Padding(
@@ -198,31 +210,110 @@ class _EventsCardsState extends State<EventsCards> {
                 child: Column(
                   children: [
                     // Render API events
-                    if (_isLoading)
-                      const Padding(
-                        padding: EdgeInsets.all(32),
-                        child: CircularProgressIndicator(),
-                      )
-                    else ...[
-                      for (var event in regularEvents) ...[
-                        _buildApiEventCard(event, state),
-                        const SizedBox(height: 24),
-                      ],
-                    ],
-
-                    if (_apiEvents.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-                        child: Text(
-                          "No ${widget.categoryName?.replaceAll('\n', ' ') ?? 'Events'} in ${widget.cityName ?? 'Mumbai'} right now. We add new ones every week — try another city or category.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 15,
-                            height: 1.4,
+                    if (_isInitialLoad && _isLoading)
+                      // Shimmer Skeleton Loading
+                      Column(
+                        children: List.generate(
+                          2,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 24),
+                            child: Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 260,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(24),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 150,
+                                            height: 14,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            width: double.infinity,
+                                            height: 20,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 80,
+                                                height: 32,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(16),
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Container(
+                                                width: 32,
+                                                height: 32,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
+                      )
+                    else ...[
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 300),
+                        opacity: _isLoading ? 0.4 : 1.0,
+                        child: Column(
+                          children: [
+                            for (var event in regularEvents) ...[
+                              _buildApiEventCard(event, state),
+                              const SizedBox(height: 24),
+                            ],
+                            if (_apiEvents.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                                child: Text(
+                                  "No ${widget.categoryName?.replaceAll('\n', ' ') ?? 'Events'} in ${widget.cityName ?? 'Mumbai'} right now. We add new ones every week — try another city or category.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 15,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
+                    ],
                   ],
                 ),
               ),
