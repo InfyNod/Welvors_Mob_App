@@ -194,7 +194,11 @@ class EventMoreDetailsSection extends StatelessWidget {
                   child: Container(
                     height: MediaQuery.of(context).size.height * 0.55,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E1E1E), // Dark premium background
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFF0F5), Colors.white],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
@@ -232,24 +236,55 @@ class EventMoreDetailsSection extends StatelessWidget {
                             Positioned(
                               top: 16,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(15),
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
                                 ),
                                 child: Text(
                                   '${(pageController.hasClients ? (pageController.page?.round() ?? initialIndex) : initialIndex) + 1} / ${allUrls.length}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0,
+                                  ),
                                 ),
                               ),
                             ),
                           // Cancel Button
                           Positioned(
-                            top: 8,
-                            right: 8,
-                            child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.white70, size: 26),
-                              onPressed: () => Navigator.pop(context),
+                            top: 12,
+                            right: 12,
+                            child: InkWell(
+                              onTap: () => Navigator.pop(context),
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.black87,
+                                  size: 22,
+                                ),
+                              ),
                             ),
                           ),
                           // Dots
@@ -265,10 +300,12 @@ class EventMoreDetailsSection extends StatelessWidget {
                                   return AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
                                     margin: const EdgeInsets.symmetric(horizontal: 4),
-                                    height: 6,
-                                    width: isCurrent ? 24 : 6,
+                                    height: 8,
+                                    width: isCurrent ? 24 : 8,
                                     decoration: BoxDecoration(
-                                      color: isCurrent ? const Color(0xFFE43A6A) : Colors.white54,
+                                      color: isCurrent
+                                          ? const Color(0xFFE43A6A)
+                                          : Colors.grey.withOpacity(0.3),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                   );
