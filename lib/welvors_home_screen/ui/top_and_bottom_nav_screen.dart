@@ -267,20 +267,16 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
     if (_isDrawerOpen) {
       return const DrawerScreen();
     }
-    switch (_selectedIndex) {
-      case 0:
-        return HomeScreen(isPreview: widget.isPreview);
-      case 1:
-        return const DateNowScreen();
-      case 2:
-        return const TopNavAdmirersScreen();
-      case 3:
-        return const ChatScreen_();
-      case 4:
-        return const EventsScreen();
-      default:
-        return const SizedBox.shrink();
-    }
+    return IndexedStack(
+      index: _selectedIndex,
+      children: [
+        HomeScreen(isPreview: widget.isPreview),
+        const DateNowScreen(),
+        const TopNavAdmirersScreen(),
+        const ChatScreen_(),
+        const EventsScreen(),
+      ],
+    );
   }
 
   Widget _buildTopBar() {

@@ -359,6 +359,10 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                         SelectCategoryEvent(index),
                                       );
                                     } else {
+                                      // Clear any active date filter before opening the new category screen
+                                      context.read<EventsBloc>().add(
+                                        SelectFilterEvent(-1),
+                                      );
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
