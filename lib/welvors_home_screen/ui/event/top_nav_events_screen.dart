@@ -53,31 +53,31 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
     },
     {
       'name': 'Dinner\nDates',
-      'image': 'assets/photo_event/dinner_date.jpeg',
+      'image': 'assets/photo_event/dinner_date1.jpeg',
       'color': '0xFFFFE4EF', // Light rose
       'eventType': 'DINNER_DATES',
     },
     {
       'name': 'Activity\nDate',
-      'image': 'assets/photo_event/activity_date.jpeg',
+      'image': 'assets/photo_event/activity.jpeg',
       'color': '0xFFFFEBC2', // Light warm orange
       'eventType': 'LEARN_AND_MATCH',
     },
     {
       'name': 'Play &\nMatch',
-      'image': 'assets/photo_event/play_match.jpeg',
+      'image': 'assets/photo_event/play.jpeg',
       'color': '0xFFEFE6E1', // Light cyan (slightly pronounced). '0xFFBCEEF5'
       'eventType': 'PLAY_AND_MATCH',
     },
     {
       'name': 'Travel\nDating',
-      'image': 'assets/photo_event/travel_date.jpeg',
+      'image': 'assets/photo_event/travel.jpeg',
       'color': '0xFFFDF4D4', // Light shade of rgba(247, 205, 96)
       'eventType': 'FIT_DATES',
     },
     {
       'name': 'Trek\nDates',
-      'image': 'assets/photo_event/treck_date.jpeg',
+      'image': 'assets/photo_event/trekking.jpeg',
       'color': '0xFFE2F8E2', // Light warm grey
       'eventType': 'TREK_DATES',
     },
@@ -262,8 +262,6 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
-
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
@@ -429,8 +427,9 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                     return GestureDetector(
                                       key: _filterKeys[index],
                                       onTap: () {
-                                        final newIndex =
-                                            isSelected ? -1 : index;
+                                        final newIndex = isSelected
+                                            ? -1
+                                            : index;
                                         context.read<EventsBloc>().add(
                                           SelectFilterEvent(newIndex),
                                         );

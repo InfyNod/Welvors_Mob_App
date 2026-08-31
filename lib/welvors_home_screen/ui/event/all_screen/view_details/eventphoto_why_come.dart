@@ -192,7 +192,7 @@ class EventMoreDetailsSection extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   child: Container(
-                    height: MediaQuery.of(context).size.height * 0.55,
+                    height: MediaQuery.of(context).size.height * 0.70,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFFFFF0F5), Colors.white],
@@ -224,9 +224,14 @@ class EventMoreDetailsSection extends StatelessWidget {
                                 panEnabled: true,
                                 minScale: 1.0,
                                 maxScale: 4.0,
-                                child: Image.network(
-                                  allUrls[idx],
-                                  fit: BoxFit.contain,
+                                child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  alignment: Alignment.center,
+                                  child: Image.network(
+                                    allUrls[idx],
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               );
                             },
