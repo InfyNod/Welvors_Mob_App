@@ -164,7 +164,9 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(widget.category['image'] ?? ''),
+                          image: (widget.category['image'] ?? '').startsWith('http')
+                              ? NetworkImage(widget.category['image'] ?? '') as ImageProvider
+                              : AssetImage(widget.category['image'] ?? '') as ImageProvider,
                           fit: BoxFit.cover,
                         ),
                       ),

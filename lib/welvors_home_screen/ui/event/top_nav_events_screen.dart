@@ -29,48 +29,41 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
   final List<Map<String, String>> _categories = const [
     {
       'name': 'All events',
-      'image':
-          'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/all_events.jpeg',
       'color': '0xFFFFEFF4',
     },
     {
       'name': 'Singles\nMixer',
-      'image':
-          'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/singles_mixer.jpeg',
       'color': '0xFFFFF5E6',
     },
     {
       'name': 'Speed\nDates',
-      'image':
-          'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/speed_dates.jpeg',
       'color': '0xFFE6F3FF',
     },
     {
       'name': 'Singles\nNight',
-      'image':
-          'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/singles_night.jpeg',
       'color': '0xFFF0FFF0',
     },
     {
       'name': 'Dinner\nDates',
-      'image':
-          'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/dinner_date.jpeg',
       'color': '0xFFFFF0F5',
     },
     {
-      'name': 'Learn &\nMatch',
-      'image':
-          'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=500&q=80',
+      'name': 'Activity\nDate',
+      'image': 'assets/photo_event/activity_date.jpeg',
       'color': '0xFFFDF5E6',
     },
     {
       'name': 'Play &\nMatch',
-      'image':
-          'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/play_match.jpeg',
       'color': '0xFFF5FFFA',
     },
     {
-      'name': 'Fit\nDates',
+      'name': 'Travel\nDates',
       'image':
           'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=500&q=80',
       'color': '0xFFF8F8FF',
@@ -416,11 +409,20 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                                     14.5,
                                                   ),
                                                 ),
-                                            child: Image.network(
-                                              category['image']!,
-                                              fit: BoxFit.cover,
-                                              height: double.infinity,
-                                            ),
+                                            child:
+                                                category['image']!.startsWith(
+                                                  'http',
+                                                )
+                                                ? Image.network(
+                                                    category['image']!,
+                                                    fit: BoxFit.cover,
+                                                    height: double.infinity,
+                                                  )
+                                                : Image.asset(
+                                                    category['image']!,
+                                                    fit: BoxFit.cover,
+                                                    height: double.infinity,
+                                                  ),
                                           ),
                                         ),
                                       ],
