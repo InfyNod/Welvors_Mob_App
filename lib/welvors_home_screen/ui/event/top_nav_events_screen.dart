@@ -30,64 +30,62 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
     {
       'name': 'All events',
       'image': 'assets/photo_event/all_events.jpeg',
-      'color': '0xFFFFEFF4',
+      'color': '0xFFFFE4EE', // Soft blush pink
     },
     {
       'name': 'Singles\nMixer',
       'image': 'assets/photo_event/singles_mixer.jpeg',
-      'color': '0xFFFFF5E6',
+      'color': '0xFF9CB8D0', // Slightly darker shade of rgba(0, 42, 80)
     },
     {
       'name': 'Speed\nDates',
       'image': 'assets/photo_event/speed_dates.jpeg',
-      'color': '0xFFE6F3FF',
+      'color': '0xFFDDF0FF', // Light sky blue
     },
     {
       'name': 'Singles\nNight',
       'image': 'assets/photo_event/singles_night.jpeg',
-      'color': '0xFFF0FFF0',
+      'color': '0xFFEAE5D4', // Light shade of rgba(124, 112, 73)
     },
     {
       'name': 'Dinner\nDates',
       'image': 'assets/photo_event/dinner_date.jpeg',
-      'color': '0xFFFFF0F5',
+      'color': '0xFFFFE4EF', // Light rose
     },
     {
       'name': 'Activity\nDate',
       'image': 'assets/photo_event/activity_date.jpeg',
-      'color': '0xFFFDF5E6',
+      'color': '0xFFFFEBC2', // Light warm orange
     },
     {
       'name': 'Play &\nMatch',
       'image': 'assets/photo_event/play_match.jpeg',
-      'color': '0xFFF5FFFA',
+      'color': '0xFFEFE6E1', // Light cyan (slightly pronounced). '0xFFBCEEF5'
     },
     {
       'name': 'Travel\nDating',
       'image': 'assets/photo_event/travel_date.jpeg',
-      'color': '0xFFF8F8FF',
+      'color': '0xFFFDF4D4', // Light shade of rgba(247, 205, 96)
     },
     {
       'name': 'Trek\nDates',
       'image': 'assets/photo_event/treck_date.jpeg',
-      'color': '0xFFFFF5EE',
+      'color': '0xFFE2F8E2', // Light warm grey
     },
     {
       'name': 'The\nReserve',
-      'image':
-          'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?auto=format&fit=crop&w=500&q=80',
-      'color': '0xFFF0F8FF',
+      'image': 'assets/photo_event/reserve.jpeg',
+      'color': '0xFFFBE4D7', // Light shade of rgba(237, 173, 135)
     },
     {
       'name': 'Professionals\nMeet',
-      'image': 'assets/photo_event/professional.jpeg',
-      'color': '0xFFE0FFFF',
+      'image': 'assets/photo_event/newpro.jpeg',
+      'color': '0xFFEBF1F6', // Light shade of rgba(185, 202, 220)
     },
     {
-      'name': 'Matched\nfor You',
-      'image':
-          'https://cdn0.hitched.co.uk/article/6290/3_2/1280/jpg/100926-signs-youve-found-the-one.jpeg',
-      'color': '0xFFFFF8DC',
+      'name': 'Other\nDates',
+      'image': 'assets/photo_event/other.jpeg',
+      'color': '0xFFFFFACC', // Light vanilla
     },
   ];
 
