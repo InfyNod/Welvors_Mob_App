@@ -69,8 +69,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
     },
     {
       'name': 'Trek\nDates',
-      'image':
-          'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/treck_date.jpeg',
       'color': '0xFFFFF5EE',
     },
     {
@@ -81,8 +80,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
     },
     {
       'name': 'Professionals\nMeet',
-      'image':
-          'https://images.unsplash.com/photo-1515169067868-5387ec356754?auto=format&fit=crop&w=500&q=80',
+      'image': 'assets/photo_event/professional.jpeg',
       'color': '0xFFE0FFFF',
     },
     {
