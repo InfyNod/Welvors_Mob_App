@@ -7,7 +7,7 @@ class EventsState {
 
   EventsState({
     this.selectedCategoryIndex = 0,
-    this.selectedFilterIndex = 0,
+    this.selectedFilterIndex = -1,
     this.searchQuery = '',
     this.likedEvents = const {},
     this.bookedEvents = const {},

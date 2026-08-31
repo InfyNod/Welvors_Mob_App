@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/events_cards.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/my_ticket.dart';
+import 'package:velvors/welvors_home_screen/ui/event/events_bloc/events_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/event/events_bloc/events_event.dart';
+import 'package:velvors/welvors_home_screen/ui/event/events_bloc/events_state.dart';
 
 class FilterEventsScreen extends StatefulWidget {
   final Map<String, String> category;
@@ -17,7 +21,7 @@ class FilterEventsScreen extends StatefulWidget {
 }
 
 class _FilterEventsScreenState extends State<FilterEventsScreen> {
-  int _selectedFilterIndex = 0;
+
   final List<String> _filters = const [
     'Today',
     'This Weekend',
@@ -232,54 +236,59 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: SizedBox(
                           height: 34,
-                          child: ListView.builder(
-                            controller: _filterScrollController,
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            itemCount: _filters.length,
-                            itemBuilder: (context, index) {
-                              final isSelected = _selectedFilterIndex == index;
-                              return GestureDetector(
-                                key: _filterKeys[index],
-                                onTap: () {
-                                  setState(() {
-                                    _selectedFilterIndex = index;
-                                  });
-                                  _scrollToCenter(index);
+                          child: BlocBuilder<EventsBloc, EventsState>(
+                            buildWhen: (previous, current) => 
+                                previous.selectedFilterIndex != current.selectedFilterIndex,
+                            builder: (context, state) {
+                              return ListView.builder(
+                                controller: _filterScrollController,
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                itemCount: _filters.length,
+                                itemBuilder: (context, index) {
+                                  final isSelected = state.selectedFilterIndex == index;
+                                  return GestureDetector(
+                                    key: _filterKeys[index],
+                                    onTap: () {
+                                      final newIndex = isSelected ? -1 : index;
+                                      context.read<EventsBloc>().add(
+                                        SelectFilterEvent(newIndex),
+                                      );
+                                      _scrollToCenter(index);
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? const Color(0xFFE85A7A)
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? const Color(0xFFE85A7A)
+                                              : Colors.grey.shade300,
+                                        ),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        _filters[index],
+                                        style: TextStyle(
+                                          color: isSelected
+                                              ? Colors.white
+                                              : Colors.grey.shade700,
+                                          fontWeight: isSelected
+                                              ? FontWeight.bold
+                                              : FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  );
                                 },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? const Color(0xFFE85A7A)
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? const Color(0xFFE85A7A)
-                                          : Colors.grey.shade300,
-                                    ),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    _filters[index],
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.grey.shade700,
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.w600,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
                               );
                             },
                           ),

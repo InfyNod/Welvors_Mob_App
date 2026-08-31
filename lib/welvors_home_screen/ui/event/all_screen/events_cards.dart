@@ -33,12 +33,39 @@ class _EventsCardsState extends State<EventsCards> {
   @override
   void initState() {
     super.initState();
-    _fetchEvents();
+    final state = context.read<EventsBloc>().state;
+    _fetchWithState(state);
   }
 
-  Future<void> _fetchEvents() async {
+  void _fetchWithState(EventsState state) {
+    String? dateFilter;
+    bool? freeOnly;
+
+    if (state.selectedFilterIndex == 0) {
+      dateFilter = 'TODAY';
+    } else if (state.selectedFilterIndex == 1) {
+      dateFilter = 'THIS_WEEKEND';
+    } else if (state.selectedFilterIndex == 2) {
+      dateFilter = 'THIS_MONTH';
+    } else if (state.selectedFilterIndex == 3) {
+      freeOnly = true;
+    }
+
+    _fetchEvents(dateFilter: dateFilter, freeOnly: freeOnly);
+  }
+
+  Future<void> _fetchEvents({String? dateFilter, bool? freeOnly}) async {
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
     try {
-      final response = await EventApiService.getEvents(widget.eventType);
+      final response = await EventApiService.getEvents(
+        eventType: widget.eventType,
+        dateFilter: dateFilter,
+        freeOnly: freeOnly,
+      );
       if (response != null && response['success'] == true) {
         if (mounted) {
           setState(() {
@@ -123,7 +150,12 @@ class _EventsCardsState extends State<EventsCards> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 24),
-      child: BlocBuilder<EventsBloc, EventsState>(
+      child: BlocConsumer<EventsBloc, EventsState>(
+        listenWhen: (previous, current) => 
+            previous.selectedFilterIndex != current.selectedFilterIndex,
+        listener: (context, state) {
+          _fetchWithState(state);
+        },
         builder: (context, state) {
           // Separate events based on tag
           final promotedTags = ['BRAND', 'PROMOTED', 'FEATURED'];

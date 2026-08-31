@@ -470,8 +470,10 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                     return GestureDetector(
                                       key: _filterKeys[index],
                                       onTap: () {
+                                        final newIndex =
+                                            isSelected ? -1 : index;
                                         context.read<EventsBloc>().add(
-                                          SelectFilterEvent(index),
+                                          SelectFilterEvent(newIndex),
                                         );
                                         _scrollToFilterCenter(index);
                                       },

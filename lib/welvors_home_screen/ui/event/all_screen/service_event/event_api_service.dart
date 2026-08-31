@@ -14,11 +14,27 @@ class EventApiService {
         'Authorization': 'Bearer $_token',
       };
 
-  static Future<Map<String, dynamic>?> getEvents([String? eventType]) async {
+  static Future<Map<String, dynamic>?> getEvents({
+    String? eventType,
+    String? dateFilter,
+    bool? freeOnly,
+  }) async {
     try {
       String urlString = '$baseUrl/admin/events/get';
+      List<String> queryParams = [];
+
       if (eventType != null && eventType.isNotEmpty && eventType != 'ALL') {
-        urlString += '?eventType=$eventType';
+        queryParams.add('eventType=$eventType');
+      }
+      if (dateFilter != null && dateFilter.isNotEmpty) {
+        queryParams.add('dateFilter=$dateFilter');
+      }
+      if (freeOnly == true) {
+        queryParams.add('freeOnly=true');
+      }
+
+      if (queryParams.isNotEmpty) {
+        urlString += '?${queryParams.join('&')}';
       }
       final url = Uri.parse(urlString);
       final response = await http.get(url, headers: _headers);
