@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/booking_confirm.dart';
+import 'package:flutter/services.dart';
+// import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/booking_confirm.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/splash_screen_book.dart';
 import 'package:intl/intl.dart';
 
@@ -780,8 +781,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           const SizedBox(height: 8),
           TextField(
             keyboardType: TextInputType.phone,
+            maxLength: 10,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             decoration: InputDecoration(
+              counterText: "",
               hintText: 'Mobile number',
               hintStyle: TextStyle(
                 color: Colors.grey.shade400,
