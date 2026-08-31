@@ -14,9 +14,13 @@ class EventApiService {
         'Authorization': 'Bearer $_token',
       };
 
-  static Future<Map<String, dynamic>?> getEvents() async {
+  static Future<Map<String, dynamic>?> getEvents([String? eventType]) async {
     try {
-      final url = Uri.parse('$baseUrl/admin/events/get');
+      String urlString = '$baseUrl/admin/events/get';
+      if (eventType != null && eventType.isNotEmpty && eventType != 'ALL') {
+        urlString += '?eventType=$eventType';
+      }
+      final url = Uri.parse(urlString);
       final response = await http.get(url, headers: _headers);
 
       if (response.statusCode == 200) {

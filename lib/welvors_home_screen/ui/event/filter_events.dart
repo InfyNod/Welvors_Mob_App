@@ -4,8 +4,13 @@ import 'package:velvors/welvors_home_screen/ui/event/all_screen/my_ticket.dart';
 
 class FilterEventsScreen extends StatefulWidget {
   final Map<String, String> category;
+  final String cityName;
 
-  const FilterEventsScreen({super.key, required this.category});
+  const FilterEventsScreen({
+    super.key, 
+    required this.category,
+    required this.cityName,
+  });
 
   @override
   State<FilterEventsScreen> createState() => _FilterEventsScreenState();
@@ -284,7 +289,13 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                   ),
 
                   // Event Cards (List of events)
-                  const SliverToBoxAdapter(child: EventsCards()),
+                  SliverToBoxAdapter(
+                    child: EventsCards(
+                      eventType: widget.category['eventType'],
+                      categoryName: widget.category['name'],
+                      cityName: widget.cityName,
+                    ),
+                  ),
                 ],
               ),
             ),

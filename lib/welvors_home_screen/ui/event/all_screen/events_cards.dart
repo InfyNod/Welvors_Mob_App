@@ -11,7 +11,16 @@ import 'package:intl/intl.dart';
 import '../../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
 class EventsCards extends StatefulWidget {
-  const EventsCards({super.key});
+  final String? eventType;
+  final String? categoryName;
+  final String? cityName;
+  
+  const EventsCards({
+    super.key, 
+    this.eventType, 
+    this.categoryName, 
+    this.cityName,
+  });
 
   @override
   State<EventsCards> createState() => _EventsCardsState();
@@ -29,8 +38,7 @@ class _EventsCardsState extends State<EventsCards> {
 
   Future<void> _fetchEvents() async {
     try {
-      // Need to import EventApiService
-      final response = await EventApiService.getEvents();
+      final response = await EventApiService.getEvents(widget.eventType);
       if (response != null && response['success'] == true) {
         if (mounted) {
           setState(() {
@@ -111,40 +119,12 @@ class _EventsCardsState extends State<EventsCards> {
     );
   }
 
-  bool _matches(
-    EventsState state, {
-    required List<int> categories,
-    required List<int> filters,
-    required String searchData,
-  }) {
-    if (state.selectedCategoryIndex != 0 &&
-        !categories.contains(state.selectedCategoryIndex)) {
-      return false;
-    }
-    if (!filters.contains(state.selectedFilterIndex)) {
-      return false;
-    }
-    if (state.searchQuery.isNotEmpty) {
-      if (!searchData.toLowerCase().contains(state.searchQuery.toLowerCase())) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 24),
       child: BlocBuilder<EventsBloc, EventsState>(
         builder: (context, state) {
-          final showCard4 = _matches(
-            state,
-            categories: [5, 6],
-            filters: [0, 1, 3],
-            searchData: "sandakphu ridge trek trekking",
-          );
-
           // Separate events based on tag
           final promotedTags = ['BRAND', 'PROMOTED', 'FEATURED'];
           final promotedEvents = _apiEvents.where((e) {
@@ -176,24 +156,8 @@ class _EventsCardsState extends State<EventsCards> {
                       );
                     },
                   ),
-                )
-              else if (!showCard4 && _apiEvents.isEmpty) ...[
-                // Fallback to dummy horizontal cards if completely empty
-                SizedBox(
-                  height: 150,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: [
-                      _buildPromotedCard(),
-                      const SizedBox(width: 12),
-                      _buildFeaturedCard(),
-                    ],
-                  ),
                 ),
-              ],
-              if (promotedEvents.isNotEmpty ||
-                  (!showCard4 && _apiEvents.isEmpty))
+              if (promotedEvents.isNotEmpty)
                 const SizedBox(height: 24),
 
               // Standard Events (Vertical)
@@ -214,17 +178,17 @@ class _EventsCardsState extends State<EventsCards> {
                       ],
                     ],
 
-                    // Render Dummy events
-                    if (showCard4) ...[
-                      _buildStandardCard4(),
-                      const SizedBox(height: 24),
-                    ],
-                    if (!showCard4 && _apiEvents.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
+                    if (_apiEvents.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                         child: Text(
-                          "No events found for the selected filters.",
-                          style: TextStyle(color: Colors.grey),
+                          "No ${widget.categoryName?.replaceAll('\n', ' ') ?? 'Events'} in ${widget.cityName ?? 'Mumbai'} right now. We add new ones every week — try another city or category.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 15,
+                            height: 1.4,
+                          ),
                         ),
                       ),
                   ],
@@ -233,294 +197,6 @@ class _EventsCardsState extends State<EventsCards> {
             ],
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildPromotedCard() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventDetailsScreen(
-              eventId: 'dummy_id',
-              title: 'Rooftop Singles Night',
-              date: 'This weekend',
-              location: 'Mumbai',
-              imageUrl: 'assets/concert.jpeg',
-              status: 'PROMOTED',
-              price: '₹1,250',
-            ),
-          ),
-        );
-      },
-      child: Container(
-        width: 270,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          image: const DecorationImage(
-            image: AssetImage('assets/concert.jpeg'),
-            fit: BoxFit.cover,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFE85A7A).withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Colors.black.withOpacity(0.9),
-                Colors.black.withOpacity(0.1),
-              ],
-            ),
-          ),
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // PROMOTED tag
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE85A7A).withOpacity(0.95),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.star, size: 10, color: Colors.white),
-                    SizedBox(width: 4),
-                    Text(
-                      'PROMOTED',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              const Text(
-                'This weekend · Mumbai',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 2),
-              const Text(
-                'Rooftop Singles Night',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '60 verified singles · Live music · Limited seats',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
-                  fontSize: 10,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Book now',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeaturedCard() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventDetailsScreen(
-              eventId: 'dummy_id',
-              title: 'Speed Dating · 25–32',
-              date: 'Sat, Oct 19',
-              location: 'Bandra',
-              imageUrl: 'assets/speed.jpeg',
-              status: 'FEATURED',
-              price: '₹999',
-            ),
-          ),
-        );
-      },
-      child: Container(
-        width: 270,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          image: const DecorationImage(
-            image: AssetImage('assets/speed.jpeg'),
-            fit: BoxFit.cover,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Colors.black.withOpacity(0.9),
-                Colors.black.withOpacity(0.1),
-              ],
-            ),
-          ),
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // FEATURED tag
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFFED86A), // rgba(254, 216, 106)
-                      Color(0xFFE9A73F), // rgba(233, 167, 63)
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '✦',
-                      style: TextStyle(color: Colors.black87, fontSize: 10),
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      'FEATURED',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              const Text(
-                'Sat, Oct 19 · Bandra',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 2),
-              const Text(
-                'Speed Dating · 25–32',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '15 curated matches in one evening',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
-                  fontSize: 10,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'View details',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward, size: 12, color: Colors.black87),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -966,205 +642,6 @@ class _EventsCardsState extends State<EventsCards> {
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStandardCard4() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventDetailsScreen(
-              eventId: 'dummy_id',
-              title: 'Sandakphu Ridge Trek',
-              date: 'Nov 14–17',
-              location: 'Darjeeling, WB',
-              imageUrl:
-                  'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80',
-              status: '🥾 TREKKING',
-              price: '₹8,900',
-            ),
-          ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFE85A7A).withOpacity(0.06),
-              blurRadius: 24,
-              spreadRadius: 4,
-              offset: const Offset(0, 12),
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-          border: Border.all(
-            color: const Color(0xFFE85A7A).withOpacity(0.1),
-            width: 1.5,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top Image
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                  child: Image.network(
-                    'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80', // Trekking image
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '🥾 TREKKING',
-                          style: const TextStyle(
-                            color: Color(0xFFE43A6A),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const PriceBadge(price: '₹8,900'),
-              ],
-            ),
-
-            // Action Icons Row
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-              child: Row(
-                children: [
-                  Text(
-                    '210 interested',
-                    style: TextStyle(
-                      color: Colors.grey.shade800,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                    ),
-                  ),
-                  const Spacer(),
-                  _buildShareIcon(context, 'Trek to Sandakphu Ridge'),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(height: 1, color: Colors.grey.shade100),
-            ),
-
-            // Content Details
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Info Text
-                  Text(
-                    '4-day guided trek · small group',
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Title & Price
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Sandakphu Ridge Trek',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Date
-                  Row(
-                    children: [
-                      const Text('📅', style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Nov 14–17 · 4 days',
-                        style: const TextStyle(
-                          color: Color(0xFFE43A6A), // Highlighted date/time
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Location
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('📍', style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Darjeeling, WB',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
                 ],
               ),
             ),

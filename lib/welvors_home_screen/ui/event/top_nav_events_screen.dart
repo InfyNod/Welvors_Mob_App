@@ -31,61 +31,73 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
       'name': 'All events',
       'image': 'assets/photo_event/all_events.jpeg',
       'color': '0xFFFFE4EE', // Soft blush pink
+      'eventType': 'ALL',
     },
     {
       'name': 'Singles\nMixer',
       'image': 'assets/photo_event/singles_mixer.jpeg',
       'color': '0xFF9CB8D0', // Slightly darker shade of rgba(0, 42, 80)
+      'eventType': 'SINGLES_MIXER',
     },
     {
       'name': 'Speed\nDates',
       'image': 'assets/photo_event/speed_dates.jpeg',
       'color': '0xFFDDF0FF', // Light sky blue
+      'eventType': 'SPEED_DATES',
     },
     {
       'name': 'Singles\nNight',
       'image': 'assets/photo_event/singles_night.jpeg',
       'color': '0xFFEAE5D4', // Light shade of rgba(124, 112, 73)
+      'eventType': 'SINGLES_NIGHT',
     },
     {
       'name': 'Dinner\nDates',
       'image': 'assets/photo_event/dinner_date.jpeg',
       'color': '0xFFFFE4EF', // Light rose
+      'eventType': 'DINNER_DATES',
     },
     {
       'name': 'Activity\nDate',
       'image': 'assets/photo_event/activity_date.jpeg',
       'color': '0xFFFFEBC2', // Light warm orange
+      'eventType': 'LEARN_AND_MATCH',
     },
     {
       'name': 'Play &\nMatch',
       'image': 'assets/photo_event/play_match.jpeg',
       'color': '0xFFEFE6E1', // Light cyan (slightly pronounced). '0xFFBCEEF5'
+      'eventType': 'PLAY_AND_MATCH',
     },
     {
       'name': 'Travel\nDating',
       'image': 'assets/photo_event/travel_date.jpeg',
       'color': '0xFFFDF4D4', // Light shade of rgba(247, 205, 96)
+      'eventType': 'FIT_DATES',
     },
     {
       'name': 'Trek\nDates',
       'image': 'assets/photo_event/treck_date.jpeg',
       'color': '0xFFE2F8E2', // Light warm grey
+      'eventType': 'TREK_DATES',
     },
     {
       'name': 'The\nReserve',
       'image': 'assets/photo_event/reserve.jpeg',
       'color': '0xFFFBE4D7', // Light shade of rgba(237, 173, 135)
+      'eventType': 'THE_RESERVE',
     },
     {
       'name': 'Professionals\nMeet',
       'image': 'assets/photo_event/newpro.jpeg',
       'color': '0xFFEBF1F6', // Light shade of rgba(185, 202, 220)
+      'eventType': 'PROFESSIONALS_MEET',
     },
     {
       'name': 'Other\nDates',
       'image': 'assets/photo_event/other.jpeg',
       'color': '0xFFFFFACC', // Light vanilla
+      'eventType': 'MATCHED_FOR_YOU',
     },
   ];
 
@@ -354,6 +366,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                           builder: (context) =>
                                               FilterEventsScreen(
                                                 category: category,
+                                                cityName: _currentCity,
                                               ),
                                         ),
                                       );
@@ -509,7 +522,12 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                     ),
 
                     // Event Cards
-                    const SliverToBoxAdapter(child: EventsCards()),
+                    SliverToBoxAdapter(
+                      child: EventsCards(
+                        categoryName: 'Events',
+                        cityName: _currentCity,
+                      ),
+                    ),
                   ],
                 ),
               ),
