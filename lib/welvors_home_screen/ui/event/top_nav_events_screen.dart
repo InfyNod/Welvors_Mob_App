@@ -262,52 +262,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Search Bar
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: TextField(
-                              onChanged: (value) {
-                                context.read<EventsBloc>().add(
-                                  SearchQueryEvent(value),
-                                );
-                              },
-                              decoration: InputDecoration(
-                                hintText: 'Search comedy, mixers, parties...',
-                                hintStyle: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontSize: 15,
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.grey.shade500,
-                                  size: 20,
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey.shade100,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                  borderSide: BorderSide.none,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide.none,
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(
-                                    color: const Color(
-                                      0xFFE85A7A,
-                                    ).withOpacity(0.5),
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
+
 
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
