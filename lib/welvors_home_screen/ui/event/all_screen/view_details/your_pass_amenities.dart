@@ -168,7 +168,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               const Text(
-                                'Standard Pass',
+                                'Price for your profile',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,
@@ -190,46 +190,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Gender Badge with subtle premium look
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFE43A6A).withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                        border: Border.all(
-                          color: const Color(0xFFE43A6A).withOpacity(0.2),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            genderIcon,
-                            color: const Color(0xFFE43A6A),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            genderLabel,
-                            style: const TextStyle(
-                              color: Color(0xFFE43A6A),
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Gender Badge Removed As Requested
                   ],
                 ),
               ),
@@ -337,17 +298,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 6),
-                      child: Text(
-                        'Price for your profile',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
+                    // 'Price for your profile' text moved to top
                   ],
                 ),
               ),

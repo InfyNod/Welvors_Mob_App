@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/booking_confirm.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/splash_screen_book.dart';
 import 'package:intl/intl.dart';
@@ -29,10 +30,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   final double _platformFee = 49.0;
   final double _discount = 100.0;
+  
+  // Partner Tickets State
+  List<PartnerTicket> _partners = [];
+  final double _womanPrice = 1250.0;
+  final double _manPrice = 1800.0;
 
-  double get _gst => widget.basePrice * 0.18;
+  double get _baseTotal {
+    double total = widget.basePrice;
+    for (var p in _partners) {
+      total += p.isMan ? _manPrice : _womanPrice;
+    }
+    return total;
+  }
+
+  double get _gst => _baseTotal * 0.18;
   double get _totalPayable =>
-      widget.basePrice + _platformFee + _gst - _discount;
+      _baseTotal + _platformFee + _gst - _discount;
 
   final NumberFormat _currencyFormat = NumberFormat.currency(
     symbol: '₹',
@@ -140,23 +154,41 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                widget.imageUrl,
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(
+                              child: widget.imageUrl.startsWith('http')
+                                  ? Image.network(
+                                      widget.imageUrl,
                                       width: 48,
                                       height: 48,
-                                      color: Colors.grey.shade200,
-                                      child: const Icon(
-                                        Icons.image,
-                                        size: 24,
-                                        color: Colors.grey,
-                                      ),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Container(
+                                            width: 48,
+                                            height: 48,
+                                            color: Colors.grey.shade200,
+                                            child: const Icon(
+                                              Icons.image,
+                                              size: 24,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                    )
+                                  : Image.asset(
+                                      widget.imageUrl,
+                                      width: 48,
+                                      height: 48,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Container(
+                                            width: 48,
+                                            height: 48,
+                                            color: Colors.grey.shade200,
+                                            child: const Icon(
+                                              Icons.image,
+                                              size: 24,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
                                     ),
-                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -197,9 +229,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         _buildPriceRow(
                           'Ticket × 1',
                           _currencyFormat.format(widget.basePrice),
-                          subtitle: "(Women's entry)",
+                          subtitle: "(Woman's entry)",
                         ),
                         const SizedBox(height: 10),
+                        ..._partners.asMap().entries.map((entry) {
+                          int idx = entry.key;
+                          PartnerTicket p = entry.value;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _buildPriceRow(
+                              'Partner ${idx + 1}',
+                              _currencyFormat.format(p.isMan ? _manPrice : _womanPrice),
+                              subtitle: p.isMan ? "(Man)" : "(Woman)",
+                            ),
+                          );
+                        }).toList(),
                         _buildPriceRow(
                           'Platform fee',
                           _currencyFormat.format(_platformFee),
@@ -304,9 +348,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
 
                   const SizedBox(height: 24),
+                  
+                  // Bring a Partner Section
+                  const Text(
+                    'BRING A PARTNER',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black87,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildBringAPartnerSection(),
+                  const SizedBox(height: 24),
 
                   // Payment Method Section
-                  Text(
+                  const Text(
                     'PAYMENT METHOD',
                     style: const TextStyle(
                       fontSize: 12,
@@ -546,4 +604,330 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
+
+  Widget _buildBringAPartnerSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ticket price differs by gender — a partner\'s ticket is charged at their rate.',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 16),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ..._partners.asMap().entries.map((entry) {
+                  int idx = entry.key;
+                  PartnerTicket p = entry.value;
+                  return _buildPartnerForm(idx, p);
+                }).toList(),
+                // Add button
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _partners.add(PartnerTicket());
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: CustomPaint(
+                    painter: DashedBorderPainter(
+                      color: const Color(0xFFE43A6A).withOpacity(0.5),
+                      strokeWidth: 1.5,
+                      gap: 6.0,
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xFFE43A6A).withOpacity(0.05),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, color: Color(0xFFE43A6A), size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            'Add partner ticket',
+                            style: TextStyle(
+                              color: Color(0xFFE43A6A),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPartnerForm(int index, PartnerTicket partner) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Partner ${index + 1}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    _currencyFormat.format(partner.isMan ? _manPrice : _womanPrice),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFFE43A6A),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _partners.removeAt(index);
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFE43A6A).withOpacity(0.08),
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Color(0xFFE43A6A),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            decoration: InputDecoration(
+              hintText: 'Full name',
+              hintStyle: TextStyle(
+                color: Colors.grey.shade400,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFE43A6A), width: 1.5),
+              ),
+              fillColor: Colors.white,
+              filled: true,
+            ),
+            onChanged: (val) => partner.fullName = val,
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            keyboardType: TextInputType.phone,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            decoration: InputDecoration(
+              hintText: 'Mobile number',
+              hintStyle: TextStyle(
+                color: Colors.grey.shade400,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFE43A6A), width: 1.5),
+              ),
+              fillColor: Colors.white,
+              filled: true,
+            ),
+            onChanged: (val) => partner.mobile = val,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      partner.isMan = false;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: !partner.isMan
+                          ? const Color(0xFFE43A6A).withOpacity(0.08)
+                          : Colors.white,
+                      border: Border.all(
+                        color: !partner.isMan
+                            ? const Color(0xFFE43A6A)
+                            : Colors.grey.shade300,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '♀ Woman - ₹1,250',
+                        style: TextStyle(
+                          color: !partner.isMan ? const Color(0xFFE43A6A) : Colors.black87,
+                          fontWeight: !partner.isMan ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      partner.isMan = true;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: partner.isMan
+                          ? const Color(0xFFE43A6A).withOpacity(0.08)
+                          : Colors.white,
+                      border: Border.all(
+                        color: partner.isMan
+                            ? const Color(0xFFE43A6A)
+                            : Colors.grey.shade300,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '♂ Man - ₹1,800',
+                        style: TextStyle(
+                          color: partner.isMan ? const Color(0xFFE43A6A) : Colors.black87,
+                          fontWeight: partner.isMan ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PartnerTicket {
+  String fullName = '';
+  String mobile = '';
+  bool isMan = true;
+}
+
+class DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double gap;
+
+  DashedBorderPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.gap,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    var path = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, size.width, size.height),
+          const Radius.circular(12)));
+
+    Path dashPath = Path();
+    double distance = 0.0;
+    for (PathMetric pathMetric in path.computeMetrics()) {
+      while (distance < pathMetric.length) {
+        dashPath.addPath(
+          pathMetric.extractPath(distance, distance + gap),
+          Offset.zero,
+        );
+        distance += gap * 2.0;
+      }
+      distance = 0.0;
+    }
+    canvas.drawPath(dashPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
