@@ -63,9 +63,8 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
       'color': '0xFFF5FFFA',
     },
     {
-      'name': 'Travel\nDates',
-      'image':
-          'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=500&q=80',
+      'name': 'Travel\nDating',
+      'image': 'assets/photo_event/travel_date.jpeg',
       'color': '0xFFF8F8FF',
     },
     {
