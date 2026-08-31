@@ -184,35 +184,39 @@ class EventMoreDetailsSection extends StatelessWidget {
       onTap: () {
         showDialog(
           context: context,
-          useSafeArea: false,
           builder: (context) {
             final pageController = PageController(initialPage: initialIndex);
             return StatefulBuilder(
               builder: (context, setState) {
                 return Dialog(
-                  backgroundColor: Colors.black,
-                  insetPadding: EdgeInsets.zero,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      PageView.builder(
-                        controller: pageController,
-                        itemCount: allUrls.length,
-                        onPageChanged: (index) {
-                          setState(() {});
-                        },
-                        itemBuilder: (context, idx) {
-                          return Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              // Blurred Background
-                              Image.network(allUrls[idx], fit: BoxFit.cover),
-                              BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-                                child: Container(color: Colors.black.withOpacity(0.6)),
-                              ),
-                              // Contained Foreground Image
-                              InteractiveViewer(
+                  backgroundColor: Colors.transparent,
+                  insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1E1E), // Dark premium background
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          PageView.builder(
+                            controller: pageController,
+                            itemCount: allUrls.length,
+                            onPageChanged: (index) {
+                              setState(() {});
+                            },
+                            itemBuilder: (context, idx) {
+                              return InteractiveViewer(
                                 panEnabled: true,
                                 minScale: 1.0,
                                 maxScale: 4.0,
@@ -220,54 +224,60 @@ class EventMoreDetailsSection extends StatelessWidget {
                                   allUrls[idx],
                                   fit: BoxFit.contain,
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-
-                      // Cancel Button
-                      Positioned(
-                        top: MediaQuery.of(context).padding.top + 10,
-                        right: 16,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
-
-                      // Page Indicators (Dots)
-                      if (allUrls.length > 1)
-                        Positioned(
-                          bottom: MediaQuery.of(context).padding.bottom + 20,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: List.generate(allUrls.length, (index) {
-                              final isCurrent = pageController.hasClients
-                                  ? (pageController.page?.round() == index)
-                                  : (initialIndex == index);
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                height: 8,
-                                width: isCurrent ? 24 : 8,
-                                decoration: BoxDecoration(
-                                  color: isCurrent
-                                      ? const Color(0xFFE43A6A)
-                                      : Colors.white54,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
                               );
-                            }),
+                            },
                           ),
-                        ),
-                    ],
+                          // Image Counter
+                          if (allUrls.length > 1)
+                            Positioned(
+                              top: 16,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Text(
+                                  '${(pageController.hasClients ? (pageController.page?.round() ?? initialIndex) : initialIndex) + 1} / ${allUrls.length}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                                ),
+                              ),
+                            ),
+                          // Cancel Button
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: IconButton(
+                              icon: const Icon(Icons.close, color: Colors.white70, size: 26),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ),
+                          // Dots
+                          if (allUrls.length > 1)
+                            Positioned(
+                              bottom: 16,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: List.generate(allUrls.length, (index) {
+                                  final isCurrent = pageController.hasClients
+                                      ? (pageController.page?.round() == index)
+                                      : (initialIndex == index);
+                                  return AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                                    height: 6,
+                                    width: isCurrent ? 24 : 6,
+                                    decoration: BoxDecoration(
+                                      color: isCurrent ? const Color(0xFFE43A6A) : Colors.white54,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               },
