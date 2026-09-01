@@ -83,4 +83,25 @@ class EventApiService {
       return null;
     }
   }
+
+  static Future<Map<String, dynamic>?> getMyTickets({String? status}) async {
+    try {
+      String urlString = '$baseUrl/user/event/my-ticket';
+      if (status != null && status.isNotEmpty && status != 'ALL') {
+        urlString += '?status=$status';
+      }
+      final url = Uri.parse(urlString);
+      final response = await http.get(url, headers: _headers);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to get my tickets: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error getting my tickets: $e');
+      return null;
+    }
+  }
 }

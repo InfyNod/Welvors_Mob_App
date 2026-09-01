@@ -2,36 +2,11 @@ import 'package:flutter/material.dart';
 import 'ticket_screen.dart';
 import 'view_details/event_details.dart';
 import 'cancel/cancel_drawer.dart';
+import 'service_event/event_api_service.dart';
+import 'package:intl/intl.dart';
 
 class MyTicketScreen extends StatefulWidget {
   const MyTicketScreen({super.key});
-
-  static final List<Map<String, dynamic>> allTickets = [
-    {
-      'title': 'Sunset Soirée for Singles',
-      'date': 'Wed, Aug 19 · 7:00 PM',
-      'location': 'The Rooftop Lounge, Bandra',
-      'imageUrl': 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
-      'status': 'Confirmed',
-      'categories': ['Mixers', 'This Month'],
-    },
-    {
-      'title': 'Speed Dating: Creative Professionals',
-      'date': 'Sat, Oct 28 · 6:30 PM',
-      'location': 'Artisan Loft, Lower Parel',
-      'imageUrl': 'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?auto=format&fit=crop&w=800&q=80',
-      'status': 'Confirmed',
-      'categories': ['Speed Dating', 'This Month'],
-    },
-    {
-      'title': 'Acoustic Night & Cocktails',
-      'date': 'Fri, Nov 3 · 8:00 PM',
-      'location': 'The Velvet Room, Juhu',
-      'imageUrl': 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
-      'status': 'Cancelled',
-      'categories': ['Mixers'],
-    },
-  ];
 
   @override
   State<MyTicketScreen> createState() => _MyTicketScreenState();
@@ -41,11 +16,14 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   int _selectedFilterIndex = 0;
   final List<String> _filters = [
     'All',
-    '✓ Confirmed',
+    'Pending',
+    'Payment Pending',
+    'Confirmed',
     'Cancelled',
-    'Mixers',
-    'Speed Dating',
-    'This Month',
+    'Refund Pending',
+    'Refunded',
+    'Attended',
+    'Expired'
   ];
   late final List<GlobalKey> _filterKeys;
 
@@ -53,10 +31,51 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
+  List<dynamic> _tickets = [];
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
     _filterKeys = List.generate(_filters.length, (index) => GlobalKey());
+    _fetchTickets();
+  }
+
+  Future<void> _fetchTickets() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String selectedFilter = _filters[_selectedFilterIndex];
+    String? apiStatus;
+    if (selectedFilter != 'All') {
+      apiStatus = selectedFilter.toUpperCase().replaceAll(' ', '_');
+    }
+
+    final response = await EventApiService.getMyTickets(status: apiStatus);
+    
+    if (mounted) {
+      setState(() {
+        if (response != null && response['success'] == true) {
+          _tickets = response['data']['bookings'] ?? [];
+        } else {
+          _tickets = [];
+        }
+        _isLoading = false;
+      });
+    }
+  }
+
+  String _formatTime(String timeStr) {
+    try {
+      final parts = timeStr.split(':');
+      final time = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+      final now = DateTime.now();
+      final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+      return DateFormat('h:mm a').format(dt);
+    } catch (e) {
+      return timeStr;
+    }
   }
 
   @override
@@ -213,6 +232,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                       setState(() {
                         _selectedFilterIndex = index;
                       });
+                      _fetchTickets();
                       final itemContext = _filterKeys[index].currentContext;
                       if (itemContext != null) {
                         Scrollable.ensureVisible(
@@ -261,57 +281,50 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
             // Tickets List
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
+              child: _isLoading 
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: CircularProgressIndicator(color: Color(0xFFE85A7A))),
+                  )
+                : Column(
                 children: [
-                  ...MyTicketScreen.allTickets
+                  ..._tickets
                       .where((ticket) {
                         // Search Filter
-                        if (_searchQuery.isNotEmpty &&
-                            !ticket['title'].toString().toLowerCase().contains(
-                              _searchQuery.toLowerCase(),
-                            )) {
-                          return false;
+                        if (_searchQuery.isNotEmpty) {
+                          final title = ticket['event']?['title']?.toString().toLowerCase() ?? '';
+                          if (!title.contains(_searchQuery.toLowerCase())) {
+                            return false;
+                          }
                         }
-
-                        // Category Filter
-                        final selectedFilter = _filters[_selectedFilterIndex];
-                        if (selectedFilter == 'All') return true;
-                        if (selectedFilter == '✓ Confirmed')
-                          return ticket['status'] == 'Confirmed';
-                        if (selectedFilter == 'Cancelled')
-                          return ticket['status'] == 'Cancelled';
-
-                        final categories = ticket['categories'] as List<String>;
-                        return categories.contains(selectedFilter);
+                        return true;
                       })
                       .map((ticket) {
+                        final event = ticket['event'] ?? {};
+                        final dateStr = event['eventDate'] != null ? DateFormat('EEE, MMM dd').format(DateTime.parse(event['eventDate'])) : '';
+                        final timeStr = event['startTime'] != null ? _formatTime(event['startTime']) : '';
+                        
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16),
                           child: _buildTicketCard(
-                            title: ticket['title'] as String,
-                            date: ticket['date'] as String,
-                            location: ticket['location'] as String,
-                            imageUrl: ticket['imageUrl'] as String,
-                            status: ticket['status'] as String,
+                            eventId: event['id'] ?? 'dummy_id',
+                            title: event['title'] ?? 'Unknown Event',
+                            date: '$dateStr · $timeStr',
+                            location: event['venueName'] ?? '',
+                            imageUrl: event['heroImage'] ?? '',
+                            status: ticket['status'] ?? 'Unknown',
                           ),
                         );
                       }),
                   // Show empty message if nothing matches
-                  if (MyTicketScreen.allTickets.where((ticket) {
-                    if (_searchQuery.isNotEmpty &&
-                        !ticket['title'].toString().toLowerCase().contains(
-                          _searchQuery.toLowerCase(),
-                        ))
-                      return false;
-                    final selectedFilter = _filters[_selectedFilterIndex];
-                    if (selectedFilter == 'All') return true;
-                    if (selectedFilter == '✓ Confirmed')
-                      return ticket['status'] == 'Confirmed';
-                    if (selectedFilter == 'Cancelled')
-                      return ticket['status'] == 'Cancelled';
-                    return (ticket['categories'] as List<String>).contains(
-                      selectedFilter,
-                    );
+                  if (_tickets.where((ticket) {
+                    if (_searchQuery.isNotEmpty) {
+                      final title = ticket['event']?['title']?.toString().toLowerCase() ?? '';
+                      if (!title.contains(_searchQuery.toLowerCase())) {
+                        return false;
+                      }
+                    }
+                    return true;
                   }).isEmpty)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 32),
@@ -403,13 +416,14 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   }
 
   Widget _buildTicketCard({
+    required String eventId,
     required String title,
     required String date,
     required String location,
     required String imageUrl,
     required String status,
   }) {
-    final bool isCancelled = status == 'Cancelled';
+    final bool isCancelled = status.toUpperCase() == 'CANCELLED';
 
     return Opacity(
       opacity: isCancelled ? 0.6 : 1.0,
@@ -445,7 +459,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                if (status == 'Confirmed')
+                if (status.toUpperCase() == 'CONFIRMED')
                   Positioned(
                     top: 12,
                     left: 12,
@@ -476,7 +490,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                       ),
                     ),
                   )
-                else if (status == 'Cancelled')
+                else if (status.toUpperCase() == 'CANCELLED')
                   Positioned(
                     top: 12,
                     left: 12,
@@ -590,7 +604,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => EventDetailsScreen(
-                                      eventId: 'dummy_id',
+                                      eventId: eventId,
                                       title: title,
                                       date: date,
                                       location: location,

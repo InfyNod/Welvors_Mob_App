@@ -178,15 +178,11 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
             Expanded(
               child: Builder(
                 builder: (context) {
-                  final upcomingCount = MyTicketScreen.allTickets
-                      .where((t) => t['status'] == 'Confirmed')
-                      .length;
-                  
                   return _buildActivityCard(
                     icon: '📅',
                     iconBgColor: const Color(0xFFF5F5F5),
                     title: 'My Bookings',
-                    subtitle: '$upcomingCount UPCOMING EVENT${upcomingCount == 1 ? '' : 'S'}',
+                    subtitle: 'VIEW YOUR BOOKINGS',
                     onTap: () {
                       Navigator.push(
                         context,
