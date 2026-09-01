@@ -24,19 +24,20 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppDimens.pad),
           child: Column(
             children: [
-              const SizedBox(height: 16),
-              // Logo Header
+              const SizedBox(height: 20),
+              // Premium Logo Header
               RichText(
                 text: const TextSpan(
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
                     fontFamily: 'DM Sans',
                   ),
                   children: [
@@ -46,12 +47,12 @@ class _LandingScreenState extends State<LandingScreen> {
                     ),
                     TextSpan(
                       text: 'vors',
-                      style: TextStyle(color: AppColors.pink),
+                      style: TextStyle(color: AppColors.pinkDeep),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Illustration placeholder
               const Expanded(child: Center(child: _Illustration())),
@@ -60,7 +61,13 @@ class _LandingScreenState extends State<LandingScreen> {
               Text(
                 'Dating for people who\nare serious, not in a\nhurry.',
                 textAlign: TextAlign.center,
-                style: AppText.display,
+                style: AppText.display.copyWith(
+                  fontSize: 32,
+                  height: 1.15,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                  color: AppColors.ink,
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -68,12 +75,14 @@ class _LandingScreenState extends State<LandingScreen> {
                 'Real connections with people who want\nthe same things you do. No biodata, no\nfamily pressure — just you, on your own\ntimeline.',
                 textAlign: TextAlign.center,
                 style: AppText.body.copyWith(
-                  color: AppColors.ink60,
+                  color: AppColors.ink.withOpacity(0.65),
                   height: 1.5,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
+                  letterSpacing: 0.2,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // Chips
               Wrap(
@@ -96,7 +105,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   StatPill(text: 'Real-life events', emoji: '🎉'),
                 ],
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: 40),
 
               // Terms & Privacy Checkbox
               GestureDetector(
@@ -105,12 +114,13 @@ class _LandingScreenState extends State<LandingScreen> {
                     _isTermsAccepted = !_isTermsAccepted;
                   });
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: _isTermsAccepted ? AppColors.pinkSoft.withOpacity(0.4) : Colors.white,
+                    color: _isTermsAccepted ? AppColors.pinkSoft.withOpacity(0.3) : const Color(0xFFF9F9F9),
                     border: Border.all(
-                      color: _isTermsAccepted ? AppColors.pinkDeep.withOpacity(0.3) : const Color(0xFFEBE6DF), 
+                      color: _isTermsAccepted ? AppColors.pinkDeep.withOpacity(0.4) : const Color(0xFFEBE6DF), 
                       width: 1.5
                     ),
                     borderRadius: BorderRadius.circular(16),
@@ -119,7 +129,8 @@ class _LandingScreenState extends State<LandingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Checkbox
-                      Container(
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
                         width: 22,
                         height: 22,
                         margin: const EdgeInsets.only(top: 2, right: 12),
@@ -130,9 +141,16 @@ class _LandingScreenState extends State<LandingScreen> {
                             width: 2,
                           ),
                           borderRadius: BorderRadius.circular(6),
+                          boxShadow: _isTermsAccepted ? [
+                            BoxShadow(
+                              color: AppColors.pinkDeep.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            )
+                          ] : null,
                         ),
                         child: _isTermsAccepted 
-                          ? const Icon(Icons.check, size: 16, color: Colors.white)
+                          ? const Icon(Icons.check, size: 14, color: Colors.white)
                           : null,
                       ),
                       // Text

@@ -1,11 +1,29 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:velvors/main.dart';
 
 class ApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
+
+  /// Centralized method to handle 401 Unauthorized token expiration
+  static Future<void> handleTokenExpiration(int statusCode) async {
+    if (statusCode == 401 || statusCode == 403) {
+      debugPrint('Token Expired! Logging out automatically...');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('auth_token');
+      
+      if (navigatorKey.currentContext != null) {
+        Navigator.pushNamedAndRemoveUntil(
+          navigatorKey.currentContext!,
+          '/landing',
+          (route) => false,
+        );
+      }
+    }
+  }
 
   /// Fetches onboarding intentions from the server.
   /// Returns a map containing 'title', 'description', and 'options' list.

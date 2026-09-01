@@ -18,7 +18,8 @@ class VerifyNumberScreen extends StatefulWidget {
   State<VerifyNumberScreen> createState() => _VerifyNumberScreenState();
 }
 
-class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
+class _VerifyNumberScreenState extends State<VerifyNumberScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _phoneController = TextEditingController();
   final FocusNode _phoneFocusNode = FocusNode();
 
@@ -36,9 +37,21 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
   int _timerSeconds = 30;
   Timer? _resendTimer;
 
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
   @override
   void initState() {
     super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1, milliseconds: 500),
+    )..repeat(reverse: true);
+
+    _pulseAnimation = Tween<double>(begin: 3.0, end: 8.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
     _phoneController.addListener(() {
       setState(() {
         _isPhoneValid = _phoneController.text.length == 10;
@@ -57,6 +70,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
   @override
   void dispose() {
     _resendTimer?.cancel();
+    _pulseController.dispose();
     _phoneController.dispose();
     _phoneFocusNode.dispose();
     _otpController.dispose();
@@ -98,14 +112,18 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMsg)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(errorMsg)));
         }
       }
     } else {
       setState(() => _isLoading = true);
-      final result = await ApiService.verifyOtp(_phoneController.text, _otpController.text, _inviteCodeController.text.trim());
+      final result = await ApiService.verifyOtp(
+        _phoneController.text,
+        _otpController.text,
+        _inviteCodeController.text.trim(),
+      );
       setState(() => _isLoading = false);
 
       final token = result['token'];
@@ -115,10 +133,10 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
-        
+
         // Save phone to UserData
         userData.phone = '+91 ${_phoneController.text.trim()}';
-        
+
         if (mounted) {
           if (!isRegister) {
             // Already registered, go straight to splash -> home
@@ -135,7 +153,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMsg ?? 'Invalid OTP. Please try again.')),
+            SnackBar(
+              content: Text(errorMsg ?? 'Invalid OTP. Please try again.'),
+            ),
           );
         }
       }
@@ -150,13 +170,17 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
     FocusScope.of(context).unfocus();
 
     final result = await ApiService.validateReferralCode(code);
-    
+
     if (mounted) {
       setState(() => _isApplyingCode = false);
-      
+
       final bool success = result?['success'] == true;
-      final String message = result?['message'] ?? (success ? 'Referral code applied successfully!' : 'Invalid referral code.');
-      
+      final String message =
+          result?['message'] ??
+          (success
+              ? 'Referral code applied successfully!'
+              : 'Invalid referral code.');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
@@ -191,20 +215,41 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                     children: [
                       const Spacer(flex: 1),
 
-                      // Shield Icon Circle
+                      // Center Icon with pulse effect
                       Center(
-                        child: Container(
-                          width: 89,
-                          height: 89,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: AppColors.pink.withOpacity(0.3),
-                              width: 1.2,
-                            ),
-                          ),
-                          padding: const EdgeInsets.all(8),
+                        child: AnimatedBuilder(
+                          animation: _pulseAnimation,
+                          builder: (context, child) {
+                            // Map the 4.0 - 12.0 value to a scale multiplier (e.g. 1.0 to 1.15)
+                            final scale =
+                                1.0 +
+                                (_pulseAnimation.value - 4.0) / 8.0 * 0.15;
+                            return Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Transform.scale(
+                                  scale: scale,
+                                  child: Container(
+                                    width: 89,
+                                    height: 89,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.pinkDeep.withOpacity(
+                                          0.3,
+                                        ),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                child!,
+                              ],
+                            );
+                          },
                           child: Container(
+                            width: 73,
+                            height: 73,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppColors.pinkDeep,
@@ -219,7 +264,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                             child: const Icon(
                               Icons.verified_user_outlined,
                               color: Colors.white,
-                              size: 28,
+                              size: 32,
                             ),
                           ),
                         ),
@@ -500,7 +545,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                                     controller: _otpController,
                                     focusNode: _otpFocusNode,
                                     keyboardType: TextInputType.number,
-                                    autofillHints: const [AutofillHints.oneTimeCode],
+                                    autofillHints: const [
+                                      AutofillHints.oneTimeCode,
+                                    ],
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
                                       LengthLimitingTextInputFormatter(6),
@@ -698,13 +745,18 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: TextButton(
-                                onPressed: (_isInviteCodeEntered && !_isInviteCodeVerified && !_isApplyingCode) 
-                                    ? _applyReferralCode 
+                                onPressed:
+                                    (_isInviteCodeEntered &&
+                                        !_isInviteCodeVerified &&
+                                        !_isApplyingCode)
+                                    ? _applyReferralCode
                                     : null,
                                 style: TextButton.styleFrom(
                                   foregroundColor: _isInviteCodeVerified
                                       ? Colors.white
-                                      : (_isInviteCodeEntered ? Colors.white : AppColors.pinkDeep),
+                                      : (_isInviteCodeEntered
+                                            ? Colors.white
+                                            : AppColors.pinkDeep),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -716,14 +768,21 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
                                     ? const SizedBox(
                                         width: 20,
                                         height: 20,
-                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
                                       )
                                     : Text(
-                                        _isInviteCodeVerified ? 'Applied' : 'Apply',
+                                        _isInviteCodeVerified
+                                            ? 'Applied'
+                                            : 'Apply',
                                         style: AppText.body.copyWith(
                                           color: _isInviteCodeVerified
                                               ? Colors.white
-                                              : (_isInviteCodeEntered ? Colors.white : AppColors.pinkDeep),
+                                              : (_isInviteCodeEntered
+                                                    ? Colors.white
+                                                    : AppColors.pinkDeep),
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14,
                                         ),
@@ -751,20 +810,32 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
             ],
           ),
         ),
-        Padding(
+        Container(
           padding: const EdgeInsets.fromLTRB(
             AppDimens.pad,
             16,
             AppDimens.pad,
-            20,
+            24,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, -4),
+              ),
+            ],
           ),
           child: PrimaryButton(
-            _isLoading ? 'Please wait...' : (_isOtpSent ? 'Verify' : 'Send code'),
+            _isLoading
+                ? 'Please wait...'
+                : (_isOtpSent ? 'Verify' : 'Send code'),
             onTap: _isLoading
                 ? null
                 : ((_isOtpSent ? isOtpValid : _isPhoneValid)
-                    ? _onSendCodePressed
-                    : null),
+                      ? _onSendCodePressed
+                      : null),
           ),
         ),
       ],

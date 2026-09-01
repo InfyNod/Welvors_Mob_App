@@ -139,6 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
     bool isOtpValid = _otpController.text.length == 6;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [

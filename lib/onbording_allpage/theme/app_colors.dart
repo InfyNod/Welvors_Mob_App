@@ -5,9 +5,9 @@ class AppColors {
   static const int resultsCount = 20;
   static const String apiUrl = '$apiBaseUrl?results=$resultsCount';
   static const Color white = Colors.white; // accent
-  static const Color pink = Color(0xFFE85A7A); // accent
-  static const Color pink1 = Color(0xFFE43A6A); // accent
-  static const Color pinkDeep = Color(0xFFC73A5E);
+  static const Color pink = Color(0xFFE33A69); // rgba(227, 58, 105)
+  static const Color pink1 = Color(0xFFE33A69); 
+  static const Color pinkDeep = Color(0xFFE33A69); // Used widely
   static const Color pinkSoft = Color(0xFFFFE7EC);
   static const Color ink = Color(0xFF1F1F1F); // primary text
   static const Color ink60 = Color(0xFF5F5C56); // secondary text
@@ -31,8 +31,8 @@ class AppColors {
 
   static const Color background = Color(0xFFF8F4F0);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color primary = Color(0xFFE85A7A);
-  static const Color primaryDark = Color(0xFFD44D6A);
+  static const Color primary = Color(0xFFE33A69);
+  static const Color primaryDark = Color(0xFFE33A69);
   static const Color primarySoft = Color(0xFFFCE8EE);
   static const Color textPrimary = Color(0xFF1C1C1C);
   static const Color textSecondary = Color(0xFF8A8A8A);
