@@ -54,6 +54,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/completion_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/landing_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/splash_screen.dart';
+import 'package:velvors/onbording_allpage/features/onboarding/basics_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/trust_verification_screen.dart';
 import 'onbording_allpage/theme/app_theme.dart';
 import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
@@ -66,7 +67,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const WelvorsApp(initialRoute: '/landing'));
+  runApp(const WelvorsApp(initialRoute: '/basics'));
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -95,6 +96,15 @@ class WelvorsApp extends StatelessWidget {
           '/splash': (context) => const SplashScreen(),
           '/home': (context) => const TopAndBottomNavScreen(),
           '/landing': (context) => const LandingScreen(),
+          '/basics': (context) => Scaffold(
+                backgroundColor: Colors.white,
+                body: SafeArea(
+                  child: BasicsScreen(
+                    onNext: () {},
+                    // onBack: () {},
+                  ),
+                ),
+              ),
           '/TrustVerificationScreen': (context) => const TrustVerificationScreen(),
         },
       ),

@@ -800,7 +800,7 @@ class _BasicsScreenState extends State<BasicsScreen> {
                   optional: true,
                   helperText: 'We use this to show you relevant matches.',
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -845,7 +845,8 @@ class _BasicsScreenState extends State<BasicsScreen> {
                     String mappedGender = 'PREFER_NOT_TO_SAY';
                     if (_selectedGender == 'Man') mappedGender = 'MEN';
                     if (_selectedGender == 'Woman') mappedGender = 'WOMEN';
-                    if (_selectedGender == 'Non-binary') mappedGender = 'NON_BINARY';
+                    if (_selectedGender == 'Non-binary')
+                      mappedGender = 'NON_BINARY';
 
                     // Convert height (e.g. 5'9") to cm (number)
                     int heightCm = 170; // default
@@ -865,16 +866,36 @@ class _BasicsScreenState extends State<BasicsScreen> {
                     String mappedOrientation = 'NOT_LISTED';
                     if (_selectedOrientation != null) {
                       switch (_selectedOrientation) {
-                        case 'Straight': mappedOrientation = 'STRAIGHT'; break;
-                        case 'Gay': mappedOrientation = 'GAY'; break;
-                        case 'Lesbian': mappedOrientation = 'LESBIAN'; break;
-                        case 'Bisexual': mappedOrientation = 'BISEXUAL'; break;
-                        case 'Pansexual': mappedOrientation = 'PANSEXUAL'; break;
-                        case 'Asexual': mappedOrientation = 'ASEXUAL'; break;
-                        case 'Aromantic': mappedOrientation = 'AROMATIC'; break;
-                        case 'Queer': mappedOrientation = 'QUEER'; break;
-                        case 'Questioning': mappedOrientation = 'NOT_LISTED'; break;
-                        case 'Prefer not to say': mappedOrientation = 'NOT_LISTED'; break;
+                        case 'Straight':
+                          mappedOrientation = 'STRAIGHT';
+                          break;
+                        case 'Gay':
+                          mappedOrientation = 'GAY';
+                          break;
+                        case 'Lesbian':
+                          mappedOrientation = 'LESBIAN';
+                          break;
+                        case 'Bisexual':
+                          mappedOrientation = 'BISEXUAL';
+                          break;
+                        case 'Pansexual':
+                          mappedOrientation = 'PANSEXUAL';
+                          break;
+                        case 'Asexual':
+                          mappedOrientation = 'ASEXUAL';
+                          break;
+                        case 'Aromantic':
+                          mappedOrientation = 'AROMATIC';
+                          break;
+                        case 'Queer':
+                          mappedOrientation = 'QUEER';
+                          break;
+                        case 'Questioning':
+                          mappedOrientation = 'NOT_LISTED';
+                          break;
+                        case 'Prefer not to say':
+                          mappedOrientation = 'NOT_LISTED';
+                          break;
                       }
                     }
 
@@ -885,7 +906,8 @@ class _BasicsScreenState extends State<BasicsScreen> {
                       'gender_option': mappedOrientation,
                       'height': heightCm,
                       if (_selectedDateOfBirth != null)
-                        'birth_date': '${_selectedDateOfBirth!.year}-${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}-${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}',
+                        'birth_date':
+                            '${_selectedDateOfBirth!.year}-${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}-${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}',
                     };
 
                     final error = await ApiService.submitBasicInfo(data);
