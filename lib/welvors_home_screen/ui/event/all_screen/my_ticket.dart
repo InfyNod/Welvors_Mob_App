@@ -23,7 +23,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
     'Refund Pending',
     'Refunded',
     'Attended',
-    'Expired'
+    'Expired',
   ];
   late final List<GlobalKey> _filterKeys;
 
@@ -53,7 +53,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
     }
 
     final response = await EventApiService.getMyTickets(status: apiStatus);
-    
+
     if (mounted) {
       setState(() {
         if (response != null && response['success'] == true) {
@@ -69,7 +69,10 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
   String _formatTime(String timeStr) {
     try {
       final parts = timeStr.split(':');
-      final time = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+      final time = TimeOfDay(
+        hour: int.parse(parts[0]),
+        minute: int.parse(parts[1]),
+      );
       final now = DateTime.now();
       final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
       return DateFormat('h:mm a').format(dt);
@@ -281,84 +284,150 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
             // Tickets List
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _isLoading 
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFFE85A7A))),
-                  )
-                : Column(
-                children: [
-                  ..._tickets
-                      .where((ticket) {
-                        // Search Filter
-                        if (_searchQuery.isNotEmpty) {
-                          final title = ticket['event']?['title']?.toString().toLowerCase() ?? '';
-                          if (!title.contains(_searchQuery.toLowerCase())) {
-                            return false;
-                          }
-                        }
-                        return true;
-                      })
-                      .map((ticket) {
-                        final event = ticket['event'] ?? {};
-                        final dateStr = event['eventDate'] != null ? DateFormat('EEE, MMM dd').format(DateTime.parse(event['eventDate'])) : '';
-                        final timeStr = event['startTime'] != null ? _formatTime(event['startTime']) : '';
-                        
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: _buildTicketCard(
-                            eventId: event['id'] ?? 'dummy_id',
-                            title: event['title'] ?? 'Unknown Event',
-                            date: '$dateStr · $timeStr',
-                            location: event['venueName'] ?? '',
-                            imageUrl: event['heroImage'] ?? '',
-                            status: ticket['status'] ?? 'Unknown',
-                          ),
-                        );
-                      }),
-                  // Show empty message if nothing matches
-                  if (_tickets.where((ticket) {
-                    if (_searchQuery.isNotEmpty) {
-                      final title = ticket['event']?['title']?.toString().toLowerCase() ?? '';
-                      if (!title.contains(_searchQuery.toLowerCase())) {
-                        return false;
-                      }
-                    }
-                    return true;
-                  }).isEmpty)
-                    const Padding(
+              child: _isLoading
+                  ? const Padding(
                       padding: EdgeInsets.symmetric(vertical: 32),
-                      child: Text(
-                        "No tickets found",
-                        style: TextStyle(color: Colors.grey),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFE85A7A),
+                        ),
                       ),
+                    )
+                  : Column(
+                      children: [
+                        ..._tickets
+                            .where((ticket) {
+                              // Search Filter
+                              if (_searchQuery.isNotEmpty) {
+                                final title =
+                                    ticket['event']?['title']
+                                        ?.toString()
+                                        .toLowerCase() ??
+                                    '';
+                                if (!title.contains(
+                                  _searchQuery.toLowerCase(),
+                                )) {
+                                  return false;
+                                }
+                              }
+                              return true;
+                            })
+                            .map((ticket) {
+                              final event = ticket['event'] ?? {};
+                              final dateStr = event['eventDate'] != null
+                                  ? DateFormat(
+                                      'EEE, MMM dd',
+                                    ).format(DateTime.parse(event['eventDate']))
+                                  : '';
+                              final timeStr = event['startTime'] != null
+                                  ? _formatTime(event['startTime'])
+                                  : '';
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: _buildTicketCard(
+                                  eventId: event['id'] ?? 'dummy_id',
+                                  title: event['title'] ?? 'Unknown Event',
+                                  date: '$dateStr · $timeStr',
+                                  location: event['venueName'] ?? '',
+                                  imageUrl: event['heroImage'] ?? '',
+                                  status: ticket['status'] ?? 'Unknown',
+                                ),
+                              );
+                            }),
+                        // Show empty message if nothing matches
+                        if (_tickets.where((ticket) {
+                          if (_searchQuery.isNotEmpty) {
+                            final title =
+                                ticket['event']?['title']
+                                    ?.toString()
+                                    .toLowerCase() ??
+                                '';
+                            if (!title.contains(_searchQuery.toLowerCase())) {
+                              return false;
+                            }
+                          }
+                          return true;
+                        }).isEmpty)
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.receipt_long,
+                                  size: 64,
+                                  color: Colors.grey.shade300,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "No tickets found",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: RichText(
+                                    text: const TextSpan(
+                                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                                      children: [
+                                        TextSpan(text: 'Looking for more events? Check '),
+                                        TextSpan(
+                                          text: 'Upcoming.',
+                                          style: TextStyle(
+                                            color: Color(0xFFE85A7A),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
-                ],
-              ),
             ),
-
-            const SizedBox(height: 32),
-
-            // Bottom Text
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: RichText(
-                text: const TextSpan(
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                  children: [
-                    TextSpan(text: 'Looking for more events? Check '),
-                    TextSpan(
-                      text: 'Upcoming.',
-                      style: TextStyle(
-                        color: Color(0xFFE85A7A),
-                        fontWeight: FontWeight.bold,
+            
+            // Only show at bottom if there ARE tickets
+            if (_tickets.where((ticket) {
+              if (_searchQuery.isNotEmpty) {
+                final title = ticket['event']?['title']?.toString().toLowerCase() ?? '';
+                if (!title.contains(_searchQuery.toLowerCase())) {
+                  return false;
+                }
+              }
+              return true;
+            }).isNotEmpty && !_isLoading) ...[
+              const SizedBox(height: 32),
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: RichText(
+                  text: const TextSpan(
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    children: [
+                      TextSpan(text: 'Looking for more events? Check '),
+                      TextSpan(
+                        text: 'Upcoming.',
+                        style: TextStyle(
+                          color: Color(0xFFE85A7A),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 40),
+              const SizedBox(height: 40),
+            ] else ...[
+              const SizedBox(height: 20),
+            ],
           ],
         ),
       ),
@@ -372,20 +441,30 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
       if (parts.length != 2) return true;
       final datePart = parts[0].trim();
       final timePart = parts[1].trim();
-      
+
       final months = {
-        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
-        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+        'Jan': 1,
+        'Feb': 2,
+        'Mar': 3,
+        'Apr': 4,
+        'May': 5,
+        'Jun': 6,
+        'Jul': 7,
+        'Aug': 8,
+        'Sep': 9,
+        'Oct': 10,
+        'Nov': 11,
+        'Dec': 12,
       };
-      
+
       final dateWords = datePart.split(RegExp(r'\s+'));
       if (dateWords.length < 3) return true;
       final monthStr = dateWords[1];
       final dayStr = dateWords[2];
-      
+
       final month = months[monthStr] ?? DateTime.now().month;
       final day = int.tryParse(dayStr) ?? DateTime.now().day;
-      
+
       int hour = 0;
       int minute = 0;
       if (timePart.contains(':')) {
@@ -393,9 +472,13 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
         final hm = timeWords[0].split(':');
         hour = int.tryParse(hm[0]) ?? 0;
         minute = int.tryParse(hm[1]) ?? 0;
-        if (timeWords.length > 1 && timeWords[1].toUpperCase() == 'PM' && hour < 12) {
+        if (timeWords.length > 1 &&
+            timeWords[1].toUpperCase() == 'PM' &&
+            hour < 12) {
           hour += 12;
-        } else if (timeWords.length > 1 && timeWords[1].toUpperCase() == 'AM' && hour == 12) {
+        } else if (timeWords.length > 1 &&
+            timeWords[1].toUpperCase() == 'AM' &&
+            hour == 12) {
           hour = 0;
         }
       }
@@ -404,10 +487,10 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
       // Assume event is in the current year, or next year if month already passed
       int year = now.year;
       if (month < now.month) {
-        year++; 
+        year++;
       }
       final eventDate = DateTime(year, month, day, hour, minute);
-      
+
       final difference = eventDate.difference(now);
       return difference.inHours >= 72;
     } catch (e) {
@@ -584,7 +667,10 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            showCancelDrawer(context, isRefundEligible: _isRefundEligible(date));
+                            showCancelDrawer(
+                              context,
+                              isRefundEligible: _isRefundEligible(date),
+                            );
                           },
                           child: const Text(
                             'Cancel',
