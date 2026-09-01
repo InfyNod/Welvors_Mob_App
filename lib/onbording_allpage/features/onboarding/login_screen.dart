@@ -117,10 +117,11 @@ class _LoginScreenState extends State<LoginScreen> {
         userData.phone = '+91 ${_phoneController.text.trim()}';
         
         if (mounted) {
-          // Navigate to Waitlist Confirmed
-          Navigator.pushReplacement(
+          // Navigate to Splash Screen
+          Navigator.pushNamedAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const WaitlistConfirmedScreen()),
+            '/splash',
+            (route) => false,
           );
         }
       } else {

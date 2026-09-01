@@ -416,8 +416,8 @@ class ApiService {
       debugPrint('OTP Verify: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
-        if (decoded['success'] == true && decoded['token'] != null) {
-          return {'token': decoded['token'].toString(), 'error': null};
+        if (decoded['success'] == true && decoded['data'] != null && decoded['data']['token'] != null) {
+          return {'token': decoded['data']['token'].toString(), 'error': null};
         }
         return {'token': null, 'error': decoded['message'] ?? 'Failed to verify'};
       }

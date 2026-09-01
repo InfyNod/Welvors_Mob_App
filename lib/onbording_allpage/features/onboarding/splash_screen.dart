@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -45,14 +46,16 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate to Home after 3 seconds
-    Timer(const Duration(milliseconds: 3000), () {
+    // Navigate after 3 seconds based on token
+    Timer(const Duration(milliseconds: 3000), () async {
+      final prefs = await SharedPreferences.getInstance();
+      final String? authToken = prefs.getString('auth_token');
+      final String targetRoute = (authToken != null && authToken.isNotEmpty) ? '/home' : '/landing';
+
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(
-            builder: (context) => const TopAndBottomNavScreen(),
-          ),
+          targetRoute,
           (route) => false,
         );
       }
