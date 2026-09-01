@@ -14,7 +14,7 @@ import '../../home_bloc/home_bloc.dart';
 import '../../../onbording_allpage/theme/app_colors.dart';
 import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart' hide TextDirection;
-
+import 'package:screen_protector/screen_protector.dart';
 class SectionColor {
   final Color bg;
   final Color icon;
@@ -30,9 +30,44 @@ abstract class SectionColors {
   static const family = SectionColor(Color(0xFFFAECE7), Color(0xFF993C1D));
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final bool isPreview;
   const HomeScreen({super.key, this.isPreview = false});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _protectScreen();
+  }
+
+  Future<void> _protectScreen() async {
+    try {
+      await ScreenProtector.preventScreenshotOn();
+      await ScreenProtector.protectDataLeakageWithBlur();
+    } catch (e) {
+      debugPrint("Screen protection error: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _unprotectScreen();
+    super.dispose();
+  }
+
+  Future<void> _unprotectScreen() async {
+    try {
+      await ScreenProtector.preventScreenshotOff();
+      await ScreenProtector.protectDataLeakageWithBlurOff();
+    } catch (e) {
+      debugPrint("Screen unprotection error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +78,7 @@ class HomeScreen extends StatelessWidget {
           return LayoutBuilder(
             builder: (context, constraints) {
               Widget child = SingleChildScrollView(
-                physics: isPreview
+                physics: widget.isPreview
                     ? const BouncingScrollPhysics()
                     : const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics(),
@@ -67,7 +102,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               );
 
-              if (isPreview) {
+              if (widget.isPreview) {
                 return child;
               }
 
@@ -370,100 +405,7 @@ class _ProfileDetailsView extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  // The elegant divider
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Divider(color: Colors.black12, height: 1),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: const Text('✦', style: TextStyle(fontSize: 14)),
-                      ),
-                      const Expanded(
-                        child: Divider(color: Colors.black12, height: 1),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // LOOKING FOR Container
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFFE5E5E5),
-                      ), // Opaque grey border
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          bottom: 0,
-                          width: 60,
-                          child: Container(color: SectionColors.intent.bg),
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.favorite_border_rounded,
-                                    color: SectionColors.intent.icon,
-                                    size: 28,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      profile.lookingFor,
-                                      style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      profile.lookingForSubtitle.isNotEmpty
-                                          ? profile.lookingForSubtitle
-                                          : _getLookingForSubtitle(
-                                              profile.lookingFor,
-                                            ),
-                                      style: const TextStyle(
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                        height: 1.4,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+
                 ],
               ),
             ),
@@ -1732,22 +1674,7 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-  String _getLookingForSubtitle(String lookingFor) {
-    switch (lookingFor) {
-      case 'A long-term relationship':
-        return 'Looking to build something that lasts';
-      case 'Let’s see where it goes':
-        return 'Open and unhurried, no fixed expectations';
-      case 'Open to marriage, when it’s right':
-        return 'Serious, on the right timeline - not rushed';
-      case 'New friends & connections':
-        return 'Meeting genuine people first';
-      case 'Long-term, marriage-open.':
-        return 'Looking to build something that lasts, open to taking the next big step.';
-      default:
-        return 'Seeking meaningful connections';
-    }
-  }
+
 
   Map<String, String> _getLoveLanguageData(String enumValue) {
     switch (enumValue.toUpperCase()) {
@@ -2414,6 +2341,23 @@ class _DraggableCardState extends State<_DraggableCard>
   }
 }
 
+String _getLookingForSubtitle(String lookingFor) {
+  switch (lookingFor) {
+    case 'A long-term relationship':
+      return 'Looking to build something that lasts';
+    case 'Let’s see where it goes':
+      return 'Open and unhurried, no fixed expectations';
+    case 'Open to marriage, when it’s right':
+      return 'Serious, on the right timeline - not rushed';
+    case 'New friends & connections':
+      return 'Meeting genuine people first';
+    case 'Long-term, marriage-open.':
+      return 'Looking to build something that lasts, open to taking the next big step.';
+    default:
+      return 'Seeking meaningful connections';
+  }
+}
+
 class _ProfileCardUI extends StatelessWidget {
   final ProfileModel profile;
   final Color glowColor;
@@ -2582,8 +2526,25 @@ class _ProfileCardUI extends StatelessWidget {
                   _buildInfoRow(Icons.location_on, profile.location),
                   // Job
                   _buildInfoRow(Icons.work, profile.job),
-                  // Intent
-                  _buildInfoRow(Icons.favorite, profile.intent),
+                  // Intent on Image
+                  _buildInfoRow(Icons.favorite_rounded, profile.lookingFor),
+                  if (profile.lookingFor.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24, bottom: 4),
+                      child: Text(
+                        profile.lookingForSubtitle.isNotEmpty
+                            ? profile.lookingForSubtitle
+                            : _getLookingForSubtitle(profile.lookingFor),
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontWeight: FontWeight.w400,
+                          fontSize: 11,
+                          height: 1.2,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                 ],
               ),
             ),
