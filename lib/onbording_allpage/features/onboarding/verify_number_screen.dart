@@ -110,6 +110,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
 
       final token = result['token'];
       final errorMsg = result['error'];
+      final isRegister = result['is_register'] ?? true;
 
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
@@ -119,7 +120,17 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen> {
         userData.phone = '+91 ${_phoneController.text.trim()}';
         
         if (mounted) {
-          widget.onVerifySuccess();
+          if (!isRegister) {
+            // Already registered, go straight to splash -> home
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/splash',
+              (route) => false,
+            );
+          } else {
+            // New user, proceed with onboarding
+            widget.onVerifySuccess();
+          }
         }
       } else {
         if (mounted) {

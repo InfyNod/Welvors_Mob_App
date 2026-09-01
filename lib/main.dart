@@ -66,7 +66,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const WelvorsApp(initialRoute: '/splash'));
+  runApp(const WelvorsApp(initialRoute: '/landing'));
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
