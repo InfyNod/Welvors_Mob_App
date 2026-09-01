@@ -29,7 +29,9 @@ class _PromptsScreenState extends State<PromptsScreen> {
 
   Future<void> _editPrompt(int index) async {
     final prompt = _prompts[index];
-    final TextEditingController controller = TextEditingController(text: prompt.answer);
+    final TextEditingController controller = TextEditingController(
+      text: prompt.answer,
+    );
 
     await showModalBottomSheet(
       context: context,
@@ -85,7 +87,9 @@ class _PromptsScreenState extends State<PromptsScreen> {
                 'Save',
                 onTap: () {
                   setState(() {
-                    prompt.answer = controller.text.trim().isEmpty ? null : controller.text.trim();
+                    prompt.answer = controller.text.trim().isEmpty
+                        ? null
+                        : controller.text.trim();
                   });
                   Navigator.pop(context);
                 },
@@ -150,7 +154,11 @@ class _PromptsScreenState extends State<PromptsScreen> {
                       color: AppColors.pinkSoft.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.edit_outlined, size: 14, color: AppColors.pinkDeep),
+                    child: const Icon(
+                      Icons.edit_outlined,
+                      size: 14,
+                      color: AppColors.pinkDeep,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -160,7 +168,11 @@ class _PromptsScreenState extends State<PromptsScreen> {
                       _prompts.removeAt(index);
                     });
                   },
-                  child: const Icon(Icons.close, size: 16, color: AppColors.muted),
+                  child: const Icon(
+                    Icons.close,
+                    size: 16,
+                    color: AppColors.muted,
+                  ),
                 ),
               ],
             ),
@@ -188,9 +200,11 @@ class _PromptsScreenState extends State<PromptsScreen> {
       onTap: () async {
         final selectedPrompt = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ChoosePromptScreen(
-            addedPromptIds: _prompts.map((p) => p.id).toList(),
-          )),
+          MaterialPageRoute(
+            builder: (context) => ChoosePromptScreen(
+              addedPromptIds: _prompts.map((p) => p.id).toList(),
+            ),
+          ),
         );
 
         if (selectedPrompt != null && selectedPrompt is PromptItem) {
@@ -298,50 +312,73 @@ class _PromptsScreenState extends State<PromptsScreen> {
                             ),
                           ),
                           const SizedBox(height: 32),
-                          
-                          ...List.generate(_prompts.length, (index) => _buildPromptCard(index)),
+
+                          ...List.generate(
+                            _prompts.length,
+                            (index) => _buildPromptCard(index),
+                          ),
                           _buildAddPromptCard(),
                         ],
                       ),
                     ),
                   ),
-                  
+
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppDimens.pad,
+                      16,
+                      AppDimens.pad,
+                      0,
+                    ),
                     child: Column(
                       children: [
                         PrimaryButton(
                           _isSubmitting ? 'Saving...' : 'Continue',
-                          onTap: _isSubmitting ? null : () async {
-                            final answeredPrompts = _prompts.where((p) => p.answer != null && p.answer!.trim().isNotEmpty).toList();
-                            
-                            if (answeredPrompts.isEmpty) {
-                              widget.onNext();
-                              return;
-                            }
+                          onTap: _isSubmitting
+                              ? null
+                              : () async {
+                                  final answeredPrompts = _prompts
+                                      .where(
+                                        (p) =>
+                                            p.answer != null &&
+                                            p.answer!.trim().isNotEmpty,
+                                      )
+                                      .toList();
 
-                            setState(() => _isSubmitting = true);
+                                  if (answeredPrompts.isEmpty) {
+                                    widget.onNext();
+                                    return;
+                                  }
 
-                            // Format the prompts payload
-                            List<Map<String, String>> payload = answeredPrompts.map((p) {
-                              return {
-                                "promptId": p.id,
-                                "answer": p.answer!.trim(),
-                              };
-                            }).toList();
+                                  setState(() => _isSubmitting = true);
 
-                            final error = await ApiService.submitPrompts(payload);
-                            
-                            setState(() => _isSubmitting = false);
-                            
-                            if (error != null) {
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-                              }
-                            } else {
-                              widget.onNext();
-                            }
-                          },
+                                  // Format the prompts payload
+                                  List<Map<String, String>> payload =
+                                      answeredPrompts.map((p) {
+                                        return {
+                                          "promptId": p.id,
+                                          "answer": p.answer!.trim(),
+                                        };
+                                      }).toList();
+
+                                  final error = await ApiService.submitPrompts(
+                                    payload,
+                                  );
+
+                                  setState(() => _isSubmitting = false);
+
+                                  if (error != null) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(content: Text(error)),
+                                      );
+                                    }
+                                  } else {
+                                    widget.onNext();
+                                  }
+                                },
                         ),
                         const SizedBox(height: 8),
                         TextButton(

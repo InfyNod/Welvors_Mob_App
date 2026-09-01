@@ -19,7 +19,7 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
   List<Map<String, dynamic>> _questions = [];
   bool _isLoading = true;
   bool _isSubmitting = false;
-  
+
   // Store answers as: Question ID -> List of selected values
   final Map<String, List<String>> _answers = {};
 
@@ -41,23 +41,35 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
 
   String _getEmoji(String key) {
     switch (key.toLowerCase()) {
-      case 'diet': return '🥗';
-      case 'workout': return '💪';
-      case 'drinking': return '🥂';
-      case 'smoking': return '🚬';
-      case 'pets': return '🐾';
-      default: return '✨';
+      case 'diet':
+        return '🥗';
+      case 'workout':
+        return '💪';
+      case 'drinking':
+        return '🥂';
+      case 'smoking':
+        return '🚬';
+      case 'pets':
+        return '🐾';
+      default:
+        return '✨';
     }
   }
 
   Color _getEmojiBg(String key) {
     switch (key.toLowerCase()) {
-      case 'diet': return AppColors.green;
-      case 'workout': return AppColors.blue;
-      case 'drinking': return AppColors.gold;
-      case 'smoking': return AppColors.ink60;
-      case 'pets': return AppColors.gold;
-      default: return AppColors.pinkDeep;
+      case 'diet':
+        return AppColors.green;
+      case 'workout':
+        return AppColors.blue;
+      case 'drinking':
+        return AppColors.gold;
+      case 'smoking':
+        return AppColors.ink60;
+      case 'pets':
+        return AppColors.gold;
+      default:
+        return AppColors.pinkDeep;
     }
   }
 
@@ -77,7 +89,9 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: isExpanded ? AppColors.pinkSoft.withOpacity(0.5) : Colors.white,
+          color: isExpanded
+              ? AppColors.pinkSoft.withOpacity(0.5)
+              : Colors.white,
           border: Border.all(
             color: isExpanded || hasValue ? AppColors.pinkDeep : AppColors.line,
             width: 1.5,
@@ -98,10 +112,7 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                       color: emojiBg.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Text(
-                      emoji,
-                      style: const TextStyle(fontSize: 24),
-                    ),
+                    child: Text(emoji, style: const TextStyle(fontSize: 24)),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -113,7 +124,9 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                           style: AppText.body.copyWith(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: isExpanded || hasValue ? AppColors.pinkDeep : AppColors.ink,
+                            color: isExpanded || hasValue
+                                ? AppColors.pinkDeep
+                                : AppColors.ink,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -175,11 +188,16 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                     onTap: () => onChanged(isSelected ? null : c),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected ? AppColors.pinkDeep : Colors.white,
                         border: Border.all(
-                          color: isSelected ? AppColors.pinkDeep : AppColors.line,
+                          color: isSelected
+                              ? AppColors.pinkDeep
+                              : AppColors.line,
                           width: 1,
                         ),
                         borderRadius: BorderRadius.circular(20),
@@ -188,7 +206,9 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                         c,
                         style: AppText.body.copyWith(
                           fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                           color: isSelected ? Colors.white : AppColors.ink,
                         ),
                       ),
@@ -247,11 +267,16 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected ? AppColors.pinkDeep : Colors.white,
                         border: Border.all(
-                          color: isSelected ? AppColors.pinkDeep : AppColors.line,
+                          color: isSelected
+                              ? AppColors.pinkDeep
+                              : AppColors.line,
                           width: 1,
                         ),
                         borderRadius: BorderRadius.circular(20),
@@ -260,7 +285,9 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                         c,
                         style: AppText.body.copyWith(
                           fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                           color: isSelected ? Colors.white : AppColors.ink,
                         ),
                       ),
@@ -298,7 +325,10 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.pinkSoft.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
@@ -373,17 +403,33 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                       },
                       expandedContent: isMulti
                           ? _buildMultiSubOptions(
-                              chips: options.map((e) => e['label'].toString()).toList(),
-                              helperText: title.toLowerCase().contains('pet') ? 'Pick up to 3' : 'Pick as many as you like',
+                              chips: options
+                                  .map((e) => e['label'].toString())
+                                  .toList(),
+                              helperText: title.toLowerCase().contains('pet')
+                                  ? 'Pick up to 3'
+                                  : 'Pick as many as you like',
                               selectedValues: selectedValues,
-                              maxSelection: title.toLowerCase().contains('pet') ? 3 : 10,
+                              maxSelection: title.toLowerCase().contains('pet')
+                                  ? 3
+                                  : 10,
                               onChanged: (newList) {
                                 setState(() {
-                                  int currentCount = _answers.values.where((v) => v.isNotEmpty).length;
-                                  bool isNewCategory = _answers[questionId] == null || _answers[questionId]!.isEmpty;
-                                  if (isNewCategory && newList.isNotEmpty && currentCount >= 10) {
+                                  int currentCount = _answers.values
+                                      .where((v) => v.isNotEmpty)
+                                      .length;
+                                  bool isNewCategory =
+                                      _answers[questionId] == null ||
+                                      _answers[questionId]!.isEmpty;
+                                  if (isNewCategory &&
+                                      newList.isNotEmpty &&
+                                      currentCount >= 10) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('You can only select up to 10 lifestyles.')),
+                                      const SnackBar(
+                                        content: Text(
+                                          'You can only select up to 10 lifestyles.',
+                                        ),
+                                      ),
                                     );
                                     return;
                                   }
@@ -392,19 +438,33 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
                               },
                             )
                           : _buildSubOptions(
-                              chips: options.map((e) => e['label'].toString()).toList(),
+                              chips: options
+                                  .map((e) => e['label'].toString())
+                                  .toList(),
                               helperText: 'Pick one',
-                              selectedValue: selectedValues.isNotEmpty ? selectedValues.first : null,
+                              selectedValue: selectedValues.isNotEmpty
+                                  ? selectedValues.first
+                                  : null,
                               onChanged: (val) {
                                 setState(() {
                                   if (val == null) {
                                     _answers[questionId] = [];
                                   } else {
-                                    int currentCount = _answers.values.where((v) => v.isNotEmpty).length;
-                                    bool isNewCategory = _answers[questionId] == null || _answers[questionId]!.isEmpty;
+                                    int currentCount = _answers.values
+                                        .where((v) => v.isNotEmpty)
+                                        .length;
+                                    bool isNewCategory =
+                                        _answers[questionId] == null ||
+                                        _answers[questionId]!.isEmpty;
                                     if (isNewCategory && currentCount >= 10) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('You can only select up to 10 lifestyles.')),
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'You can only select up to 10 lifestyles.',
+                                          ),
+                                        ),
                                       );
                                       return;
                                     }
@@ -421,31 +481,38 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
+          padding: const EdgeInsets.fromLTRB(
+            AppDimens.pad,
+            16,
+            AppDimens.pad,
+            0,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               PrimaryButton(
                 'Continue',
                 isLoading: _isSubmitting,
-                onTap: _isSubmitting ? null : () async {
-                  setState(() => _isSubmitting = true);
+                onTap: _isSubmitting
+                    ? null
+                    : () async {
+                        setState(() => _isSubmitting = true);
 
-                  // Collect local user data
-                  List<String> selectedLabels = [];
-                  for (final values in _answers.values) {
-                    selectedLabels.addAll(values);
-                  }
-                  userData.lifestyle = selectedLabels;
+                        // Collect local user data
+                        List<String> selectedLabels = [];
+                        for (final values in _answers.values) {
+                          selectedLabels.addAll(values);
+                        }
+                        userData.lifestyle = selectedLabels;
 
-                  // Simulate API delay
-                  await Future.delayed(const Duration(seconds: 1));
+                        // Simulate API delay
+                        await Future.delayed(const Duration(seconds: 1));
 
-                  if (mounted) {
-                    setState(() => _isSubmitting = false);
-                    widget.onNext();
-                  }
-                },
+                        if (mounted) {
+                          setState(() => _isSubmitting = false);
+                          widget.onNext();
+                        }
+                      },
               ),
               const SizedBox(height: 8),
               TextButton(

@@ -614,7 +614,7 @@ class _CareerScreenState extends State<CareerScreen> {
             AppDimens.pad,
             16,
             AppDimens.pad,
-            20,
+            0,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

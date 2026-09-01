@@ -81,7 +81,8 @@ class _AboutScreenState extends State<AboutScreen> {
                             cursorColor: AppColors.pinkDeep,
                             style: AppText.body.copyWith(fontSize: 15),
                             decoration: InputDecoration(
-                              hintText: 'Building products by day,\nplanning my next trek by night.\nLooking for someone equally\ndriven and equally curious...',
+                              hintText:
+                                  'Building products by day,\nplanning my next trek by night.\nLooking for someone equally\ndriven and equally curious...',
                               hintMaxLines: 4,
                               hintStyle: AppText.body.copyWith(
                                 color: AppColors.muted.withOpacity(0.6),
@@ -91,14 +92,21 @@ class _AboutScreenState extends State<AboutScreen> {
                               filled: true,
                               fillColor: Colors.white,
                               contentPadding: const EdgeInsets.all(16),
-                              counterText: '', // Hide default counter, we'll build our own
+                              counterText:
+                                  '', // Hide default counter, we'll build our own
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.line, width: 1.5),
+                                borderSide: const BorderSide(
+                                  color: AppColors.line,
+                                  width: 1.5,
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.pinkDeep, width: 1.5),
+                                borderSide: const BorderSide(
+                                  color: AppColors.pinkDeep,
+                                  width: 1.5,
+                                ),
                               ),
                             ),
                           ),
@@ -118,32 +126,45 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                     ),
                   ),
-                  
+
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppDimens.pad,
+                      16,
+                      AppDimens.pad,
+                      0,
+                    ),
                     child: Column(
                       children: [
                         PrimaryButton(
                           _isSubmitting ? 'Saving...' : 'Continue',
-                          onTap: _isSubmitting ? null : () async {
-                            if (_controller.text.trim().isEmpty) {
-                              widget.onNext();
-                              return;
-                            }
-                            setState(() => _isSubmitting = true);
-                            
-                            final error = await ApiService.submitBio(_controller.text.trim());
-                            
-                            setState(() => _isSubmitting = false);
-                            
-                            if (error != null) {
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-                              }
-                            } else {
-                              widget.onNext();
-                            }
-                          },
+                          onTap: _isSubmitting
+                              ? null
+                              : () async {
+                                  if (_controller.text.trim().isEmpty) {
+                                    widget.onNext();
+                                    return;
+                                  }
+                                  setState(() => _isSubmitting = true);
+
+                                  final error = await ApiService.submitBio(
+                                    _controller.text.trim(),
+                                  );
+
+                                  setState(() => _isSubmitting = false);
+
+                                  if (error != null) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(content: Text(error)),
+                                      );
+                                    }
+                                  } else {
+                                    widget.onNext();
+                                  }
+                                },
                         ),
                         const SizedBox(height: 8),
                         TextButton(

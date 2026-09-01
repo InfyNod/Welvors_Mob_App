@@ -20,13 +20,27 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   bool _isLoading = false;
 
   final List<Map<String, String>> _orientationOptions = [
-    {'title': 'Straight', 'subtitle': 'Attracted to people of the opposite gender'},
+    {
+      'title': 'Straight',
+      'subtitle': 'Attracted to people of the opposite gender',
+    },
     {'title': 'Gay', 'subtitle': 'Attracted to people of the same gender'},
     {'title': 'Lesbian', 'subtitle': 'A woman attracted to other women'},
     {'title': 'Bisexual', 'subtitle': 'Attracted to more than one gender'},
-    {'title': 'Pansexual', 'subtitle': 'Attracted to people regardless of gender'},
-    {'title': 'Asexual', 'subtitle': 'Little or no sexual attraction — may still feel romantic attraction'},
-    {'title': 'Aromantic', 'subtitle': 'Little or no romantic attraction — may still feel other connections'},
+    {
+      'title': 'Pansexual',
+      'subtitle': 'Attracted to people regardless of gender',
+    },
+    {
+      'title': 'Asexual',
+      'subtitle':
+          'Little or no sexual attraction — may still feel romantic attraction',
+    },
+    {
+      'title': 'Aromantic',
+      'subtitle':
+          'Little or no romantic attraction — may still feel other connections',
+    },
     {'title': 'Queer', 'subtitle': 'A broad, self-defined orientation'},
     {'title': 'Questioning', 'subtitle': 'Still exploring what feels right'},
   ];
@@ -49,7 +63,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.pinkSoft.withOpacity(0.5) : Colors.white,
+          color: isSelected
+              ? AppColors.pinkSoft.withOpacity(0.5)
+              : Colors.white,
           border: Border.all(
             color: isSelected ? AppColors.pinkDeep : AppColors.line,
             width: 1.5,
@@ -69,11 +85,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       color: iconBg,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Icon(
-                      icon,
-                      color: iconColor,
-                      size: 28,
-                    ),
+                    child: Icon(icon, color: iconColor, size: 28),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -85,7 +97,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           style: AppText.body.copyWith(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: isSelected ? AppColors.pinkDeep : AppColors.ink,
+                            color: isSelected
+                                ? AppColors.pinkDeep
+                                : AppColors.ink,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -154,14 +168,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     option['subtitle']!,
                     style: AppText.sub.copyWith(
                       fontSize: 12,
-                      color: isSelected ? AppColors.pinkDeep : AppColors.ink.withOpacity(0.5),
+                      color: isSelected
+                          ? AppColors.pinkDeep
+                          : AppColors.ink.withOpacity(0.5),
                     ),
                   ),
                 ],
               ),
             ),
-            if (isSelected)
-              const Icon(Icons.check, color: AppColors.pinkDeep),
+            if (isSelected) const Icon(Icons.check, color: AppColors.pinkDeep),
           ],
         ),
       ),
@@ -190,7 +205,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.pinkSoft.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(4),
@@ -241,135 +259,165 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-          Text(
-            'PREFERENCES',
-            style: AppText.eyebrow.copyWith(
-              color: AppColors.pinkDeep,
-              fontSize: 11,
-              letterSpacing: 1.5,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Who are you interested\nin seeing for a date?',
-            style: AppText.display.copyWith(fontSize: 32),
-          ),
-          const SizedBox(height: 32),
+                Text(
+                  'PREFERENCES',
+                  style: AppText.eyebrow.copyWith(
+                    color: AppColors.pinkDeep,
+                    fontSize: 11,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Who are you interested\nin seeing for a date?',
+                  style: AppText.display.copyWith(fontSize: 32),
+                ),
+                const SizedBox(height: 32),
 
-          _buildCard(
-            title: 'Women',
-            subtitle: 'Show me women',
-            icon: Icons.female,
-            iconColor: AppColors.pinkDeep,
-            iconBg: AppColors.pinkSoft,
-            isSelected: _selectedPreference == 'Women',
-            onTap: () {
-              setState(() {
-                if (_selectedPreference == 'Women') {
-                  _selectedPreference = null;
-                } else {
-                  _selectedPreference = 'Women';
-                  _selectedSubPreferences.clear();
-                }
-              });
-            },
-            expandedContent: _buildOrientationOptions(
-              helperText: 'Leave blank to see all women.',
-            ),
-          ),
+                _buildCard(
+                  title: 'Women',
+                  subtitle: 'Show me women',
+                  icon: Icons.female,
+                  iconColor: AppColors.pinkDeep,
+                  iconBg: AppColors.pinkSoft,
+                  isSelected: _selectedPreference == 'Women',
+                  onTap: () {
+                    setState(() {
+                      if (_selectedPreference == 'Women') {
+                        _selectedPreference = null;
+                      } else {
+                        _selectedPreference = 'Women';
+                        _selectedSubPreferences.clear();
+                      }
+                    });
+                  },
+                  expandedContent: _buildOrientationOptions(
+                    helperText: 'Leave blank to see all women.',
+                  ),
+                ),
 
-          _buildCard(
-            title: 'Man',
-            subtitle: 'Show me men',
-            icon: Icons.male,
-            iconColor: AppColors.blue,
-            iconBg: AppColors.blue.withOpacity(0.15),
-            isSelected: _selectedPreference == 'Man',
-            onTap: () {
-              setState(() {
-                if (_selectedPreference == 'Man') {
-                  _selectedPreference = null;
-                } else {
-                  _selectedPreference = 'Man';
-                  _selectedSubPreferences.clear();
-                }
-              });
-            },
-            expandedContent: _buildOrientationOptions(
-              helperText: 'Leave blank to see all men.',
-            ),
-          ),
+                _buildCard(
+                  title: 'Man',
+                  subtitle: 'Show me men',
+                  icon: Icons.male,
+                  iconColor: AppColors.blue,
+                  iconBg: AppColors.blue.withOpacity(0.15),
+                  isSelected: _selectedPreference == 'Man',
+                  onTap: () {
+                    setState(() {
+                      if (_selectedPreference == 'Man') {
+                        _selectedPreference = null;
+                      } else {
+                        _selectedPreference = 'Man';
+                        _selectedSubPreferences.clear();
+                      }
+                    });
+                  },
+                  expandedContent: _buildOrientationOptions(
+                    helperText: 'Leave blank to see all men.',
+                  ),
+                ),
 
-          _buildCard(
-            title: 'Everyone',
-            subtitle: 'Show me everyone',
-            icon: Icons.transgender, 
-            iconColor: AppColors.gold,
-            iconBg: AppColors.gold.withOpacity(0.15),
-            isSelected: _selectedPreference == 'Everyone',
-            onTap: () {
-              setState(() {
-                if (_selectedPreference == 'Everyone') {
-                  _selectedPreference = null;
-                } else {
-                  _selectedPreference = 'Everyone';
-                  _selectedSubPreferences.clear();
-                }
-              });
-            },
-          ),
-
+                _buildCard(
+                  title: 'Everyone',
+                  subtitle: 'Show me everyone',
+                  icon: Icons.transgender,
+                  iconColor: AppColors.gold,
+                  iconBg: AppColors.gold.withOpacity(0.15),
+                  isSelected: _selectedPreference == 'Everyone',
+                  onTap: () {
+                    setState(() {
+                      if (_selectedPreference == 'Everyone') {
+                        _selectedPreference = null;
+                      } else {
+                        _selectedPreference = 'Everyone';
+                        _selectedSubPreferences.clear();
+                      }
+                    });
+                  },
+                ),
               ],
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
+          padding: const EdgeInsets.fromLTRB(
+            AppDimens.pad,
+            16,
+            AppDimens.pad,
+            20,
+          ),
           child: PrimaryButton(
             _isLoading ? 'Saving...' : 'Continue',
-            onTap: (_isFormValid && !_isLoading) ? () async {
-              setState(() => _isLoading = true);
+            onTap: (_isFormValid && !_isLoading)
+                ? () async {
+                    setState(() => _isLoading = true);
 
-              userData.interestedIn = _selectedPreference ?? 'Everyone';
-              
-              // Backend Prisma schema expects the Gender enum, usually uppercase like 'WOMEN', 'MEN', 'EVERYONE'
-              String interestedInValue = 'EVERYONE';
-              if (_selectedPreference == 'Man') interestedInValue = 'MEN';
-              if (_selectedPreference == 'Women') interestedInValue = 'WOMEN';
+                    userData.interestedIn = _selectedPreference ?? 'Everyone';
 
-              String sexualOrientationValue = 'NOT_LISTED';
-              if (_selectedSubPreferences.isNotEmpty) {
-                final orientation = _selectedSubPreferences.first;
-                switch (orientation) {
-                  case 'Straight': sexualOrientationValue = 'STRAIGHT'; break;
-                  case 'Gay': sexualOrientationValue = 'GAY'; break;
-                  case 'Lesbian': sexualOrientationValue = 'LESBIAN'; break;
-                  case 'Aromantic': sexualOrientationValue = 'AROMATIC'; break;
-                  case 'Asexual': sexualOrientationValue = 'ASEXUAL'; break;
-                  case 'Bisexual': sexualOrientationValue = 'BISEXUAL'; break;
-                  case 'Demisexual': sexualOrientationValue = 'DEMISEXUAL'; break;
-                  case 'Pansexual': sexualOrientationValue = 'PANSEXUAL'; break;
-                  case 'Queer': sexualOrientationValue = 'QUEER'; break;
-                  case 'Questioning': sexualOrientationValue = 'NOT_LISTED'; break;
-                }
-              }
+                    // Backend Prisma schema expects the Gender enum, usually uppercase like 'WOMEN', 'MEN', 'EVERYONE'
+                    String interestedInValue = 'EVERYONE';
+                    if (_selectedPreference == 'Man') interestedInValue = 'MEN';
+                    if (_selectedPreference == 'Women')
+                      interestedInValue = 'WOMEN';
 
-              final errorMsg = await ApiService.submitInterestedIn(interestedInValue, sexualOrientationValue);
-              setState(() => _isLoading = false);
+                    String sexualOrientationValue = 'NOT_LISTED';
+                    if (_selectedSubPreferences.isNotEmpty) {
+                      final orientation = _selectedSubPreferences.first;
+                      switch (orientation) {
+                        case 'Straight':
+                          sexualOrientationValue = 'STRAIGHT';
+                          break;
+                        case 'Gay':
+                          sexualOrientationValue = 'GAY';
+                          break;
+                        case 'Lesbian':
+                          sexualOrientationValue = 'LESBIAN';
+                          break;
+                        case 'Aromantic':
+                          sexualOrientationValue = 'AROMATIC';
+                          break;
+                        case 'Asexual':
+                          sexualOrientationValue = 'ASEXUAL';
+                          break;
+                        case 'Bisexual':
+                          sexualOrientationValue = 'BISEXUAL';
+                          break;
+                        case 'Demisexual':
+                          sexualOrientationValue = 'DEMISEXUAL';
+                          break;
+                        case 'Pansexual':
+                          sexualOrientationValue = 'PANSEXUAL';
+                          break;
+                        case 'Queer':
+                          sexualOrientationValue = 'QUEER';
+                          break;
+                        case 'Questioning':
+                          sexualOrientationValue = 'NOT_LISTED';
+                          break;
+                      }
+                    }
 
-              if (errorMsg == null) {
-                widget.onNext();
-              } else {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(errorMsg),
-                      duration: const Duration(seconds: 4),
-                    ),
-                  );
-                }
-              }
-            } : null,
+                    final errorMsg = await ApiService.submitInterestedIn(
+                      interestedInValue,
+                      sexualOrientationValue,
+                    );
+                    setState(() => _isLoading = false);
+
+                    if (errorMsg == null) {
+                      widget.onNext();
+                    } else {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(errorMsg),
+                            duration: const Duration(seconds: 4),
+                          ),
+                        );
+                      }
+                    }
+                  }
+                : null,
           ),
         ),
       ],
