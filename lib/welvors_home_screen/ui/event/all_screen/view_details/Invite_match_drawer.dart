@@ -140,13 +140,42 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Subtitle
-                        const Text(
-                          'Meet at a verified venue — the safest way to take it offline.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF5F7), // Soft pink background
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.1)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.verified, color: Color(0xFFE43A6A), size: 18),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: RichText(
+                                  text: const TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.4,
+                                    ),
+                                    children: [
+                                      TextSpan(text: 'Meet at a '),
+                                      TextSpan(
+                                        text: 'verified venue',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          color: Color(0xFFE43A6A),
+                                        ),
+                                      ),
+                                      TextSpan(text: ' — the safest way to take it offline.'),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 32),
