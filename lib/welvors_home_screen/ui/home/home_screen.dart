@@ -15,6 +15,7 @@ import '../../../onbording_allpage/theme/app_colors.dart';
 import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:screen_protector/screen_protector.dart';
+
 class SectionColor {
   final Color bg;
   final Color icon;
@@ -229,7 +230,12 @@ class _ProfileDetailsView extends StatelessWidget {
       if (data.isEmpty) return false;
       return data.entries.any((entry) {
         final key = entry.key.toString();
-        if (key == '_id' || key == 'id' || key == 'userId' || key == 'createdAt' || key == 'updatedAt' || key == '__v') {
+        if (key == '_id' ||
+            key == 'id' ||
+            key == 'userId' ||
+            key == 'createdAt' ||
+            key == 'updatedAt' ||
+            key == '__v') {
           return false;
         }
         final v = entry.value;
@@ -248,27 +254,49 @@ class _ProfileDetailsView extends StatelessWidget {
   bool _hasCareerData() {
     if (profile.career == null) return false;
     final c = profile.career!;
-    if (c['highestEducation'] != null && c['highestEducation'].toString().isNotEmpty) return true;
-    if (c['collegeName'] != null && c['collegeName'].toString().isNotEmpty) return true;
-    if (c['profession'] != null && c['profession'].toString().isNotEmpty) return true;
-    if (c['companyName'] != null && c['companyName'].toString().isNotEmpty) return true;
-    if (c['salaryRange'] != null && c['salaryRange'].toString().isNotEmpty) return true;
-    if (c['employmentType'] != null && c['employmentType'].toString().isNotEmpty) return true;
-    if (c['ambition'] != null && c['ambition'].toString().isNotEmpty) return true;
-    if (c['bigDreams'] != null && c['bigDreams'].toString().trim().isNotEmpty) return true;
+    if (c['highestEducation'] != null &&
+        c['highestEducation'].toString().isNotEmpty)
+      return true;
+    if (c['collegeName'] != null && c['collegeName'].toString().isNotEmpty)
+      return true;
+    if (c['profession'] != null && c['profession'].toString().isNotEmpty)
+      return true;
+    if (c['companyName'] != null && c['companyName'].toString().isNotEmpty)
+      return true;
+    if (c['salaryRange'] != null && c['salaryRange'].toString().isNotEmpty)
+      return true;
+    if (c['employmentType'] != null &&
+        c['employmentType'].toString().isNotEmpty)
+      return true;
+    if (c['ambition'] != null && c['ambition'].toString().isNotEmpty)
+      return true;
+    if (c['bigDreams'] != null && c['bigDreams'].toString().trim().isNotEmpty)
+      return true;
     return false;
   }
 
   bool _hasFamilyData() {
     if (profile.family == null) return false;
     final f = profile.family!;
-    if (f['familyType'] != null && f['familyType'].toString().isNotEmpty) return true;
-    if (f['familyStatus'] != null && f['familyStatus'].toString().isNotEmpty) return true;
-    if (f['fatherOccupation'] != null && f['fatherOccupation'].toString().isNotEmpty) return true;
-    if (f['fatherOrganisation'] != null && f['fatherOrganisation'].toString().isNotEmpty) return true;
-    if (f['motherOccupation'] != null && f['motherOccupation'].toString().isNotEmpty) return true;
-    if (f['motherOrganisation'] != null && f['motherOrganisation'].toString().isNotEmpty) return true;
-    if (f['numberOfSiblings'] != null && f['numberOfSiblings'].toString().isNotEmpty) return true;
+    if (f['familyType'] != null && f['familyType'].toString().isNotEmpty)
+      return true;
+    if (f['familyStatus'] != null && f['familyStatus'].toString().isNotEmpty)
+      return true;
+    if (f['fatherOccupation'] != null &&
+        f['fatherOccupation'].toString().isNotEmpty)
+      return true;
+    if (f['fatherOrganisation'] != null &&
+        f['fatherOrganisation'].toString().isNotEmpty)
+      return true;
+    if (f['motherOccupation'] != null &&
+        f['motherOccupation'].toString().isNotEmpty)
+      return true;
+    if (f['motherOrganisation'] != null &&
+        f['motherOrganisation'].toString().isNotEmpty)
+      return true;
+    if (f['numberOfSiblings'] != null &&
+        f['numberOfSiblings'].toString().isNotEmpty)
+      return true;
     return false;
   }
 
@@ -405,7 +433,6 @@ class _ProfileDetailsView extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -1674,8 +1701,6 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-
-
   Map<String, String> _getLoveLanguageData(String enumValue) {
     switch (enumValue.toUpperCase()) {
       case 'WORDS_OF_AFFIRMATION':
@@ -2455,7 +2480,12 @@ class _ProfileCardUI extends StatelessWidget {
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 20,
+                top: 20,
+                bottom: 10,
+              ),
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.vertical(
                   bottom: Radius.circular(24),
@@ -2483,7 +2513,7 @@ class _ProfileCardUI extends StatelessWidget {
                       _buildTag(profile.replyTime, Colors.orange),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 5),
                   // Name & Age
                   Row(
                     children: [
@@ -2521,7 +2551,7 @@ class _ProfileCardUI extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 05),
                   // Location
                   _buildInfoRow(Icons.location_on, profile.location),
                   // Job
