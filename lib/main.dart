@@ -64,7 +64,7 @@ import 'welvors_home_screen/ui/event/events_bloc/events_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const WelvorsApp(initialRoute: '/landing'));
+  runApp(const WelvorsApp(initialRoute: '/splash'));
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

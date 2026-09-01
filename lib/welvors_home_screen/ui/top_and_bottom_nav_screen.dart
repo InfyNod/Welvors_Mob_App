@@ -47,7 +47,7 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
     }
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => HomeBloc()..add(LoadHomeDataEvent())),
+        // HomeBloc is now provided globally in main.dart and pre-fetched in splash_screen.dart
         BlocProvider(create: (context) => FilterBloc()),
         BlocProvider(create: (context) => AdmirersBloc()..add(LoadAdmirersData())),
       ],

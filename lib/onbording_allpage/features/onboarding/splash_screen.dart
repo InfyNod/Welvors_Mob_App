@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
+import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -46,20 +47,33 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate after 3 seconds based on token
-    Timer(const Duration(milliseconds: 3000), () async {
-      final prefs = await SharedPreferences.getInstance();
-      final String? authToken = prefs.getString('auth_token');
-      final String targetRoute = (authToken != null && authToken.isNotEmpty) ? '/home' : '/landing';
+    _initializeApp();
+  }
 
-      if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          targetRoute,
-          (route) => false,
-        );
-      }
-    });
+  Future<void> _initializeApp() async {
+    // 1. Immediately check token and start prefetching
+    final prefs = await SharedPreferences.getInstance();
+    final String? authToken = prefs.getString('auth_token');
+    
+    final bool isLoggedIn = authToken != null && authToken.isNotEmpty;
+
+    if (isLoggedIn && mounted) {
+      context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
+    }
+
+    // 2. Ensure the splash animation plays for 3 seconds
+    await Future.delayed(const Duration(milliseconds: 3000));
+
+    // 3. Navigate
+    final String targetRoute = isLoggedIn ? '/home' : '/landing';
+
+    if (mounted) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        targetRoute,
+        (route) => false,
+      );
+    }
   }
 
   @override

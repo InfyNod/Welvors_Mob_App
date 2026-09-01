@@ -2637,7 +2637,7 @@ class _ProfileCardUI extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white.withOpacity(0.9),
                 fontSize: 13,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
