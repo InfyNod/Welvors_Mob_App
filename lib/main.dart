@@ -61,9 +61,21 @@ import 'welvors_home_screen/home_bloc/home_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'welvors_home_screen/ui/event/events_bloc/events_bloc.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Remove grey shadow from Android status bar and make it transparent with dark icons
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+
   runApp(const WelvorsApp(initialRoute: '/splash'));
 }
 

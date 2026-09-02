@@ -7,6 +7,8 @@ import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
+import 'onboarding_flow_screen.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -54,8 +56,10 @@ class _SplashScreenState extends State<SplashScreen>
     // 1. Immediately check token and start prefetching
     final prefs = await SharedPreferences.getInstance();
     final String? authToken = prefs.getString('auth_token');
+    final bool isOnboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
     
-    final bool isLoggedIn = authToken != null && authToken.isNotEmpty;
+    final bool hasToken = authToken != null && authToken.isNotEmpty;
+    final bool isLoggedIn = hasToken && isOnboardingCompleted;
 
     if (isLoggedIn && mounted) {
       context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
@@ -65,14 +69,24 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 3000));
 
     // 3. Navigate
-    final String targetRoute = isLoggedIn ? '/home' : '/landing';
-
     if (mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        targetRoute,
-        (route) => false,
-      );
+      if (hasToken && !isOnboardingCompleted) {
+        // User has a token but didn't finish onboarding -> resume onboarding
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const OnboardingFlowScreen(initialStep: 2),
+          ),
+          (route) => false,
+        );
+      } else {
+        final String targetRoute = isLoggedIn ? '/home' : '/landing';
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          targetRoute,
+          (route) => false,
+        );
+      }
     }
   }
 

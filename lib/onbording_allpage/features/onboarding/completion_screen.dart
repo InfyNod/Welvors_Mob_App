@@ -6,6 +6,7 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import 'user_data.dart';
 import 'splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CompletionScreen extends StatelessWidget {
   const CompletionScreen({super.key});
@@ -225,14 +226,19 @@ class CompletionScreen extends StatelessWidget {
               ),
               child: PrimaryButton(
                 'Explore Profiles →',
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SplashScreen(),
-                    ),
-                    (route) => false,
-                  );
+                onTap: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('onboarding_completed', true);
+
+                  if (context.mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SplashScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  }
                 },
               ),
             ),

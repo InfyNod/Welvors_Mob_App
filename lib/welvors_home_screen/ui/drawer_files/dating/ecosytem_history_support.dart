@@ -10,6 +10,7 @@ import 'commitment_management.dart/commitment_bloc/commitment_bloc.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../date_now/date_api_service/date_now_api_service.dart';
+import 'logout/logout_screen.dart';
 
 class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
@@ -292,6 +293,14 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 title: 'Logout',
                 subtitle: 'Sign out of your account',
                 titleColor: Colors.red.shade400,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LogoutScreen(),
+                    ),
+                  );
+                },
               ),
             ],
           ),

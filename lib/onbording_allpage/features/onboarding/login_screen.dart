@@ -121,18 +121,24 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           if (isRegister == false) {
             // New user -> Start onboarding from step 2 (Basics)
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const OnboardingFlowScreen(initialStep: 2)),
-              (route) => false,
-            );
+            await prefs.setBool('onboarding_completed', false);
+            if (context.mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const OnboardingFlowScreen(initialStep: 2)),
+                (route) => false,
+              );
+            }
           } else {
             // Existing user -> Go to Splash
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/splash',
-              (route) => false,
-            );
+            await prefs.setBool('onboarding_completed', true);
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/splash',
+                (route) => false,
+              );
+            }
           }
         }
       } else {
