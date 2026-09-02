@@ -16,6 +16,22 @@ class AboutScreen extends StatefulWidget {
 class _AboutScreenState extends State<AboutScreen> with AutomaticKeepAliveClientMixin  {
   final TextEditingController _controller = TextEditingController();
   bool _isSubmitting = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('STORY');
+    if (data != null && mounted) {
+      setState(() {
+        if (data['bio'] != null) {
+          _controller.text = data['bio'];
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {

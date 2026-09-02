@@ -111,6 +111,36 @@ class ApiService {
     }
   }
 
+  /// Fetches onboarding details for a specific step (e.g., BASIC_INFO, INTERESTED_IN).
+  static Future<dynamic> fetchOnboardingDetails(String type) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/user/onboarding-details?type=$type'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('Onboarding Details ($type) Status: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null && decoded['data']['data'] != null) {
+          // Note: The response has data inside data -> decoded['data']['data']
+          return decoded['data']['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching onboarding details ($type): $e');
+      return null;
+    }
+  }
+
+
   /// Fetches Refer & Earn informational details (e.g., rewards and rules).
   static Future<Map<String, dynamic>?> fetchReferEarnInfo() async {
     try {

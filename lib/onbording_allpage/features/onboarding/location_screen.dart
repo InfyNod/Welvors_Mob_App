@@ -35,11 +35,64 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
   String? _city;
   String? _state;
   String? _country;
+  String? _area;
 
   @override
   void initState() {
     super.initState();
-    // Initially try to get location if toggled on, but we default to false to not spam permissions immediately.
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('LOCATION');
+    if (data != null && mounted) {
+      double? lat = data['latitude'] != null ? (data['latitude'] as num).toDouble() : null;
+      double? lng = data['longitude'] != null ? (data['longitude'] as num).toDouble() : null;
+      
+      String? city = data['city'];
+      String? state = data['state'];
+      String? country = data['country'];
+      String? area = data['area'];
+
+      if ((city == null || area == null) && lat != null && lng != null) {
+        try {
+          List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+          if (placemarks.isNotEmpty) {
+            Placemark place = placemarks[0];
+            city ??= place.locality ?? place.subAdministrativeArea ?? place.administrativeArea;
+            state ??= place.administrativeArea;
+            country ??= place.country;
+            area ??= place.subLocality ?? place.thoroughfare;
+          }
+        } catch (e) {
+          debugPrint('Reverse geocoding error in loadData: $e');
+        }
+      }
+
+      if (mounted && lat != null && lng != null) {
+        setState(() {
+          _lat = lat;
+          _lng = lng;
+          _city = city;
+          _state = state;
+          _country = country;
+          _area = area;
+
+          String displayText = '';
+          if (area != null && area.isNotEmpty) displayText += '$area, ';
+          if (city != null && city.isNotEmpty) displayText += '$city, ';
+          if (country != null && country.isNotEmpty) displayText += country;
+          
+          if (displayText.isNotEmpty) {
+            _cityController.text = displayText.trim().replaceAll(RegExp(r',$'), '');
+          }
+          
+          final latLng = LatLng(lat, lng);
+          _mapCenter = latLng;
+          _mapController.move(latLng, 13.0);
+        });
+      }
+    }
   }
 
   @override
@@ -90,14 +143,21 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
         String city = place.locality ?? place.subAdministrativeArea ?? place.administrativeArea ?? 'Unknown City';
         String state = place.administrativeArea ?? 'Unknown State';
         String country = place.country ?? 'Unknown Country';
+        String area = place.subLocality ?? place.thoroughfare ?? '';
         
         setState(() {
-          _cityController.text = '$city, $country';
+          String displayText = '';
+          if (area.isNotEmpty) displayText += '$area, ';
+          if (city != 'Unknown City') displayText += '$city, ';
+          displayText += country;
+
+          _cityController.text = displayText.trim().replaceAll(RegExp(r',$'), '');
           _lat = position.latitude;
           _lng = position.longitude;
           _city = city;
           _state = state;
           _country = country;
+          _area = area;
         });
       } else {
         setState(() {

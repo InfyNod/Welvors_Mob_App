@@ -47,6 +47,24 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
 
   bool get _isFormValid => _selectedPreference != null;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('INTERESTED_IN');
+    if (data != null && mounted) {
+      setState(() {
+        if (data['interestedIn'] != null) {
+          _selectedPreference = data['interestedIn'];
+          userData.interestedIn = data['interestedIn'];
+        }
+      });
+    }
+  }
+
   Widget _buildCard({
     required String title,
     required String subtitle,

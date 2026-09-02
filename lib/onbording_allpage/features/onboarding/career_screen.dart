@@ -127,6 +127,66 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
         }
         _isAmbitionsLoading = false;
       });
+      _loadData(); // Load the saved data after the options are fetched
+    }
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('CAREER_AMBITION');
+    if (data != null && mounted) {
+      setState(() {
+        if (data['highestEducation'] != null) {
+          String edu = data['highestEducation'].toString();
+          // Convert from HIGH_SCHOOL back to High School
+          edu = edu.replaceAll('_', ' ').toLowerCase();
+          edu = edu.split(' ').map((str) => str.isNotEmpty ? '${str[0].toUpperCase()}${str.substring(1)}' : '').join(' ');
+          _educationLevel = edu;
+          userData.education = edu;
+        }
+        
+        if (data['degree'] != null) {
+          _degreeController.text = data['degree'];
+          userData.degree = data['degree'];
+        }
+        if (data['collegeName'] != null) {
+          _collegeController.text = data['collegeName'];
+          userData.college = data['collegeName'];
+        }
+        if (data['graduationYear'] != null) {
+          _gradYearController.text = data['graduationYear'].toString();
+          userData.gradYear = data['graduationYear'].toString();
+        }
+        
+        if (data['profession'] != null && data['profession']['name'] != null) {
+          _profession = data['profession']['name'];
+          userData.profession = _profession!;
+        }
+        if (data['companyName'] != null) {
+          _companyController.text = data['companyName'];
+          userData.company = data['companyName'];
+        }
+        if (data['employmentType'] != null && data['employmentType']['name'] != null) {
+          _employmentType = data['employmentType']['name'];
+          userData.employmentType = _employmentType!;
+        }
+        if (data['experience'] != null && data['experience']['title'] != null) {
+          _experience = data['experience']['title'];
+          userData.experience = _experience!;
+        }
+        
+        if (data['ambition'] != null && data['ambition']['title'] != null) {
+          _ambitionLevel = data['ambition']['title'];
+          userData.ambitionLevel = _ambitionLevel!;
+        }
+        if (data['salaryRange'] != null && data['salaryRange']['title'] != null) {
+          _salaryRange = data['salaryRange']['title'];
+          userData.salaryRange = _salaryRange!;
+        }
+        if (data['bigDreams'] != null) {
+          _dreamsController.text = data['bigDreams'];
+          userData.dreams = data['bigDreams'];
+        }
+      });
     }
   }
 

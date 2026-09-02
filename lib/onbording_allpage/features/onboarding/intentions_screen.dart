@@ -43,6 +43,19 @@ class _IntentionsScreenState extends State<IntentionsScreen> with AutomaticKeepA
         }
         _isLoading = false;
       });
+      _loadData(); // Load saved intent after options are fetched
+    }
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('LOOKING_FOR');
+    if (data != null && mounted) {
+      setState(() {
+        if (data['intention'] != null && data['intention']['option'] != null) {
+          _selectedIntention = data['intention']['option'];
+          userData.intentions = data['intention']['option'];
+        }
+      });
     }
   }
 

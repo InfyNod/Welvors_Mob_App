@@ -145,13 +145,17 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
             if (nextStep != null) {
               await prefs.setString('onboarding_next_step', nextStep);
             }
-            
-            final int initialStep = OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
-            
+
+            final int initialStep =
+                OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
+
             if (context.mounted) {
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => OnboardingFlowScreen(initialStep: initialStep)),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      OnboardingFlowScreen(initialStep: initialStep),
+                ),
                 (route) => false,
               );
             }
@@ -232,7 +236,8 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Container(
-                          width: 44, height: 44,
+                          width: 44,
+                          height: 44,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
@@ -246,7 +251,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                             ],
                           ),
                           child: const Icon(
-                            Icons.arrow_back_ios_new, 
+                            Icons.arrow_back_ios_new,
                             color: Colors.black,
                             size: 16,
                           ),
@@ -260,642 +265,666 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
             Expanded(
               child: CustomScrollView(
                 slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimens.pad,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 40),
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimens.pad,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 40),
 
-                      // Center Icon with pulse effect
-                      Center(
-                        child: AnimatedBuilder(
-                          animation: _pulseAnimation,
-                          builder: (context, child) {
-                            // Map the 4.0 - 12.0 value to a scale multiplier (e.g. 1.0 to 1.15)
-                            final scale =
-                                1.0 +
-                                (_pulseAnimation.value - 4.0) / 8.0 * 0.15;
-                            return Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Transform.scale(
-                                  scale: scale,
-                                  child: Container(
-                                    width: 89,
-                                    height: 89,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: AppColors.pinkDeep.withOpacity(
-                                          0.3,
+                          // Center Icon with pulse effect
+                          Center(
+                            child: AnimatedBuilder(
+                              animation: _pulseAnimation,
+                              builder: (context, child) {
+                                // Map the 4.0 - 12.0 value to a scale multiplier (e.g. 1.0 to 1.15)
+                                final scale =
+                                    1.0 +
+                                    (_pulseAnimation.value - 4.0) / 8.0 * 0.15;
+                                return Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Transform.scale(
+                                      scale: scale,
+                                      child: Container(
+                                        width: 89,
+                                        height: 89,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: AppColors.pinkDeep
+                                                .withOpacity(0.3),
+                                            width: 1.5,
+                                          ),
                                         ),
-                                        width: 1.5,
                                       ),
                                     ),
-                                  ),
-                                ),
-                                child!,
-                              ],
-                            );
-                          },
-                          child: Container(
-                            width: 73,
-                            height: 73,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.pinkDeep,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.pinkDeep.withOpacity(0.4),
-                                  blurRadius: 24,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.verified_user_outlined,
-                              color: Colors.white,
-                              size: 32,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'SECURE VERIFICATION',
-                        textAlign: TextAlign.center,
-                        style: AppText.eyebrow.copyWith(
-                          color: AppColors.pinkDeep,
-                          fontSize: 11,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 4), // Reduced gap
-                      // Verify your number
-                      Text(
-                        'Verify your number',
-                        textAlign: TextAlign.center,
-                        style: AppText.display.copyWith(fontSize: 32),
-                      ),
-                      const SizedBox(height: 8), // Reduced gap
-                      // Subtitle
-                      if (_isOtpSent)
-                        RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            style: AppText.body.copyWith(
-                              color: AppColors.ink60,
-                              fontSize: 13,
-                            ),
-                            children: [
-                              const TextSpan(text: 'Sent a 6-digit code to '),
-                              TextSpan(
-                                text: '+91 ${_phoneController.text}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.ink,
-                                ),
-                              ),
-                              const TextSpan(text: ' · '),
-                              TextSpan(
-                                text: 'Change',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
+                                    child!,
+                                  ],
+                                );
+                              },
+                              child: Container(
+                                width: 73,
+                                height: 73,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
                                   color: AppColors.pinkDeep,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.pinkDeep.withOpacity(
+                                        0.4,
+                                      ),
+                                      blurRadius: 24,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    setState(() {
-                                      _isOtpSent = false;
-                                      _resendTimer?.cancel();
-                                    });
-                                    Future.delayed(
-                                      const Duration(milliseconds: 100),
-                                      () {
-                                        if (context.mounted) {
-                                          FocusScope.of(
-                                            context,
-                                          ).requestFocus(_phoneFocusNode);
-                                        }
-                                      },
-                                    );
-                                  },
-                              ),
-                            ],
-                          ),
-                        )
-                      else
-                        Text(
-                          'We\'ll text a one-time code to confirm it\'s\nreally you. Takes just a few seconds.',
-                          textAlign: TextAlign.center,
-                          style: AppText.body.copyWith(
-                            color: AppColors.ink60,
-                            height: 1.5,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      const SizedBox(height: 34),
-
-                      Text(
-                        'Phone number',
-                        style: AppText.eyebrow.copyWith(fontSize: 12),
-                      ),
-                      const SizedBox(height: 8),
-
-                      Row(
-                        children: [
-                          Container(
-                            height: 56,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                color: AppColors.line,
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(
-                                AppDimens.rInput,
+                                child: const Icon(
+                                  Icons.verified_user_outlined,
+                                  color: Colors.white,
+                                  size: 32,
+                                ),
                               ),
                             ),
-                            child: Row(
-                              children: [
-                                const Text(
-                                  '🇮🇳',
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '+91',
-                                  style: AppText.body.copyWith(fontSize: 16),
-                                ),
-                              ],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'SECURE VERIFICATION',
+                            textAlign: TextAlign.center,
+                            style: AppText.eyebrow.copyWith(
+                              color: AppColors.pinkDeep,
+                              fontSize: 11,
+                              letterSpacing: 1.5,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          // Phone input
-                          Expanded(
-                            child: Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: _isOtpSent
-                                    ? AppColors.pinkSoft.withOpacity(0.4)
-                                    : Colors.white,
-                                border: Border.all(
-                                  color: _isOtpSent
-                                      ? AppColors.pinkSoft.withOpacity(0.4)
-                                      : (_phoneFocusNode.hasFocus
-                                            ? AppColors.pinkDeep
-                                            : AppColors.ink.withOpacity(0.12)),
-                                  width: _phoneFocusNode.hasFocus && !_isOtpSent
-                                      ? 1.5
-                                      : 1.2,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                  AppDimens.rInput,
-                                ),
-                                boxShadow:
-                                    _phoneFocusNode.hasFocus && !_isOtpSent
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColors.pinkDeep.withOpacity(
-                                            0.15,
-                                          ),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: TextField(
-                                controller: _phoneController,
-                                focusNode: _phoneFocusNode,
-                                readOnly: _isOtpSent,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(10),
-                                ],
-                                decoration: InputDecoration(
-                                  hintText: '98765 43210',
-                                  hintStyle: AppText.body.copyWith(
-                                    color: AppColors.muted,
-                                    fontSize: 16,
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 16,
-                                  ),
-                                ),
-                                keyboardType: TextInputType.number,
+                          const SizedBox(height: 4), // Reduced gap
+                          // Verify your number
+                          Text(
+                            'Verify your number',
+                            textAlign: TextAlign.center,
+                            style: AppText.display.copyWith(fontSize: 32),
+                          ),
+                          const SizedBox(height: 8), // Reduced gap
+                          // Subtitle
+                          if (_isOtpSent)
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
                                 style: AppText.body.copyWith(
-                                  fontSize: 18,
-                                  letterSpacing: 1.5,
-                                  color: _isOtpSent
-                                      ? AppColors.ink.withOpacity(0.6)
-                                      : AppColors.ink,
+                                  color: AppColors.ink60,
+                                  fontSize: 13,
                                 ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      if (!_isOtpSent) ...[
-                        const SizedBox(height: 24),
-                        // Security Box
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF4EFE7),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.lock_outline,
-                                color: AppColors.green,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'Your number stays private — never shown on your profile or shared.',
-                                  style: AppText.sub.copyWith(
-                                    fontSize: 13,
-                                    color: AppColors.ink.withOpacity(0.8),
-                                    height: 1.5,
+                                children: [
+                                  const TextSpan(
+                                    text: 'Sent a 6-digit code to ',
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-
-                      if (_isOtpSent) ...[
-                        const SizedBox(height: 24),
-                        // Divider line with text
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: AppColors.ink.withOpacity(0.3),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: Text(
-                                'Enter the 6-digit code',
-                                style: AppText.sub.copyWith(
-                                  color: AppColors.ink.withOpacity(0.4),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: AppColors.ink.withOpacity(0.3),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Custom OTP Input Boxes
-                        GestureDetector(
-                          onTap: () {
-                            if (!_otpFocusNode.hasFocus) {
-                              FocusScope.of(
-                                context,
-                              ).requestFocus(_otpFocusNode);
-                            } else {
-                              SystemChannels.textInput.invokeMethod(
-                                'TextInput.show',
-                              );
-                            }
-                          },
-                          child: Container(
-                            height: 56,
-                            color: Colors.transparent,
-                            child: Stack(
-                              children: [
-                                // Hidden true text field
-                                Opacity(
-                                  opacity: 0,
-                                  child: TextField(
-                                    controller: _otpController,
-                                    focusNode: _otpFocusNode,
-                                    keyboardType: TextInputType.number,
-                                    autofillHints: const [
-                                      AutofillHints.oneTimeCode,
-                                    ],
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(6),
-                                    ],
-                                    onChanged: (_) => setState(() {}),
+                                  TextSpan(
+                                    text: '+91 ${_phoneController.text}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.ink,
+                                    ),
                                   ),
-                                ),
-                                // Visual Boxes
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: List.generate(6, (index) {
-                                    String char = '';
-                                    if (_otpController.text.length > index) {
-                                      char = _otpController.text[index];
-                                    }
-                                    bool isCurrent =
-                                        _otpController.text.length == index &&
-                                        _otpFocusNode.hasFocus;
-                                    bool isFilled = char.isNotEmpty;
-
-                                    return Container(
-                                      width: 46,
-                                      height: 56,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: isFilled || isCurrent
-                                            ? AppColors.pinkSoft.withOpacity(
-                                                0.4,
-                                              )
-                                            : Colors.white,
-                                        border: Border.all(
-                                          color: isFilled || isCurrent
-                                              ? AppColors.pinkDeep
-                                              : AppColors.ink.withOpacity(0.12),
-                                          width: isFilled || isCurrent
-                                              ? 1.5
-                                              : 1.5,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
-                                        boxShadow: isCurrent
-                                            ? [
-                                                BoxShadow(
-                                                  color: AppColors.pinkDeep
-                                                      .withOpacity(0.15),
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ]
-                                            : null,
-                                      ),
-                                      child: Text(
-                                        char,
-                                        style: AppText.h2.copyWith(
-                                          fontSize: 22,
-                                          color: AppColors.pinkDeep,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Resend code timer or button
-                        if (_timerSeconds > 0)
-                          RichText(
-                            text: TextSpan(
-                              style: AppText.sub.copyWith(
-                                fontSize: 12,
+                                  const TextSpan(text: ' · '),
+                                  TextSpan(
+                                    text: 'Change',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.pinkDeep,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        setState(() {
+                                          _isOtpSent = false;
+                                          _resendTimer?.cancel();
+                                        });
+                                        Future.delayed(
+                                          const Duration(milliseconds: 100),
+                                          () {
+                                            if (context.mounted) {
+                                              FocusScope.of(
+                                                context,
+                                              ).requestFocus(_phoneFocusNode);
+                                            }
+                                          },
+                                        );
+                                      },
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Text(
+                              'We\'ll text a one-time code to confirm it\'s\nreally you. Takes just a few seconds.',
+                              textAlign: TextAlign.center,
+                              style: AppText.body.copyWith(
                                 color: AppColors.ink60,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              children: [
-                                const TextSpan(text: 'Resend code in '),
-                                TextSpan(
-                                  text:
-                                      '0:${_timerSeconds.toString().padLeft(2, '0')}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.ink,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        else
-                          GestureDetector(
-                            onTap: () {
-                              _startTimer();
-                            },
-                            child: Text(
-                              'Resend code',
-                              style: AppText.sub.copyWith(
-                                fontSize: 12,
-                                color: AppColors.pinkDeep,
-                                fontWeight: FontWeight.w800,
+                                height: 1.5,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ),
+                          const SizedBox(height: 34),
 
-                        const SizedBox(height: 32),
-                        // Invite Code Divider
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: AppColors.line.withOpacity(0.6),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Text(
-                                'Have an invite code?',
-                                style: AppText.sub.copyWith(
-                                  fontSize: 11,
-                                  color: AppColors.ink.withOpacity(0.4),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: AppColors.line.withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        // Invite Code Input
-                        Row(
-                          children: [
-                            // Invite Code Input Box
-                            Expanded(
-                              child: Container(
+                          Text(
+                            'Phone number',
+                            style: AppText.eyebrow.copyWith(fontSize: 12),
+                          ),
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              Container(
                                 height: 56,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border.all(
-                                    color: _isInviteCodeEntered
-                                        ? AppColors.pinkDeep
-                                        : AppColors.line,
+                                    color: AppColors.line,
                                     width: 1.5,
                                   ),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimens.rInput,
+                                  ),
                                 ),
-                                child: TextField(
-                                  controller: _inviteCodeController,
-                                  readOnly: _isInviteCodeVerified,
-                                  textCapitalization:
-                                      TextCapitalization.characters,
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(8),
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(r'[a-zA-Z0-9]'),
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      '🇮🇳',
+                                      style: TextStyle(fontSize: 22),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '+91',
+                                      style: AppText.body.copyWith(
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ],
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _isInviteCodeEntered =
-                                          val.trim().length == 8;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: 'Enter friend\'s code (optional)',
-                                    hintStyle: AppText.body.copyWith(
-                                      color: AppColors.ink.withOpacity(0.4),
-                                      fontSize: 15,
-                                    ),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 16,
-                                    ),
-                                  ),
-                                  style: AppText.body.copyWith(fontSize: 16),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Apply Button Box
+                              const SizedBox(width: 12),
+                              // Phone input
+                              Expanded(
+                                child: Container(
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: _isOtpSent
+                                        ? AppColors.pinkSoft.withOpacity(0.4)
+                                        : Colors.white,
+                                    border: Border.all(
+                                      color: _isOtpSent
+                                          ? AppColors.pinkSoft.withOpacity(0.4)
+                                          : (_phoneFocusNode.hasFocus
+                                                ? AppColors.pinkDeep
+                                                : AppColors.ink.withOpacity(
+                                                    0.12,
+                                                  )),
+                                      width:
+                                          _phoneFocusNode.hasFocus &&
+                                              !_isOtpSent
+                                          ? 1.5
+                                          : 1.2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimens.rInput,
+                                    ),
+                                    boxShadow:
+                                        _phoneFocusNode.hasFocus && !_isOtpSent
+                                        ? [
+                                            BoxShadow(
+                                              color: AppColors.pinkDeep
+                                                  .withOpacity(0.15),
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ]
+                                        : null,
+                                  ),
+                                  child: TextField(
+                                    controller: _phoneController,
+                                    focusNode: _phoneFocusNode,
+                                    readOnly: _isOtpSent,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(10),
+                                    ],
+                                    decoration: InputDecoration(
+                                      hintText: '98765 43210',
+                                      hintStyle: AppText.body.copyWith(
+                                        color: AppColors.muted,
+                                        fontSize: 16,
+                                      ),
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 16,
+                                          ),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    style: AppText.body.copyWith(
+                                      fontSize: 18,
+                                      letterSpacing: 1.5,
+                                      color: _isOtpSent
+                                          ? AppColors.ink.withOpacity(0.6)
+                                          : AppColors.ink,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          if (!_isOtpSent) ...[
+                            const SizedBox(height: 24),
+                            // Security Box
                             Container(
-                              height: 56,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
                               decoration: BoxDecoration(
-                                color: _isInviteCodeEntered
-                                    ? AppColors.pinkDeep
-                                    : AppColors.pinkSoft.withOpacity(0.5),
+                                color: const Color(0xFFF4EFE7),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: TextButton(
-                                onPressed:
-                                    (_isInviteCodeEntered &&
-                                        !_isInviteCodeVerified &&
-                                        !_isApplyingCode)
-                                    ? _applyReferralCode
-                                    : null,
-                                style: TextButton.styleFrom(
-                                  foregroundColor: _isInviteCodeVerified
-                                      ? Colors.white
-                                      : (_isInviteCodeEntered
-                                            ? Colors.white
-                                            : AppColors.pinkDeep),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.lock_outline,
+                                    color: AppColors.green,
+                                    size: 16,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                ),
-                                child: _isApplyingCode
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : Text(
-                                        _isInviteCodeVerified
-                                            ? 'Applied'
-                                            : 'Apply',
-                                        style: AppText.body.copyWith(
-                                          color: _isInviteCodeVerified
-                                              ? Colors.white
-                                              : (_isInviteCodeEntered
-                                                    ? Colors.white
-                                                    : AppColors.pinkDeep),
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 14,
-                                        ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Your number stays private — never shown on your profile or shared.',
+                                      style: AppText.sub.copyWith(
+                                        fontSize: 13,
+                                        color: AppColors.ink.withOpacity(0.8),
+                                        height: 1.5,
                                       ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Your friend earns a reward when you activate a plan.',
-                          style: AppText.sub.copyWith(
-                            fontSize: 11,
-                            color: AppColors.ink.withOpacity(0.5),
-                          ),
-                        ),
-                      ],
 
-                      const SizedBox(height: 24),
-                      const Spacer(flex: 2),
-                    ],
+                          if (_isOtpSent) ...[
+                            const SizedBox(height: 24),
+                            // Divider line with text
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    color: AppColors.ink.withOpacity(0.3),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  child: Text(
+                                    'Enter the 6-digit code',
+                                    style: AppText.sub.copyWith(
+                                      color: AppColors.ink.withOpacity(0.4),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    color: AppColors.ink.withOpacity(0.3),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Custom OTP Input Boxes
+                            GestureDetector(
+                              onTap: () {
+                                if (!_otpFocusNode.hasFocus) {
+                                  FocusScope.of(
+                                    context,
+                                  ).requestFocus(_otpFocusNode);
+                                } else {
+                                  SystemChannels.textInput.invokeMethod(
+                                    'TextInput.show',
+                                  );
+                                }
+                              },
+                              child: Container(
+                                height: 56,
+                                color: Colors.transparent,
+                                child: Stack(
+                                  children: [
+                                    // Hidden true text field
+                                    Opacity(
+                                      opacity: 0,
+                                      child: TextField(
+                                        controller: _otpController,
+                                        focusNode: _otpFocusNode,
+                                        keyboardType: TextInputType.number,
+                                        autofillHints: const [
+                                          AutofillHints.oneTimeCode,
+                                        ],
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                          LengthLimitingTextInputFormatter(6),
+                                        ],
+                                        onChanged: (_) => setState(() {}),
+                                      ),
+                                    ),
+                                    // Visual Boxes
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: List.generate(6, (index) {
+                                        String char = '';
+                                        if (_otpController.text.length >
+                                            index) {
+                                          char = _otpController.text[index];
+                                        }
+                                        bool isCurrent =
+                                            _otpController.text.length ==
+                                                index &&
+                                            _otpFocusNode.hasFocus;
+                                        bool isFilled = char.isNotEmpty;
+
+                                        return Container(
+                                          width: 46,
+                                          height: 56,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: isFilled || isCurrent
+                                                ? AppColors.pinkSoft
+                                                      .withOpacity(0.4)
+                                                : Colors.white,
+                                            border: Border.all(
+                                              color: isFilled || isCurrent
+                                                  ? AppColors.pinkDeep
+                                                  : AppColors.ink.withOpacity(
+                                                      0.12,
+                                                    ),
+                                              width: isFilled || isCurrent
+                                                  ? 1.5
+                                                  : 1.5,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            boxShadow: isCurrent
+                                                ? [
+                                                    BoxShadow(
+                                                      color: AppColors.pinkDeep
+                                                          .withOpacity(0.15),
+                                                      blurRadius: 8,
+                                                      offset: const Offset(
+                                                        0,
+                                                        2,
+                                                      ),
+                                                    ),
+                                                  ]
+                                                : null,
+                                          ),
+                                          child: Text(
+                                            char,
+                                            style: AppText.h2.copyWith(
+                                              fontSize: 22,
+                                              color: AppColors.pinkDeep,
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Resend code timer or button
+                            if (_timerSeconds > 0)
+                              RichText(
+                                text: TextSpan(
+                                  style: AppText.sub.copyWith(
+                                    fontSize: 12,
+                                    color: AppColors.ink60,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Resend code in '),
+                                    TextSpan(
+                                      text:
+                                          '0:${_timerSeconds.toString().padLeft(2, '0')}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.ink,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              GestureDetector(
+                                onTap: () {
+                                  _startTimer();
+                                },
+                                child: Text(
+                                  'Resend code',
+                                  style: AppText.sub.copyWith(
+                                    fontSize: 12,
+                                    color: AppColors.pinkDeep,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+
+                            const SizedBox(height: 32),
+                            // Invite Code Divider
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    color: AppColors.line.withOpacity(0.6),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Text(
+                                    'Have an invite code?',
+                                    style: AppText.sub.copyWith(
+                                      fontSize: 11,
+                                      color: AppColors.ink.withOpacity(0.4),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    color: AppColors.line.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            // Invite Code Input
+                            Row(
+                              children: [
+                                // Invite Code Input Box
+                                Expanded(
+                                  child: Container(
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                        color: _isInviteCodeEntered
+                                            ? AppColors.pinkDeep
+                                            : AppColors.line,
+                                        width: 1.5,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TextField(
+                                      controller: _inviteCodeController,
+                                      readOnly: _isInviteCodeVerified,
+                                      textCapitalization:
+                                          TextCapitalization.characters,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(8),
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(r'[a-zA-Z0-9]'),
+                                        ),
+                                      ],
+                                      onChanged: (val) {
+                                        setState(() {
+                                          _isInviteCodeEntered =
+                                              val.trim().length == 8;
+                                        });
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            'Enter friend\'s code (optional)',
+                                        hintStyle: AppText.body.copyWith(
+                                          color: AppColors.ink.withOpacity(0.4),
+                                          fontSize: 15,
+                                        ),
+                                        border: InputBorder.none,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 16,
+                                            ),
+                                      ),
+                                      style: AppText.body.copyWith(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                // Apply Button Box
+                                Container(
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: _isInviteCodeEntered
+                                        ? AppColors.pinkDeep
+                                        : AppColors.pinkSoft.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: TextButton(
+                                    onPressed:
+                                        (_isInviteCodeEntered &&
+                                            !_isInviteCodeVerified &&
+                                            !_isApplyingCode)
+                                        ? _applyReferralCode
+                                        : null,
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: _isInviteCodeVerified
+                                          ? Colors.white
+                                          : (_isInviteCodeEntered
+                                                ? Colors.white
+                                                : AppColors.pinkDeep),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                    ),
+                                    child: _isApplyingCode
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : Text(
+                                            _isInviteCodeVerified
+                                                ? 'Applied'
+                                                : 'Apply',
+                                            style: AppText.body.copyWith(
+                                              color: _isInviteCodeVerified
+                                                  ? Colors.white
+                                                  : (_isInviteCodeEntered
+                                                        ? Colors.white
+                                                        : AppColors.pinkDeep),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Your friend earns a reward when you activate a plan.',
+                              style: AppText.sub.copyWith(
+                                fontSize: 11,
+                                color: AppColors.ink.withOpacity(0.5),
+                              ),
+                            ),
+                          ],
+
+                          const SizedBox(height: 24),
+                          const Spacer(flex: 2),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(
+                AppDimens.pad,
+                16,
+                AppDimens.pad,
+                24,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: PrimaryButton(
+                _isLoading
+                    ? 'Please wait...'
+                    : (_isOtpSent ? 'Verify' : 'Send code'),
+                onTap: _isLoading
+                    ? null
+                    : ((_isOtpSent ? isOtpValid : _isPhoneValid)
+                          ? _onSendCodePressed
+                          : null),
+              ),
+            ),
+          ],
         ),
-        Container(
-          padding: const EdgeInsets.fromLTRB(
-            AppDimens.pad,
-            16,
-            AppDimens.pad,
-            24,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          child: PrimaryButton(
-            _isLoading
-                ? 'Please wait...'
-                : (_isOtpSent ? 'Verify' : 'Send code'),
-            onTap: _isLoading
-                ? null
-                : ((_isOtpSent ? isOtpValid : _isPhoneValid)
-                      ? _onSendCodePressed
-                      : null),
-          ),
-          ),
-        ],
-      ),
       ),
     );
   }

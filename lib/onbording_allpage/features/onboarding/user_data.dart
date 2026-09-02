@@ -31,7 +31,7 @@ class UserData {
 
   List<Map<String, String>> interests = [];
   int photoCount = 0;
-  List<File?> photos = [];
+  List<dynamic> photos = [];
   String location = 'Fetching...';
   String locationAuto = 'Auto';
 }

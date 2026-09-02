@@ -36,6 +36,27 @@ class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAli
         _questions = data;
         _isLoading = false;
       });
+      _loadData();
+    }
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('LIFESTYLE');
+    if (data != null && data is List && mounted) {
+      setState(() {
+        for (var item in data) {
+          if (item['question'] != null && item['option'] != null) {
+            String qId = item['question']['id'].toString();
+            String optLabel = item['option']['label'].toString();
+            if (_answers[qId] == null) {
+              _answers[qId] = [];
+            }
+            if (!_answers[qId]!.contains(optLabel)) {
+              _answers[qId]!.add(optLabel);
+            }
+          }
+        }
+      });
     }
   }
 

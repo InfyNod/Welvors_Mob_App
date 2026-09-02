@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _isPhoneValid = _phoneController.text.length == 10;
       });
     });
-    
+
     _phoneFocusNode.addListener(() {
       setState(() {});
     });
@@ -96,15 +96,18 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMsg)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(errorMsg)));
         }
       }
     } else {
       // Verify OTP logic
       setState(() => _isLoading = true);
-      final result = await ApiService.verifyOtp(_phoneController.text, _otpController.text);
+      final result = await ApiService.verifyOtp(
+        _phoneController.text,
+        _otpController.text,
+      );
       setState(() => _isLoading = false);
 
       final token = result['token'];
@@ -116,10 +119,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
-        
+
         // Save phone to UserData
         userData.phone = '+91 ${_phoneController.text.trim()}';
-        
+
         if (mounted) {
           if (!onboardingCompleted) {
             // New or incomplete user -> Start onboarding from next step
@@ -127,13 +130,17 @@ class _LoginScreenState extends State<LoginScreen> {
             if (nextStep != null) {
               await prefs.setString('onboarding_next_step', nextStep);
             }
-            
-            final int initialStep = OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
-            
+
+            final int initialStep =
+                OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
+
             if (context.mounted) {
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => OnboardingFlowScreen(initialStep: initialStep)),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      OnboardingFlowScreen(initialStep: initialStep),
+                ),
                 (route) => false,
               );
             }
@@ -152,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMsg ?? 'Invalid OTP. Please try again.')),
+            SnackBar(
+              content: Text(errorMsg ?? 'Invalid OTP. Please try again.'),
+            ),
           );
         }
       }
@@ -179,7 +188,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Container(
-                          width: 44, height: 44,
+                          width: 44,
+                          height: 44,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
@@ -193,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           child: const Icon(
-                            Icons.arrow_back_ios_new, 
+                            Icons.arrow_back_ios_new,
                             color: Colors.black,
                             size: 16,
                           ),
@@ -204,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            
+
             Expanded(
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -212,12 +222,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppDimens.pad),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimens.pad,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const Spacer(flex: 1),
-                          
+
                           // Heart Animation
                           Center(
                             child: Lottie.asset(
@@ -229,21 +241,27 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          
+
                           // Welvors logo
                           Center(
                             child: RichText(
                               text: TextSpan(
-                                style: AppText.display.copyWith(fontSize: 24), 
+                                style: AppText.display.copyWith(fontSize: 24),
                                 children: const [
-                                  TextSpan(text: 'Wel', style: TextStyle(color: AppColors.ink)),
-                                  TextSpan(text: 'vors', style: TextStyle(color: AppColors.pinkDeep)),
+                                  TextSpan(
+                                    text: 'Wel',
+                                    style: TextStyle(color: AppColors.ink),
+                                  ),
+                                  TextSpan(
+                                    text: 'vors',
+                                    style: TextStyle(color: AppColors.pinkDeep),
+                                  ),
                                 ],
                               ),
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Welcome back
                           Text(
                             'Welcome back.',
@@ -251,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: AppText.display.copyWith(fontSize: 32),
                           ),
                           const SizedBox(height: 12),
-                          
+
                           // Subtitle
                           if (_isOtpSent)
                             RichText(
@@ -262,9 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontSize: 13,
                                 ),
                                 children: [
-                                  const TextSpan(
-                                    text: 'We sent a code to ',
-                                  ),
+                                  const TextSpan(text: 'We sent a code to '),
                                   TextSpan(
                                     text: '+91 ${_phoneController.text}.',
                                     style: const TextStyle(
@@ -287,33 +303,45 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           const SizedBox(height: 32),
-                          
+
                           // Phone number input
                           Text(
                             'Phone number',
                             style: AppText.eyebrow.copyWith(fontSize: 12),
                           ),
                           const SizedBox(height: 8),
-                          
+
                           Row(
                             children: [
                               // Country code container
                               Container(
                                 height: 56,
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border.all(
                                     color: AppColors.line,
                                     width: 1.5,
                                   ),
-                                  borderRadius: BorderRadius.circular(AppDimens.rInput),
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimens.rInput,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Text('🇮🇳', style: TextStyle(fontSize: 22)),
+                                    const Text(
+                                      '🇮🇳',
+                                      style: TextStyle(fontSize: 22),
+                                    ),
                                     const SizedBox(width: 8),
-                                    Text('+91', style: AppText.body.copyWith(fontSize: 16)),
+                                    Text(
+                                      '+91',
+                                      style: AppText.body.copyWith(
+                                        fontSize: 16,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -332,16 +360,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                           : (_phoneFocusNode.hasFocus
                                                 ? AppColors.pinkDeep
                                                 : AppColors.line),
-                                      width: _phoneFocusNode.hasFocus && !_isOtpSent ? 1.5 : 1.5,
+                                      width:
+                                          _phoneFocusNode.hasFocus &&
+                                              !_isOtpSent
+                                          ? 1.5
+                                          : 1.5,
                                     ),
-                                    borderRadius: BorderRadius.circular(AppDimens.rInput),
-                                    boxShadow: _phoneFocusNode.hasFocus && !_isOtpSent ? [
-                                      BoxShadow(
-                                        color: AppColors.pinkDeep.withOpacity(0.15),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 3),
-                                      )
-                                    ] : null,
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimens.rInput,
+                                    ),
+                                    boxShadow:
+                                        _phoneFocusNode.hasFocus && !_isOtpSent
+                                        ? [
+                                            BoxShadow(
+                                              color: AppColors.pinkDeep
+                                                  .withOpacity(0.15),
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ]
+                                        : null,
                                   ),
                                   child: TextField(
                                     controller: _phoneController,
@@ -353,15 +391,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ],
                                     decoration: InputDecoration(
                                       hintText: '98765 43210',
-                                      hintStyle: AppText.body.copyWith(color: AppColors.muted, fontSize: 16),
+                                      hintStyle: AppText.body.copyWith(
+                                        color: AppColors.muted,
+                                        fontSize: 16,
+                                      ),
                                       border: InputBorder.none,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 16,
+                                          ),
                                     ),
                                     keyboardType: TextInputType.number,
                                     style: AppText.body.copyWith(
-                                      fontSize: 18, 
+                                      fontSize: 18,
                                       letterSpacing: 1.5,
-                                      color: _isOtpSent ? AppColors.ink.withOpacity(0.6) : AppColors.ink,
+                                      color: _isOtpSent
+                                          ? AppColors.ink.withOpacity(0.6)
+                                          : AppColors.ink,
                                     ),
                                   ),
                                 ),
@@ -381,7 +428,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
                                   child: Text(
                                     'Enter the 6-digit code',
                                     style: AppText.sub.copyWith(
@@ -403,10 +452,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             // Custom OTP Input Boxes
                             GestureDetector(
-                              onTap: () => FocusScope.of(context).requestFocus(_otpFocusNode),
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                _otpFocusNode.requestFocus();
+                              },
                               child: Container(
                                 height: 56,
-                                color: Colors.transparent, 
+                                color: Colors.transparent,
                                 child: Stack(
                                   children: [
                                     // Hidden true text field
@@ -416,9 +468,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                         controller: _otpController,
                                         focusNode: _otpFocusNode,
                                         keyboardType: TextInputType.number,
-                                        autofillHints: const [AutofillHints.oneTimeCode],
+                                        autofillHints: const [
+                                          AutofillHints.oneTimeCode,
+                                        ],
                                         inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly,
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
                                           LengthLimitingTextInputFormatter(6),
                                         ],
                                         onChanged: (_) => setState(() {}),
@@ -426,13 +481,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     // Visual Boxes
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: List.generate(6, (index) {
                                         String char = '';
-                                        if (_otpController.text.length > index) {
+                                        if (_otpController.text.length >
+                                            index) {
                                           char = _otpController.text[index];
                                         }
-                                        bool isCurrent = _otpController.text.length == index && _otpFocusNode.hasFocus;
+                                        bool isCurrent =
+                                            _otpController.text.length ==
+                                                index &&
+                                            _otpFocusNode.hasFocus;
                                         bool isFilled = char.isNotEmpty;
 
                                         return Container(
@@ -441,7 +501,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             color: isFilled || isCurrent
-                                                ? AppColors.pinkSoft.withOpacity(0.4)
+                                                ? AppColors.pinkSoft
+                                                      .withOpacity(0.4)
                                                 : Colors.white,
                                             border: Border.all(
                                               color: isFilled || isCurrent
@@ -449,13 +510,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   : AppColors.line,
                                               width: 1.5,
                                             ),
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                             boxShadow: isCurrent
                                                 ? [
                                                     BoxShadow(
-                                                      color: AppColors.pinkDeep.withOpacity(0.15),
+                                                      color: AppColors.pinkDeep
+                                                          .withOpacity(0.15),
                                                       blurRadius: 8,
-                                                      offset: const Offset(0, 2),
+                                                      offset: const Offset(
+                                                        0,
+                                                        2,
+                                                      ),
                                                     ),
                                                   ]
                                                 : null,
@@ -478,106 +545,146 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             // Resend code timer or button
                             if (_timerSeconds > 0)
-                               RichText(
-                                 text: TextSpan(
-                                   style: AppText.sub.copyWith(
-                                     fontSize: 12,
-                                     color: AppColors.ink60,
-                                     fontWeight: FontWeight.w600,
-                                   ),
-                                   children: [
-                                     const TextSpan(text: 'Didn\'t get it? '),
-                                     TextSpan(
-                                       text: 'Resend code in 0:${_timerSeconds.toString().padLeft(2, '0')}',
-                                     ),
-                                   ],
-                                 ),
-                               )
+                              RichText(
+                                text: TextSpan(
+                                  style: AppText.sub.copyWith(
+                                    fontSize: 12,
+                                    color: AppColors.ink60,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Didn\'t get it? '),
+                                    TextSpan(
+                                      text:
+                                          'Resend code in 0:${_timerSeconds.toString().padLeft(2, '0')}',
+                                    ),
+                                  ],
+                                ),
+                              )
                             else
-                               RichText(
-                                 text: TextSpan(
-                                   style: AppText.sub.copyWith(
-                                     fontSize: 12,
-                                     color: AppColors.ink60,
-                                     fontWeight: FontWeight.w600,
-                                   ),
-                                   children: [
-                                     const TextSpan(text: 'Didn\'t get it? '),
-                                     TextSpan(
-                                       text: 'Resend code',
-                                       style: const TextStyle(
-                                         color: AppColors.pinkDeep,
-                                         fontWeight: FontWeight.w800,
-                                       ),
-                                       recognizer: TapGestureRecognizer()..onTap = () {
-                                         _startTimer();
-                                       },
-                                     ),
-                                   ],
-                                 ),
-                               ),
+                              RichText(
+                                text: TextSpan(
+                                  style: AppText.sub.copyWith(
+                                    fontSize: 12,
+                                    color: AppColors.ink60,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Didn\'t get it? '),
+                                    TextSpan(
+                                      text: 'Resend code',
+                                      style: const TextStyle(
+                                        color: AppColors.pinkDeep,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          _startTimer();
+                                        },
+                                    ),
+                                  ],
+                                ),
+                              ),
                           ],
 
                           const SizedBox(height: 32),
-                          
+
                           // Create account link
                           Center(
                             child: RichText(
                               text: TextSpan(
-                                style: AppText.sub.copyWith(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.ink60),
+                                style: AppText.sub.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.ink60,
+                                ),
                                 children: [
                                   const TextSpan(text: 'New to Welvors? '),
                                   TextSpan(
                                     text: 'Create an account',
-                                    style: const TextStyle(color: AppColors.pinkDeep, fontWeight: FontWeight.w800),
-                                    recognizer: TapGestureRecognizer()..onTap = () {
-                                      Navigator.pop(context); // Go back to landing
-                                    },
+                                    style: const TextStyle(
+                                      color: AppColors.pinkDeep,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.pop(
+                                          context,
+                                        ); // Go back to landing
+                                      },
                                   ),
                                 ],
                               ),
                             ),
                           ),
                           const SizedBox(height: 20),
-                          
+
                           // Trust badges
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.lock_outline, size: 14, color: AppColors.green),
+                              const Icon(
+                                Icons.lock_outline,
+                                size: 14,
+                                color: AppColors.green,
+                              ),
                               const SizedBox(width: 4),
-                              Text('Encrypted login', style: AppText.sub.copyWith(color: AppColors.ink, fontSize: 11, fontWeight: FontWeight.w700)),
+                              Text(
+                                'Encrypted login',
+                                style: AppText.sub.copyWith(
+                                  color: AppColors.ink,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                               const SizedBox(width: 16),
-                              const Icon(Icons.check_circle_outline, size: 14, color: AppColors.green),
+                              const Icon(
+                                Icons.check_circle_outline,
+                                size: 14,
+                                color: AppColors.green,
+                              ),
                               const SizedBox(width: 4),
-                              Text('2M+ verified singles', style: AppText.sub.copyWith(color: AppColors.ink, fontSize: 11, fontWeight: FontWeight.w700)),
+                              Text(
+                                '2M+ verified singles',
+                                style: AppText.sub.copyWith(
+                                  color: AppColors.ink,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ],
                           ),
-                          
+
                           const SizedBox(height: 24),
                           const Spacer(flex: 2),
-                          
-                        ]
-                      )
-                    )
-                  )
-                ]
-              )
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppDimens.pad, 16, AppDimens.pad, 20),
-              child: PrimaryButton(
-                _isLoading ? 'Please wait...' : (_isOtpSent ? 'Log in' : 'Send code'),
-                onTap: _isLoading 
-                  ? null 
-                  : ((_isOtpSent ? isOtpValid : _isPhoneValid) 
-                      ? _onSendCodePressed
-                      : null), 
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ]
-        )
-      )
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppDimens.pad,
+                16,
+                AppDimens.pad,
+                20,
+              ),
+              child: PrimaryButton(
+                _isLoading
+                    ? 'Please wait...'
+                    : (_isOtpSent ? 'Log in' : 'Send code'),
+                onTap: _isLoading
+                    ? null
+                    : ((_isOtpSent ? isOtpValid : _isPhoneValid)
+                          ? _onSendCodePressed
+                          : null),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

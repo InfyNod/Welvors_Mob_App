@@ -18,6 +18,76 @@ class ReviewScreen extends StatefulWidget {
 class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClientMixin  {
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('REVIEW_FINISH');
+    if (data != null && mounted) {
+      setState(() {
+        if (data['BASIC_INFO'] != null) {
+          userData.name = data['BASIC_INFO']['fullName'] ?? userData.name;
+          userData.email = data['BASIC_INFO']['email'] ?? userData.email;
+          userData.gender = data['BASIC_INFO']['gender'] ?? userData.gender;
+        }
+        if (data['INTERESTED_IN'] != null) {
+          userData.interestedIn = data['INTERESTED_IN']['interestedIn'] ?? userData.interestedIn;
+        }
+        if (data['LOOKING_FOR'] != null && data['LOOKING_FOR']['intention'] != null) {
+          userData.intentions = data['LOOKING_FOR']['intention']['option'] ?? userData.intentions;
+        }
+        if (data['LIFESTYLE'] != null && data['LIFESTYLE'] is List) {
+          userData.lifestyle = (data['LIFESTYLE'] as List)
+              .where((e) => e['option'] != null)
+              .map((e) => e['option']['label'].toString())
+              .toList();
+        }
+        if (data['CAREER_AMBITION'] != null) {
+          final career = data['CAREER_AMBITION'];
+          userData.education = career['highestEducation'] ?? userData.education;
+          userData.career = career['profession']?['name'] ?? userData.career;
+          userData.company = career['companyName'] ?? userData.company;
+        }
+        if (data['INTEREST'] != null && data['INTEREST'] is List) {
+          userData.interests = (data['INTEREST'] as List)
+              .where((e) => e['option'] != null)
+              .map((e) => {
+                'label': e['option']['label'].toString(),
+                'emoji': '✨',
+              }).toList();
+        }
+        if (data['PHOTOS'] != null && data['PHOTOS'] is List) {
+          userData.photos = (data['PHOTOS'] as List)
+              .where((e) => e['mediaUrl'] != null)
+              .map((e) => e['mediaUrl'])
+              .toList();
+          userData.photoCount = userData.photos.length;
+        }
+        if (data['STORY'] != null) {
+          userData.dreams = data['STORY']['bio'] ?? userData.dreams;
+        }
+        if (data['LOCATION'] != null) {
+          final loc = data['LOCATION'];
+          String area = loc['area'] ?? '';
+          String city = loc['city'] ?? '';
+          String country = loc['country'] ?? '';
+          
+          String displayText = '';
+          if (area.isNotEmpty) displayText += '$area, ';
+          if (city.isNotEmpty) displayText += '$city, ';
+          if (country.isNotEmpty) displayText += country;
+          
+          if (displayText.isNotEmpty) {
+            userData.location = displayText.trim().replaceAll(RegExp(r',$'), '');
+          }
+        }
+      });
+    }
+  }
+
   Future<void> _handleFinish() async {
     setState(() => _isLoading = true);
     final success = await ApiService.completeOnboarding();
@@ -196,14 +266,22 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
                                       offset: const Offset(0, 2),
                                     ),
                                   ],
-                                  image: userData.photos.isNotEmpty
-                                      ? DecorationImage(
-                                          image: FileImage(
-                                            userData.photos.first!,
-                                          ),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : null,
+                                  image: () {
+                                    if (userData.photos.isEmpty || userData.photos.first == null) return null;
+                                    final photo = userData.photos.first;
+                                    if (photo is File) {
+                                      return DecorationImage(
+                                        image: FileImage(photo),
+                                        fit: BoxFit.cover,
+                                      );
+                                    } else if (photo is String) {
+                                      return DecorationImage(
+                                        image: NetworkImage(photo),
+                                        fit: BoxFit.cover,
+                                      );
+                                    }
+                                    return null;
+                                  }(),
                                 ),
                               ),
                               const SizedBox(width: 16),

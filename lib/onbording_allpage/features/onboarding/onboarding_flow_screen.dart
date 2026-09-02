@@ -24,15 +24,15 @@ class OnboardingFlowScreen extends StatefulWidget {
     switch (nextStep) {
       case 'BASIC_INFO': return 1;
       case 'INTERESTED_IN': return 2;
-      case 'INTENTION': return 3;
+      case 'LOOKING_FOR': return 3;
       case 'LIFESTYLE': return 4;
-      case 'EDUCATION_CAREER': return 5;
+      case 'CAREER_AMBITION': return 5;
       case 'INTEREST': return 6;
-      case 'PROFILE_PHOTOS': return 7;
-      case 'BIO': return 8;
-      case 'PROMPTS': return 9;
+      case 'PHOTOS': return 7;
+      case 'STORY': return 8;
+      case 'PROMPT': return 9;
       case 'LOCATION': return 10;
-      case 'REVIEW': return 11;
+      case 'REVIEW_FINISH': return 11;
       default: return 1;
     }
   }
@@ -97,7 +97,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   }
 
   void _previousStep() {
-    if (_currentStep > widget.initialStep) {
+    if (_currentStep > 1) {
       setState(() {
         _currentStep--;
       });

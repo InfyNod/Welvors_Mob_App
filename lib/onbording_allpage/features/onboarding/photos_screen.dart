@@ -26,6 +26,28 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
   bool get _isFormValid => _photoCount >= 2;
   bool _isSubmitting = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('PHOTOS');
+    if (data != null && data is List && mounted) {
+      setState(() {
+        for (var item in data) {
+          if (item['mediaUrl'] != null && item['order'] != null) {
+            int order = item['order'] - 1; // Assuming order starts from 1
+            if (order >= 0 && order < 6) {
+              _photos[order] = item['mediaUrl'];
+            }
+          }
+        }
+      });
+    }
+  }
+
   void _handleAddPhoto() {
     showCupertinoModalPopup(
       context: context,
@@ -93,13 +115,20 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
 
     if (photo != null) {
       // Filled slot
+      ImageProvider? imgProvider;
+      if (photo is XFile) {
+        imgProvider = FileImage(File(photo.path));
+      } else if (photo is String) {
+        imgProvider = NetworkImage(photo);
+      }
+
       return Container(
         decoration: BoxDecoration(
           color: photo is Color ? photo : AppColors.line,
           borderRadius: BorderRadius.circular(12),
-          image: photo is XFile
+          image: imgProvider != null
               ? DecorationImage(
-                  image: FileImage(File(photo.path)),
+                  image: imgProvider,
                   fit: BoxFit.cover,
                 )
               : null,
@@ -337,9 +366,11 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
                     } else {
                       // Local backup
                       userData.photoCount = _photoCount;
-                      userData.photos = validPhotos
-                          .map((f) => File(f.path))
-                          .toList();
+                      final allValid = _photos.where((p) => p is XFile || p is String).toList();
+                      userData.photos = allValid.map((p) {
+                        if (p is XFile) return File(p.path);
+                        return p; // keep string URL
+                      }).toList();
 
                       widget.onNext();
                     }

@@ -27,6 +27,29 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
   bool _isSubmitting = false;
   final List<PromptItem> _prompts = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('PROMPT');
+    if (data != null && data is List && mounted) {
+      setState(() {
+        for (var item in data) {
+          if (item['promptId'] != null && item['question'] != null && item['answer'] != null) {
+            _prompts.add(PromptItem(
+              id: item['promptId'].toString(),
+              question: item['question'].toString(),
+              answer: item['answer'].toString(),
+            ));
+          }
+        }
+      });
+    }
+  }
+
   Future<void> _editPrompt(int index) async {
     final prompt = _prompts[index];
     final TextEditingController controller = TextEditingController(

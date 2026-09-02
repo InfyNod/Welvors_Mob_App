@@ -78,6 +78,33 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
           }
         }
       });
+      _loadData();
+    }
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('INTEREST');
+    if (data != null && data is List && mounted) {
+      setState(() {
+        userData.interests.clear(); // Prevent duplicates on reload
+        for (var item in data) {
+          if (item['option'] != null) {
+            String optLabel = item['option']['label'].toString();
+            try {
+              final interest = _allInterests.firstWhere((i) => i.label == optLabel);
+              _selectedInterests.add(interest);
+              
+              // Map to user data
+              userData.interests.add({
+                'label': interest.label,
+                'emoji': interest.emoji,
+              });
+            } catch (e) {
+              // Ignore if not found
+            }
+          }
+        }
+      });
     }
   }
 

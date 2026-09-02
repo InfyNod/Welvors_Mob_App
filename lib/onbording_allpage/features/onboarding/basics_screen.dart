@@ -96,6 +96,41 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
     super.initState();
     _nameController.addListener(_validateForm);
     _emailController.addListener(_validateForm);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await ApiService.fetchOnboardingDetails('BASIC_INFO');
+    if (data != null && mounted) {
+      setState(() {
+        if (data['fullName'] != null) {
+          _nameController.text = data['fullName'];
+          userData.name = data['fullName'];
+        }
+        if (data['email'] != null) {
+          _emailController.text = data['email'];
+          userData.email = data['email'];
+        }
+        if (data['dateOfBirth'] != null) {
+          try {
+            _selectedDateOfBirth = DateTime.parse(data['dateOfBirth']);
+            _dobController.text = "${_selectedDateOfBirth!.day}/${_selectedDateOfBirth!.month}/${_selectedDateOfBirth!.year}";
+          } catch (_) {}
+        }
+        if (data['height'] != null) {
+          _selectedHeight = "${data['height']} cm";
+        }
+        if (data['gender'] != null) {
+          _selectedGender = data['gender'] == 'WOMEN' ? 'Woman' : (data['gender'] == 'MEN' ? 'Man' : data['gender']);
+          userData.gender = _selectedGender!;
+        }
+        if (data['genderOption'] != null) {
+          _selectedOrientation = data['genderOption']; // Assuming STRAIGHT is returned
+          userData.sexualOrientation = data['genderOption'];
+        }
+        _validateForm();
+      });
+    }
   }
 
   @override
