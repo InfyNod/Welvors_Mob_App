@@ -20,20 +20,20 @@ class OnboardingFlowScreen extends StatefulWidget {
   const OnboardingFlowScreen({super.key, this.initialStep = 1});
 
   static int mapNextStepToScreenIndex(String? nextStep) {
-    if (nextStep == null) return 2; // Default to basics if not specified
+    if (nextStep == null) return 1; // Default to basics if not specified
     switch (nextStep) {
-      case 'BASIC_INFO': return 2;
-      case 'INTERESTED_IN': return 3;
-      case 'INTENTION': return 4;
-      case 'LIFESTYLE': return 5;
-      case 'EDUCATION_CAREER': return 6;
-      case 'INTEREST': return 7;
-      case 'PROFILE_PHOTOS': return 8;
-      case 'BIO': return 9;
-      case 'PROMPTS': return 10;
-      case 'LOCATION': return 11;
-      case 'REVIEW': return 12;
-      default: return 2;
+      case 'BASIC_INFO': return 1;
+      case 'INTERESTED_IN': return 2;
+      case 'INTENTION': return 3;
+      case 'LIFESTYLE': return 4;
+      case 'EDUCATION_CAREER': return 5;
+      case 'INTEREST': return 6;
+      case 'PROFILE_PHOTOS': return 7;
+      case 'BIO': return 8;
+      case 'PROMPTS': return 9;
+      case 'LOCATION': return 10;
+      case 'REVIEW': return 11;
+      default: return 1;
     }
   }
 
@@ -43,7 +43,7 @@ class OnboardingFlowScreen extends StatefulWidget {
 
 class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   late int _currentStep;
-  final int _totalSteps = 12; 
+  final int _totalSteps = 11; 
   
   late PageController _pageController;
 
@@ -57,28 +57,26 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   String get _currentTitle {
     switch (_currentStep) {
       case 1:
-        return 'Verify your number';
-      case 2:
         return 'The basics';
-      case 3:
+      case 2:
         return 'Who you\'re seeing';
-      case 4:
+      case 3:
         return 'Your intentions';
-      case 5:
+      case 4:
         return 'Lifestyle';
-      case 6:
+      case 5:
         return 'Career & ambition';
-      case 7:
+      case 6:
         return 'Your interests';
-      case 8:
+      case 7:
         return 'Your photos';
-      case 9:
+      case 8:
         return 'About you';
-      case 10:
+      case 9:
         return 'Prompts';
-      case 11:
+      case 10:
         return 'Location';
-      case 12:
+      case 11:
         return 'Review & finish';
       default:
         return 'Setup';
@@ -99,7 +97,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   }
 
   void _previousStep() {
-    if (_currentStep > 1) {
+    if (_currentStep > widget.initialStep) {
       setState(() {
         _currentStep--;
       });
@@ -138,7 +136,6 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(), // Disable swipe
                 children: [
-                  VerifyNumberScreen(onVerifySuccess: _nextStep),
                   BasicsScreen(onNext: _nextStep),
                   PreferencesScreen(onNext: _nextStep),
                   IntentionsScreen(onNext: _nextStep),

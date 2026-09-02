@@ -9,10 +9,10 @@ import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'user_data.dart';
+import 'onboarding_flow_screen.dart';
 
 class VerifyNumberScreen extends StatefulWidget {
-  final VoidCallback onVerifySuccess;
-  const VerifyNumberScreen({super.key, required this.onVerifySuccess});
+  const VerifyNumberScreen({super.key});
 
   @override
   State<VerifyNumberScreen> createState() => _VerifyNumberScreenState();
@@ -147,7 +147,14 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
             );
           } else {
             // New user, proceed with onboarding
-            widget.onVerifySuccess();
+            final String? nextStep = result['next_step'];
+            final int initialStep = OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
+            
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => OnboardingFlowScreen(initialStep: initialStep)),
+              (route) => false,
+            );
           }
         }
       } else {
@@ -199,11 +206,50 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
   Widget build(BuildContext context) {
     bool isOtpValid = _otpController.text.length == 6;
 
-    return Column(
-      children: [
-        Expanded(
-          child: CustomScrollView(
-            slivers: [
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Fixed top bar with back button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppDimens.pad),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 44, height: 44,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey.shade200),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new, 
+                            color: Colors.black,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Padding(
@@ -213,7 +259,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Spacer(flex: 1),
+                      const SizedBox(height: 40),
 
                       // Center Icon with pulse effect
                       Center(
@@ -837,8 +883,10 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                       ? _onSendCodePressed
                       : null),
           ),
-        ),
-      ],
+          ),
+        ],
+      ),
+      ),
     );
   }
 }

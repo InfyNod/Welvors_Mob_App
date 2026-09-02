@@ -8,7 +8,9 @@ import '../../widgets/primary_button.dart';
 import '../../widgets/stat_pill.dart';
 import '../../widgets/terms_bottom_sheet.dart';
 import '../../widgets/privacy_bottom_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
+import 'verify_number_screen.dart';
 import 'onboarding_flow_screen.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -214,7 +216,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const OnboardingFlowScreen(),
+                      builder: (_) => const VerifyNumberScreen(),
                     ),
                   );
                 } : null,

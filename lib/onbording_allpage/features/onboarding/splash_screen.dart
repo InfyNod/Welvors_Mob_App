@@ -70,23 +70,17 @@ class _SplashScreenState extends State<SplashScreen>
 
     // 3. Navigate
     if (mounted) {
-      if (hasToken && !isOnboardingCompleted) {
-        // User has a token but didn't finish onboarding -> resume onboarding
-        final String? nextStep = prefs.getString('onboarding_next_step');
-        final int initialStep = OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
-        
-        Navigator.pushAndRemoveUntil(
+      if (isLoggedIn) {
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(
-            builder: (context) => OnboardingFlowScreen(initialStep: initialStep),
-          ),
+          '/home',
           (route) => false,
         );
       } else {
-        final String targetRoute = isLoggedIn ? '/home' : '/landing';
+        // If they haven't completed onboarding, force them to land and verify again
         Navigator.pushNamedAndRemoveUntil(
           context,
-          targetRoute,
+          '/landing',
           (route) => false,
         );
       }

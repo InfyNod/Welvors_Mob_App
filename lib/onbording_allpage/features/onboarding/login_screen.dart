@@ -183,9 +183,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.line, width: 1.5),
+                            border: Border.all(color: Colors.grey.shade200),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          child: const Icon(Icons.chevron_left, color: AppColors.ink),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new, 
+                            color: Colors.black,
+                            size: 16,
+                          ),
                         ),
                       ),
                     ],
