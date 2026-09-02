@@ -27,26 +27,32 @@ class LogoutScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: GestureDetector(
+          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+          child: InkWell(
             onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(24),
             child: Container(
-              width: 40,
-              height: 40,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.line, width: 1),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: const Icon(
-                Icons.chevron_left,
-                color: AppColors.ink,
-                size: 24,
+                Icons.arrow_back_ios_new,
+                color: Colors.black,
+                size: 16,
               ),
             ),
           ),
         ),
-        title: Text('Log out', style: AppText.h2.copyWith(fontSize: 16)),
+        title: Text('Log out', style: AppText.h2.copyWith(fontSize: 18)),
         centerTitle: true,
       ),
       body: SafeArea(

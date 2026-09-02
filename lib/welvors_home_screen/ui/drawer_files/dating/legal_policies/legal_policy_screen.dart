@@ -73,7 +73,7 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
           'Legal & Policies',
           style: TextStyle(
             color: Colors.black87,
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -334,18 +334,12 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'CIN: U72900MH2024PTC000000 · Mumbai, India',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     'v3.2.1 · Last updated 20 June 2026',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -389,9 +383,7 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
           ),
         ],
       ),
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 
@@ -434,10 +426,7 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],
               ),
