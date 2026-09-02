@@ -393,7 +393,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 BlocBuilder<ProfileEditCubit, ProfileEditState>(
                   builder: (context, state) {
                     return Text(
-                      state.fullName.isNotEmpty ? state.fullName : 'Tanishka',
+                      state.fullName.isNotEmpty ? state.fullName :  'Welvors User',
                       style: const TextStyle(
                         fontSize: 24, // slightly larger
                         fontWeight: FontWeight.w900,
@@ -422,25 +422,44 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  size: 14,
-                  color: Colors.grey.shade600,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Mumbai, India',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade700,
-                    fontWeight: FontWeight.bold, // bolded
+            BlocBuilder<ProfileEditCubit, ProfileEditState>(
+              builder: (context, state) {
+                final area = state.area;
+                final city = state.city;
+                final stateLoc = state.stateLocation;
+                
+                List<String> parts = [];
+                if (area.isNotEmpty) parts.add(area);
+                if (city.isNotEmpty) parts.add(city);
+                if (stateLoc.isNotEmpty) parts.add(stateLoc);
+                
+                if (parts.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        parts.join(', '),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
             const SizedBox(height: 16),
             // Badges
