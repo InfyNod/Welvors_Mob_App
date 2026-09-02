@@ -128,7 +128,8 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
 
       final token = result['token'];
       final errorMsg = result['error'];
-      final isRegister = result['is_register'] ?? true;
+      final onboardingCompleted = result['onboarding_completed'] ?? false;
+      final String? nextStep = result['next_step'];
 
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
@@ -138,23 +139,32 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
         userData.phone = '+91 ${_phoneController.text.trim()}';
 
         if (mounted) {
-          if (!isRegister) {
-            // Already registered, go straight to splash -> home
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/splash',
-              (route) => false,
-            );
-          } else {
-            // New user, proceed with onboarding
-            final String? nextStep = result['next_step'];
+          if (!onboardingCompleted) {
+            // New or incomplete user -> Start onboarding from next step
+            await prefs.setBool('onboarding_completed', false);
+            if (nextStep != null) {
+              await prefs.setString('onboarding_next_step', nextStep);
+            }
+            
             final int initialStep = OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
             
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => OnboardingFlowScreen(initialStep: initialStep)),
-              (route) => false,
-            );
+            if (context.mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => OnboardingFlowScreen(initialStep: initialStep)),
+                (route) => false,
+              );
+            }
+          } else {
+            // Existing user who completed onboarding -> Go to Splash
+            await prefs.setBool('onboarding_completed', true);
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/splash',
+                (route) => false,
+              );
+            }
           }
         }
       } else {
