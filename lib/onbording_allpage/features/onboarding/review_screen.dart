@@ -15,7 +15,7 @@ class ReviewScreen extends StatefulWidget {
   State<ReviewScreen> createState() => _ReviewScreenState();
 }
 
-class _ReviewScreenState extends State<ReviewScreen> {
+class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClientMixin  {
   bool _isLoading = false;
 
   Future<void> _handleFinish() async {
@@ -129,8 +129,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         Expanded(

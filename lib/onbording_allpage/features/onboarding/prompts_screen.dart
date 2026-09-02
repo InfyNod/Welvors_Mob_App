@@ -23,7 +23,7 @@ class PromptsScreen extends StatefulWidget {
   State<PromptsScreen> createState() => _PromptsScreenState();
 }
 
-class _PromptsScreenState extends State<PromptsScreen> {
+class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveClientMixin  {
   bool _isSubmitting = false;
   final List<PromptItem> _prompts = [];
 
@@ -272,8 +272,12 @@ class _PromptsScreenState extends State<PromptsScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(

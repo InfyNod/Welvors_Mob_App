@@ -14,7 +14,7 @@ class LifestyleScreen extends StatefulWidget {
   State<LifestyleScreen> createState() => _LifestyleScreenState();
 }
 
-class _LifestyleScreenState extends State<LifestyleScreen> {
+class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAliveClientMixin  {
   String? _expandedCard;
   List<Map<String, dynamic>> _questions = [];
   bool _isLoading = true;
@@ -302,8 +302,12 @@ class _LifestyleScreenState extends State<LifestyleScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         Expanded(

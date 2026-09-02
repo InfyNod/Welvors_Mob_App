@@ -34,7 +34,7 @@ class InterestsScreen extends StatefulWidget {
   State<InterestsScreen> createState() => _InterestsScreenState();
 }
 
-class _InterestsScreenState extends State<InterestsScreen> {
+class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAliveClientMixin  {
   final Set<Interest> _selectedInterests = {};
   String _searchQuery = '';
   final Map<String, bool> _categoryExpanded = {};
@@ -391,8 +391,12 @@ class _InterestsScreenState extends State<InterestsScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final grouped = _groupedInterests;
 
     return Column(

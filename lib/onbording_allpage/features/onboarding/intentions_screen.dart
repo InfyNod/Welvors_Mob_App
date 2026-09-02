@@ -14,7 +14,7 @@ class IntentionsScreen extends StatefulWidget {
   State<IntentionsScreen> createState() => _IntentionsScreenState();
 }
 
-class _IntentionsScreenState extends State<IntentionsScreen> {
+class _IntentionsScreenState extends State<IntentionsScreen> with AutomaticKeepAliveClientMixin  {
   String? _selectedIntention;
   String _apiTitle = '';
   String _apiDescription = '';
@@ -107,8 +107,12 @@ class _IntentionsScreenState extends State<IntentionsScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         Expanded(

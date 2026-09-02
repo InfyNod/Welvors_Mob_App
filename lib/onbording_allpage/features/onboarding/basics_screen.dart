@@ -14,7 +14,7 @@ class BasicsScreen extends StatefulWidget {
   State<BasicsScreen> createState() => _BasicsScreenState();
 }
 
-class _BasicsScreenState extends State<BasicsScreen> {
+class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClientMixin  {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
@@ -629,8 +629,12 @@ class _BasicsScreenState extends State<BasicsScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         Expanded(

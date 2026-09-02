@@ -13,7 +13,7 @@ class AboutScreen extends StatefulWidget {
   State<AboutScreen> createState() => _AboutScreenState();
 }
 
-class _AboutScreenState extends State<AboutScreen> {
+class _AboutScreenState extends State<AboutScreen> with AutomaticKeepAliveClientMixin  {
   final TextEditingController _controller = TextEditingController();
   bool _isSubmitting = false;
 
@@ -23,8 +23,12 @@ class _AboutScreenState extends State<AboutScreen> {
     super.dispose();
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(

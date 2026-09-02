@@ -15,7 +15,7 @@ class CareerScreen extends StatefulWidget {
   State<CareerScreen> createState() => _CareerScreenState();
 }
 
-class _CareerScreenState extends State<CareerScreen> {
+class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClientMixin  {
   final TextEditingController _collegeController = TextEditingController();
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _gradYearController = TextEditingController();
@@ -344,8 +344,12 @@ class _CareerScreenState extends State<CareerScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         Expanded(

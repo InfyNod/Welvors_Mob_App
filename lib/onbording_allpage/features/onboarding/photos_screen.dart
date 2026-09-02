@@ -18,7 +18,7 @@ class PhotosScreen extends StatefulWidget {
   State<PhotosScreen> createState() => _PhotosScreenState();
 }
 
-class _PhotosScreenState extends State<PhotosScreen> {
+class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClientMixin  {
   final List<dynamic> _photos = [null, null, null, null, null, null];
   final ImagePicker _picker = ImagePicker();
 
@@ -217,8 +217,12 @@ class _PhotosScreenState extends State<PhotosScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

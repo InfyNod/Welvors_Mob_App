@@ -21,7 +21,7 @@ class LocationScreen extends StatefulWidget {
   State<LocationScreen> createState() => _LocationScreenState();
 }
 
-class _LocationScreenState extends State<LocationScreen> {
+class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAliveClientMixin  {
   final TextEditingController _cityController = TextEditingController();
   bool _useCurrentLocation = false;
   bool _isLoadingLocation = false;
@@ -231,8 +231,12 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 
+    @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
