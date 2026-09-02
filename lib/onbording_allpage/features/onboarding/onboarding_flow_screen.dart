@@ -16,17 +16,25 @@ import 'review_screen.dart';
 import 'completion_screen.dart';
 
 class OnboardingFlowScreen extends StatefulWidget {
-  const OnboardingFlowScreen({super.key});
+  final int initialStep;
+  const OnboardingFlowScreen({super.key, this.initialStep = 1});
 
   @override
   State<OnboardingFlowScreen> createState() => _OnboardingFlowScreenState();
 }
 
 class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
-  int _currentStep = 1;
+  late int _currentStep;
   final int _totalSteps = 12; 
   
-  final PageController _pageController = PageController();
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentStep = widget.initialStep;
+    _pageController = PageController(initialPage: _currentStep - 1);
+  }
 
   String get _currentTitle {
     switch (_currentStep) {

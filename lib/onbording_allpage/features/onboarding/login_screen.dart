@@ -11,6 +11,7 @@ import '../../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'waitlist_confirmed_screen.dart';
 import 'user_data.dart';
+import 'onboarding_flow_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -108,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final token = result['token'];
       final errorMsg = result['error'];
+      final isRegister = result['is_register'] ?? true;
 
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
@@ -117,12 +119,21 @@ class _LoginScreenState extends State<LoginScreen> {
         userData.phone = '+91 ${_phoneController.text.trim()}';
         
         if (mounted) {
-          // Navigate to Splash Screen
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/splash',
-            (route) => false,
-          );
+          if (isRegister == false) {
+            // New user -> Start onboarding from step 2 (Basics)
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const OnboardingFlowScreen(initialStep: 2)),
+              (route) => false,
+            );
+          } else {
+            // Existing user -> Go to Splash
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/splash',
+              (route) => false,
+            );
+          }
         }
       } else {
         if (mounted) {

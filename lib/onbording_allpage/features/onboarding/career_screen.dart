@@ -388,15 +388,15 @@ class _CareerScreenState extends State<CareerScreen> {
                   value: _educationLevel,
                   options: [
                     'High School',
-                    'IIT',
+                    'ITI',
                     'Diploma',
                     'Undergraduate',
-                    'Post Graduate',
+                    'Bachelor',
+                    'Postgraduate',
                     'Master',
                     'MPhil',
                     'PhD',
                     'Post-Doctorate',
-                    'Other',
                   ],
                   onChanged: (val) => setState(() => _educationLevel = val),
                   focusNode: _eduFocus,
@@ -626,7 +626,7 @@ class _CareerScreenState extends State<CareerScreen> {
                         setState(() => _isSubmitting = true);
 
                         // Map Education Level to Prisma Enum (uppercase, spaces and hyphens to underscores)
-                        String formattedEdu = (_educationLevel ?? 'Other')
+                        String formattedEdu = (_educationLevel ?? 'High School')
                             .toUpperCase()
                             .replaceAll(' ', '_')
                             .replaceAll('-', '_');
@@ -661,13 +661,12 @@ class _CareerScreenState extends State<CareerScreen> {
                           return;
                         }
 
-                        // Map Work IDs
-                        final profId = _professionsMap[_profession] ?? 1;
-                        final expId = _experiencesMap[_experience] ?? 1;
-                        final empTypeId =
-                            _employmentTypesMap[_employmentType] ?? 1;
-                        final salId = _salaryRangesMap[_salaryRange] ?? 1;
-                        final ambId = _ambitionsMap[_ambitionLevel] ?? 1;
+                        // Map Work IDs (send null if not selected, rather than a fake ID like 1)
+                        final profId = _professionsMap[_profession];
+                        final expId = _experiencesMap[_experience];
+                        final empTypeId = _employmentTypesMap[_employmentType];
+                        final salId = _salaryRangesMap[_salaryRange];
+                        final ambId = _ambitionsMap[_ambitionLevel];
 
                         // Call Work API
                         final workError = await ApiService.submitWork({
