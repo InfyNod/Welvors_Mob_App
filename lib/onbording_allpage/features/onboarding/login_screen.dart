@@ -110,6 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
       final token = result['token'];
       final errorMsg = result['error'];
       final isRegister = result['is_register'] ?? true;
+      final onboardingCompleted = result['onboarding_completed'] ?? false;
+      final String? nextStep = result['next_step'];
 
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
@@ -119,18 +121,24 @@ class _LoginScreenState extends State<LoginScreen> {
         userData.phone = '+91 ${_phoneController.text.trim()}';
         
         if (mounted) {
-          if (isRegister == false) {
-            // New user -> Start onboarding from step 2 (Basics)
+          if (!onboardingCompleted) {
+            // New or incomplete user -> Start onboarding from next step
             await prefs.setBool('onboarding_completed', false);
+            if (nextStep != null) {
+              await prefs.setString('onboarding_next_step', nextStep);
+            }
+            
+            final int initialStep = OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
+            
             if (context.mounted) {
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const OnboardingFlowScreen(initialStep: 2)),
+                MaterialPageRoute(builder: (context) => OnboardingFlowScreen(initialStep: initialStep)),
                 (route) => false,
               );
             }
           } else {
-            // Existing user -> Go to Splash
+            // Existing user who completed onboarding -> Go to Splash
             await prefs.setBool('onboarding_completed', true);
             if (context.mounted) {
               Navigator.pushNamedAndRemoveUntil(

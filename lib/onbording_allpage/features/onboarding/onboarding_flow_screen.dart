@@ -19,6 +19,24 @@ class OnboardingFlowScreen extends StatefulWidget {
   final int initialStep;
   const OnboardingFlowScreen({super.key, this.initialStep = 1});
 
+  static int mapNextStepToScreenIndex(String? nextStep) {
+    if (nextStep == null) return 2; // Default to basics if not specified
+    switch (nextStep) {
+      case 'BASIC_INFO': return 2;
+      case 'INTERESTED_IN': return 3;
+      case 'INTENTION': return 4;
+      case 'LIFESTYLE': return 5;
+      case 'EDUCATION_CAREER': return 6;
+      case 'INTEREST': return 7;
+      case 'PROFILE_PHOTOS': return 8;
+      case 'BIO': return 9;
+      case 'PROMPTS': return 10;
+      case 'LOCATION': return 11;
+      case 'REVIEW': return 12;
+      default: return 2;
+    }
+  }
+
   @override
   State<OnboardingFlowScreen> createState() => _OnboardingFlowScreenState();
 }
@@ -91,7 +109,11 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.pop(context);
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      } else {
+        Navigator.pushReplacementNamed(context, '/landing');
+      }
     }
   }
 

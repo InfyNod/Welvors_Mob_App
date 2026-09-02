@@ -34,7 +34,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null && decoded['data'].isNotEmpty) {
-          final data = decoded['data'][0];
+          _saveOnboardingProgress(decoded);
+           final data = decoded['data'][0];
           
           List<Map<String, dynamic>> parsedOptions = [];
           if (data['options'] != null) {
@@ -70,7 +71,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          return decoded['data'];
+          _saveOnboardingProgress(decoded);
+           return decoded['data'];
         }
       }
       return [];
@@ -98,7 +100,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true) {
-          return decoded['data'];
+          _saveOnboardingProgress(decoded);
+           return decoded['data'];
         }
       }
       return null;
@@ -126,7 +129,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          return decoded['data'];
+          _saveOnboardingProgress(decoded);
+           return decoded['data'];
         }
       }
       return null;
@@ -154,7 +158,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          return decoded['data'];
+          _saveOnboardingProgress(decoded);
+           return decoded['data'];
         }
       }
       return null;
@@ -195,7 +200,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List<dynamic> data = decoded['data'];
+          _saveOnboardingProgress(decoded);
+           final List<dynamic> data = decoded['data'];
           return data.map((q) {
             final List<dynamic> optionsRaw = q['options'] ?? [];
             return {
@@ -249,7 +255,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          return decoded['data'];
+          _saveOnboardingProgress(decoded);
+           return decoded['data'];
         }
       }
       return [];
@@ -266,7 +273,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List<dynamic> data = decoded['data'];
+          _saveOnboardingProgress(decoded);
+           final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['name'].toString()] = item['id'] as int;
@@ -288,7 +296,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List<dynamic> data = decoded['data'];
+          _saveOnboardingProgress(decoded);
+           final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['title'].toString()] = item['id'] as int;
@@ -310,7 +319,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List<dynamic> data = decoded['data'];
+          _saveOnboardingProgress(decoded);
+           final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['name'].toString()] = item['id'] as int;
@@ -332,7 +342,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List<dynamic> data = decoded['data'];
+          _saveOnboardingProgress(decoded);
+           final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['title'].toString()] = item['id'] as int;
@@ -354,7 +365,8 @@ class ApiService {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
-          final List<dynamic> data = decoded['data'];
+          _saveOnboardingProgress(decoded);
+           final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['title'].toString()] = item['id'] as int;
@@ -435,9 +447,12 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null && decoded['data']['token'] != null) {
-          return {
+          _saveOnboardingProgress(decoded);
+           return {
             'token': decoded['data']['token'].toString(),
             'is_register': decoded['data']['is_register'] ?? true,
+            'onboarding_completed': decoded['data']['user']?['onboarding_completed'] ?? false,
+            'next_step': decoded['data']['user']?['next_step'],
             'error': null
           };
         }
@@ -471,6 +486,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -511,6 +527,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -549,6 +566,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -593,6 +611,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -631,6 +650,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -663,6 +683,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -709,6 +730,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -751,6 +773,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -785,6 +808,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
+           _saveOnboardingProgress(decoded);
            return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
@@ -852,6 +876,35 @@ class ApiService {
     } catch (e) {
       debugPrint('Error submitting location: $e');
       return e.toString();
+    }
+  }
+
+  static Future<void> _saveOnboardingProgress(dynamic decodedResponse) async {
+    if (decodedResponse is! Map<String, dynamic>) return;
+    
+    String? nextStep = decodedResponse['next_step'];
+    bool? isCompleted = decodedResponse['onboarding_completed'];
+
+    if (decodedResponse['data'] is Map<String, dynamic>) {
+       final data = decodedResponse['data'];
+       nextStep ??= data['next_step'];
+       isCompleted ??= data['onboarding_completed'];
+       
+       if (data['user'] is Map<String, dynamic>) {
+         final user = data['user'];
+         nextStep ??= user['next_step'];
+         isCompleted ??= user['onboarding_completed'];
+       }
+    }
+    
+    if (nextStep != null || isCompleted != null) {
+      final prefs = await SharedPreferences.getInstance();
+      if (nextStep != null) {
+        await prefs.setString('onboarding_next_step', nextStep);
+      }
+      if (isCompleted != null) {
+        await prefs.setBool('onboarding_completed', isCompleted);
+      }
     }
   }
 }
