@@ -89,6 +89,14 @@ class WelvorsApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         navigatorKey: navigatorKey,
         initialRoute: initialRoute,
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(1.0),
+            ),
+            child: child!,
+          );
+        },
         routes: {
           '/splash': (context) => const SplashScreen(),
           '/home': (context) => const TopAndBottomNavScreen(),
