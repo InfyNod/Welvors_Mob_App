@@ -87,7 +87,7 @@ class CompletionScreen extends StatelessWidget {
     final firstName = userData.name.split(' ').first;
 
     return Scaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: const Color.fromARGB(255, 253, 253, 253),
       body: SafeArea(
         child: Column(
           children: [

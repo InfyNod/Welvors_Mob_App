@@ -350,29 +350,32 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
                     final validPhotos = _photos.whereType<XFile>().toList();
                     final paths = validPhotos.map((f) => f.path).toList();
 
-                    final errorMsg = await ApiService.submitPhotos(paths);
+                    String? errorMsg;
+                    if (paths.isNotEmpty) {
+                      errorMsg = await ApiService.submitPhotos(paths);
+                    }
 
-                    setState(() => _isSubmitting = false);
+                    if (mounted) {
+                      setState(() => _isSubmitting = false);
 
-                    if (errorMsg != null) {
-                      if (mounted) {
+                      if (errorMsg != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(errorMsg),
                             duration: const Duration(seconds: 4),
                           ),
                         );
-                      }
-                    } else {
-                      // Local backup
-                      userData.photoCount = _photoCount;
-                      final allValid = _photos.where((p) => p is XFile || p is String).toList();
-                      userData.photos = allValid.map((p) {
-                        if (p is XFile) return File(p.path);
-                        return p; // keep string URL
-                      }).toList();
+                      } else {
+                        // Local backup
+                        userData.photoCount = _photoCount;
+                        final allValid = _photos.where((p) => p != null).toList();
+                        userData.photos = allValid.map((p) {
+                          if (p is XFile) return File(p.path);
+                          return p; // keep string URL
+                        }).toList();
 
-                      widget.onNext();
+                        widget.onNext();
+                      }
                     }
                   }
                 : null,

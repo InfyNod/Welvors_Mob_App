@@ -18,6 +18,7 @@ class _ChoosePromptScreenState extends State<ChoosePromptScreen> {
   bool _isLoading = true;
   List<dynamic> _categoriesData = [];
   String? _selectedCategoryId;
+  final Map<String, GlobalKey> _categoryKeys = {};
 
   @override
   void initState() {
@@ -147,11 +148,21 @@ class _ChoosePromptScreenState extends State<ChoosePromptScreen> {
                   ),
                   child: Row(
                     children: _categoriesData.map((cat) {
-                      final isSelected = _selectedCategoryId == cat['id'];
+                      final String catId = cat['id'] ?? '';
+                      final key = _categoryKeys.putIfAbsent(catId, () => GlobalKey());
+                      final isSelected = _selectedCategoryId == catId;
                       final catName = cat['name'] ?? 'Other';
                       return GestureDetector(
-                        onTap: () =>
-                            setState(() => _selectedCategoryId = cat['id']),
+                        key: key,
+                        onTap: () {
+                          setState(() => _selectedCategoryId = catId);
+                          Scrollable.ensureVisible(
+                            key.currentContext!,
+                            alignment: 0.5,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,

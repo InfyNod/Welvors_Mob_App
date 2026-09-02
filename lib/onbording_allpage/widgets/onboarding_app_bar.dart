@@ -105,18 +105,20 @@ class OnboardingAppBar extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             // Linear Progress Bar
-            if (showProgress)
+            if (showProgress) ...[
               ClipRRect(
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(3),
                 child: LinearProgressIndicator(
                   value: progress,
-                  minHeight: 4,
+                  minHeight: 6,
                   backgroundColor: AppColors.line,
                   valueColor: const AlwaysStoppedAnimation<Color>(AppColors.pinkDeep),
                 ),
-              )
-            else
-              const SizedBox(height: 4), // Placeholder for linear progress
+              ),
+              const SizedBox(height: 12),
+            ] else ...[
+              const SizedBox(height: 16), // Placeholder for linear progress
+            ],
           ],
         );
       },

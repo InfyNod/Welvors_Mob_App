@@ -361,7 +361,7 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
                       children: [
                         PrimaryButton(
                           _isSubmitting ? 'Saving...' : 'Continue',
-                          onTap: _isSubmitting
+                          onTap: (_isSubmitting || !_prompts.any((p) => p.answer != null && p.answer!.trim().isNotEmpty))
                               ? null
                               : () async {
                                   final answeredPrompts = _prompts
@@ -371,11 +371,6 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
                                             p.answer!.trim().isNotEmpty,
                                       )
                                       .toList();
-
-                                  if (answeredPrompts.isEmpty) {
-                                    widget.onNext();
-                                    return;
-                                  }
 
                                   setState(() => _isSubmitting = true);
 

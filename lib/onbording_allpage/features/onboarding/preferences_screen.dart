@@ -58,8 +58,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
     if (data != null && mounted) {
       setState(() {
         if (data['interestedIn'] != null) {
-          _selectedPreference = data['interestedIn'];
-          userData.interestedIn = data['interestedIn'];
+          String pref = data['interestedIn'];
+          if (pref == 'MEN') {
+            _selectedPreference = 'Man';
+          } else if (pref == 'WOMEN') {
+            _selectedPreference = 'Women';
+          } else if (pref == 'EVERYONE') {
+            _selectedPreference = 'Everyone';
+          } else {
+            _selectedPreference = pref;
+          }
+          userData.interestedIn = _selectedPreference!;
         }
       });
     }
@@ -109,6 +118,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           title,
@@ -120,14 +130,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                                 : AppColors.ink,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          subtitle,
-                          style: AppText.sub.copyWith(
-                            fontSize: 14,
-                            color: AppColors.muted,
+                        if (subtitle.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            subtitle,
+                            style: AppText.sub.copyWith(
+                              fontSize: 14,
+                              color: AppColors.muted,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
@@ -139,7 +151,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                 ],
               ),
             ),
-            if (isSelected && expandedContent != null) expandedContent,
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topCenter,
+              child: isSelected && expandedContent != null
+                  ? expandedContent
+                  : const SizedBox.shrink(),
+            ),
           ],
         ),
       ),

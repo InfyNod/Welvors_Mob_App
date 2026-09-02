@@ -184,10 +184,8 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
 
   List<String> get _heightOptions {
     List<String> options = [];
-    for (int feet = 4; feet <= 7; feet++) {
-      for (int inches = 0; inches <= 11; inches++) {
-        options.add('$feet\'$inches"');
-      }
+    for (int cm = 90; cm <= 240; cm++) {
+      options.add('$cm cm');
     }
     return options;
   }

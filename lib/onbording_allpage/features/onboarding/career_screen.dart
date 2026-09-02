@@ -136,12 +136,29 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
     if (data != null && mounted) {
       setState(() {
         if (data['highestEducation'] != null) {
-          String edu = data['highestEducation'].toString();
-          // Convert from HIGH_SCHOOL back to High School
-          edu = edu.replaceAll('_', ' ').toLowerCase();
-          edu = edu.split(' ').map((str) => str.isNotEmpty ? '${str[0].toUpperCase()}${str.substring(1)}' : '').join(' ');
-          _educationLevel = edu;
-          userData.education = edu;
+          String eduCode = data['highestEducation'].toString();
+          String? matchingEdu;
+          for (var opt in [
+            'High School',
+            'ITI',
+            'Diploma',
+            'Undergraduate',
+            'Bachelor',
+            'Postgraduate',
+            'Master',
+            'MPhil',
+            'PhD',
+            'Post-Doctorate',
+          ]) {
+            if (opt.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_') == eduCode) {
+              matchingEdu = opt;
+              break;
+            }
+          }
+          if (matchingEdu != null) {
+            _educationLevel = matchingEdu;
+            userData.education = matchingEdu;
+          }
         }
         
         if (data['degree'] != null) {

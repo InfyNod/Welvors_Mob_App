@@ -288,6 +288,7 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           categoryName,
@@ -324,8 +325,12 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
                 ],
               ),
             ),
-            if (isExpanded)
-              Column(
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topCenter,
+              child: isExpanded
+                  ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Divider(
@@ -411,7 +416,9 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
                     ),
                   ),
                 ],
-              ),
+              )
+            : const SizedBox.shrink(),
+            ),
           ],
         ),
       ),

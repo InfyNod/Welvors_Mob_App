@@ -139,6 +139,7 @@ class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAli
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           title,
@@ -150,14 +151,16 @@ class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAli
                                 : AppColors.ink,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          subtitle,
-                          style: AppText.sub.copyWith(
-                            fontSize: 14,
-                            color: AppColors.muted,
+                        if (subtitle.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            subtitle,
+                            style: AppText.sub.copyWith(
+                              fontSize: 14,
+                              color: AppColors.muted,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
@@ -169,7 +172,14 @@ class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAli
                 ],
               ),
             ),
-            if (isExpanded && expandedContent != null) expandedContent,
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topCenter,
+              child: isExpanded && expandedContent != null
+                  ? expandedContent
+                  : const SizedBox.shrink(),
+            ),
           ],
         ),
       ),

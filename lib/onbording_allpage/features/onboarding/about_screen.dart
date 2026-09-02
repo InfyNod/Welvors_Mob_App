@@ -19,6 +19,9 @@ class _AboutScreenState extends State<AboutScreen> with AutomaticKeepAliveClient
   @override
   void initState() {
     super.initState();
+    _controller.addListener(() {
+      setState(() {});
+    });
     _loadData();
   }
 
@@ -158,13 +161,9 @@ class _AboutScreenState extends State<AboutScreen> with AutomaticKeepAliveClient
                       children: [
                         PrimaryButton(
                           _isSubmitting ? 'Saving...' : 'Continue',
-                          onTap: _isSubmitting
+                          onTap: (_isSubmitting || _controller.text.trim().isEmpty)
                               ? null
                               : () async {
-                                  if (_controller.text.trim().isEmpty) {
-                                    widget.onNext();
-                                    return;
-                                  }
                                   setState(() => _isSubmitting = true);
 
                                   final error = await ApiService.submitBio(
