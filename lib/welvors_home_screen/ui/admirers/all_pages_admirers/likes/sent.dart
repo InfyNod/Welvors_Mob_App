@@ -243,26 +243,104 @@ class SentLikesScreen extends StatelessWidget {
   }
 
   Widget _buildActionButton(Map<String, dynamic> card) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Color(card['actionBgColor'] ?? 0xFFE43A6A),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.local_florist, size: 12, color: Color(card['actionIconColor'] ?? 0xFFFFFFFF)),
-          const SizedBox(width: 4),
-          Text(
-            card['actionText'] ?? 'Send a rose',
-            style: TextStyle(
-              color: Color(card['actionTextColor'] ?? 0xFFFFFFFF),
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
+    return AnimatedRoseButton(
+      text: card['actionText'] ?? 'Send a rose',
+      baseColor: Color(card['actionBgColor'] ?? 0xFFE43A6A),
+      textColor: Color(card['actionTextColor'] ?? 0xFFFFFFFF),
+    );
+  }
+}
+
+class AnimatedRoseButton extends StatefulWidget {
+  final String text;
+  final Color baseColor;
+  final Color textColor;
+
+  const AnimatedRoseButton({
+    super.key,
+    required this.text,
+    required this.baseColor,
+    required this.textColor,
+  });
+
+  @override
+  State<AnimatedRoseButton> createState() => _AnimatedRoseButtonState();
+}
+
+class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    // Only animate if it is an active "Send a rose" button
+    if (widget.text.toLowerCase().contains('send')) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isActive = widget.text.toLowerCase().contains('send');
+
+    return ScaleTransition(
+      scale: isActive ? _scaleAnimation : const AlwaysStoppedAnimation(1.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8), // Square-ish corners
+          gradient: isActive
+              ? const LinearGradient(
+                  colors: [Color(0xFFFF6B9E), Color(0xFFE43A6A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : LinearGradient(
+                  colors: [widget.baseColor, widget.baseColor],
+                ),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFFE43A6A).withOpacity(0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🌹', style: TextStyle(fontSize: 14)),
+            const SizedBox(width: 6),
+            Text(
+              widget.text,
+              style: TextStyle(
+                color: widget.textColor,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
