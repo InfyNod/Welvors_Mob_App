@@ -858,8 +858,8 @@ class _MyPlanScreenState extends State<MyPlanScreen>
     List<Map<String, dynamic>> planRequests,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFFF6F4EF),
         borderRadius: BorderRadius.circular(16),
@@ -883,6 +883,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             },
             behavior: HitTestBehavior.opaque,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 24,
@@ -902,43 +903,51 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          const Icon(
-                            Icons.verified,
-                            color: Colors.blue,
-                            size: 16,
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFA6A85).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              request['match'] ?? '92%',
-                              style: const TextStyle(
-                                color: Color(0xFFDE2957),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Row(
+                              children: const [
+                                Icon(
+                                  Icons.location_on,
+                                  color: Color(0xFFDE2957),
+                                  size: 14,
+                                ), // Red pin
+                                SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    '1.4 km · 12m ago', // Dummy location and time
+                                    style: TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 12,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        request['message'],
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 13,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        maxLines: 1,
+                      RichText(
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        text: const TextSpan(
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '💜 92% match',
+                              style: TextStyle(
+                                color: Color(0xFF9C27B0),
+                              ), // Purple color for match
+                            ),
+                            TextSpan(text: ' · 🛡️ 98% trust'),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -947,7 +956,57 @@ class _MyPlanScreenState extends State<MyPlanScreen>
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          // Message Bubble (Vertical pink line style)
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border(
+                left: BorderSide(
+                  color: const Color(0xFFFA6A85).withOpacity(0.3),
+                  width: 3,
+                ),
+              ),
+            ),
+            padding: const EdgeInsets.only(left: 12, top: 2, bottom: 2),
+            child: Text(
+              'Hey! I’d love to join you for coffee ✨', // Dummy message
+              style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Divider(color: Colors.grey.shade200, height: 1),
+          const SizedBox(height: 0),
+
+          // Bill Suggestion
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'BILL SUGGESTION',
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 128, 128, 128),
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              Row(
+                children: const [
+                  Text('🤝 ', style: TextStyle(fontSize: 14)),
+                  Text(
+                    'Split (TTMM)', // Dummy bill suggestion
+                    style: TextStyle(
+                      color: Color(0xFFDE2957),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
 
           if (request['status'] == 'approved') ...[
             Container(
@@ -1024,6 +1083,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade300),
                       ),
                       child: const Center(
                         child: Text(
