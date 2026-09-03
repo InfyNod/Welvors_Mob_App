@@ -172,9 +172,10 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen>
 
   Widget _buildTab(String title, int count, int index) {
     return AnimatedBuilder(
-      animation: _tabController,
+      animation: _tabController.animation ?? _tabController,
       builder: (context, child) {
-        final isSelected = _tabController.index == index;
+        // Use animation value to update color instantly during swipe
+        final isSelected = (_tabController.animation?.value.round() ?? _tabController.index) == index;
         return Tab(
           child: Row(
             mainAxisSize: MainAxisSize.min,
