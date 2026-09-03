@@ -189,8 +189,8 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen>
               ),
               const SizedBox(width: 6),
               Container(
-                width: 20,
-                height: 20,
+                width: 18,
+                height: 19,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: isSelected
