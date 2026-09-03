@@ -1,18 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import '../../../../services/token_helper.dart';
 class ServiceFilter {
   static const String baseUrl = 'https://api.welvors.com/api';
-  // TODO: Replace with dynamic token from secure storage or auth provider when available
-  static const String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
-
   /// Fetches options for the "Looking For" filter
   static Future<Map<String, dynamic>?> fetchLookingForOptions() async {
     try {
       final url = Uri.parse('$baseUrl/onboarding/intention/get');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       if (response.statusCode == 200) {
@@ -66,7 +63,7 @@ class ServiceFilter {
     try {
       final url = Uri.parse('$baseUrl/admin/languages/get-All');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       debugPrint('====== [LANGUAGES API RESPONSE] ======');
@@ -91,7 +88,7 @@ class ServiceFilter {
     try {
       final url = Uri.parse('$baseUrl/question/fetch?category=DATING&screen=LIFESTYLE');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       debugPrint('====== [LIFESTYLE API RESPONSE] ======');
@@ -115,7 +112,7 @@ class ServiceFilter {
     try {
       final url = Uri.parse('$baseUrl/religion/get');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       debugPrint('====== [RELIGION API RESPONSE] ======');
@@ -140,7 +137,7 @@ class ServiceFilter {
     try {
       final url = Uri.parse('$baseUrl/onboarding/professions/get');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       debugPrint('====== [PROFESSION API RESPONSE] ======');
@@ -166,7 +163,7 @@ class ServiceFilter {
     try {
       final url = Uri.parse('$baseUrl/admin/family-incomes/get-all');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       if (response.statusCode == 200) {
@@ -188,7 +185,7 @@ class ServiceFilter {
     try {
       final url = Uri.parse('$baseUrl/question/fetch?category=DATING&screen=NETWORKING_INTENT');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       if (response.statusCode == 200) {
@@ -213,7 +210,7 @@ class ServiceFilter {
     try {
       final url = Uri.parse('$baseUrl/admin/ambitions/get');
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
       if (response.statusCode == 200) {

@@ -58,7 +58,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
           (await TokenHelper.getToken() ?? "");
 
       final url = Uri.parse(
-          'https://dating-app-backend-plum.vercel.app/api/user/details/${widget.userId}');
+          'https://api.welvors.com/api/user/details/${widget.userId}');
 
       final response = await http.get(
         url,

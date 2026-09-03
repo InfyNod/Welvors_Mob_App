@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 class DateNowApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
-  static const String vercelBaseUrl = baseUrl;
+  
 
   // Hardcoded token for now as per home_api_service.dart pattern
   static Future<Map<String, String>> get _headers async {
@@ -144,7 +144,7 @@ class DateNowApiService {
   }) async {
     try {
       final url = Uri.parse(
-        '$vercelBaseUrl/user/date-plans/history?page=$page&limit=$limit',
+        '$baseUrl/user/date-plans/history?page=$page&limit=$limit',
       );
       final response = await http.get(url, headers: await _headers);
 
@@ -165,7 +165,7 @@ class DateNowApiService {
   // GET Request to fetch history plan details
   static Future<Map<String, dynamic>?> getHistoryPlanDetails(String planId) async {
     try {
-      final url = Uri.parse('$vercelBaseUrl/user/history/details/$planId');
+      final url = Uri.parse('$baseUrl/user/history/details/$planId');
       final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
@@ -197,7 +197,7 @@ class DateNowApiService {
         query += '&activity=${activity.toLowerCase()}';
       }
 
-      final url = Uri.parse('$vercelBaseUrl/user/date-plans/my-plans?$query');
+      final url = Uri.parse('$baseUrl/user/date-plans/my-plans?$query');
       final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
@@ -358,10 +358,9 @@ class DateNowApiService {
     String? overrideToken,
   }) async {
     try {
-      // The user mentioned the API is on the vercel domain, which might not be deployed to production yet
-      final String vercelBaseUrl = baseUrl; //vercel link api
+      // The user mentioned the API is on the backend domain, which might not be deployed to production yet
       final url = Uri.parse(
-        '$vercelBaseUrl/user/date-plans/withdraw/$requestId',
+        '$baseUrl/user/date-plans/withdraw/$requestId',
       );
 
       final headers = overrideToken != null
@@ -374,7 +373,7 @@ class DateNowApiService {
       // We assume it's PATCH based on the other endpoints, but fallback to POST/DELETE
       var response = await http.patch(url, headers: headers);
       debugPrint(
-        'PATCH vercel response: ${response.statusCode} - ${response.body}',
+        'PATCH response: ${response.statusCode} - ${response.body}',
       );
       if (response.statusCode == 200 || response.statusCode == 201) return true;
       if (response.body.contains('"success":') ||
@@ -385,7 +384,7 @@ class DateNowApiService {
       if (response.statusCode == 404) {
         response = await http.post(url, headers: headers);
         debugPrint(
-          'POST vercel response: ${response.statusCode} - ${response.body}',
+          'POST response: ${response.statusCode} - ${response.body}',
         );
         if (response.statusCode == 200 || response.statusCode == 201)
           return true;
@@ -398,7 +397,7 @@ class DateNowApiService {
       if (response.statusCode == 404) {
         response = await http.delete(url, headers: headers);
         debugPrint(
-          'DELETE vercel response: ${response.statusCode} - ${response.body}',
+          'DELETE response: ${response.statusCode} - ${response.body}',
         );
         if (response.statusCode == 200 || response.statusCode == 201)
           return true;
@@ -544,7 +543,7 @@ class DateNowApiService {
     String comment,
   ) async {
     try {
-      final url = Uri.parse('$vercelBaseUrl/user/date-plans/$planId/report');
+      final url = Uri.parse('$baseUrl/user/date-plans/$planId/report');
       final response = await http.post(
         url,
         headers: await _headers,
@@ -568,7 +567,7 @@ class DateNowApiService {
   // PATCH Request for Cancel Date Plan
   static Future<bool> cancelDatePlan(String planId) async {
     try {
-      final url = Uri.parse('$vercelBaseUrl/user/date-plan/$planId/cancel');
+      final url = Uri.parse('$baseUrl/user/date-plan/$planId/cancel');
       final response = await http.patch(
         url,
         headers: await _headers,

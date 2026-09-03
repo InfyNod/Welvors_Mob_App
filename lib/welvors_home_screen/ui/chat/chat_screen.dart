@@ -225,7 +225,7 @@ class _ChatListViewState extends State<_ChatListView> {
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs";
 
       final uri = Uri.parse(
-        'https://dating-app-backend-plum.vercel.app/api/user/matches/new',
+        'https://api.welvors.com/api/user/matches/new',
       );
 
       final response = await http.get(
