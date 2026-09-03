@@ -89,12 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: constraints
                           .maxHeight, // Exactly fits the visible viewport
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,
                           vertical: 8.0,
                         ),
-                        child: _CardsStack(),
+                        child: _CardsStack(isPreview: widget.isPreview),
                       ),
                     ),
                     _ProfileDetailsView(profile: currentProfile),
@@ -2146,7 +2146,8 @@ class _ProfileDetailsView extends StatelessWidget {
 }
 
 class _CardsStack extends StatelessWidget {
-  const _CardsStack();
+  final bool isPreview;
+  const _CardsStack({this.isPreview = false});
 
   @override
   Widget build(BuildContext context) {
@@ -2176,7 +2177,7 @@ class _CardsStack extends StatelessWidget {
                     profile.id,
                   ); // Stable key instead of images.first
 
-                  return isFront
+                  return isFront && !isPreview
                       ? _DraggableCard(key: widgetKey, profile: profile)
                       : _StaticCard(key: widgetKey, profile: profile);
                 })

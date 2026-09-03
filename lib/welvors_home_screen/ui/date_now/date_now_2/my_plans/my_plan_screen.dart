@@ -613,14 +613,51 @@ class _MyPlanScreenState extends State<MyPlanScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
-              children:
-                  (plan['tags'] as List<dynamic>?)?.map((tag) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: _buildSmallTag(tag.toString()),
-                    );
-                  }).toList() ??
-                  [],
+              children: [
+                ...((plan['tags'] as List<dynamic>?)?.map((tag) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: _buildSmallTag(tag.toString()),
+                  );
+                }).toList() ?? []),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    // User mentioned: "uspar click krna par screen open hoga ek , jo bad mai btauga"
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFDE2957).withOpacity(0.3),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.person_add_alt_1, color: Colors.white, size: 12),
+                        SizedBox(width: 4),
+                        Text(
+                          'Invite',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -956,7 +993,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           // Message Bubble (Vertical pink line style)
           Container(
             width: double.infinity,
@@ -1006,7 +1043,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
 
           if (request['status'] == 'approved') ...[
             Container(
