@@ -46,9 +46,14 @@ class SentLikesScreen extends StatelessWidget {
 
   Widget _buildSentCard(Map<String, dynamic> card) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Color(card['statusTextColor'] ?? 0xFF9E9E9E).withOpacity(0.3),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -129,44 +134,48 @@ class SentLikesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${card['name'] ?? ''}, ${card['age'] ?? ''}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${card['name'] ?? ''}, ${card['age'] ?? ''}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDE8EF), // light pink
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.favorite, color: Color(0xFFE43A6A), size: 10),
+                          SizedBox(width: 4),
+                          Text(
+                            'You liked her',
+                            style: TextStyle(
+                              color: Color(0xFFE43A6A),
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${card['matchPercent'] ?? ''} · ${card['location'] ?? ''}',
                   style: const TextStyle(fontSize: 12, color: Colors.black54),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFDE8EF), // light pink
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.favorite, color: Color(0xFFE43A6A), size: 10),
-                      SizedBox(width: 4),
-                      Text(
-                        'You liked her',
-                        style: TextStyle(
-                          color: Color(0xFFE43A6A),
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
@@ -343,25 +352,80 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
 
     _controller.stop(); // Stop the pulsing animation
 
-    // Show popup message
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('🌹', style: TextStyle(fontSize: 16)),
-            SizedBox(width: 8),
-            Text('Rose sent successfully!'),
-          ],
-        ),
-        backgroundColor: Colors.black87,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(bottom: 30, left: 60, right: 60), // Reduce width and float higher
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        duration: const Duration(seconds: 2),
-      ),
+    // Show custom bouncy popup message
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          bottom: 120, // Slightly above the bottom
+          left: 0,
+          right: 0,
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutBack, // Bouncy pop animation
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ), // Smaller padding
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize:
+                        MainAxisSize.min, // Make width as small as possible
+                    children: [
+                      Text(
+                        '🌹',
+                        style: TextStyle(fontSize: 14),
+                      ), // Smaller emoji
+                      SizedBox(width: 6),
+                      Text(
+                        'Rose sent', // Shorter text
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12, // Smaller font
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
+
+    overlay.insert(overlayEntry);
+
+    // Auto-remove after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        overlayEntry.remove();
+      }
+    });
   }
 
   @override
