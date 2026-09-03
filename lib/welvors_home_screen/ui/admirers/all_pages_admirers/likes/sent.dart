@@ -206,22 +206,22 @@ class SentLikesScreen extends StatelessWidget {
               _buildProgressPill(
                 'SENT',
                 progressState >= 0,
-                const Color(0xFFFEF7E0), // Yellow/Orange
-                const Color(0xFFE37400),
+                const Color(0xFFFFF6E6), // bg
+                const Color(0xFF8A6011), // text
               ),
               _buildProgressLine(),
               _buildProgressPill(
                 'SEEN',
                 progressState >= 1,
-                const Color(0xFFE8F0FE), // Blue
-                const Color(0xFF1967D2),
+                const Color(0xFFE9F2FF), // bg
+                const Color(0xFF3563C1), // text
               ),
               _buildProgressLine(),
               _buildProgressPill(
                 progressState >= 2 ? 'MATCHED' : 'MATCH',
                 progressState >= 2,
-                const Color(0xFFE6F4EA),
-                const Color(0xFF1E8E3E),
+                const Color(0xFFE9F7F0), // bg
+                const Color(0xFF1B7F53), // text
               ),
             ],
           ),
