@@ -751,19 +751,48 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            plan['hostName'],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                plan['hostName'] +
+                                    (plan['pay'] != null ? ' , ' : ''),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  plan['pay'] ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 2),
-                          Text(
-                            'Host · ${plan['pay']}',
-                            style: const TextStyle(
-                              color: Colors.black54,
-                              fontSize: 12,
+                          RichText(
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            text: const TextSpan(
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              children: [
+                                TextSpan(text: 'Host · '),
+                                TextSpan(
+                                  text: '💜 88% match',
+                                  style: TextStyle(
+                                    color: Color(0xFF9C27B0),
+                                  ), // Purple color for match
+                                ),
+                                TextSpan(text: ' · 🛡️ 95% trust'),
+                              ],
                             ),
                           ),
                         ],
@@ -789,27 +818,57 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                // Message Bubble
+                const SizedBox(height: 16),
+                // Message Bubble (Vertical pink line style)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF6F4EF), // Beige
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    plan['message'],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
+                    border: Border(
+                      left: BorderSide(
+                        color: const Color(0xFFFA6A85).withOpacity(0.3),
+                        width: 3,
+                      ),
                     ),
                   ),
+                  padding: const EdgeInsets.only(left: 12, top: 2, bottom: 2),
+                  child: Text(
+                    'Hey Ananya! I’d love to join you for dinner 🍝', // Dummy message
+                    style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
+                  ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
+                Divider(color: Colors.grey.shade200, height: 1),
+                const SizedBox(height: 10),
+
+                // Bill Suggestion
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'YOUR BILL SUGGESTION',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    Row(
+                      children: const [
+                        Text('🤝 ', style: TextStyle(fontSize: 14)),
+                        Text(
+                          'She’ll pay', // Dummy bill suggestion
+                          style: TextStyle(
+                            color: Color(0xFFDE2957),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 // Status Box (Premium Slim Design)
                 Container(
                   width: double.infinity,
