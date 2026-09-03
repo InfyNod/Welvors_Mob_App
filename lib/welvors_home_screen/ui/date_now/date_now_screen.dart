@@ -89,32 +89,9 @@ class _DateNowScreenState extends State<DateNowScreen>
           for (var p in plans) {
             String activity = p['activity'] ?? 'Unknown';
 
-            // Determine default image based on activity type if photoUrl is null
-            String defaultImage =
-                'https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'; // Default walk/nature
-            final activityLower = activity.toLowerCase();
-            if (activityLower.contains('dinner')) {
-              defaultImage =
-                  'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            } else if (activityLower.contains('coffee')) {
-              defaultImage =
-                  'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            } else if (activityLower.contains('brunch')) {
-              defaultImage =
-                  'https://images.unsplash.com/photo-1543807535-eceef0bc6599?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            } else if (activityLower.contains('drink') ||
-                activityLower.contains('bar')) {
-              defaultImage =
-                  'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            } else if (activityLower.contains('trek') ||
-                activityLower.contains('hike')) {
-              defaultImage =
-                  'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            }
-
             _fetchedPlans.add({
               'id': p['id'],
-              'imageUrl': p['photoUrl'] ?? p['activityIcon'] ?? defaultImage,
+              'imageUrl': p['photoUrl'] ?? p['activityIcon'] ?? '',
               'location': 'Live · ${p['venueName'] ?? 'Unknown'}',
               'distance': p['distanceKm'] != null
                   ? '${p['distanceKm']} km away'
@@ -124,26 +101,24 @@ class _DateNowScreenState extends State<DateNowScreen>
                   : '0% match',
               'date': p['eventDate'] != null
                   ? '📅 ${p['eventDate']}'
-                  : '📅 TODAY',
+                  : '',
               'time': p['eventTime'] != null
                   ? '🕔 ${p['eventTime']}'
-                  : '🕔 TBD',
+                  : '',
               'type': activity,
               'title': p['title'] ?? p['quickTitle'] ?? 'Date Plan',
               'subtitle': p['note'] ?? '',
               'people': p['duration'] != null
                   ? '⏱️ ${p['duration']} mins'
-                  : '👥 2 people',
-              'pay': p['whoPays'] ?? '🤝 Split',
+                  : '',
+              'pay': p['whoPays'] ?? '',
               'name': p['host'] != null
-                  ? '${p['host']['name']}, ${p['host']['age']}'
+                  ? '${p['host']['name'] ?? 'User'}, ${p['host']['age'] ?? ''}'
                   : 'User',
               'userId': p['host'] != null ? (p['host']['id'] ?? p['host']['userId'] ?? p['host']['_id'] ?? p['userId']) : p['userId'],
-              'verified': true, // default for now
+              'verified': p['host'] != null && p['host']['isVerified'] == true,
               'nameSubtitle': 'Host',
-              'avatarUrl': p['host'] != null
-                  ? p['host']['profilePhoto']
-                  : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+              'avatarUrl': p['host'] != null ? (p['host']['profilePhoto'] ?? '') : '',
             });
           }
         }
@@ -800,7 +775,13 @@ class _DateNowScreenState extends State<DateNowScreen>
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage(plan['avatarUrl']),
+                        backgroundColor: Colors.grey.shade300,
+                        backgroundImage: plan['avatarUrl'] != null && plan['avatarUrl'].toString().isNotEmpty
+                            ? NetworkImage(plan['avatarUrl'])
+                            : null,
+                        child: plan['avatarUrl'] == null || plan['avatarUrl'].toString().isEmpty
+                            ? const Icon(Icons.person, color: Colors.grey)
+                            : null,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
