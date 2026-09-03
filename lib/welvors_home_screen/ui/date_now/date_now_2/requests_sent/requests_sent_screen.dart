@@ -739,84 +739,74 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Profile Row
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundImage: NetworkImage(plan['hostAvatar']),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                plan['hostName'] +
-                                    (plan['pay'] != null ? ' , ' : ''),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  plan['pay'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          RichText(
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            text: const TextSpan(
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
+                // Profile Card
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF9F9F9),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: NetworkImage(plan['hostAvatar']),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                TextSpan(text: 'Host · '),
-                                TextSpan(
-                                  text: '💜 88% match',
-                                  style: TextStyle(
-                                    color: Color(0xFF9C27B0),
-                                  ), // Purple color for match
+                                Text(
+                                  plan['hostName'] +
+                                      (plan['pay'] != null ? ' , ' : ''),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                                TextSpan(text: ' · 🛡️ 95% trust'),
+                                Expanded(
+                                  child: Text(
+                                    plan['pay'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF0F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        plan['match'],
-                        style: const TextStyle(
-                          color: Color(0xFFE43A6A),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                            const SizedBox(height: 2),
+                            RichText(
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              text: const TextSpan(
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                children: [
+                                  TextSpan(text: 'Host · '),
+                                  TextSpan(
+                                    text: '💜 88% match',
+                                    style: TextStyle(
+                                      color: Color(0xFF9C27B0),
+                                    ), // Purple color for match
+                                  ),
+                                  TextSpan(text: ' · 🛡️ 95% trust'),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 // Message Bubble (Vertical pink line style)

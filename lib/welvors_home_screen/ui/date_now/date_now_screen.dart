@@ -108,9 +108,9 @@ class _DateNowScreenState extends State<DateNowScreen>
               'type': activity,
               'title': p['title'] ?? p['quickTitle'] ?? 'Date Plan',
               'subtitle': p['note'] ?? '',
-              'people': p['duration'] != null
+              'people': (p['duration'] != null && p['duration'].toString() != '0')
                   ? '⏱️ ${p['duration']} mins'
-                  : '',
+                  : '⏱️ Flexible',
               'pay': p['whoPays'] ?? '',
               'name': p['host'] != null
                   ? '${p['host']['name'] ?? 'User'}, ${p['host']['age'] ?? ''}'

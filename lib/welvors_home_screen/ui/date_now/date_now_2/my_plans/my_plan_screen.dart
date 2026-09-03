@@ -372,7 +372,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildBoostSection(plan),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Container(
@@ -615,18 +615,22 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             child: Row(
               children: [
                 ...((plan['tags'] as List<dynamic>?)?.map((tag) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: _buildSmallTag(tag.toString()),
-                  );
-                }).toList() ?? []),
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: _buildSmallTag(tag.toString()),
+                      );
+                    }).toList() ??
+                    []),
                 const Spacer(),
                 GestureDetector(
                   onTap: () {
                     // User mentioned: "uspar click krna par screen open hoga ek , jo bad mai btauga"
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
@@ -642,7 +646,11 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                     ),
                     child: Row(
                       children: const [
-                        Icon(Icons.person_add_alt_1, color: Colors.white, size: 12),
+                        Icon(
+                          Icons.person_add_alt_1,
+                          color: Colors.white,
+                          size: 12,
+                        ),
                         SizedBox(width: 4),
                         Text(
                           'Invite',
