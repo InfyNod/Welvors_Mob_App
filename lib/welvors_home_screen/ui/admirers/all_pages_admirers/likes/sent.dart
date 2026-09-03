@@ -157,7 +157,11 @@ class SentLikesScreen extends StatelessWidget {
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.favorite, color: Color(0xFFE43A6A), size: 10),
+                          Icon(
+                            Icons.favorite,
+                            color: Color(0xFFE43A6A),
+                            size: 10,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             'You liked her',
@@ -445,7 +449,7 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
             borderRadius: BorderRadius.circular(8), // Square-ish corners
             gradient: isActive
                 ? const LinearGradient(
-                    colors: [Color(0xFFFF6B9E), Color(0xFFE43A6A)],
+                    colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   )
