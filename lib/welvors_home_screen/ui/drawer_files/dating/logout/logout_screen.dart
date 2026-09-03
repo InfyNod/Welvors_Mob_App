@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lottie/lottie.dart';
 import '../../../../../../onbording_allpage/theme/app_colors.dart';
 import '../../../../../../onbording_allpage/theme/app_text.dart';
 import '../../../../../../onbording_allpage/widgets/primary_button.dart';
 import '../edit_profile/bloc/profile_edit_cubit.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 
+import 'splash_logout.dart';
+
 class LogoutScreen extends StatelessWidget {
   const LogoutScreen({super.key});
 
-  void _handleLogout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
-    if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(context, '/landing', (route) => false);
-    }
+  void _handleLogout(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const SplashLogout()),
+    );
   }
 
   @override
@@ -61,21 +63,18 @@ class LogoutScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Emoji
+              // Lottie Animation
               Center(
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: const BoxDecoration(
-                    color: AppColors.pinkSoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Text('🚪', style: TextStyle(fontSize: 28)),
+                child: SizedBox(
+                  width: 130,
+                  height: 130,
+                  child: Lottie.asset(
+                    'assets/logout.json',
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 10),
 
               // Title
               Text(
@@ -98,111 +97,111 @@ class LogoutScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 10),
 
               // Profile Card
-              BlocBuilder<ProfileEditCubit, ProfileEditState>(
-                builder: (context, state) {
-                  final String name = state.fullName.isNotEmpty
-                      ? state.fullName.split(' ').first
-                      : 'Welvors User';
+              // BlocBuilder<ProfileEditCubit, ProfileEditState>(
+              //   builder: (context, state) {
+              //     final String name = state.fullName.isNotEmpty
+              //         ? state.fullName.split(' ').first
+              //         : 'Welvors User';
 
-                  // Construct location string
-                  final List<String> locParts = [];
-                  if (state.city.isNotEmpty) locParts.add(state.city);
-                  if (state.stateLocation.isNotEmpty)
-                    locParts.add(state.stateLocation);
-                  final String location = locParts.isEmpty
-                      ? 'India'
-                      : locParts.join(', ');
+              //     // Construct location string
+              //     final List<String> locParts = [];
+              //     if (state.city.isNotEmpty) locParts.add(state.city);
+              //     if (state.stateLocation.isNotEmpty)
+              //       locParts.add(state.stateLocation);
+              //     final String location = locParts.isEmpty
+              //         ? 'India'
+              //         : locParts.join(', ');
 
-                  final String subtitle = '$location · Platinum Member';
+              //     final String subtitle = '$location · Platinum Member';
 
-                  final photo = state.photos.firstWhere(
-                    (p) => p != null,
-                    orElse: () => null,
-                  );
+              //     final photo = state.photos.firstWhere(
+              //       (p) => p != null,
+              //       orElse: () => null,
+              //     );
 
-                  return Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: AppColors.shadow,
-                    ),
-                    child: Row(
-                      children: [
-                        // Profile Avatar
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.soft,
-                            image:
-                                photo != null && photo.url?.isNotEmpty == true
-                                ? DecorationImage(
-                                    image: NetworkImage(photo.url!),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                          ),
-                          child: (photo == null || (photo.url?.isEmpty ?? true))
-                              ? const Icon(Icons.person, color: AppColors.muted)
-                              : null,
-                        ),
-                        const SizedBox(width: 12),
+              //     return Container(
+              //       padding: const EdgeInsets.all(12),
+              //       decoration: BoxDecoration(
+              //         color: Colors.white,
+              //         borderRadius: BorderRadius.circular(16),
+              //         boxShadow: AppColors.shadow,
+              //       ),
+              //       child: Row(
+              //         children: [
+              //           // Profile Avatar
+              //           Container(
+              //             width: 48,
+              //             height: 48,
+              //             decoration: BoxDecoration(
+              //               shape: BoxShape.circle,
+              //               color: AppColors.soft,
+              //               image:
+              //                   photo != null && photo.url?.isNotEmpty == true
+              //                   ? DecorationImage(
+              //                       image: NetworkImage(photo.url!),
+              //                       fit: BoxFit.cover,
+              //                     )
+              //                   : null,
+              //             ),
+              //             child: (photo == null || (photo.url?.isEmpty ?? true))
+              //                 ? const Icon(Icons.person, color: AppColors.muted)
+              //                 : null,
+              //           ),
+              //           const SizedBox(width: 12),
 
-                        // Name & Subtitle
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name,
-                                style: AppText.h2.copyWith(fontSize: 16),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                subtitle,
-                                style: AppText.sub.copyWith(
-                                  fontSize: 11,
-                                  color: AppColors.muted,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
+              //           // Name & Subtitle
+              //           Expanded(
+              //             child: Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: [
+              //                 Text(
+              //                   name,
+              //                   style: AppText.h2.copyWith(fontSize: 16),
+              //                   maxLines: 1,
+              //                   overflow: TextOverflow.ellipsis,
+              //                 ),
+              //                 const SizedBox(height: 2),
+              //                 Text(
+              //                   subtitle,
+              //                   style: AppText.sub.copyWith(
+              //                     fontSize: 11,
+              //                     color: AppColors.muted,
+              //                   ),
+              //                   maxLines: 1,
+              //                   overflow: TextOverflow.ellipsis,
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
 
-                        // THIS DEVICE badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.pinkSoft,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            'THIS DEVICE',
-                            style: AppText.eyebrow.copyWith(
-                              color: AppColors.pinkDeep,
-                              fontSize: 9,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 32),
+              //           // THIS DEVICE badge
+              //           Container(
+              //             padding: const EdgeInsets.symmetric(
+              //               horizontal: 8,
+              //               vertical: 4,
+              //             ),
+              //             decoration: BoxDecoration(
+              //               color: AppColors.pinkSoft,
+              //               borderRadius: BorderRadius.circular(100),
+              //             ),
+              //             child: Text(
+              //               'THIS DEVICE',
+              //               style: AppText.eyebrow.copyWith(
+              //                 color: AppColors.pinkDeep,
+              //                 fontSize: 9,
+              //                 letterSpacing: 0.5,
+              //               ),
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     );
+              //   },
+              // ),
+              const SizedBox(height: 10),
 
               // WHAT STAYS SAFE
               Text(
@@ -260,37 +259,37 @@ class LogoutScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Device info block
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.soft,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 2),
-                      child: Icon(
-                        Icons.phone_iphone,
-                        size: 14,
-                        color: AppColors.ink60,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'This device · last active just now\nOther signed-in devices stay logged in.',
-                        style: AppText.sub.copyWith(
-                          fontSize: 12,
-                          color: AppColors.ink60,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.all(16),
+              //   decoration: BoxDecoration(
+              //     color: AppColors.soft,
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              //   child: Row(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       const Padding(
+              //         padding: EdgeInsets.only(top: 2),
+              //         child: Icon(
+              //           Icons.phone_iphone,
+              //           size: 14,
+              //           color: AppColors.ink60,
+              //         ),
+              //       ),
+              //       const SizedBox(width: 8),
+              //       // Expanded(
+              //       //   child: Text(
+              //       //     'This device · last active just now\nOther signed-in devices stay logged in.',
+              //       //     style: AppText.sub.copyWith(
+              //       //       fontSize: 12,
+              //       //       color: AppColors.ink60,
+              //       //       height: 1.4,
+              //       //     ),
+              //       //   ),
+              //       // ),
+              //     ],
+              //   ),
+              //),
               // End of scrollable content
             ],
           ),
