@@ -73,8 +73,7 @@ class _DateNowScreenState extends State<DateNowScreen>
       filter = 'weekend'; // Adjust if backend uses a different term for weekend
     }
 
-    final token =
-        (await TokenHelper.getToken() ?? "");
+    final token = (await TokenHelper.getToken() ?? "");
 
     final plans = await DateNowApiService.getDiscoverPlans(
       filter,
@@ -99,26 +98,30 @@ class _DateNowScreenState extends State<DateNowScreen>
               'match': p['matchScore'] != null
                   ? '${p['matchScore']['score']}% match'
                   : '0% match',
-              'date': p['eventDate'] != null
-                  ? '📅 ${p['eventDate']}'
-                  : '',
-              'time': p['eventTime'] != null
-                  ? '🕔 ${p['eventTime']}'
-                  : '',
+              'date': p['eventDate'] != null ? '📅 ${p['eventDate']}' : '',
+              'time': p['eventTime'] != null ? '🕔 ${p['eventTime']}' : '',
               'type': activity,
               'title': p['title'] ?? p['quickTitle'] ?? 'Date Plan',
               'subtitle': p['note'] ?? '',
-              'people': (p['duration'] != null && p['duration'].toString() != '0')
+              'people':
+                  (p['duration'] != null && p['duration'].toString() != '0')
                   ? '⏱️ ${p['duration']} mins'
                   : '⏱️ Flexible',
               'pay': p['whoPays'] ?? '',
               'name': p['host'] != null
                   ? '${p['host']['name'] ?? 'User'}, ${p['host']['age'] ?? ''}'
                   : 'User',
-              'userId': p['host'] != null ? (p['host']['id'] ?? p['host']['userId'] ?? p['host']['_id'] ?? p['userId']) : p['userId'],
+              'userId': p['host'] != null
+                  ? (p['host']['id'] ??
+                        p['host']['userId'] ??
+                        p['host']['_id'] ??
+                        p['userId'])
+                  : p['userId'],
               'verified': p['host'] != null && p['host']['isVerified'] == true,
               'nameSubtitle': 'Host',
-              'avatarUrl': p['host'] != null ? (p['host']['profilePhoto'] ?? '') : '',
+              'avatarUrl': p['host'] != null
+                  ? (p['host']['profilePhoto'] ?? '')
+                  : '',
             });
           }
         }
@@ -771,10 +774,14 @@ class _DateNowScreenState extends State<DateNowScreen>
                       CircleAvatar(
                         radius: 20,
                         backgroundColor: Colors.grey.shade300,
-                        backgroundImage: plan['avatarUrl'] != null && plan['avatarUrl'].toString().isNotEmpty
+                        backgroundImage:
+                            plan['avatarUrl'] != null &&
+                                plan['avatarUrl'].toString().isNotEmpty
                             ? NetworkImage(plan['avatarUrl'])
                             : null,
-                        child: plan['avatarUrl'] == null || plan['avatarUrl'].toString().isEmpty
+                        child:
+                            plan['avatarUrl'] == null ||
+                                plan['avatarUrl'].toString().isEmpty
                             ? const Icon(Icons.person, color: Colors.grey)
                             : null,
                       ),
@@ -827,7 +834,9 @@ class _DateNowScreenState extends State<DateNowScreen>
                                   plan: plan,
                                   onPlanAction: () {
                                     setState(() {
-                                      _removedPlanIds.add(plan['id'].toString());
+                                      _removedPlanIds.add(
+                                        plan['id'].toString(),
+                                      );
                                     });
                                     final remaining = _fetchedPlans
                                         .where(
@@ -845,7 +854,9 @@ class _DateNowScreenState extends State<DateNowScreen>
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Host details not available')),
+                              const SnackBar(
+                                content: Text('Host details not available'),
+                              ),
                             );
                           }
                         },

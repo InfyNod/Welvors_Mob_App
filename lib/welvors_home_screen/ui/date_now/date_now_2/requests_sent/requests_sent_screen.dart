@@ -741,7 +741,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               children: [
                 // Profile Card
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF9F9F9),
                     borderRadius: BorderRadius.circular(16),

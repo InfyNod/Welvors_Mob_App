@@ -9,7 +9,9 @@ Future<bool> showRequestDateBottomSheet(
 ) async {
   final TextEditingController messageController = TextEditingController();
   int selectedBillIndex = 0;
-  final Future<List<dynamic>?> whoPaysFuture = DateNowApiService.getOptions('WHO_PAYS');
+  final Future<List<dynamic>?> whoPaysFuture = DateNowApiService.getOptions(
+    'WHO_PAYS',
+  );
 
   final result = await showModalBottomSheet<bool>(
     context: context,
@@ -180,35 +182,44 @@ Future<bool> showRequestDateBottomSheet(
                             child: FutureBuilder<List<dynamic>?>(
                               future: whoPaysFuture,
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
                                   return const Center(
                                     child: Padding(
                                       padding: EdgeInsets.all(16.0),
-                                      child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFFE43A6A),
+                                      ),
                                     ),
                                   );
                                 }
-                                
+
                                 final options = snapshot.data ?? [];
                                 if (options.isEmpty) {
                                   return const SizedBox();
                                 }
-                                
+
                                 return Wrap(
                                   spacing: 8,
                                   runSpacing: 8,
                                   alignment: WrapAlignment.start,
-                                  children: options.asMap().entries.map((entry) {
+                                  children: options.asMap().entries.map((
+                                    entry,
+                                  ) {
                                     final index = entry.key;
                                     final optionObj = entry.value;
-                                    final label = optionObj['label'] as String? ?? '';
-                                    
+                                    final label =
+                                        optionObj['label'] as String? ?? '';
+
                                     // Extract emoji (assuming the first character is an emoji, as in "🙋 I'll pay")
                                     String emoji = '';
                                     String text = label;
                                     if (label.characters.isNotEmpty) {
                                       emoji = label.characters.first;
-                                      text = label.characters.skip(1).toString().trim();
+                                      text = label.characters
+                                          .skip(1)
+                                          .toString()
+                                          .trim();
                                     }
 
                                     return _buildSelectionChip(
@@ -332,45 +343,69 @@ Future<bool> showRequestDateBottomSheet(
                                   final options = await whoPaysFuture ?? [];
                                   String? selectedBillId;
                                   String? selectedBillLabel;
-                                  if (options.isNotEmpty && selectedBillIndex >= 0 && selectedBillIndex < options.length) {
-                                    selectedBillId = options[selectedBillIndex]['id'];
-                                    selectedBillLabel = options[selectedBillIndex]['label'];
+                                  if (options.isNotEmpty &&
+                                      selectedBillIndex >= 0 &&
+                                      selectedBillIndex < options.length) {
+                                    selectedBillId =
+                                        options[selectedBillIndex]['id'];
+                                    selectedBillLabel =
+                                        options[selectedBillIndex]['label'];
                                   }
 
                                   // Call API in the background using the correct token for this viewer
-                                  final testToken = (await TokenHelper.getToken() ?? "");
-                                  bool success = await DateNowApiService.requestDatePlan(
-                                    plan['id'],
-                                    overrideToken: testToken,
-                                    message: messageController.text,
-                                    billSuggestionId: selectedBillId,
-                                  );
-                                  
+                                  final testToken =
+                                      (await TokenHelper.getToken() ?? "");
+                                  bool success =
+                                      await DateNowApiService.requestDatePlan(
+                                        plan['id'],
+                                        overrideToken: testToken,
+                                        message: messageController.text,
+                                        billSuggestionId: selectedBillId,
+                                      );
+
                                   if (context.mounted) {
                                     Navigator.pop(context, success);
-                                    
+
                                     if (success) {
                                       // Construct sent request map
                                       final newSentRequest = {
-                                        'imageUrl': plan['imageUrl'] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                                        'imageUrl':
+                                            plan['imageUrl'] ??
+                                            'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
                                         'title': plan['title'] ?? 'Activity',
-                                        'subtitle': '${(plan['date'] as String?)?.replaceAll('📅 ', '') ?? 'Today'} · ${(plan['time'] as String?)?.replaceAll('🕔 ', '').replaceAll('🕗 ', '').replaceAll('🕙 ', '').replaceAll('🕐 ', '').replaceAll('🕘 ', '').replaceAll('🕕 ', '') ?? 'Now'} · ${plan['location'] ?? ''}',
+                                        'subtitle':
+                                            '${(plan['date'] as String?)?.replaceAll('📅 ', '') ?? 'Today'} · ${(plan['time'] as String?)?.replaceAll('🕔 ', '').replaceAll('🕗 ', '').replaceAll('🕙 ', '').replaceAll('🕐 ', '').replaceAll('🕘 ', '').replaceAll('🕕 ', '') ?? 'Now'} · ${plan['location'] ?? ''}',
                                         'hostName': plan['name'] ?? 'User',
-                                        'hostAvatar': plan['avatarUrl'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-                                        'pay': selectedBillLabel != null ? '🤝 $selectedBillLabel' : (plan['whoPays'] != null ? '🤝 ${plan['whoPays']}' : '🤝 Split (TTMM)'),
+                                        'hostAvatar':
+                                            plan['avatarUrl'] ??
+                                            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+                                        'pay': selectedBillLabel != null
+                                            ? '🤝 $selectedBillLabel'
+                                            : (plan['whoPays'] != null
+                                                  ? '🤝 ${plan['whoPays']}'
+                                                  : '🤝 Split (TTMM)'),
                                         'match': plan['match'] ?? '90%',
-                                        'message': 'You: "${messageController.text.isNotEmpty ? messageController.text : 'I would love to join!'}"',
+                                        'message':
+                                            'You: "${messageController.text.isNotEmpty ? messageController.text : 'I would love to join!'}"',
                                         'status': 'Pending',
-                                        'statusMessage': 'Waiting for ${(plan['name'] as String?)?.split(',')[0] ?? 'host'} to approve. You can withdraw anytime before they do.',
+                                        'statusMessage':
+                                            'Waiting for ${(plan['name'] as String?)?.split(',')[0] ?? 'host'} to approve. You can withdraw anytime before they do.',
                                         'isLive': true,
                                       };
-                                      
-                                      RequestsSentScreen.mySentRequests.insert(0, newSentRequest);
+
+                                      RequestsSentScreen.mySentRequests.insert(
+                                        0,
+                                        newSentRequest,
+                                      );
                                       showRequestSentBottomSheet(context, plan);
                                     } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Failed to send request. Please try again.'),
+                                          content: Text(
+                                            'Failed to send request. Please try again.',
+                                          ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
@@ -431,7 +466,7 @@ Future<bool> showRequestDateBottomSheet(
       );
     },
   );
-  
+
   return result ?? false;
 }
 
