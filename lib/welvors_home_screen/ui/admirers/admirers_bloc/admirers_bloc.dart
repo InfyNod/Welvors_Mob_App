@@ -258,9 +258,9 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'location': 'Pune',
         'timeElapsed': '2 days ago',
         'imageUrl': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
-        'statusText': 'Seen, no reply yet',
-        'statusTextColor': 0xFFE43A6A,
-        'statusBgColor': 0xFFFDE8EF,
+        'statusText': 'Seen',
+        'statusTextColor': 0xFF1967D2, // Blue
+        'statusBgColor': 0xFFE8F0FE,
         'quote': '"Your dog is adorable — mine would approve."',
         'progressState': 1,
         'actionText': 'Send a rose',

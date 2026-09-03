@@ -11,7 +11,9 @@ class SentLikesScreen extends StatelessWidget {
     return BlocBuilder<AdmirersBloc, AdmirersState>(
       builder: (context, state) {
         if (state is AdmirersLoading || state is AdmirersInitial) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)));
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+          );
         } else if (state is AdmirersLoaded) {
           final sentCards = state.sentLikes;
 
@@ -138,14 +140,14 @@ class SentLikesScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '${card['matchPercent'] ?? ''} · ${card['location'] ?? ''}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFDE8EF), // light pink
                     borderRadius: BorderRadius.circular(20),
@@ -192,7 +194,7 @@ class SentLikesScreen extends StatelessWidget {
 
   Widget _buildFooter(Map<String, dynamic> card) {
     int progressState = card['progressState'] ?? 0;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -201,11 +203,26 @@ class SentLikesScreen extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildProgressPill('SENT', progressState >= 0, const Color(0xFFE8F0FE), const Color(0xFF1967D2)),
+              _buildProgressPill(
+                'SENT',
+                progressState >= 0,
+                const Color(0xFFFEF7E0), // Yellow/Orange
+                const Color(0xFFE37400),
+              ),
               _buildProgressLine(),
-              _buildProgressPill('SEEN', progressState >= 1, const Color(0xFFFEF7E0), const Color(0xFFE37400)),
+              _buildProgressPill(
+                'SEEN',
+                progressState >= 1,
+                const Color(0xFFE8F0FE), // Blue
+                const Color(0xFF1967D2),
+              ),
               _buildProgressLine(),
-              _buildProgressPill(progressState >= 2 ? 'MATCHED' : 'MATCH', progressState >= 2, const Color(0xFFE6F4EA), const Color(0xFF1E8E3E)),
+              _buildProgressPill(
+                progressState >= 2 ? 'MATCHED' : 'MATCH',
+                progressState >= 2,
+                const Color(0xFFE6F4EA),
+                const Color(0xFF1E8E3E),
+              ),
             ],
           ),
           _buildActionButton(card),
@@ -214,19 +231,24 @@ class SentLikesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressPill(String text, bool isActive, Color activeBgColor, Color activeTextColor) {
+  Widget _buildProgressPill(
+    String text,
+    bool isActive,
+    Color activeBgColor,
+    Color activeTextColor,
+  ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: isActive ? activeBgColor : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(12), // Pill shape
       ),
       child: Text(
         text,
         style: TextStyle(
           color: isActive ? activeTextColor : Colors.grey.shade500,
-          fontSize: 9,
-          fontWeight: FontWeight.w800,
+          fontSize: 8, // Slightly smaller text
+          fontWeight: FontWeight.bold,
           letterSpacing: 0.5,
         ),
       ),
@@ -271,22 +293,38 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+  late bool _isSent;
 
   @override
   void initState() {
     super.initState();
+    _isSent = !widget.text.toLowerCase().contains('send');
+
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-    
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      duration: const Duration(milliseconds: 500),
     );
 
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
     // Only animate if it is an active "Send a rose" button
-    if (widget.text.toLowerCase().contains('send')) {
-      _controller.repeat(reverse: true);
+    if (!_isSent) {
+      _startAnimationLoop();
+    }
+  }
+
+  void _startAnimationLoop() async {
+    while (mounted && !_isSent) {
+      await _controller.forward();
+      if (!mounted || _isSent) break;
+      await _controller.reverse();
+      if (!mounted || _isSent) break;
+      await Future.delayed(
+        const Duration(seconds: 1),
+      ); // 1 second delay between pulses
     }
   }
 
@@ -296,50 +334,84 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
     super.dispose();
   }
 
+  void _handleTap() {
+    if (_isSent) return;
+
+    setState(() {
+      _isSent = true;
+    });
+
+    _controller.stop(); // Stop the pulsing animation
+
+    // Show popup message
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('🌹', style: TextStyle(fontSize: 16)),
+            SizedBox(width: 8),
+            Text('Rose sent successfully!'),
+          ],
+        ),
+        backgroundColor: Colors.black87,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 30, left: 60, right: 60), // Reduce width and float higher
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isActive = widget.text.toLowerCase().contains('send');
+    bool isActive = !_isSent;
+    String displayText = _isSent ? 'Rose sent' : widget.text;
+    Color bgColor = _isSent ? const Color(0xFFF5F5F5) : widget.baseColor;
+    Color txtColor = _isSent ? const Color(0xFF757575) : widget.textColor;
 
-    return ScaleTransition(
-      scale: isActive ? _scaleAnimation : const AlwaysStoppedAnimation(1.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8), // Square-ish corners
-          gradient: isActive
-              ? const LinearGradient(
-                  colors: [Color(0xFFFF6B9E), Color(0xFFE43A6A)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : LinearGradient(
-                  colors: [widget.baseColor, widget.baseColor],
-                ),
-          boxShadow: isActive
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFFE43A6A).withOpacity(0.4),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: _handleTap,
+      child: ScaleTransition(
+        scale: isActive ? _scaleAnimation : const AlwaysStoppedAnimation(1.0),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8), // Square-ish corners
+            gradient: isActive
+                ? const LinearGradient(
+                    colors: [Color(0xFFFF6B9E), Color(0xFFE43A6A)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   )
-                ]
-              : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('🌹', style: TextStyle(fontSize: 14)),
-            const SizedBox(width: 6),
-            Text(
-              widget.text,
-              style: TextStyle(
-                color: widget.textColor,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+                : LinearGradient(colors: [bgColor, bgColor]),
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFFE43A6A).withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('🌹', style: TextStyle(fontSize: 14)),
+              const SizedBox(width: 6),
+              Text(
+                displayText,
+                style: TextStyle(
+                  color: txtColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
