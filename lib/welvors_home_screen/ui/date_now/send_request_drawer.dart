@@ -253,7 +253,8 @@ Future<bool> showRequestDateBottomSheet(
                           const SizedBox(height: 12),
                           TextField(
                             controller: messageController,
-                            maxLines: 3,
+                            maxLength: 60,
+                            maxLines: 2,
                             decoration: InputDecoration(
                               hintText:
                                   'Hey $firstName! I\'d love to join you for walk...',
@@ -282,7 +283,7 @@ Future<bool> showRequestDateBottomSheet(
                               contentPadding: const EdgeInsets.all(16),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 2),
                           SizedBox(
                             width: double.infinity,
                             child: Wrap(
