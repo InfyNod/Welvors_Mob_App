@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import '../../../../services/token_helper.dart';
 
 class EventApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
 
-  // Hardcoded token for now as per other api services
-  static const String _token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
-
-  static Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_token',
-      };
+  static Future<Map<String, String>> get _headers async {
+    final token = await TokenHelper.getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
 
   static Future<Map<String, dynamic>?> getEvents({
     String? eventType,
@@ -37,7 +37,7 @@ class EventApiService {
         urlString += '?${queryParams.join('&')}';
       }
       final url = Uri.parse(urlString);
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -54,7 +54,7 @@ class EventApiService {
   static Future<Map<String, dynamic>?> getEventDetails(String eventId) async {
     try {
       final url = Uri.parse('$baseUrl/admin/events/details/$eventId');
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -70,7 +70,7 @@ class EventApiService {
   static Future<Map<String, dynamic>?> getChatConversations() async {
     try {
       final url = Uri.parse('$baseUrl/user/chat/conversations');
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -91,7 +91,7 @@ class EventApiService {
         urlString += '?status=$status';
       }
       final url = Uri.parse(urlString);
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
