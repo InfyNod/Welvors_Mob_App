@@ -32,7 +32,7 @@ class SentLikesScreen extends StatelessWidget {
           return ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             itemCount: sentCards.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            separatorBuilder: (context, index) => const SizedBox(height: 15),
             itemBuilder: (context, index) {
               final card = sentCards[index];
               return _buildSentCard(card);
@@ -46,7 +46,6 @@ class SentLikesScreen extends StatelessWidget {
 
   Widget _buildSentCard(Map<String, dynamic> card) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
