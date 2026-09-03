@@ -1,3 +1,4 @@
+import '../../services/token_helper.dart';
 import 'package:flutter/material.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
 import 'date_api_service/date_now_api_service.dart';
@@ -327,7 +328,7 @@ Future<bool> showRequestDateBottomSheet(
                                 borderRadius: BorderRadius.circular(16),
                                 onTap: () async {
                                   // Call API in the background using the correct token for this viewer
-                                  final testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+                                  final testToken = (await TokenHelper.getToken() ?? "");
                                   bool success = await DateNowApiService.requestDatePlan(plan['id'], overrideToken: testToken);
                                   
                                   if (context.mounted) {

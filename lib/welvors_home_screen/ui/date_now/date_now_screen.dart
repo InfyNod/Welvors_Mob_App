@@ -1,3 +1,4 @@
+import '../../services/token_helper.dart';
 import 'package:flutter/material.dart';
 import 'send_request_drawer.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
@@ -73,7 +74,7 @@ class _DateNowScreenState extends State<DateNowScreen>
     }
 
     final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+        (await TokenHelper.getToken() ?? "");
 
     final plans = await DateNowApiService.getDiscoverPlans(
       filter,
@@ -911,7 +912,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                         icon: const Icon(Icons.close, color: Color(0xFFE43A6A)),
                         onPressed: () async {
                           final testToken =
-                              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+                              (await TokenHelper.getToken() ?? "");
 
                           // Optional UI feedback or just remove immediately for perceived speed
                           setState(() {

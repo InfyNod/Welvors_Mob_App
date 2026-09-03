@@ -1,3 +1,4 @@
+import '../../../../services/token_helper.dart';
 import 'package:flutter/material.dart';
 import '../post_a_plan/activity_1.dart';
 import '../history/top_history_screen.dart';
@@ -27,8 +28,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   int _historyCount = 0;
 
   // Shared token for API calls in this screen
-  static const String _userToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_userToken',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
         },
       );
 
@@ -1124,7 +1124,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         url,
                         headers: {
                           'Content-Type': 'application/json',
-                          'Authorization': 'Bearer $_userToken',
+                          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
                         },
                         body: json.encode(
                           {},
@@ -1375,7 +1375,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
 
                     final success = await DateNowApiService.withdrawRequest(
                       requestId,
-                      overrideToken: _userToken,
+                      overrideToken: (await TokenHelper.getToken() ?? ""),
                     );
 
                     if (success) {

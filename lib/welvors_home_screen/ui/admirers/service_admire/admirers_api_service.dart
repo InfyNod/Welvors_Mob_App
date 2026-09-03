@@ -1,10 +1,9 @@
 import 'dart:convert';
+import '../../../services/token_helper.dart';
 import 'package:http/http.dart' as http;
 
 class AdmirersApiService {
   static const String baseUrl = 'https://api.welvors.com/api/user/admirers';
-  // Standard token provided by the user
-  static const String _token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
 
   /// Fetches Received Likes
   Future<Map<String, dynamic>> getReceivedLikes({int page = 1, int limit = 10}) async {
@@ -15,7 +14,7 @@ class AdmirersApiService {
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_token',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
         },
       );
 
@@ -38,7 +37,7 @@ class AdmirersApiService {
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_token',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
         },
       );
 
@@ -61,7 +60,7 @@ class AdmirersApiService {
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_token',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
         },
       );
 
@@ -84,7 +83,7 @@ class AdmirersApiService {
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_token',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
         },
       );
 

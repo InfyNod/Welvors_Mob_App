@@ -1,3 +1,4 @@
+import '../../../services/token_helper.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -7,13 +8,13 @@ class DateNowApiService {
   static const String vercelBaseUrl = baseUrl;
 
   // Hardcoded token for now as per home_api_service.dart pattern
-  static const String _token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
-
-  static Map<String, String> get _headers => {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer $_token',
-  };
+  static Future<Map<String, String>> get _headers async {
+    final token = await TokenHelper.getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
 
   // Example structure for API methods. You can provide the endpoints and I'll fill them in!
 
@@ -25,7 +26,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans');
       final response = await http.post(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode(data),
       );
 
@@ -52,7 +53,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId');
       final response = await http.patch(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode(data),
       );
 
@@ -79,7 +80,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/activity');
       final response = await http.patch(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode(data),
       );
 
@@ -101,7 +102,7 @@ class DateNowApiService {
   static Future<Map<String, dynamic>?> publishPlan(String planId) async {
     try {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/publish');
-      final response = await http.post(url, headers: _headers);
+      final response = await http.post(url, headers: await _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
@@ -121,7 +122,7 @@ class DateNowApiService {
   static Future<List<dynamic>?> getOptions(String type) async {
     try {
       final url = Uri.parse('$baseUrl/admin/date-now/options?type=$type');
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -145,7 +146,7 @@ class DateNowApiService {
       final url = Uri.parse(
         '$vercelBaseUrl/user/date-plans/history?page=$page&limit=$limit',
       );
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -165,7 +166,7 @@ class DateNowApiService {
   static Future<Map<String, dynamic>?> getHistoryPlanDetails(String planId) async {
     try {
       final url = Uri.parse('$vercelBaseUrl/user/history/details/$planId');
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -197,7 +198,7 @@ class DateNowApiService {
       }
 
       final url = Uri.parse('$vercelBaseUrl/user/date-plans/my-plans?$query');
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -222,7 +223,7 @@ class DateNowApiService {
 
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${overrideToken ?? _token}',
+        'Authorization': 'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
       };
 
       final response = await http.get(url, headers: headers);
@@ -260,7 +261,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/skip');
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${overrideToken ?? _token}',
+        'Authorization': 'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
       };
 
       final response = await http.post(url, headers: headers);
@@ -288,7 +289,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/request');
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${overrideToken ?? _token}',
+        'Authorization': 'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
       };
 
       final response = await http.post(url, headers: headers);
@@ -313,7 +314,7 @@ class DateNowApiService {
       final url = Uri.parse(
         '$baseUrl/user/date-plan-requests/$requestId/approve',
       );
-      final response = await http.patch(url, headers: _headers);
+      final response = await http.patch(url, headers: await _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -335,7 +336,7 @@ class DateNowApiService {
       final url = Uri.parse(
         '$baseUrl/user/date-plan-requests/$requestId/decline',
       );
-      final response = await http.patch(url, headers: _headers);
+      final response = await http.patch(url, headers: await _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -368,7 +369,7 @@ class DateNowApiService {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $overrideToken',
             }
-          : _headers;
+          : await _headers;
 
       // We assume it's PATCH based on the other endpoints, but fallback to POST/DELETE
       var response = await http.patch(url, headers: headers);
@@ -417,7 +418,7 @@ class DateNowApiService {
   static Future<Map<String, dynamic>?> getPlanRequests(String planId) async {
     try {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/requests');
-      final response = await http.get(url, headers: _headers);
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -442,7 +443,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/$planId/feedback/is_meet');
       final response = await http.post(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode({'attendanceStatus': status}),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -463,7 +464,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/$planId/feedback/met-user');
       final response = await http.put(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode({'metUserId': metUserId}),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -489,7 +490,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/feedback/experience');
       final response = await http.post(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode({
           'overallRating': overallRating,
           'personRating': personRating,
@@ -518,7 +519,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/feedback/no-show');
       final response = await http.post(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode({
           'overallRating': overallRating,
           'noShowReason': noShowReason,
@@ -546,7 +547,7 @@ class DateNowApiService {
       final url = Uri.parse('$vercelBaseUrl/user/date-plans/$planId/report');
       final response = await http.post(
         url,
-        headers: _headers,
+        headers: await _headers,
         body: json.encode({
           'reason': reason,
           'comment': comment,
@@ -570,7 +571,7 @@ class DateNowApiService {
       final url = Uri.parse('$vercelBaseUrl/user/date-plan/$planId/cancel');
       final response = await http.patch(
         url,
-        headers: _headers,
+        headers: await _headers,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -590,7 +591,7 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/admin/date-now/options?type=ACTIVITY');
       final response = await http.get(
         url,
-        headers: _headers,
+        headers: await _headers,
       );
 
       if (response.statusCode == 200) {

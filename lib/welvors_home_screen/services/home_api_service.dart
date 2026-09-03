@@ -12,8 +12,8 @@ class HomeApiService {
     Map<String, dynamic>? filters,
   }) async {
     try {
-      final token =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
       String urlStr = '$baseUrl/user/feed?limit=$limit';
       if (cursor != null && cursor.isNotEmpty) {
         urlStr += '&cursor=$cursor';
@@ -60,8 +60,8 @@ class HomeApiService {
 
   static Future<Map<String, dynamic>?> fetchUserDetails(String userId) async {
     try {
-      final token =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
 
       final url = Uri.parse('$baseUrl/user/feed/details/$userId');
       final response = await http.get(
