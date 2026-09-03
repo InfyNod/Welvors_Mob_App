@@ -667,15 +667,10 @@ class _DateNowScreenState extends State<DateNowScreen>
                       ],
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.favorite,
-                          color: Color(0xFFE43A6A), // Pink heart
-                          size: 12,
-                        ),
-                        const SizedBox(width: 4),
                         Text(
-                          plan['match'],
+                          '💜 ${plan['match']} · 🛡️ 98% trust',
                           style: const TextStyle(
                             color: Color(0xFFE43A6A),
                             fontSize: 11,

@@ -103,17 +103,24 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(
-        parent: AlwaysScrollableScrollPhysics(),
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 16),
-          _buildReceivedGrid(),
-          if (_likeCards.isNotEmpty) _buildPremiumBanner(),
-          const SizedBox(height: 24), // Bottom padding for scrolling
-        ],
+    return RefreshIndicator(
+      color: const Color(0xFFE43A6A),
+      onRefresh: () async {
+        context.read<AdmirersBloc>().add(LoadAdmirersData());
+        await Future.delayed(const Duration(milliseconds: 1500));
+      },
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            _buildReceivedGrid(),
+            if (_likeCards.isNotEmpty) _buildPremiumBanner(),
+            const SizedBox(height: 24), // Bottom padding for scrolling
+          ],
+        ),
       ),
     );
   }

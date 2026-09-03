@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
+import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 
 class SentLikesScreen extends StatelessWidget {
@@ -29,14 +30,22 @@ class SentLikesScreen extends StatelessWidget {
             );
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            itemCount: sentCards.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 15),
-            itemBuilder: (context, index) {
-              final card = sentCards[index];
-              return _buildSentCard(card);
+          return RefreshIndicator(
+            color: const Color(0xFFE43A6A),
+            onRefresh: () async {
+              context.read<AdmirersBloc>().add(LoadAdmirersData());
+              await Future.delayed(const Duration(milliseconds: 1500));
             },
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              itemCount: sentCards.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 15),
+              itemBuilder: (context, index) {
+                final card = sentCards[index];
+                return _buildSentCard(card);
+              },
+            ),
           );
         }
         return const SizedBox();

@@ -29,7 +29,6 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
 
   // Shared token for API calls in this screen
 
-
   @override
   void initState() {
     super.initState();
@@ -814,7 +813,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 // Status Box (Premium Slim Design)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     gradient: isApproved
                         ? LinearGradient(
@@ -1124,7 +1126,8 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         url,
                         headers: {
                           'Content-Type': 'application/json',
-                          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
+                          'Authorization':
+                              'Bearer ${await TokenHelper.getToken() ?? ""}',
                         },
                         body: json.encode(
                           {},

@@ -79,22 +79,13 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen>
                   Expanded(
                     child: Container(
                       color: const Color(0xFFFAFAFA),
-                      child: RefreshIndicator(
-                        color: const Color(0xFFE43A6A),
-                        onRefresh: () async {
-                          context.read<AdmirersBloc>().add(LoadAdmirersData());
-                          await Future.delayed(
-                            const Duration(milliseconds: 1500),
-                          );
-                        },
-                        child: TabBarView(
-                          controller: _tabController,
-                          physics: const BouncingScrollPhysics(),
-                          children: const [
-                            ReceivedLikesScreen(),
-                            SentLikesScreen(),
-                          ],
-                        ),
+                      child: TabBarView(
+                        controller: _tabController,
+                        physics: const BouncingScrollPhysics(),
+                        children: const [
+                          ReceivedLikesScreen(),
+                          SentLikesScreen(),
+                        ],
                       ),
                     ),
                   ),
