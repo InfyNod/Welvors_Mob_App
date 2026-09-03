@@ -15,7 +15,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
   }
 
   Future<void> _onLoadAdmirersData(LoadAdmirersData event, Emitter<AdmirersState> emit) async {
-    String currentActiveTab = 'likes';
+    String currentActiveTab = 'received';
     if (state is AdmirersLoaded) {
       currentActiveTab = (state as AdmirersLoaded).activeTab;
     }

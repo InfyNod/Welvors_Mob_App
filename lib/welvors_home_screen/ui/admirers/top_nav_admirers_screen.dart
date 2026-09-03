@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'admirers_bloc/admirers_bloc.dart';
 import 'admirers_bloc/admirers_event.dart';
 import 'admirers_bloc/admirers_state.dart';
 import 'all_pages_admirers/likes/received.dart';
-import 'all_pages_admirers/roses/rose_received.dart';
-import 'all_pages_admirers/vip+/vip_received.dart';
+import 'all_pages_admirers/likes/sent.dart';
 
 class TopNavAdmirersScreen extends StatefulWidget {
   const TopNavAdmirersScreen({super.key});
@@ -15,9 +13,10 @@ class TopNavAdmirersScreen extends StatefulWidget {
   State<TopNavAdmirersScreen> createState() => _TopNavAdmirersScreenState();
 }
 
-class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
-  late PageController _pageController;
-  final List<String> _tabKeys = ['likes', 'roses', 'vip'];
+class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final List<String> _tabKeys = ['received', 'sent'];
 
   @override
   void initState() {
@@ -28,12 +27,24 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
       initialIndex = _tabKeys.indexOf(state.activeTab);
       if (initialIndex == -1) initialIndex = 0;
     }
-    _pageController = PageController(initialPage: initialIndex);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
+
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        context.read<AdmirersBloc>().add(
+          ChangeAdmirersTab(_tabKeys[_tabController.index]),
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -43,140 +54,63 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
       backgroundColor: const Color(0xFFFAFAFA),
       body: SafeArea(
         child: BlocConsumer<AdmirersBloc, AdmirersState>(
-            listener: (context, state) {
-              if (state is AdmirersLoaded) {
-                final index = _tabKeys.indexOf(state.activeTab);
-                if (_pageController.hasClients) {
-                  final currentIndex = _pageController.page?.round() ?? 0;
-                  if (currentIndex != index) {
-                    if ((currentIndex - index).abs() > 1) {
-                      _pageController.jumpToPage(index);
-                    } else {
-                      _pageController.animateToPage(
-                        index,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    }
-                  }
-                }
+          listener: (context, state) {
+            if (state is AdmirersLoaded) {
+              final index = _tabKeys.indexOf(state.activeTab);
+              if (index != -1 && _tabController.index != index) {
+                _tabController.animateTo(index);
               }
-            },
-            builder: (context, state) {
-              if (state is AdmirersLoading || state is AdmirersInitial) {
-                return const Center(child: CircularProgressIndicator());
-              }
+            }
+          },
+          builder: (context, state) {
+            if (state is AdmirersLoading || state is AdmirersInitial) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (state is AdmirersLoaded) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildHeader(state),
-                    const SizedBox(height: 2),
-                    _buildTabs(context, state),
-                    const Divider(height: 1, color: Color(0xFFF0F0F0)),
-                    // Dynamic content based on tab via PageView
-                    Expanded(
-                      child: Container(
-                        color: const Color(0xFFFAFAFA),
-                        child: CustomRefreshIndicator(
-                              offsetToArmed: 80,
-                              onRefresh: () async {
-                                context.read<AdmirersBloc>().add(LoadAdmirersData());
-                                await Future.delayed(const Duration(milliseconds: 1500)); // Smooth loading experience
-                              },
-                              notificationPredicate: (ScrollNotification notification) {
-                                return notification.metrics.axis == Axis.vertical;
-                              },
-                              builder: (BuildContext context, Widget child, IndicatorController controller) {
-                                return Stack(
-                                  children: [
-                                    child, // Keeps the list in place (does not push it far down)
-
-                                    Positioned(
-                                      top: -50 + (controller.value * 70), // Gently drops from just under the tabs
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: AnimatedBuilder(
-                                          animation: controller,
-                                          builder: (context, _) {
-                                            // Smooth heartbeat effect
-                                            double scale = controller.isDragging || controller.isArmed
-                                                ? controller.value.clamp(0.0, 1.0)
-                                                : (controller.isLoading ? 1.05 : 0.0);
-
-                                            return Transform.scale(
-                                              scale: scale,
-                                              child: Container(
-                                                height: 46,
-                                                width: 46,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  shape: BoxShape.circle,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: const Color(0xFFE85A7A).withOpacity(0.2),
-                                                      blurRadius: 10,
-                                                      spreadRadius: 2,
-                                                      offset: const Offset(0, 3),
-                                                    )
-                                                  ],
-                                                ),
-                                                child: Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-                                                    if (!controller.isIdle)
-                                                      SizedBox(
-                                                        width: 46,
-                                                        height: 46,
-                                                        child: CircularProgressIndicator(
-                                                          value: controller.isLoading ? null : controller.value.clamp(0.0, 1.0),
-                                                          strokeWidth: 2.5,
-                                                          valueColor: const AlwaysStoppedAnimation(Color(0xFFE85A7A)),
-                                                        ),
-                                                      ),
-                                                    const Text('🌹', style: TextStyle(fontSize: 20)),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                              child: PageView(
-                                controller: _pageController,
-                                onPageChanged: (index) {
-                                  context.read<AdmirersBloc>().add(
-                                    ChangeAdmirersTab(_tabKeys[index]),
-                                  );
-                                },
-                                children: const [
-                                  ReceivedLikesScreen(),
-                                  ReceivedRosesScreen(),
-                                  VipReceivedScreen(),
-                                ],
-                              ),
-                            ),
-                          ),
+            if (state is AdmirersLoaded) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildHeader(state),
+                  const SizedBox(height: 2),
+                  _buildTabBar(state),
+                  const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                  // Dynamic content based on tab via TabBarView
+                  Expanded(
+                    child: Container(
+                      color: const Color(0xFFFAFAFA),
+                      child: RefreshIndicator(
+                        color: const Color(0xFFE43A6A),
+                        onRefresh: () async {
+                          context.read<AdmirersBloc>().add(LoadAdmirersData());
+                          await Future.delayed(
+                            const Duration(milliseconds: 1500),
+                          );
+                        },
+                        child: TabBarView(
+                          controller: _tabController,
+                          physics: const BouncingScrollPhysics(),
+                          children: const [
+                            ReceivedLikesScreen(),
+                            SentLikesScreen(),
+                          ],
                         ),
-                  ],
-                );
-              }
-              return const SizedBox();
-            },
-          ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return const SizedBox();
+          },
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildHeader(AdmirersLoaded state) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 12, bottom: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,115 +151,67 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen> {
     );
   }
 
-  Widget _buildTabs(BuildContext context, AdmirersLoaded state) {
-    final tabs = [
-      {
-        'label': '❤️Likes',
-        'count': state.likesCount.toString(),
-        'key': 'likes',
-      },
-      {
-        'label': '🌹Roses',
-        'count': state.rosesCount.toString(),
-        'key': 'roses',
-      },
-      {'label': '👑VIP+', 'count': '', 'key': 'vip'},
-    ];
+  Widget _buildTabBar(AdmirersLoaded state) {
+    return TabBar(
+      controller: _tabController,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 12),
+      indicatorColor: const Color(0xFFE43A6A),
+      indicatorWeight: 3,
+      indicatorSize: TabBarIndicatorSize.label,
+      dividerColor: Colors.transparent, // Hides default grey bottom line
+      splashFactory: NoSplash.splashFactory,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
+      physics: const BouncingScrollPhysics(),
+      tabs: [
+        _buildTab('Received', state.likesCount, 0),
+        _buildTab('Sent', state.sentLikes.length, 1),
+      ],
+    );
+  }
 
-    final int selectedIndex = _tabKeys.indexOf(state.activeTab);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final double parentWidth = constraints.maxWidth;
-          final double itemWidth = parentWidth / tabs.length;
-
-          double indicatorWidth;
-          if (selectedIndex == 0) {
-            indicatorWidth = 90; // "❤️Likes 36"
-          } else if (selectedIndex == 1) {
-            indicatorWidth = 85; // "🌹Roses 3"
-          } else {
-            indicatorWidth = 60; // "👑VIP+"
-          }
-
-          double indicatorCenter =
-              (selectedIndex * itemWidth) + (itemWidth / 2);
-
-          return Stack(
+  Widget _buildTab(String title, int count, int index) {
+    return AnimatedBuilder(
+      animation: _tabController,
+      builder: (context, child) {
+        final isSelected = _tabController.index == index;
+        return Tab(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: List.generate(tabs.length, (index) {
-                  final tab = tabs[index];
-                  final isActive = selectedIndex == index;
-                  final textColor = isActive
-                      ? const Color(0xFFE85A7A)
-                      : Colors.grey.shade600;
-
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        context.read<AdmirersBloc>().add(
-                          ChangeAdmirersTab(tab['key']!),
-                        );
-                      },
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              tab['label']!,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: isActive
-                                    ? FontWeight.bold
-                                    : FontWeight.w600,
-                                color: textColor,
-                              ),
-                            ),
-                            if (tab['count']!.isNotEmpty) ...[
-                              const SizedBox(width: 4),
-                              Text(
-                                tab['count']!,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFFE85A7A),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
+              Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? const Color(0xFFE43A6A) : Colors.black54,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
               ),
-              AnimatedPositioned(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                bottom: 0,
-                left: indicatorCenter - (indicatorWidth / 2),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  height: 3,
-                  width: indicatorWidth,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE85A7A),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(3),
-                    ),
+              const SizedBox(width: 6),
+              Container(
+                width: 20,
+                height: 20,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFFE43A6A)
+                      : Colors.grey.shade400,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  count > 99 ? '99+' : count.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

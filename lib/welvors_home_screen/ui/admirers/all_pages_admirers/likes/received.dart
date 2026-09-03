@@ -5,7 +5,6 @@ import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import 'reveal_drawer.dart';
-import 'sent.dart';
 
 class ReceivedLikesScreen extends StatefulWidget {
   const ReceivedLikesScreen({super.key});
@@ -15,8 +14,6 @@ class ReceivedLikesScreen extends StatefulWidget {
 }
 
 class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
-  int _selectedTab = 0; // 0 for Received, 1 for Sent
-
   List<Map<String, dynamic>> _likeCards = [];
   bool _isInitialized = false;
 
@@ -113,100 +110,9 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
       child: Column(
         children: [
           const SizedBox(height: 16),
-          _buildToggle(),
-          const SizedBox(height: 16),
-          _selectedTab == 0 ? _buildReceivedGrid() : const SentLikesScreen(),
-          if (_selectedTab == 0 && _likeCards.isNotEmpty) _buildPremiumBanner(),
+          _buildReceivedGrid(),
+          if (_likeCards.isNotEmpty) _buildPremiumBanner(),
           const SizedBox(height: 24), // Bottom padding for scrolling
-        ],
-      ),
-    );
-  }
-
-  Widget _buildToggle() {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ), // Aligned with grid padding
-      height: 48,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEBEBEB),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: AnimatedAlign(
-              alignment: _selectedTab == 0
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight,
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOutCubic,
-              child: FractionallySizedBox(
-                widthFactor: 0.5,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => setState(() => _selectedTab = 0),
-                  child: Center(
-                    child: AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 200),
-                      style: TextStyle(
-                        color: _selectedTab == 0
-                            ? const Color(0xFFE85A7A)
-                            : Colors.grey.shade600,
-                        fontWeight: _selectedTab == 0
-                            ? FontWeight.bold
-                            : FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                      child: const Text('Received'),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => setState(() => _selectedTab = 1),
-                  child: Center(
-                    child: AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 200),
-                      style: TextStyle(
-                        color: _selectedTab == 1
-                            ? const Color(0xFFE85A7A)
-                            : Colors.grey.shade600,
-                        fontWeight: _selectedTab == 1
-                            ? FontWeight.bold
-                            : FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                      child: const Text('Sent'),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
