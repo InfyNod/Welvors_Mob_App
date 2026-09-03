@@ -9,6 +9,7 @@ Future<bool> showRequestDateBottomSheet(
 ) async {
   final TextEditingController messageController = TextEditingController();
   int selectedBillIndex = 0;
+  final Future<List<dynamic>?> whoPaysFuture = DateNowApiService.getOptions('WHO_PAYS');
 
   final result = await showModalBottomSheet<bool>(
     context: context,
@@ -176,52 +177,53 @@ Future<bool> showRequestDateBottomSheet(
                           const SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              alignment: WrapAlignment.start,
-                              children: [
-                                _buildSelectionChip(
-                                  '🙋‍♂️',
-                                  'I\'ll pay the bill',
-                                  selectedBillIndex == 0,
-                                  () {
-                                    setModalState(() {
-                                      selectedBillIndex = 0;
-                                    });
-                                  },
-                                ),
-                                _buildSelectionChip(
-                                  '🤝',
-                                  'Let\'s do TTMM',
-                                  selectedBillIndex == 1,
-                                  () {
-                                    setModalState(() {
-                                      selectedBillIndex = 1;
-                                    });
-                                  },
-                                ),
-                                _buildSelectionChip(
-                                  '☕',
-                                  'I\'ve got the coffee',
-                                  selectedBillIndex == 2,
-                                  () {
-                                    setModalState(() {
-                                      selectedBillIndex = 2;
-                                    });
-                                  },
-                                ),
-                                _buildSelectionChip(
-                                  '🤷‍♂️',
-                                  'Decide there',
-                                  selectedBillIndex == 3,
-                                  () {
-                                    setModalState(() {
-                                      selectedBillIndex = 3;
-                                    });
-                                  },
-                                ),
-                              ],
+                            child: FutureBuilder<List<dynamic>?>(
+                              future: whoPaysFuture,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(16.0),
+                                      child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                                    ),
+                                  );
+                                }
+                                
+                                final options = snapshot.data ?? [];
+                                if (options.isEmpty) {
+                                  return const SizedBox();
+                                }
+                                
+                                return Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  alignment: WrapAlignment.start,
+                                  children: options.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final optionObj = entry.value;
+                                    final label = optionObj['label'] as String? ?? '';
+                                    
+                                    // Extract emoji (assuming the first character is an emoji, as in "🙋 I'll pay")
+                                    String emoji = '';
+                                    String text = label;
+                                    if (label.characters.isNotEmpty) {
+                                      emoji = label.characters.first;
+                                      text = label.characters.skip(1).toString().trim();
+                                    }
+
+                                    return _buildSelectionChip(
+                                      emoji,
+                                      text,
+                                      selectedBillIndex == index,
+                                      () {
+                                        setModalState(() {
+                                          selectedBillIndex = index;
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                );
+                              },
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -327,9 +329,22 @@ Future<bool> showRequestDateBottomSheet(
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(16),
                                 onTap: () async {
+                                  final options = await whoPaysFuture ?? [];
+                                  String? selectedBillId;
+                                  String? selectedBillLabel;
+                                  if (options.isNotEmpty && selectedBillIndex >= 0 && selectedBillIndex < options.length) {
+                                    selectedBillId = options[selectedBillIndex]['id'];
+                                    selectedBillLabel = options[selectedBillIndex]['label'];
+                                  }
+
                                   // Call API in the background using the correct token for this viewer
                                   final testToken = (await TokenHelper.getToken() ?? "");
-                                  bool success = await DateNowApiService.requestDatePlan(plan['id'], overrideToken: testToken);
+                                  bool success = await DateNowApiService.requestDatePlan(
+                                    plan['id'],
+                                    overrideToken: testToken,
+                                    message: messageController.text,
+                                    billSuggestionId: selectedBillId,
+                                  );
                                   
                                   if (context.mounted) {
                                     Navigator.pop(context, success);
@@ -342,7 +357,7 @@ Future<bool> showRequestDateBottomSheet(
                                         'subtitle': '${(plan['date'] as String?)?.replaceAll('📅 ', '') ?? 'Today'} · ${(plan['time'] as String?)?.replaceAll('🕔 ', '').replaceAll('🕗 ', '').replaceAll('🕙 ', '').replaceAll('🕐 ', '').replaceAll('🕘 ', '').replaceAll('🕕 ', '') ?? 'Now'} · ${plan['location'] ?? ''}',
                                         'hostName': plan['name'] ?? 'User',
                                         'hostAvatar': plan['avatarUrl'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-                                        'pay': plan['whoPays'] != null ? '🤝 ${plan['whoPays']}' : '🤝 Split (TTMM)',
+                                        'pay': selectedBillLabel != null ? '🤝 $selectedBillLabel' : (plan['whoPays'] != null ? '🤝 ${plan['whoPays']}' : '🤝 Split (TTMM)'),
                                         'match': plan['match'] ?? '90%',
                                         'message': 'You: "${messageController.text.isNotEmpty ? messageController.text : 'I would love to join!'}"',
                                         'status': 'Pending',

@@ -283,6 +283,8 @@ class DateNowApiService {
   // POST Request to send date request
   static Future<bool> requestDatePlan(
     String planId, {
+    String? message,
+    String? billSuggestionId,
     String? overrideToken,
   }) async {
     try {
@@ -292,7 +294,15 @@ class DateNowApiService {
         'Authorization': 'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
       };
 
-      final response = await http.post(url, headers: headers);
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode({
+          if (message != null && message.isNotEmpty) 'message': message,
+          if (billSuggestionId != null && billSuggestionId.isNotEmpty)
+            'billSuggestionId': billSuggestionId,
+        }),
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
