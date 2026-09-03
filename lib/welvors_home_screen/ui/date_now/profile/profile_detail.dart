@@ -17,6 +17,9 @@ class ProfileDetailHomeBloc extends Bloc<HomeEvent, HomeState> implements HomeBl
       emit(HomeLoaded(profiles: [profile]));
     });
   }
+
+  @override
+  bool get hasSwipedProfiles => false;
 }
 
 class ProfileDetailScreen extends StatefulWidget {

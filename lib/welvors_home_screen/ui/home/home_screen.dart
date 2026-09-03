@@ -533,7 +533,7 @@ class _ProfileDetailsView extends StatelessWidget {
                               Icons.location_on_outlined,
                               profile.location.split(', ').first,
                               profile.location.split(', ').length > 1
-                                  ? profile.location.split(', ')[1]
+                                  ? profile.location.split(', ').skip(1).join(', ')
                                   : '',
                               itemWidth,
                               stacked: true,
@@ -2430,29 +2430,34 @@ class _ProfileCardUI extends StatelessWidget {
           Positioned(
             top: 16,
             left: 16,
-            child: GestureDetector(
-              onTap: () {
-                context.read<HomeBloc>().add(UndoSwipeEvent());
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.95),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (!context.read<HomeBloc>().hasSwipedProfiles) return const SizedBox.shrink();
+                return GestureDetector(
+                  onTap: () {
+                    context.read<HomeBloc>().add(UndoSwipeEvent());
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.95),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.replay_rounded,
-                  size: 22,
-                  color: Colors.orange.shade500,
-                ),
-              ),
+                    child: Icon(
+                      Icons.replay_rounded,
+                      size: 22,
+                      color: Colors.orange.shade500,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           // Top-right diamond icon

@@ -87,9 +87,21 @@ class ProfileModel extends Equatable {
       }
     }
 
-    String city = '';
+    String loc = '';
     if (json['profile'] != null) {
-      city = json['profile']['city'] ?? '';
+      final p = json['profile'];
+      List<String> locParts = [];
+      if (p['area'] != null && p['area'].toString().isNotEmpty) locParts.add(p['area'].toString());
+      if (p['city'] != null && p['city'].toString().isNotEmpty) locParts.add(p['city'].toString());
+      if (p['state'] != null && p['state'].toString().isNotEmpty) locParts.add(p['state'].toString());
+      loc = locParts.join(', ');
+    } else if (json['location'] != null) {
+      final l = json['location'];
+      List<String> locParts = [];
+      if (l['area'] != null && l['area'].toString().isNotEmpty) locParts.add(l['area'].toString());
+      if (l['city'] != null && l['city'].toString().isNotEmpty) locParts.add(l['city'].toString());
+      if (l['state'] != null && l['state'].toString().isNotEmpty) locParts.add(l['state'].toString());
+      loc = locParts.join(', ');
     }
 
     String profession = '';
@@ -103,7 +115,7 @@ class ProfileModel extends Equatable {
       videoUrl: parsedVideo,
       name: json['full_name'] ?? json['fullName'] ?? 'Unknown',
       age: json['age'] ?? 0,
-      location: city,
+      location: loc,
       job: profession,
       intent: 'New friends', // Default or parse if available
       matchPercentage: '${json['matchScore'] ?? 0}% Match',
@@ -138,11 +150,12 @@ class ProfileModel extends Equatable {
     }
 
     String loc = this.location;
-    if (details['city'] != null) {
-      loc = details['city'];
-      if (details['state'] != null) {
-        loc += ', ${details['state']}';
-      }
+    if (details['area'] != null || details['city'] != null || details['state'] != null) {
+      List<String> locParts = [];
+      if (details['area'] != null && details['area'].toString().isNotEmpty) locParts.add(details['area'].toString());
+      if (details['city'] != null && details['city'].toString().isNotEmpty) locParts.add(details['city'].toString());
+      if (details['state'] != null && details['state'].toString().isNotEmpty) locParts.add(details['state'].toString());
+      if (locParts.isNotEmpty) loc = locParts.join(', ');
     }
 
     List<Map<String, String>> parsedPrompts = [];

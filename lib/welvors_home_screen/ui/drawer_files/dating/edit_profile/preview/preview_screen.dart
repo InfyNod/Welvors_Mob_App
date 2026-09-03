@@ -16,6 +16,9 @@ class PreviewHomeBloc extends Bloc<HomeEvent, HomeState> implements HomeBloc {
       emit(HomeLoaded(profiles: [profile]));
     });
   }
+
+  @override
+  bool get hasSwipedProfiles => false;
 }
 
 class PreviewScreen extends StatelessWidget {
