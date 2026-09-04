@@ -5,9 +5,23 @@ import 'package:flutter/foundation.dart';
 
 class DateNowApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
-  
 
   // Hardcoded token for now as per home_api_service.dart pattern
+  static Future<Map<String, dynamic>?> inviteToDatePlan(String datePlanId, String receiverId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/date-plan/$datePlanId/invite'),
+        headers: await _headers,
+        body: jsonEncode({'receiverId': receiverId}),
+      );
+
+      debugPrint('Date Plan Invite Status: ${response.statusCode} - ${response.body}');
+      return jsonDecode(response.body);
+    } catch (e) {
+      debugPrint('Error inviting to date plan: $e');
+      return {'success': false, 'message': 'Network error occurred'};
+    }
+  }
   static Future<Map<String, String>> get _headers async {
     final token = await TokenHelper.getToken();
     return {
@@ -163,7 +177,9 @@ class DateNowApiService {
   }
 
   // GET Request to fetch history plan details
-  static Future<Map<String, dynamic>?> getHistoryPlanDetails(String planId) async {
+  static Future<Map<String, dynamic>?> getHistoryPlanDetails(
+    String planId,
+  ) async {
     try {
       final url = Uri.parse('$baseUrl/user/history/details/$planId');
       final response = await http.get(url, headers: await _headers);
@@ -219,11 +235,14 @@ class DateNowApiService {
     String? overrideToken,
   }) async {
     try {
-      final url = Uri.parse('$baseUrl/user/date-plans/discover?filter=$filter&limit=15');
+      final url = Uri.parse(
+        '$baseUrl/user/date-plans/discover?filter=$filter&limit=15',
+      );
 
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
+        'Authorization':
+            'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
       };
 
       final response = await http.get(url, headers: headers);
@@ -261,7 +280,8 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/skip');
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
+        'Authorization':
+            'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
       };
 
       final response = await http.post(url, headers: headers);
@@ -291,7 +311,8 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/request');
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
+        'Authorization':
+            'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
       };
 
       final response = await http.post(
@@ -369,9 +390,7 @@ class DateNowApiService {
   }) async {
     try {
       // The user mentioned the API is on the backend domain, which might not be deployed to production yet
-      final url = Uri.parse(
-        '$baseUrl/user/date-plans/withdraw/$requestId',
-      );
+      final url = Uri.parse('$baseUrl/user/date-plans/withdraw/$requestId');
 
       final headers = overrideToken != null
           ? {
@@ -382,9 +401,7 @@ class DateNowApiService {
 
       // We assume it's PATCH based on the other endpoints, but fallback to POST/DELETE
       var response = await http.patch(url, headers: headers);
-      debugPrint(
-        'PATCH response: ${response.statusCode} - ${response.body}',
-      );
+      debugPrint('PATCH response: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) return true;
       if (response.body.contains('"success":') ||
           response.body.contains('not found'))
@@ -393,9 +410,7 @@ class DateNowApiService {
       // If 404 HTML, try POST on Vercel
       if (response.statusCode == 404) {
         response = await http.post(url, headers: headers);
-        debugPrint(
-          'POST response: ${response.statusCode} - ${response.body}',
-        );
+        debugPrint('POST response: ${response.statusCode} - ${response.body}');
         if (response.statusCode == 200 || response.statusCode == 201)
           return true;
         if (response.body.contains('"success":') ||
@@ -458,7 +473,9 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to submit feedback: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to submit feedback: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -468,7 +485,10 @@ class DateNowApiService {
   }
 
   // PUT Request for Who came to meet you screen
-  static Future<bool> submitFeedbackMetUser(String planId, String metUserId) async {
+  static Future<bool> submitFeedbackMetUser(
+    String planId,
+    String metUserId,
+  ) async {
     try {
       final url = Uri.parse('$baseUrl/user/$planId/feedback/met-user');
       final response = await http.put(
@@ -479,7 +499,9 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to submit feedback met-user: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to submit feedback met-user: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -496,7 +518,9 @@ class DateNowApiService {
     List<String> experienceTags,
   ) async {
     try {
-      final url = Uri.parse('$baseUrl/user/date-plans/$planId/feedback/experience');
+      final url = Uri.parse(
+        '$baseUrl/user/date-plans/$planId/feedback/experience',
+      );
       final response = await http.post(
         url,
         headers: await _headers,
@@ -509,7 +533,9 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to submit experience rating: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to submit experience rating: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -525,7 +551,9 @@ class DateNowApiService {
     String noShowReason,
   ) async {
     try {
-      final url = Uri.parse('$baseUrl/user/date-plans/$planId/feedback/no-show');
+      final url = Uri.parse(
+        '$baseUrl/user/date-plans/$planId/feedback/no-show',
+      );
       final response = await http.post(
         url,
         headers: await _headers,
@@ -537,7 +565,9 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to submit no-show rating: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to submit no-show rating: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -557,15 +587,14 @@ class DateNowApiService {
       final response = await http.post(
         url,
         headers: await _headers,
-        body: json.encode({
-          'reason': reason,
-          'comment': comment,
-        }),
+        body: json.encode({'reason': reason, 'comment': comment}),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to submit report issue: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to submit report issue: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -578,14 +607,13 @@ class DateNowApiService {
   static Future<bool> cancelDatePlan(String planId) async {
     try {
       final url = Uri.parse('$baseUrl/user/date-plan/$planId/cancel');
-      final response = await http.patch(
-        url,
-        headers: await _headers,
-      );
+      final response = await http.patch(url, headers: await _headers);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint('Failed to cancel date plan: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Failed to cancel date plan: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -598,10 +626,7 @@ class DateNowApiService {
   static Future<List<dynamic>?> getActivityOptions() async {
     try {
       final url = Uri.parse('$baseUrl/admin/date-now/options?type=ACTIVITY');
-      final response = await http.get(
-        url,
-        headers: await _headers,
-      );
+      final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -609,7 +634,9 @@ class DateNowApiService {
           return data['data'];
         }
       }
-      debugPrint('Failed to fetch activity options: ${response.statusCode} - ${response.body}');
+      debugPrint(
+        'Failed to fetch activity options: ${response.statusCode} - ${response.body}',
+      );
       return null;
     } catch (e) {
       debugPrint('Error fetching activity options: $e');

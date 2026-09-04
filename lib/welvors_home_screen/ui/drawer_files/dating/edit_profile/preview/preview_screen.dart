@@ -271,6 +271,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
               .map((p) => p['media_url']?.toString() ?? '')
               .toList();
 
+          List<String> locParts = [];
+          if (profileData['area'] != null && profileData['area'].toString().isNotEmpty) locParts.add(extractString(profileData['area']));
+          if (profileData['city'] != null && profileData['city'].toString().isNotEmpty) locParts.add(extractString(profileData['city']));
+          if (profileData['state'] != null && profileData['state'].toString().isNotEmpty) locParts.add(extractString(profileData['state']));
+          String combinedLocation = locParts.join(', ');
+
           // Create base profile. We use fallback values in case the API doesn't provide them.
           final baseProfile = ProfileModel(
             id: userId,
@@ -286,7 +292,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             age: data['age'] is int
                 ? data['age']
                 : (int.tryParse(data['age']?.toString() ?? '') ?? 25),
-            location: extractString(profileData['city']),
+            location: combinedLocation,
             job: '',
             intent: extractString(
               profileData['lookingFor'] ?? data['lookingFor'],
@@ -300,6 +306,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
           final Map<String, dynamic> cleanDetails = {
             'fullName': extractString(data['full_name']),
             'age': data['age'],
+            'area': extractString(profileData['area']),
             'city': extractString(profileData['city']),
             'state': extractString(profileData['state']),
             'career': mappedCareer,

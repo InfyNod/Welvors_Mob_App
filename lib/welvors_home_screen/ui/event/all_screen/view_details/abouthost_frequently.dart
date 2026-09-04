@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
-import 'Invite_match_drawer.dart';
+import 'Invite_screen.dart';
 
 class AboutHostAndFAQSection extends StatelessWidget {
   final String? termsConditions;

@@ -7,6 +7,7 @@ import '../../date_api_service/date_now_api_service.dart';
 import 'profile.dart';
 import 'boost.dart';
 import 'dart:async';
+import '../../../event/all_screen/view_details/Invite_screen.dart';
 
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
@@ -624,7 +625,16 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 const Spacer(),
                 GestureDetector(
                   onTap: () {
-                    // User mentioned: "uspar click krna par screen open hoga ek , jo bad mai btauga"
+                    final planId = plan['id']?.toString() ?? '';
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InviteMatchScreen(
+                          isDatePlan: true,
+                          datePlanId: planId,
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(

@@ -14,7 +14,7 @@ class ApiService {
       debugPrint('Token Expired! Logging out automatically...');
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('auth_token');
-      
+
       if (navigatorKey.currentContext != null) {
         Navigator.pushNamedAndRemoveUntil(
           navigatorKey.currentContext!,
@@ -29,14 +29,18 @@ class ApiService {
   /// Returns a map containing 'title', 'description', and 'options' list.
   static Future<Map<String, dynamic>> fetchIntentions() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/onboarding/intention/get'));
-      
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/intention/get'),
+      );
+
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
-        if (decoded['success'] == true && decoded['data'] != null && decoded['data'].isNotEmpty) {
+        if (decoded['success'] == true &&
+            decoded['data'] != null &&
+            decoded['data'].isNotEmpty) {
           _saveOnboardingProgress(decoded);
-           final data = decoded['data'][0];
-          
+          final data = decoded['data'][0];
+
           List<Map<String, dynamic>> parsedOptions = [];
           if (data['options'] != null) {
             final List<dynamic> optionsRaw = data['options'];
@@ -49,7 +53,7 @@ class ApiService {
               };
             }).toList();
           }
-          
+
           return {
             'title': data['title'] ?? '',
             'description': data['description'] ?? '',
@@ -67,12 +71,14 @@ class ApiService {
   /// Fetches prompt categories and their prompts from the server.
   static Future<List<dynamic>> fetchPromptsCategories() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/onboarding/prompt/get'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/prompt/get'),
+      );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           return decoded['data'];
+          return decoded['data'];
         }
       }
       return [];
@@ -101,7 +107,7 @@ class ApiService {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true) {
           _saveOnboardingProgress(decoded);
-           return decoded['data'];
+          return decoded['data'];
         }
       }
       return null;
@@ -128,7 +134,9 @@ class ApiService {
       debugPrint('Onboarding Details ($type) Status: ${response.statusCode}');
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
-        if (decoded['success'] == true && decoded['data'] != null && decoded['data']['data'] != null) {
+        if (decoded['success'] == true &&
+            decoded['data'] != null &&
+            decoded['data']['data'] != null) {
           // Note: The response has data inside data -> decoded['data']['data']
           return decoded['data']['data'];
         }
@@ -139,7 +147,6 @@ class ApiService {
       return null;
     }
   }
-
 
   /// Fetches Refer & Earn informational details (e.g., rewards and rules).
   static Future<Map<String, dynamic>?> fetchReferEarnInfo() async {
@@ -160,7 +167,7 @@ class ApiService {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           return decoded['data'];
+          return decoded['data'];
         }
       }
       return null;
@@ -189,7 +196,7 @@ class ApiService {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           return decoded['data'];
+          return decoded['data'];
         }
       }
       return null;
@@ -225,13 +232,15 @@ class ApiService {
   /// Fetches lifestyle questions from the server.
   static Future<List<Map<String, dynamic>>> fetchLifestyle() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/question/fetch?category=DATING&screen=LIFESTYLE'));
-      
+      final response = await http.get(
+        Uri.parse('$baseUrl/question/fetch?category=DATING&screen=LIFESTYLE'),
+      );
+
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           final List<dynamic> data = decoded['data'];
+          final List<dynamic> data = decoded['data'];
           return data.map((q) {
             final List<dynamic> optionsRaw = q['options'] ?? [];
             return {
@@ -239,11 +248,15 @@ class ApiService {
               'key': q['key'] ?? '',
               'title': q['title'] ?? '',
               'isMulti': q['isMulti'] ?? false,
-              'options': optionsRaw.map((opt) => {
-                'id': opt['id'] ?? '',
-                'value': opt['value'] ?? '',
-                'label': opt['label'] ?? '',
-              }).toList(),
+              'options': optionsRaw
+                  .map(
+                    (opt) => {
+                      'id': opt['id'] ?? '',
+                      'value': opt['value'] ?? '',
+                      'label': opt['label'] ?? '',
+                    },
+                  )
+                  .toList(),
             };
           }).toList();
         }
@@ -260,7 +273,7 @@ class ApiService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       final response = await http.patch(
         Uri.parse('$baseUrl/user/profile/complete-onboarding'),
         headers: {
@@ -268,8 +281,10 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
       );
-      
-      debugPrint('Complete Onboarding: ${response.statusCode} - ${response.body}');
+
+      debugPrint(
+        'Complete Onboarding: ${response.statusCode} - ${response.body}',
+      );
       return (response.statusCode == 200 || response.statusCode == 201);
     } catch (e) {
       debugPrint('Error completing onboarding: $e');
@@ -280,13 +295,17 @@ class ApiService {
   /// Fetches things you love (interests) questions from the server.
   static Future<List<dynamic>> fetchInterests() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/question/fetch?category=DATING&screen=THINGS_U_LOVE'));
-      
+      final response = await http.get(
+        Uri.parse(
+          '$baseUrl/question/fetch?category=DATING&screen=THINGS_U_LOVE',
+        ),
+      );
+
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           return decoded['data'];
+          return decoded['data'];
         }
       }
       return [];
@@ -299,12 +318,14 @@ class ApiService {
   /// Fetches profession options from the server.
   static Future<Map<String, int>> fetchProfessions() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/onboarding/professions/get'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/professions/get'),
+      );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           final List<dynamic> data = decoded['data'];
+          final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['name'].toString()] = item['id'] as int;
@@ -322,12 +343,14 @@ class ApiService {
   /// Fetches experience options from the server.
   static Future<Map<String, int>> fetchExperiences() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/onboarding/experiences/get'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/experiences/get'),
+      );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           final List<dynamic> data = decoded['data'];
+          final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['title'].toString()] = item['id'] as int;
@@ -345,12 +368,14 @@ class ApiService {
   /// Fetches employment type options from the server.
   static Future<Map<String, int>> fetchEmploymentTypes() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/onboarding/employment-type/get'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/employment-type/get'),
+      );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           final List<dynamic> data = decoded['data'];
+          final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['name'].toString()] = item['id'] as int;
@@ -368,12 +393,14 @@ class ApiService {
   /// Fetches salary ranges from the server.
   static Future<Map<String, int>> fetchSalaryRanges() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/onboarding/salary-ranges/get'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/salary-ranges/get'),
+      );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           final List<dynamic> data = decoded['data'];
+          final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['title'].toString()] = item['id'] as int;
@@ -391,12 +418,14 @@ class ApiService {
   /// Fetches ambition options from the server.
   static Future<Map<String, int>> fetchAmbitions() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/onboarding/ambitions/get'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/onboarding/ambitions/get'),
+      );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
           _saveOnboardingProgress(decoded);
-           final List<dynamic> data = decoded['data'];
+          final List<dynamic> data = decoded['data'];
           final Map<String, int> map = {};
           for (var item in data) {
             map[item['title'].toString()] = item['id'] as int;
@@ -419,7 +448,7 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'phoneNumber': phoneNumber}),
       );
-      
+
       debugPrint('OTP Send: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -441,8 +470,10 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'referralCode': code}),
       );
-      
-      debugPrint('Referral Validate: ${response.statusCode} - ${response.body}');
+
+      debugPrint(
+        'Referral Validate: ${response.statusCode} - ${response.body}',
+      );
       try {
         return jsonDecode(response.body);
       } catch (_) {
@@ -458,12 +489,13 @@ class ApiService {
   }
 
   /// Verifies OTP and returns the token or error string.
-  static Future<Map<String, dynamic>> verifyOtp(String phoneNumber, String otp, [String? referralCode]) async {
+  static Future<Map<String, dynamic>> verifyOtp(
+    String phoneNumber,
+    String otp, [
+    String? referralCode,
+  ]) async {
     try {
-      final body = {
-        'phoneNumber': phoneNumber,
-        'otp': otp,
-      };
+      final body = {'phoneNumber': phoneNumber, 'otp': otp};
       if (referralCode != null && referralCode.isNotEmpty) {
         body['referralCode'] = referralCode;
       }
@@ -472,23 +504,32 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
       );
-      
+
       debugPrint('OTP Verify: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
-        if (decoded['success'] == true && decoded['data'] != null && decoded['data']['token'] != null) {
+        if (decoded['success'] == true &&
+            decoded['data'] != null &&
+            decoded['data']['token'] != null) {
           _saveOnboardingProgress(decoded);
-           return {
+          return {
             'token': decoded['data']['token'].toString(),
             'is_register': decoded['data']['is_register'] ?? true,
-            'onboarding_completed': decoded['data']['user']?['onboarding_completed'] ?? false,
+            'onboarding_completed':
+                decoded['data']['user']?['onboarding_completed'] ?? false,
             'next_step': decoded['data']['user']?['next_step'],
-            'error': null
+            'error': null,
           };
         }
-        return {'token': null, 'error': decoded['message'] ?? 'Failed to verify'};
+        return {
+          'token': null,
+          'error': decoded['message'] ?? 'Failed to verify',
+        };
       }
-      return {'token': null, 'error': 'Error ${response.statusCode}: ${response.body}'};
+      return {
+        'token': null,
+        'error': 'Error ${response.statusCode}: ${response.body}',
+      };
     } catch (e) {
       debugPrint('Error verifying OTP: $e');
       return {'token': null, 'error': e.toString()};
@@ -516,15 +557,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null; // Success
+          _saveOnboardingProgress(decoded);
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
-      
+
       try {
         final decoded = jsonDecode(response.body);
-        return decoded['message'] ?? 'Error ${response.statusCode}: ${response.body}';
+        return decoded['message'] ??
+            'Error ${response.statusCode}: ${response.body}';
       } catch (_) {
         return 'Error ${response.statusCode}: ${response.body}';
       }
@@ -534,7 +576,10 @@ class ApiService {
     }
   }
 
-  static Future<String?> submitInterestedIn(String interestedIn, String sexualOrientation) async {
+  static Future<String?> submitInterestedIn(
+    String interestedIn,
+    String sexualOrientation,
+  ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -557,15 +602,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null; // Success
+          _saveOnboardingProgress(decoded);
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
-      
+
       try {
         final decoded = jsonDecode(response.body);
-        return decoded['message'] ?? 'Error ${response.statusCode}: ${response.body}';
+        return decoded['message'] ??
+            'Error ${response.statusCode}: ${response.body}';
       } catch (_) {
         return 'Error ${response.statusCode}: ${response.body}';
       }
@@ -596,15 +642,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null; // Success
+          _saveOnboardingProgress(decoded);
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
-      
+
       try {
         final decoded = jsonDecode(response.body);
-        return decoded['message'] ?? 'Error ${response.statusCode}: ${response.body}';
+        return decoded['message'] ??
+            'Error ${response.statusCode}: ${response.body}';
       } catch (_) {
         return 'Error ${response.statusCode}: ${response.body}';
       }
@@ -629,10 +676,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          'questionId': questionId,
-          'optionIds': optionIds,
-        }),
+        body: jsonEncode({'questionId': questionId, 'optionIds': optionIds}),
       );
 
       debugPrint('Submit Answer Status: ${response.statusCode}');
@@ -641,15 +685,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null; // Success
+          _saveOnboardingProgress(decoded);
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
-      
+
       try {
         final decoded = jsonDecode(response.body);
-        return decoded['message'] ?? 'Error ${response.statusCode}: ${response.body}';
+        return decoded['message'] ??
+            'Error ${response.statusCode}: ${response.body}';
       } catch (_) {
         return 'Error ${response.statusCode}: ${response.body}';
       }
@@ -680,8 +725,8 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null;
+          _saveOnboardingProgress(decoded);
+          return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -713,8 +758,8 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null;
+          _saveOnboardingProgress(decoded);
+          return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -743,7 +788,7 @@ class ApiService {
       for (var path in imagePaths) {
         request.files.add(
           await http.MultipartFile.fromPath(
-            'images', 
+            'images',
             path,
             filename: 'upload_${DateTime.now().millisecondsSinceEpoch}.jpg',
             contentType: MediaType('image', 'jpeg'),
@@ -760,15 +805,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null; // Success
+          _saveOnboardingProgress(decoded);
+          return null; // Success
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
-      
+
       try {
         final decoded = jsonDecode(response.body);
-        return decoded['message'] ?? 'Error ${response.statusCode}: ${response.body}';
+        return decoded['message'] ??
+            'Error ${response.statusCode}: ${response.body}';
       } catch (_) {
         return 'Error ${response.statusCode}: ${response.body}';
       }
@@ -777,8 +823,6 @@ class ApiService {
       return e.toString();
     }
   }
-
-
 
   /// Submits the user's bio to the server.
   static Future<String?> submitBio(String bioText) async {
@@ -792,9 +836,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "bio": bioText
-        }),
+        body: jsonEncode({"bio": bioText}),
       );
 
       debugPrint('Submit Bio Status: ${response.statusCode}');
@@ -803,8 +845,8 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null;
+          _saveOnboardingProgress(decoded);
+          return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -816,7 +858,9 @@ class ApiService {
   }
 
   /// Submits the user's prompts to the server.
-  static Future<String?> submitPrompts(List<Map<String, String>> prompts) async {
+  static Future<String?> submitPrompts(
+    List<Map<String, String>> prompts,
+  ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -827,9 +871,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "prompts": prompts
-        }),
+        body: jsonEncode({"prompts": prompts}),
       );
 
       debugPrint('Submit Prompts Status: ${response.statusCode}');
@@ -838,8 +880,8 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true || decoded['status'] == 200) {
-           _saveOnboardingProgress(decoded);
-           return null;
+          _saveOnboardingProgress(decoded);
+          return null;
         }
         return decoded['message'] ?? 'Failed: ${response.body}';
       }
@@ -851,7 +893,11 @@ class ApiService {
   }
 
   /// Submits the user's address.
-  static Future<String?> submitAddress(String country, String state, String city) async {
+  static Future<String?> submitAddress(
+    String country,
+    String state,
+    String city,
+  ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -862,11 +908,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "country": country,
-          "state": state,
-          "city": city,
-        }),
+        body: jsonEncode({"country": country, "state": state, "city": city}),
       );
 
       debugPrint('Submit Address Status: ${response.statusCode}');
@@ -892,10 +934,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "latitude": lat,
-          "longitude": lng,
-        }),
+        body: jsonEncode({"latitude": lat, "longitude": lng}),
       );
 
       debugPrint('Submit Location Status: ${response.statusCode}');
@@ -911,22 +950,22 @@ class ApiService {
 
   static Future<void> _saveOnboardingProgress(dynamic decodedResponse) async {
     if (decodedResponse is! Map<String, dynamic>) return;
-    
+
     String? nextStep = decodedResponse['next_step'];
     bool? isCompleted = decodedResponse['onboarding_completed'];
 
     if (decodedResponse['data'] is Map<String, dynamic>) {
-       final data = decodedResponse['data'];
-       nextStep ??= data['next_step'];
-       isCompleted ??= data['onboarding_completed'];
-       
-       if (data['user'] is Map<String, dynamic>) {
-         final user = data['user'];
-         nextStep ??= user['next_step'];
-         isCompleted ??= user['onboarding_completed'];
-       }
+      final data = decodedResponse['data'];
+      nextStep ??= data['next_step'];
+      isCompleted ??= data['onboarding_completed'];
+
+      if (data['user'] is Map<String, dynamic>) {
+        final user = data['user'];
+        nextStep ??= user['next_step'];
+        isCompleted ??= user['onboarding_completed'];
+      }
     }
-    
+
     if (nextStep != null || isCompleted != null) {
       final prefs = await SharedPreferences.getInstance();
       if (nextStep != null) {

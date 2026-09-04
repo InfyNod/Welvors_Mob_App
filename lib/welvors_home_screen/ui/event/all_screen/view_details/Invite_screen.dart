@@ -3,9 +3,13 @@ import 'dart:async';
 import 'dart:ui';
 import 'dart:convert';
 import '../service_event/event_api_service.dart';
+import '../../../date_now/date_api_service/date_now_api_service.dart';
 
 class InviteMatchScreen extends StatefulWidget {
-  const InviteMatchScreen({super.key});
+  final String? datePlanId;
+  final bool isDatePlan;
+
+  const InviteMatchScreen({super.key, this.datePlanId, this.isDatePlan = false});
 
   @override
   State<InviteMatchScreen> createState() => _InviteMatchScreenState();
@@ -55,8 +59,21 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
     }
   }
 
-  void handleInvite(String matchId) {
+  Future<void> handleInvite(String matchId) async {
     if (!invitedMatches.contains(matchId)) {
+      if (widget.isDatePlan && widget.datePlanId != null) {
+        // Call Date Plan Invite API
+        final result = await DateNowApiService.inviteToDatePlan(widget.datePlanId!, matchId);
+        if (result == null || result['success'] != true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result?['message'] ?? 'Failed to send invite')),
+          );
+          return; // Don't show success state if API fails
+        }
+      } else {
+        // Event invite simulation
+      }
+
       setState(() {
         invitedMatches.add(matchId);
         showToast = true;
@@ -114,9 +131,9 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(bounds),
-          child: const Text(
-            'Invite a match',
-            style: TextStyle(
+          child: Text(
+            widget.isDatePlan ? 'Invite for Date' : 'Invite a match',
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w900,
               color: Colors.white, // Required for ShaderMask
@@ -141,16 +158,27 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
                       children: [
                         // Subtitle
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFF5F7), // Soft pink background
+                            color: const Color(
+                              0xFFFFF5F7,
+                            ), // Soft pink background
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.1)),
+                            border: Border.all(
+                              color: const Color(0xFFE43A6A).withOpacity(0.1),
+                            ),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.verified, color: Color(0xFFE43A6A), size: 18),
+                              const Icon(
+                                Icons.verified,
+                                color: Color(0xFFE43A6A),
+                                size: 18,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: RichText(
@@ -170,7 +198,10 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
                                           color: Color(0xFFE43A6A),
                                         ),
                                       ),
-                                      TextSpan(text: ' — the safest way to take it offline.'),
+                                      TextSpan(
+                                        text:
+                                            ' — the safest way to take it offline.',
+                                      ),
                                     ],
                                   ),
                                 ),
