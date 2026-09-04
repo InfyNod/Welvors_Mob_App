@@ -36,69 +36,92 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
       context.read<AdmirersBloc>().add(RemoveLike(id));
       setState(() {});
     }
-
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2A2A2A),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Text(
-                popupText,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(bottom: 16),
-        duration: const Duration(milliseconds: 2000),
-      ),
-    );
+    
+    // Pass the text to custom popup
+    // Usually popupText has an emoji at the end like "Rejected ❌", 
+    // so we can just display it directly.
+    _showCustomPopup(context, popupText);
   }
 
   void _showRevealedSnackbar(BuildContext context) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('💛', style: TextStyle(fontSize: 16)),
-            SizedBox(width: 8),
-            Text(
-              'Revealed · like them back!',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+    _showCustomPopup(context, 'Revealed · like them back!', '💛');
+  }
+
+  void _showCustomPopup(BuildContext context, String text, [String? emoji]) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          bottom: 120, // Match the height from sent.dart
+          left: 0,
+          right: 0,
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutBack, // Bouncy pop animation
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (emoji != null) ...[
+                        Text(
+                          emoji,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Text(
+                        text,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12, // Same text style
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
-        backgroundColor: const Color(0xFF2A2A2A),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        margin: const EdgeInsets.only(
-          bottom: 16,
-          left: 60,
-          right: 60,
-        ), // Increased horizontal margin to reduce width
-        duration: const Duration(milliseconds: 2000), // Faster duration
-      ),
+          ),
+        );
+      },
     );
+
+    overlay.insert(overlayEntry);
+
+    // Auto-remove after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        overlayEntry.remove();
+      }
+    });
   }
 
   @override
