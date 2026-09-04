@@ -415,7 +415,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     return Row(
                       children: [
                         Text(
-                          state.fullName.isNotEmpty ? state.fullName :  'Welvors User',
+                          state.fullName.isNotEmpty
+                              ? state.fullName
+                              : 'Welvors User',
                           style: const TextStyle(
                             fontSize: 24, // slightly larger
                             fontWeight: FontWeight.w900,
@@ -436,13 +438,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   },
                 ),
                 const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    color: Colors.blue,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.check, size: 12, color: Colors.white),
+                const Icon(
+                  Icons.verified,
+                  color: Colors.pinkAccent,
+                  size: 20,
                 ),
               ],
             ),
@@ -451,16 +450,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 final area = state.area;
                 final city = state.city;
                 final stateLoc = state.stateLocation;
-                
+
                 List<String> parts = [];
                 if (area.isNotEmpty) parts.add(area);
                 if (city.isNotEmpty) parts.add(city);
                 if (stateLoc.isNotEmpty) parts.add(stateLoc);
-                
+
                 if (parts.isEmpty) {
                   return const SizedBox.shrink();
                 }
-                
+
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
                   child: Row(
