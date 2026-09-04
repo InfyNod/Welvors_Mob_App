@@ -165,6 +165,10 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 'match': requester['matchPercentage'] != null
                     ? '${requester['matchPercentage']}%'
                     : '92%',
+                'area': (requester['location'] is Map ? requester['location']['area']?.toString() : null) ?? 
+                        requester['area']?.toString() ?? 
+                        (req['location'] is Map ? req['location']['area']?.toString() : null) ??
+                        req['area']?.toString(),
                 'message':
                     req['message']?.toString() ?? '"No message attached."',
                 'billSuggestionLabel': req['billSuggestion'] != null && req['billSuggestion'] is Map
@@ -229,6 +233,81 @@ class _MyPlanScreenState extends State<MyPlanScreen>
         }
       }
     }
+  }
+
+  void _showActionPopup(String message, {bool isError = false}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          bottom: 120,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutBack,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isError ? Colors.red.shade800 : Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isError ? Icons.error : Icons.check_circle,
+                        color: isError ? Colors.white : Colors.green,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        message,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    overlay.insert(overlayEntry);
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
   }
 
   @override
@@ -1002,29 +1081,31 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Row(
-                              children: const [
-                                Icon(
-                                  Icons.location_on,
-                                  color: Color(0xFFDE2957),
-                                  size: 14,
-                                ), // Red pin
-                                SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    '1.4 km · 12m ago', // Dummy location and time
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontSize: 12,
+                          if (request['area'] != null && request['area'].toString().isNotEmpty)
+                            const SizedBox(width: 8),
+                          if (request['area'] != null && request['area'].toString().isNotEmpty)
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                    color: Color(0xFFDE2957),
+                                    size: 14,
+                                  ), // Red pin
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      request['area'].toString(),
+                                      style: const TextStyle(
+                                        color: Colors.black54,
+                                        fontSize: 12,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -1170,9 +1251,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                           planRequests.remove(request);
                         });
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Request declined')),
-                          );
+                          _showActionPopup('Request declined');
                         }
                       }
                     },
@@ -1211,9 +1290,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                           request['status'] = 'approved';
                         });
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Request approved')),
-                          );
+                          _showActionPopup('Request approved');
                         }
                       }
                     },

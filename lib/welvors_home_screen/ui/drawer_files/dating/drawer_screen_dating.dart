@@ -27,6 +27,26 @@ class DrawerScreen extends StatefulWidget {
 class _DrawerScreenState extends State<DrawerScreen> {
   int _selectedTabIndex = 1; // 0 = Marriage, 1 = Dating, 2 = Mature Dating
 
+  int _calculateAge(String dobString) {
+    try {
+      final parts = dobString.split(' / ');
+      if (parts.length == 3) {
+        int year = int.parse(parts[2]);
+        int month = int.parse(parts[1]);
+        int day = int.parse(parts[0]);
+        final selectedDate = DateTime(year, month, day);
+        final now = DateTime.now();
+        int age = now.year - selectedDate.year;
+        if (now.month < selectedDate.month ||
+            (now.month == selectedDate.month && now.day < selectedDate.day)) {
+          age--;
+        }
+        return age;
+      }
+    } catch (e) {}
+    return 26; // Default fallback
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -392,24 +412,28 @@ class _DrawerScreenState extends State<DrawerScreen> {
               children: [
                 BlocBuilder<ProfileEditCubit, ProfileEditState>(
                   builder: (context, state) {
-                    return Text(
-                      state.fullName.isNotEmpty ? state.fullName :  'Welvors User',
-                      style: const TextStyle(
-                        fontSize: 24, // slightly larger
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black87,
-                      ),
+                    return Row(
+                      children: [
+                        Text(
+                          state.fullName.isNotEmpty ? state.fullName :  'Welvors User',
+                          style: const TextStyle(
+                            fontSize: 24, // slightly larger
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${_calculateAge(state.dob)}',
+                          style: const TextStyle(
+                            fontSize: 24, // slightly larger
+                            fontWeight: FontWeight.bold, // made bolder
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     );
                   },
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  '26',
-                  style: TextStyle(
-                    fontSize: 24, // slightly larger
-                    fontWeight: FontWeight.bold, // made bolder
-                    color: Colors.grey,
-                  ),
                 ),
                 const SizedBox(width: 6),
                 Container(

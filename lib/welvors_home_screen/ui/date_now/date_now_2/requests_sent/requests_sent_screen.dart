@@ -1029,9 +1029,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Coming soon')),
-                            );
+                            _showActionPopup('Coming soon');
                           },
                           child: Container(
                             height: 40,
