@@ -9,7 +9,11 @@ class InviteMatchScreen extends StatefulWidget {
   final String? datePlanId;
   final bool isDatePlan;
 
-  const InviteMatchScreen({super.key, this.datePlanId, this.isDatePlan = false});
+  const InviteMatchScreen({
+    super.key,
+    this.datePlanId,
+    this.isDatePlan = false,
+  });
 
   @override
   State<InviteMatchScreen> createState() => _InviteMatchScreenState();
@@ -17,8 +21,6 @@ class InviteMatchScreen extends StatefulWidget {
 
 class _InviteMatchScreenState extends State<InviteMatchScreen> {
   Set<String> invitedMatches = {};
-  bool showToast = false;
-  Timer? toastTimer;
 
   bool isLoading = true;
   List<dynamic> conversations = [];
@@ -32,7 +34,6 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
 
   @override
   void dispose() {
-    toastTimer?.cancel();
     super.dispose();
   }
 
@@ -59,14 +60,91 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
     }
   }
 
+  void _showInvitePopup() {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          bottom: 100, // Slightly above the bottom
+          left: 0,
+          right: 0,
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutBack, // Bouncy pop animation
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green, size: 16),
+                      SizedBox(width: 6),
+                      Text(
+                        'Invite sent',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    overlay.insert(overlayEntry);
+
+    // Auto-remove after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
+  }
+
   Future<void> handleInvite(String matchId) async {
     if (!invitedMatches.contains(matchId)) {
       if (widget.isDatePlan && widget.datePlanId != null) {
         // Call Date Plan Invite API
-        final result = await DateNowApiService.inviteToDatePlan(widget.datePlanId!, matchId);
+        final result = await DateNowApiService.inviteToDatePlan(
+          widget.datePlanId!,
+          matchId,
+        );
         if (result == null || result['success'] != true) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(result?['message'] ?? 'Failed to send invite')),
+            SnackBar(
+              content: Text(result?['message'] ?? 'Failed to send invite'),
+            ),
           );
           return; // Don't show success state if API fails
         }
@@ -76,17 +154,9 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
 
       setState(() {
         invitedMatches.add(matchId);
-        showToast = true;
       });
 
-      toastTimer?.cancel();
-      toastTimer = Timer(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() {
-            showToast = false;
-          });
-        }
-      });
+      _showInvitePopup();
     }
   }
 
@@ -332,74 +402,6 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
               ],
             ),
           ),
-
-          // Custom Toast
-          if (showToast)
-            Positioned(
-              bottom: 40,
-              left: 20,
-              right: 20,
-              child: AnimatedOpacity(
-                opacity: showToast ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.15),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF2CAF6B),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 14,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              "Invite sent",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
