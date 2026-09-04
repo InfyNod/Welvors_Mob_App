@@ -1631,23 +1631,22 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Match pill
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFA6A85).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${plan['match']} match',
+                      RichText(
+                        text: TextSpan(
                           style: const TextStyle(
-                            color: Color(0xFFE43A6A),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            color: Colors.black54,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
                           ),
+                          children: [
+                            TextSpan(
+                              text: '💜 ${plan['match']} match',
+                              style: const TextStyle(
+                                color: Color(0xFF9C27B0),
+                              ), // Purple color for match
+                            ),
+                            const TextSpan(text: ' · 🛡️ 98% trust'),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -1673,12 +1672,6 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       // Tags row (Payment, people)
                       Row(
                         children: [
-                          const Icon(
-                            Icons.person_outline,
-                            size: 16,
-                            color: Colors.black54,
-                          ),
-                          const SizedBox(width: 8),
                           Text(
                             plan['pay'],
                             style: const TextStyle(
