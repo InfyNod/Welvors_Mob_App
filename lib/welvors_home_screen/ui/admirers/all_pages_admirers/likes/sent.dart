@@ -418,7 +418,7 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
 
     // Auto-remove after 2 seconds
     Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
+      if (overlayEntry.mounted) {
         overlayEntry.remove();
       }
     });

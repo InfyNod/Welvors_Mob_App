@@ -118,7 +118,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
 
     // Auto-remove after 2 seconds
     Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
+      if (overlayEntry.mounted) {
         overlayEntry.remove();
       }
     });
