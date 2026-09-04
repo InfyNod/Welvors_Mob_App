@@ -178,17 +178,53 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             }).toList(),
             'requestsMeta': plan['requests'] ?? {}, // total, pending
             'rawPlan': plan,
+            'isBoosted': false,
+            'boostEndTime': null,
+            'boostViews': 0,
+            'boostRequests': 0,
+            'boostApproved': 0,
           };
         }).toList();
         MyPlanScreen.myHostedPlans = List.from(_apiPlans);
         _isLoading = false;
       });
+      _fetchActiveBoosts();
     } else {
       setState(() {
         _apiPlans = [];
         MyPlanScreen.myHostedPlans = [];
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _fetchActiveBoosts() async {
+    for (int i = 0; i < _apiPlans.length; i++) {
+      final planId = _apiPlans[i]['id'];
+      final res = await DateNowApiService.getActiveDatePlanBoost(planId);
+      if (res != null && res['success'] == true && res['data'] != null) {
+        final data = res['data'];
+        if (data['isBoosted'] == true && data['boost'] != null) {
+          final boostData = data['boost'];
+          final expiresAtStr = boostData['expiresAt'];
+          DateTime? endTime;
+          if (expiresAtStr != null) {
+            endTime = DateTime.tryParse(expiresAtStr);
+          }
+          final stats = boostData['stats'] ?? {};
+          
+          if (mounted) {
+            setState(() {
+              _apiPlans[i]['isBoosted'] = true;
+              _apiPlans[i]['boostEndTime'] = endTime;
+              _apiPlans[i]['boostViews'] = stats['views'] ?? 0;
+              _apiPlans[i]['boostRequests'] = stats['requests'] ?? 0;
+              _apiPlans[i]['boostApproved'] = stats['approved'] ?? 0;
+            });
+            _startTimer();
+          }
+        }
+      }
     }
   }
 
@@ -701,9 +737,9 @@ class _MyPlanScreenState extends State<MyPlanScreen>
     );
   }
 
-  String _getRemainingTime() {
-    if (_boostEndTime == null) return '0h 0m 0s';
-    final diff = _boostEndTime!.difference(DateTime.now());
+  String _getRemainingTime(DateTime? endTime) {
+    if (endTime == null) return '0h 0m 0s';
+    final diff = endTime.difference(DateTime.now());
     if (diff.isNegative) return '0h 0m 0s';
     final h = diff.inHours;
     final m = diff.inMinutes % 60;
@@ -752,7 +788,12 @@ class _MyPlanScreenState extends State<MyPlanScreen>
     );
   }
 
-  Widget _buildActiveBoostSection() {
+  Widget _buildActiveBoostSection(Map<String, dynamic> plan) {
+    final views = plan['boostViews'] ?? 0;
+    final requests = plan['boostRequests'] ?? 0;
+    final approved = plan['boostApproved'] ?? 0;
+    final endTime = plan['boostEndTime'] as DateTime?;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -791,7 +832,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 ),
               ),
               const Spacer(),
-              _buildStatChip(' ✓', '$_fakeApproved approved', isGreen: true),
+              _buildStatChip(' ✓', '$approved approved', isGreen: true),
             ],
           ),
           const SizedBox(height: 10),
@@ -799,11 +840,11 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildStatChip('⏱️', _getRemainingTime()),
+                _buildStatChip('⏱️', _getRemainingTime(endTime)),
                 const SizedBox(width: 8),
-                _buildStatChip('👁️', '$_fakeViews views'),
+                _buildStatChip('👁️', '$views views'),
                 const SizedBox(width: 8),
-                _buildStatChip('✉️', '$_fakeRequests requests'),
+                _buildStatChip('✉️', '$requests requests'),
               ],
             ),
           ),
@@ -813,8 +854,8 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   }
 
   Widget _buildBoostSection(Map<String, dynamic> plan) {
-    if (_isBoosted) {
-      return _buildActiveBoostSection();
+    if (plan['isBoosted'] == true) {
+      return _buildActiveBoostSection(plan);
     }
 
     return GestureDetector(
@@ -822,8 +863,8 @@ class _MyPlanScreenState extends State<MyPlanScreen>
         final duration = await showBoostBottomSheet(context, plan);
         if (duration != null && mounted) {
           setState(() {
-            _isBoosted = true;
-            _boostEndTime = DateTime.now().add(Duration(hours: duration));
+            plan['isBoosted'] = true;
+            plan['boostEndTime'] = DateTime.now().add(Duration(hours: duration));
             _startTimer();
           });
           ScaffoldMessenger.of(context).showSnackBar(

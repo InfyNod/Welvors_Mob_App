@@ -67,6 +67,24 @@ class DateNowApiService {
     }
   }
 
+  static Future<Map<String, dynamic>?> getActiveDatePlanBoost(String planId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/user/date-plan-boost/$planId/active'),
+        headers: await _headers,
+      );
+
+      debugPrint('Get Active Boost Status: ${response.statusCode} - ${response.body}');
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Exception getting active boost: $e');
+      return null;
+    }
+  }
+
   // POST Request Example
   static Future<Map<String, dynamic>?> postPlan(
     Map<String, dynamic> data,
