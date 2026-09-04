@@ -167,6 +167,9 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                     : '92%',
                 'message':
                     req['message']?.toString() ?? '"No message attached."',
+                'billSuggestionLabel': req['billSuggestion'] != null && req['billSuggestion'] is Map
+                    ? req['billSuggestion']['label']
+                    : '🤝 Split (TTMM)',
                 'avatar':
                     requester['photo']?.toString() ??
                     'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
@@ -1066,7 +1069,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             ),
             padding: const EdgeInsets.only(left: 12, top: 2, bottom: 2),
             child: Text(
-              'Hey! I’d love to join you for coffee ✨', // Dummy message
+              request['message']?.toString() ?? '',
               style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
             ),
           ),
@@ -1088,10 +1091,9 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 ),
               ),
               Row(
-                children: const [
-                  Text('🤝 ', style: TextStyle(fontSize: 14)),
+                children: [
                   Text(
-                    'Split (TTMM)', // Dummy bill suggestion
+                    request['billSuggestionLabel'] ?? '🤝 Split (TTMM)',
                     style: TextStyle(
                       color: Color(0xFFDE2957),
                       fontWeight: FontWeight.bold,

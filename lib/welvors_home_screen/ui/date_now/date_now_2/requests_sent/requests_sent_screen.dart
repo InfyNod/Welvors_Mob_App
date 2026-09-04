@@ -103,6 +103,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               'hostAvatar': host['profilePhoto'],
               'status': displayStatus,
               'message': item['message'] ?? 'I would love to join!',
+              'billSuggestionLabel': item['billSuggestion'] != null && item['billSuggestion'] is Map
+                  ? item['billSuggestion']['label']
+                  : '🤝 Split the bill',
               'statusMessage': item['status'] == 'APPROVED'
                   ? 'Host approved your request!'
                   : 'Waiting for host to approve. You can withdraw anytime.',
@@ -901,7 +904,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   ),
                   padding: const EdgeInsets.only(left: 12, top: 2, bottom: 2),
                   child: Text(
-                    'Hey Ananya! I’d love to join you for dinner 🍝', // Dummy message
+                    plan['message'] ?? '',
                     style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
                   ),
                 ),
@@ -923,11 +926,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       ),
                     ),
                     Row(
-                      children: const [
-                        Text('🤝 ', style: TextStyle(fontSize: 14)),
+                      children: [
                         Text(
-                          'She’ll pay', // Dummy bill suggestion
-                          style: TextStyle(
+                          plan['billSuggestionLabel'] ?? '🤝 Split the bill',
+                          style: const TextStyle(
                             color: Color(0xFFDE2957),
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
