@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../date_api_service/date_now_api_service.dart';
 
 Future<int?> showBoostBottomSheet(BuildContext context, Map<String, dynamic> plan) {
   return showModalBottomSheet<int>(
@@ -24,8 +25,63 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
   int _selectedDuration = 3;
   int _walletBalance = 2480;
   bool _isReviewing = false;
+  bool _isActivating = false;
+  bool _isLoading = true;
+  String _boostTitle = "Boost to top of feed";
+  String _boostDescription = "Pin your plan above every other plan nearby.\nBoosted plans get up to 5x more requests.";
+  List<dynamic> _options = [];
+
+  String? get _selectedBoostOptionId {
+    for (var opt in _options) {
+      if (opt['durationHours'] == _selectedDuration) {
+        return opt['id']?.toString();
+      }
+    }
+    return null;
+  }
 
   final Map<int, int> _prices = {3: 149, 6: 279, 9: 399};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBoosts();
+  }
+
+  Future<void> _fetchBoosts() async {
+    final response = await DateNowApiService.getDatePlanBoosts();
+    if (response != null && response['success'] == true && response['data'] != null) {
+      final data = response['data'];
+      setState(() {
+        _boostTitle = data['title'] ?? _boostTitle;
+        _boostDescription = data['description'] ?? _boostDescription;
+        _walletBalance = data['walletBalance'] ?? _walletBalance;
+        
+        if (data['options'] != null) {
+          _options = List.from(data['options']);
+          _options.sort((a, b) => (a['sortOrder'] ?? 0).compareTo(b['sortOrder'] ?? 0));
+          
+          _prices.clear();
+          for (var opt in _options) {
+            int duration = opt['durationHours'];
+            int price = opt['price'];
+            _prices[duration] = price;
+            if (opt['isPopular'] == true) {
+              _selectedDuration = duration;
+            }
+          }
+          if (!_prices.containsKey(_selectedDuration) && _prices.isNotEmpty) {
+            _selectedDuration = _prices.keys.first;
+          }
+        }
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +125,19 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
           ),
           const SizedBox(height: 16),
 
-          if (!_isReviewing) _buildSelectionView() else _buildReviewView(),
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.all(32.0),
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Color.fromRGBO(242, 127, 66, 1),
+                ),
+              ),
+            )
+          else if (!_isReviewing)
+            _buildSelectionView()
+          else
+            _buildReviewView(),
         ],
       ),
     );
@@ -77,14 +145,14 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
 
   Widget _buildSelectionView() {
     final title = widget.plan['title'] ?? 'Date Plan';
-    final price = _prices[_selectedDuration]!;
+    final price = _prices[_selectedDuration] ?? 0;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          'Boost to top of feed',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        Text(
+          _boostTitle,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         RichText(
@@ -102,12 +170,10 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const TextSpan(
-                text:
-                    ' above every other plan nearby.\nBoosted plans get up to ',
+                text: ' ',
               ),
-              const TextSpan(
-                text: '5x more requests.',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              TextSpan(
+                text: _boostDescription,
               ),
             ],
           ),
@@ -115,13 +181,17 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
         const SizedBox(height: 24),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildDurationOption(3),
-            const SizedBox(width: 8),
-            _buildDurationOption(6),
-            const SizedBox(width: 8),
-            _buildDurationOption(9),
-          ],
+          children: _prices.keys.toList().asMap().entries.map((entry) {
+            int idx = entry.key;
+            int duration = entry.value;
+            bool isLast = idx == _prices.keys.length - 1;
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: isLast ? 0 : 8.0),
+                child: _buildDurationOption(duration),
+              ),
+            );
+          }).toList(),
         ),
         const SizedBox(height: 16),
         Text(
@@ -205,50 +275,48 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
 
   Widget _buildDurationOption(int hours) {
     bool isSelected = _selectedDuration == hours;
-    int price = _prices[hours]!;
+    int price = _prices[hours] ?? 0;
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedDuration = hours;
-          });
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFFFF7F2) : Colors.white,
-            border: Border.all(
-              color: isSelected
-                  ? const Color.fromRGBO(242, 127, 66, 1)
-                  : Colors.grey.shade300,
-              width: 1.5,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedDuration = hours;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFFF7F2) : Colors.white,
+          border: Border.all(
+            color: isSelected
+                ? const Color.fromRGBO(242, 127, 66, 1)
+                : Colors.grey.shade300,
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Text(
+              '$hours hours',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: isSelected ? Colors.black87 : Colors.black87,
+              ),
             ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-              Text(
-                '$hours hours',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: isSelected ? Colors.black87 : Colors.black87,
-                ),
+            const SizedBox(height: 4),
+            Text(
+              '₹$price',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: isSelected
+                    ? const Color.fromRGBO(242, 127, 66, 1)
+                    : Colors.grey.shade500,
               ),
-              const SizedBox(height: 4),
-              Text(
-                '₹$price',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                  color: isSelected
-                      ? const Color.fromRGBO(242, 127, 66, 1)
-                      : Colors.grey.shade500,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -345,31 +413,69 @@ class _BoostBottomSheetContentState extends State<_BoostBottomSheetContent> {
         ),
         const SizedBox(height: 24),
         GestureDetector(
-          onTap: () {
-            // TODO: Call API to activate boost
-            Navigator.pop(context, _selectedDuration);
+          onTap: _isActivating ? null : () async {
+            final optionId = _selectedBoostOptionId;
+            final planId = widget.plan['id']?.toString();
+            
+            if (optionId == null || planId == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Error: Missing plan or boost ID')),
+              );
+              return;
+            }
+
+            setState(() {
+              _isActivating = true;
+            });
+
+            final response = await DateNowApiService.activateDatePlanBoost(planId, optionId);
+
+            if (mounted) {
+              setState(() {
+                _isActivating = false;
+              });
+
+              if (response != null && response['success'] == true) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(response['message'] ?? 'Boost activated successfully!')),
+                );
+                Navigator.pop(context, _selectedDuration);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(response?['message'] ?? 'Failed to activate boost')),
+                );
+              }
+            }
           },
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color.fromRGBO(252, 168, 85, 1),
-                  Color.fromRGBO(242, 127, 66, 1),
-                ],
+              gradient: LinearGradient(
+                colors: _isActivating 
+                  ? [Colors.grey.shade400, Colors.grey.shade400]
+                  : [
+                      const Color.fromRGBO(252, 168, 85, 1),
+                      const Color.fromRGBO(242, 127, 66, 1),
+                    ],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
-              child: Text(
-                'Activate boost · ₹$price',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
+              child: _isActivating
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : Text(
+                    'Activate boost · ₹$price',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
             ),
           ),
         ),

@@ -32,6 +32,41 @@ class DateNowApiService {
 
   // Example structure for API methods. You can provide the endpoints and I'll fill them in!
 
+  static Future<Map<String, dynamic>?> getDatePlanBoosts() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/admin/date-now/date-plan-boosts/get'),
+        headers: await _headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Error getting boosts: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Exception getting boosts: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> activateDatePlanBoost(String planId, String boostOptionId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/date-plan-boost/$planId/activate'),
+        headers: await _headers,
+        body: jsonEncode({"boostOptionId": boostOptionId}),
+      );
+
+      debugPrint('Activate Boost Status: ${response.statusCode} - ${response.body}');
+      return json.decode(response.body);
+    } catch (e) {
+      debugPrint('Exception activating boost: $e');
+      return {'success': false, 'message': 'Network error occurred'};
+    }
+  }
+
   // POST Request Example
   static Future<Map<String, dynamic>?> postPlan(
     Map<String, dynamic> data,
