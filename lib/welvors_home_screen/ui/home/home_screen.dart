@@ -33,7 +33,8 @@ abstract class SectionColors {
 
 class HomeScreen extends StatefulWidget {
   final bool isPreview;
-  const HomeScreen({super.key, this.isPreview = false});
+  final bool isSelfPreview;
+  const HomeScreen({super.key, this.isPreview = false, this.isSelfPreview = false});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -94,10 +95,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           horizontal: 16.0,
                           vertical: 8.0,
                         ),
-                        child: _CardsStack(isPreview: widget.isPreview),
+                        child: _CardsStack(isPreview: widget.isPreview, isSelfPreview: widget.isSelfPreview),
                       ),
                     ),
-                    _ProfileDetailsView(profile: currentProfile),
+                    _ProfileDetailsView(profile: currentProfile, isSelfPreview: widget.isSelfPreview),
                     const SizedBox(height: 14),
                   ],
                 ),
@@ -221,8 +222,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _ProfileDetailsView extends StatelessWidget {
   final ProfileModel profile;
+  final bool isSelfPreview;
 
-  const _ProfileDetailsView({required this.profile});
+  const _ProfileDetailsView({required this.profile, this.isSelfPreview = false});
 
   bool _hasValidData(dynamic data) {
     if (data == null) return false;
@@ -332,6 +334,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 profile.matchPercentage,
                 Colors.blue,
                 onTap: () {
+                  if (isSelfPreview) return;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -345,6 +348,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 profile.trustPercentage,
                 Colors.green,
                 onTap: () {
+                  if (isSelfPreview) return;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -356,7 +360,10 @@ class _ProfileDetailsView extends StatelessWidget {
               _buildPillTag(
                 profile.replyTime,
                 Colors.orange,
-                onTap: () => ReplyDrawer.show(context),
+                onTap: () {
+                  if (isSelfPreview) return;
+                  ReplyDrawer.show(context);
+                },
               ),
             ],
           ),
@@ -533,7 +540,10 @@ class _ProfileDetailsView extends StatelessWidget {
                               Icons.location_on_outlined,
                               profile.location.split(', ').first,
                               profile.location.split(', ').length > 1
-                                  ? profile.location.split(', ').skip(1).join(', ')
+                                  ? profile.location
+                                        .split(', ')
+                                        .skip(1)
+                                        .join(', ')
                                   : '',
                               itemWidth,
                               stacked: true,
@@ -592,7 +602,7 @@ class _ProfileDetailsView extends StatelessWidget {
             const SizedBox(height: 16),
             // Slot 1: After THE BASICS
             if (hasVideo) ...[
-              ProfileVideoPlayer(videoPath: profile.videoUrl!),
+              ProfileVideoPlayer(videoPath: profile.videoUrl!, isSelfPreview: isSelfPreview),
               const SizedBox(height: 16),
             ] else if (profile.images.length > 1) ...[
               _buildImageWithRose(context, profile.images[1]),
@@ -1635,8 +1645,10 @@ class _ProfileDetailsView extends StatelessWidget {
             bottom: 6,
             right: 2,
             child: GestureDetector(
-              onTap: () =>
-                  ComplimentingBottomSheet.show(context, type: 'Photo'),
+              onTap: () {
+                if (isSelfPreview) return;
+                ComplimentingBottomSheet.show(context, type: 'Photo');
+              },
               child: Container(
                 width: 65,
                 height: 65,
@@ -2122,8 +2134,10 @@ class _ProfileDetailsView extends StatelessWidget {
                 bottom: -18,
                 right: -13,
                 child: GestureDetector(
-                  onTap: () =>
-                      ComplimentingBottomSheet.show(context, type: 'Prompt'),
+                  onTap: () {
+                    if (isSelfPreview) return;
+                    ComplimentingBottomSheet.show(context, type: 'Prompt');
+                  },
                   child: Container(
                     width: 65,
                     height: 65,
@@ -2147,7 +2161,8 @@ class _ProfileDetailsView extends StatelessWidget {
 
 class _CardsStack extends StatelessWidget {
   final bool isPreview;
-  const _CardsStack({this.isPreview = false});
+  final bool isSelfPreview;
+  const _CardsStack({this.isPreview = false, this.isSelfPreview = false});
 
   @override
   Widget build(BuildContext context) {
@@ -2433,7 +2448,8 @@ class _ProfileCardUI extends StatelessWidget {
             left: 16,
             child: BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
-                if (!context.read<HomeBloc>().hasSwipedProfiles) return const SizedBox.shrink();
+                if (!context.read<HomeBloc>().hasSwipedProfiles)
+                  return const SizedBox.shrink();
                 return GestureDetector(
                   onTap: () {
                     context.read<HomeBloc>().add(UndoSwipeEvent());
@@ -2657,7 +2673,8 @@ class _ProfileCardUI extends StatelessWidget {
 
 class ProfileVideoPlayer extends StatefulWidget {
   final String videoPath;
-  const ProfileVideoPlayer({super.key, required this.videoPath});
+  final bool isSelfPreview;
+  const ProfileVideoPlayer({super.key, required this.videoPath, this.isSelfPreview = false});
 
   @override
   State<ProfileVideoPlayer> createState() => _ProfileVideoPlayerState();
@@ -2912,8 +2929,10 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
               bottom: 6,
               right: 2,
               child: GestureDetector(
-                onTap: () =>
-                    ComplimentingBottomSheet.show(context, type: 'Video intro'),
+                onTap: () {
+                  if (widget.isSelfPreview) return;
+                  ComplimentingBottomSheet.show(context, type: 'Video intro');
+                },
                 child: Container(
                   width: 65,
                   height: 65,
