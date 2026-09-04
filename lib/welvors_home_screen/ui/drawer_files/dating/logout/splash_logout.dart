@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../../../onbording_allpage/theme/app_colors.dart';
 import '../../../../../../onbording_allpage/theme/app_text.dart';
+import '../../../date_now/date_now_2/history/card_history.dart';
+import '../../../date_now/date_now_2/my_plans/my_plan_screen.dart';
+import '../../../date_now/date_now_2/requests_sent/requests_sent_screen.dart';
 
 class SplashLogout extends StatefulWidget {
   const SplashLogout({super.key});
@@ -38,7 +41,14 @@ class _SplashLogoutState extends State<SplashLogout> {
           _timer = Timer(const Duration(milliseconds: 800), () async {
             if (mounted) {
               final prefs = await SharedPreferences.getInstance();
-              await prefs.remove('auth_token');
+              await prefs.clear();
+              
+              // Clear Date Now static cache memory
+              CardHistory.thisWeekPlans.clear();
+              CardHistory.earlierPlans.clear();
+              MyPlanScreen.myHostedPlans.clear();
+              RequestsSentScreen.mySentRequests.clear();
+
               if (mounted) {
                 Navigator.pushNamedAndRemoveUntil(context, '/landing', (route) => false);
               }

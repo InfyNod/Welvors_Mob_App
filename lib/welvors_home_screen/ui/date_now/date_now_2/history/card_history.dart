@@ -311,7 +311,9 @@ class CardHistory extends StatelessWidget {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage: NetworkImage(plan['partnerAvatar']),
+                          backgroundImage: plan['partnerAvatar'] != null && plan['partnerAvatar'].toString().isNotEmpty
+                              ? NetworkImage(plan['partnerAvatar']) as ImageProvider
+                              : const AssetImage('assets/dummyphoto.jpeg'),
                           radius: 18,
                         ),
                         const SizedBox(width: 10),
@@ -320,7 +322,7 @@ class CardHistory extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                plan['partnerName'],
+                                plan['partnerName'] ?? 'Unknown User',
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
@@ -329,7 +331,7 @@ class CardHistory extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                plan['partnerStatus'],
+                                plan['partnerStatus'] ?? '',
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: Colors.grey.shade500,

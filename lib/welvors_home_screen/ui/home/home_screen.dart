@@ -2416,9 +2416,11 @@ class _ProfileCardUI extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         image: DecorationImage(
-          image: profile.images.first.startsWith('http')
-              ? NetworkImage(profile.images.first) as ImageProvider
-              : FileImage(File(profile.images.first)),
+          image: profile.images.isNotEmpty
+              ? (profile.images.first.startsWith('http')
+                  ? NetworkImage(profile.images.first) as ImageProvider
+                  : FileImage(File(profile.images.first)))
+              : const AssetImage('assets/dummyphoto.jpeg') as ImageProvider,
           fit: BoxFit.cover,
           filterQuality: FilterQuality.high,
         ),

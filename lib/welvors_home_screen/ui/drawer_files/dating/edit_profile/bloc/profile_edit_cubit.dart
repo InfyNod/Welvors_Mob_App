@@ -43,21 +43,26 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
 
       // Parse photos
       List<ProfilePhoto?> parsedPhotos = List.filled(6, null);
-      if (data['photos'] != null && data['photos'] is List) {
-        var backendPhotos = List.from(data['photos']);
+      dynamic rawPhotos = data['photos'] ?? data['profile']?['photos'] ?? data['userPhotos'];
+      
+      if (rawPhotos != null && rawPhotos is List) {
+        var backendPhotos = List.from(rawPhotos);
         // Sort by order just in case they are different, but keep original sequence if same
         backendPhotos.sort((a, b) {
-          int orderA = a['order'] ?? 1;
-          int orderB = b['order'] ?? 1;
+          int orderA = (a is Map) ? (a['order'] ?? 1) : 1;
+          int orderB = (b is Map) ? (b['order'] ?? 1) : 1;
           return orderA.compareTo(orderB);
         });
 
         int currentIndex = 0;
         for (var p in backendPhotos) {
+          if (p is! Map) continue;
+          if (p['media_type'] == 'VIDEO') continue;
+          
           if (currentIndex < 6) {
             parsedPhotos[currentIndex] = ProfilePhoto(
-              id: p['id'],
-              url: p['url'],
+              id: p['id']?.toString(),
+              url: p['media_url']?.toString() ?? p['url']?.toString(),
             );
             currentIndex++;
           }

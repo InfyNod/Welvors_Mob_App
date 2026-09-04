@@ -85,8 +85,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               'planId': item['planId'] ?? plan['id'],
               'imageUrl':
                   plan['photoUrl'] ??
-                  (plan['activity'] is Map ? plan['activity']['icon'] : null) ??
-                  'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                  (plan['activity'] is Map ? plan['activity']['icon'] : null),
               'activityName': plan['activity'] is Map
                   ? (plan['activity']['label'] ??
                         plan['activity']['name'] ??
@@ -101,9 +100,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               'subtitle':
                   '${_formatDate(plan['eventDateTime'])} · ${plan['venueName'] ?? ''}',
               'hostName': host['name'] ?? 'User',
-              'hostAvatar':
-                  host['profilePhoto'] ??
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+              'hostAvatar': host['profilePhoto'],
               'status': displayStatus,
               'message': item['message'] ?? 'I would love to join!',
               'statusMessage': item['status'] == 'APPROVED'
@@ -181,6 +178,81 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _showActionPopup(String message, {bool isError = false}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          bottom: 120,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutBack,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isError ? Colors.red.shade800 : Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isError ? Icons.error : Icons.check_circle,
+                        color: isError ? Colors.white : Colors.green,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        message,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    overlay.insert(overlayEntry);
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
   }
 
   List<String> _filters = ['☕ Coffee', '🍽️ Dinner', '🍸 Drinks', '🚶 Walk'];
@@ -599,7 +671,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 top: Radius.circular(20),
               ),
               image: DecorationImage(
-                image: NetworkImage(plan['imageUrl']),
+                image: plan['imageUrl'] != null && plan['imageUrl'].toString().isNotEmpty
+                    ? NetworkImage(plan['imageUrl']) as ImageProvider
+                    : const AssetImage('assets/dummyphoto.jpeg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -754,7 +828,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage(plan['hostAvatar']),
+                        backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
+                            ? NetworkImage(plan['hostAvatar']) as ImageProvider
+                            : const AssetImage('assets/dummyphoto.jpeg'),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -1127,7 +1203,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundImage: NetworkImage(plan['hostAvatar']),
+                        backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
+                            ? NetworkImage(plan['hostAvatar']) as ImageProvider
+                            : const AssetImage('assets/dummyphoto.jpeg'),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -1164,9 +1242,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     Navigator.pop(context); // Close bottom sheet
 
                     // Show a simple snackbar indicating progress
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Canceling date...')),
-                    );
+                    // (Removed loading snackbar)
 
                     final planId = plan['planId'];
                     final url = Uri.parse(
@@ -1192,11 +1268,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                           RequestsSentScreen.mySentRequests.remove(plan);
                         });
                         if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Date canceled successfully'),
-                            ),
-                          );
+                          _showActionPopup('Date canceled successfully');
                         }
                       } else {
                         String errorMessage = 'Failed to cancel date';
@@ -1208,9 +1280,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         } catch (_) {}
 
                         if (mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(errorMessage)));
+                          _showActionPopup(errorMessage, isError: true);
                         }
                         debugPrint(
                           'Failed to cancel: ${response.statusCode} - ${response.body}',
@@ -1218,9 +1288,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       }
                     } catch (e) {
                       if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Error canceling date')),
-                        );
+                        _showActionPopup('Error canceling date', isError: true);
                       }
                       debugPrint('Error canceling date: $e');
                     }
@@ -1381,7 +1449,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundImage: NetworkImage(plan['hostAvatar']),
+                        backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
+                            ? NetworkImage(plan['hostAvatar']) as ImageProvider
+                            : const AssetImage('assets/dummyphoto.jpeg'),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -1421,12 +1491,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     final requestId = plan['id'] ?? 'DUMMY_ID';
 
                     // Show a simple snackbar indicating progress
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Withdrawing request...'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
+                    // (Removed loading snackbar)
 
                     final success = await DateNowApiService.withdrawRequest(
                       requestId,
@@ -1438,17 +1503,11 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         RequestsSentScreen.mySentRequests.remove(plan);
                       });
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Request withdrawn')),
-                        );
+                        _showActionPopup('Request withdrawn');
                       }
                     } else {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to withdraw request'),
-                          ),
-                        );
+                        _showActionPopup('Failed to withdraw request', isError: true);
                       }
                     }
                   },
@@ -1530,10 +1589,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   width: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(
-                        plan['imageUrl'] ??
-                            'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                      ),
+                      image: plan['imageUrl'] != null && plan['imageUrl'].toString().isNotEmpty
+                          ? NetworkImage(plan['imageUrl']) as ImageProvider
+                          : const AssetImage('assets/dummyphoto.jpeg'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -1655,7 +1713,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                           children: [
                             CircleAvatar(
                               radius: 20,
-                              backgroundImage: NetworkImage(plan['hostAvatar']),
+                              backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
+                                  ? NetworkImage(plan['hostAvatar']) as ImageProvider
+                                  : const AssetImage('assets/dummyphoto.jpeg'),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
