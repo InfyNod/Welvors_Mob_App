@@ -37,7 +37,7 @@ class SentLikesScreen extends StatelessWidget {
               await Future.delayed(const Duration(milliseconds: 1500));
             },
             child: ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               itemCount: sentCards.length,
               separatorBuilder: (context, index) => const SizedBox(height: 15),
@@ -75,7 +75,6 @@ class SentLikesScreen extends StatelessWidget {
         children: [
           _buildHeader(card),
           _buildBody(card),
-          _buildQuote(card),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           _buildFooter(card),
         ],
@@ -197,21 +196,6 @@ class SentLikesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuote(Map<String, dynamic> card) {
-    if (card['quote'] == null || card['quote'].isEmpty) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-      child: Text(
-        card['quote'],
-        style: const TextStyle(
-          fontSize: 13,
-          fontStyle: FontStyle.italic,
-          color: Colors.black54,
-          height: 1.4,
-        ),
-      ),
-    );
-  }
 
   Widget _buildFooter(Map<String, dynamic> card) {
     int progressState = card['progressState'] ?? 0;
