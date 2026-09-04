@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
@@ -85,6 +86,9 @@ class BasicDetailsSection extends StatelessWidget {
                           subHeaderText:
                               'Please enter your valid and full name for better connections.',
                           currentValue: state.fullName,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                          ],
                         ),
                       ),
                     );
@@ -104,6 +108,13 @@ class BasicDetailsSection extends StatelessWidget {
                           subHeaderText: 'We use this to keep your account secure.',
                           currentValue: state.email,
                           keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            final emailRegex = RegExp(r'^[\w-\.]+@gmail\.com$');
+                            if (!emailRegex.hasMatch(value)) {
+                              return 'Please insert a valid @gmail.com address';
+                            }
+                            return null;
+                          },
                         ),
                       ),
                     );

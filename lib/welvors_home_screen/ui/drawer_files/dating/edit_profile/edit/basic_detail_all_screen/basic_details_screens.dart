@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 // Generic unsaved changes popup method
@@ -171,6 +172,8 @@ class EditTextInputScreen extends StatefulWidget {
   final TextInputType keyboardType;
   final int maxLines;
   final int? maxLength;
+  final String? Function(String)? validator;
+  final List<TextInputFormatter>? inputFormatters;
 
   const EditTextInputScreen({
     super.key,
@@ -182,6 +185,8 @@ class EditTextInputScreen extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
     this.maxLength,
+    this.validator,
+    this.inputFormatters,
   });
 
   @override
@@ -209,7 +214,15 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
 
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
-      if (mounted) Navigator.pop(context, _controller.text.trim());
+      final text = _controller.text.trim();
+      if (widget.validator != null) {
+        final error = widget.validator!(text);
+        if (error != null) {
+          _showCustomPopup(context, error);
+          return false; // Prevent pop
+        }
+      }
+      if (mounted) Navigator.pop(context, text);
       return false; // Already popped
     }
     return result == false; // Pop without saving
@@ -262,6 +275,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                       keyboardType: widget.keyboardType,
                       maxLines: null,
                       maxLength: widget.maxLength,
+                      inputFormatters: widget.inputFormatters,
                       textInputAction: TextInputAction.done,
                       style: const TextStyle(
                         fontSize: 16,
@@ -292,6 +306,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                     keyboardType: widget.keyboardType,
                     maxLines: widget.maxLines,
                     maxLength: widget.maxLength,
+                    inputFormatters: widget.inputFormatters,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -319,7 +334,15 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, _controller.text.trim());
+                      final text = _controller.text.trim();
+                      if (widget.validator != null) {
+                        final error = widget.validator!(text);
+                        if (error != null) {
+                          _showCustomPopup(context, error);
+                          return;
+                        }
+                      }
+                      Navigator.pop(context, text);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -345,6 +368,81 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
         ),
       ),
     );
+  }
+
+  void _showCustomPopup(BuildContext context, String text) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          bottom: 120, // Match the height from sent.dart
+          left: 0,
+          right: 0,
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutBack, // Bouncy pop animation
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        '⚠️',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        text,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    overlay.insert(overlayEntry);
+
+    // Auto-remove after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
   }
 }
 
@@ -829,13 +927,13 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
                     scrollController: FixedExtentScrollController(
                       initialItem: _selectedCm - 90,
                     ),
-                    onSelectedItemChanged: (index) {
+                    onSelectedItemChanged: (int index) {
                       setState(() {
                         _selectedCm = 90 + index; // Range from 90 cm to 250 cm
                       });
                     },
                     childCount: 250 - 90 + 1,
-                    itemBuilder: (context, index) {
+                    itemBuilder: (BuildContext context, int index) {
                       int cm = 90 + index;
                       double inches = cm / 2.54;
                       int feet = (inches / 12).floor();
