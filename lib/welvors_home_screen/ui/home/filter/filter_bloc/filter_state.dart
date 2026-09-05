@@ -26,7 +26,7 @@ class FilterState extends Equatable {
     this.minAge = 18.0,
     this.maxAge = 32.0,
     this.distance = 100.0,
-    this.showMe = 'EVERYONE',
+    this.showMe = 'ANY',
     this.showMePreference = '',
     this.lookingFor = const [],
     this.minHeight,
@@ -121,7 +121,7 @@ class FilterState extends Equatable {
       minAge: map['minAge']?.toDouble() ?? 18.0,
       maxAge: map['maxAge']?.toDouble() ?? 32.0,
       distance: map['distance']?.toDouble() ?? 100.0,
-      showMe: map['showMe'] ?? 'EVERYONE',
+      showMe: map['showMe'] ?? 'ANY',
       showMePreference: map['showMePreference'] ?? '',
       lookingFor: List<String>.from(map['lookingFor'] ?? []),
       minHeight: map['minHeight']?.toDouble(),
@@ -162,7 +162,7 @@ class FilterState extends Equatable {
     if (minHeight != null) data["minHeight"] = minHeight!.toInt();
     if (maxHeight != null) data["maxHeight"] = maxHeight!.toInt();
     
-    if (showMe.isNotEmpty && showMe != 'Any' && showMe != 'EVERYONE') {
+    if (showMe.isNotEmpty && showMe != 'Any' && showMe != 'ANY') {
       String interestedIn = 'Everyone';
       if (showMe == 'WOMEN') interestedIn = 'Women';
       if (showMe == 'MEN') interestedIn = 'Men';

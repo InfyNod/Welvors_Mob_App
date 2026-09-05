@@ -4,6 +4,7 @@ import 'all_screen_help/account_pofile.dart';
 import 'all_screen_help/safety_privacy.dart';
 import 'all_screen_help/plan_wallet.dart';
 import 'all_screen_help/matches_date.dart';
+
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
 
@@ -389,72 +390,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               ),
             ),
 
-            const SizedBox(height: 32),
-            const Text(
-              'MORE',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Colors.black54,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // MORE Section List
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
-                    blurRadius: 16,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  _buildMoreItem(
-                    emoji: '🚩',
-                    iconBgColor: Colors.red.shade50,
-                    title: 'Report a problem',
-                    onTap: () => _showComingSoon(),
-                  ),
-                  _buildDivider(),
-                  _buildMoreItem(
-                    emoji: '📜',
-                    iconBgColor: Colors.orange.shade50,
-                    title: 'Community Guidelines',
-                    onTap: () => _showComingSoon(),
-                  ),
-                  _buildDivider(),
-                  _buildMoreItem(
-                    emoji: '📋',
-                    iconBgColor: Colors.blue.shade50,
-                    title: 'Terms of Service',
-                    onTap: () => _showComingSoon(),
-                  ),
-                  _buildDivider(),
-                  _buildMoreItem(
-                    emoji: '🔒',
-                    iconBgColor: Colors.green.shade50,
-                    title: 'Privacy Policy',
-                    onTap: () => _showComingSoon(),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             Center(
               child: RichText(
                 text: TextSpan(
@@ -731,7 +667,9 @@ class _FaqItemState extends State<_FaqItem> {
                   curve: Curves.easeInOut,
                   child: Icon(
                     Icons.add,
-                    color: _isExpanded ? Colors.pink.shade300 : Colors.grey.shade400,
+                    color: _isExpanded
+                        ? Colors.pink.shade300
+                        : Colors.grey.shade400,
                     size: 20,
                   ),
                 ),

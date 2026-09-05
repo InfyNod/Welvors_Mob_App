@@ -13,7 +13,7 @@ class ShowMeScreen extends StatefulWidget {
 }
 
 class _ShowMeScreenState extends State<ShowMeScreen> {
-  String _selectedShowMe = 'EVERYONE';
+  String _selectedShowMe = 'ANY';
   final Set<String> _selectedPreferences = {};
 
   // Display map for UI (Backend Key : Display Name)
@@ -34,9 +34,9 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
   void initState() {
     super.initState();
     final currentState = context.read<FilterBloc>().state;
-    _selectedShowMe = ['WOMEN', 'MEN', 'EVERYONE'].contains(currentState.showMe)
+    _selectedShowMe = ['WOMEN', 'MEN', 'NON_BINARY'].contains(currentState.showMe)
         ? currentState.showMe
-        : 'EVERYONE';
+        : 'ANY';
         
     if (currentState.showMePreference.isNotEmpty) {
       _selectedPreferences.add(currentState.showMePreference);
@@ -337,19 +337,19 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                 expandedContent: _buildExpandedPreferences(),
               ),
               _buildCard(
-                title: 'Everyone',
-                subtitle: 'Show me everyone',
+                title: 'Non-binary',
+                subtitle: 'Show me non-binary people',
                 icon: Icons.transgender,
                 iconColor: AppColors.gold,
                 iconBg: AppColors.gold.withOpacity(0.15),
-                isSelected: _selectedShowMe == 'EVERYONE',
+                isSelected: _selectedShowMe == 'NON_BINARY',
                 onTap: () {
                   setState(() {
-                    _selectedShowMe = 'EVERYONE';
+                    _selectedShowMe = 'NON_BINARY';
                     _selectedPreferences.clear();
                   });
                 },
-                // No expanded content for 'Everyone' as requested
+                expandedContent: _buildExpandedPreferences(),
               ),
             ],
           ),

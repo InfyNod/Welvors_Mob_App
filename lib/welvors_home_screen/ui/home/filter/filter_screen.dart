@@ -196,8 +196,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             'MEN': 'Men',
                             'WOMEN': 'Women',
                             'NON_BINARY': 'Non-binary',
-                            'PREFER_NOT_TO_SAY': 'Prefer not to say',
-                            'EVERYONE': 'Everyone',
+                            'ANY': 'Any',
                           }[state.showMe] ??
                           state.showMe,
                       onTap: () {
