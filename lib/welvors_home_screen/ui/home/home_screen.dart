@@ -45,6 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _protectScreen();
+    // Safety check: if splash screen was bypassed, load data now.
+    if (context.read<HomeBloc>().state is HomeInitial) {
+      context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
+    }
   }
 
   Future<void> _protectScreen() async {

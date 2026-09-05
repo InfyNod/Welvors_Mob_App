@@ -387,12 +387,13 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
           bottom: 120, // Slightly above the bottom
           left: 0,
           right: 0,
-          child: Center(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOutBack, // Bouncy pop animation
-              builder: (context, value, child) {
+          child: IgnorePointer(
+            child: Center(
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOutBack, // Bouncy pop animation
+                builder: (context, value, child) {
                 return Transform.scale(
                   scale: value,
                   child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
@@ -439,8 +440,9 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
               ),
             ),
           ),
-        );
-      },
+        ),
+      );
+    },
     );
 
     overlay.insert(overlayEntry);

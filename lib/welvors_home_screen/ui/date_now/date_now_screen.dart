@@ -30,12 +30,21 @@ class _DateNowScreenState extends State<DateNowScreen>
   bool _isLoading = true;
   List<Map<String, dynamic>> _fetchedPlans = [];
   final Set<String> _removedPlanIds = {};
+  
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _selectedTabIndex);
     _fetchOptions();
     _fetchPlans();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchOptions() async {
@@ -146,12 +155,26 @@ class _DateNowScreenState extends State<DateNowScreen>
             _buildFilters(),
             const SizedBox(height: 2),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: _buildDateCard(),
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: _tabs.length,
+                onPageChanged: (index) {
+                  if (_selectedTabIndex != index) {
+                    setState(() {
+                      _selectedTabIndex = index;
+                      _fetchPlans();
+                    });
+                  }
+                },
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: _buildDateCard(),
+                  );
+                },
               ),
             ),
           ],
@@ -301,12 +324,13 @@ class _DateNowScreenState extends State<DateNowScreen>
                   return Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        setState(() {
-                          if (_selectedTabIndex != index) {
-                            _selectedTabIndex = index;
-                            _fetchPlans(); // Fetch new plans for the selected tab
-                          }
-                        });
+                        if (_selectedTabIndex != index) {
+                          _pageController.animateToPage(
+                            index,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
                       },
                       behavior: HitTestBehavior.opaque,
                       child: Padding(

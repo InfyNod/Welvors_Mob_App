@@ -57,17 +57,18 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
           bottom: 120, // Match the height from sent.dart
           left: 0,
           right: 0,
-          child: Center(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOutBack, // Bouncy pop animation
-              builder: (context, value, child) {
-                return Transform.scale(
-                  scale: value,
-                  child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
-                );
-              },
+          child: IgnorePointer(
+            child: Center(
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOutBack, // Bouncy pop animation
+                builder: (context, value, child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+                  );
+                },
               child: Material(
                 color: Colors.transparent,
                 child: Container(
@@ -110,8 +111,9 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
               ),
             ),
           ),
-        );
-      },
+        ),
+      );
+    },
     );
 
     overlay.insert(overlayEntry);

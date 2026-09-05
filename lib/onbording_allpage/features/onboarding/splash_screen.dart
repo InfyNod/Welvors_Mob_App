@@ -65,8 +65,26 @@ class _SplashScreenState extends State<SplashScreen>
       context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
     }
 
-    // 2. Ensure the splash animation plays for 3 seconds
-    await Future.delayed(const Duration(milliseconds: 3000));
+    // 2. Ensure the splash animation plays for at least 3 seconds
+    // AND wait for the home data to load (up to 5 seconds max)
+    final timerFuture = Future.delayed(const Duration(milliseconds: 3000));
+    
+    Future<void> waitForData() async {
+      if (!isLoggedIn || !mounted) return;
+      final bloc = context.read<HomeBloc>();
+      // If already loaded, return immediately
+      if (bloc.state is HomeLoaded || bloc.state is HomeEmpty) return;
+      
+      try {
+        await bloc.stream.firstWhere(
+          (state) => state is HomeLoaded || state is HomeEmpty,
+        ).timeout(const Duration(seconds: 5));
+      } catch (_) {
+        // Ignore timeout
+      }
+    }
+
+    await Future.wait([timerFuture, waitForData()]);
 
     // 3. Navigate
     if (mounted) {
