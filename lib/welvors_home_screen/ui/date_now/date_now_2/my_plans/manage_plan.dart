@@ -1203,7 +1203,12 @@ void showFeedbackBottomSheet(
                             onTap: () {
                               if (overallExperience > 0 && ratePerson > 0) {
                                 final apiTags = selectedTags
-                                    .map((tag) => tag.toUpperCase().replaceAll(' ', '_'))
+                                    .map(
+                                      (tag) => tag.toUpperCase().replaceAll(
+                                        ' ',
+                                        '_',
+                                      ),
+                                    )
                                     .toList();
                                 DateNowApiService.submitFeedbackExperience(
                                   plan['id']?.toString() ?? '',
@@ -1211,7 +1216,7 @@ void showFeedbackBottomSheet(
                                   ratePerson,
                                   apiTags,
                                 );
-                                
+
                                 Navigator.pop(context);
                                 showThanksBottomSheet(
                                   context,
@@ -1757,8 +1762,11 @@ void showReportIssueBottomSheet(
                           GestureDetector(
                             onTap: () {
                               if (issueDescription.trim().isNotEmpty) {
-                                String reportReason = selectedTags.isNotEmpty 
-                                    ? selectedTags.first.toUpperCase().replaceAll('\'', '').replaceAll(' ', '_') 
+                                String reportReason = selectedTags.isNotEmpty
+                                    ? selectedTags.first
+                                          .toUpperCase()
+                                          .replaceAll('\'', '')
+                                          .replaceAll(' ', '_')
                                     : 'SAFETY_CONCERN';
 
                                 DateNowApiService.submitReportIssue(
@@ -2117,8 +2125,10 @@ void showNoOneCameBottomSheet(
                           GestureDetector(
                             onTap: () {
                               if (isFormValid) {
-                                String noShowReason = selectedTags.isNotEmpty 
-                                    ? selectedTags.first.toUpperCase().replaceAll(' ', '_') 
+                                String noShowReason = selectedTags.isNotEmpty
+                                    ? selectedTags.first
+                                          .toUpperCase()
+                                          .replaceAll(' ', '_')
                                     : 'NOT_SURE';
 
                                 DateNowApiService.submitFeedbackNoShow(

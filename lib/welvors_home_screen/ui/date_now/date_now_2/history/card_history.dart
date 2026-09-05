@@ -18,15 +18,14 @@ class CardHistory extends StatelessWidget {
   static List<Map<String, dynamic>> earlierPlans = [];
 
   List<Map<String, dynamic>> _filterPlans(List<Map<String, dynamic>> plans) {
-    if (selectedFilter.toLowerCase() == 'all') {
+    final filterPrefix = selectedFilter.split(' ')[0].toLowerCase();
+    if (filterPrefix == 'all') {
       return plans;
     }
     return plans.where((plan) {
       final status = plan['status'].toString().toLowerCase();
-      final filter = selectedFilter.toLowerCase();
-      // Special case for 'No-show' vs 'NO-SHOW'
-      if (filter == 'no-show' && status == 'no-show') return true;
-      return status == filter;
+      // Special case for 'no-show' since it might have hyphen issues, though toLowerCase handles it.
+      return status == filterPrefix;
     }).toList();
   }
 

@@ -106,7 +106,18 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
         final title = item['quickTitle']?['label'] ?? item['title'] ?? 'Date Plan';
         final location = '${item['venue']?['name'] ?? ''} · ${item['venue']?['address'] ?? ''}';
         final image = item['activity']?['icon'] ?? 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-        final status = item['statusLabel']?.toString().toUpperCase() ?? item['status']?.toString().toUpperCase() ?? 'EXPIRED';
+        String status = item['statusLabel']?.toString().toUpperCase() ?? item['status']?.toString().toUpperCase() ?? 'EXPIRED';
+        
+        final requestsObj = item['requests'] ?? {};
+        final cancelledReqs = requestsObj['cancelled'] ?? 0;
+        final approvedReqs = requestsObj['approved'] ?? 0;
+
+        if (status == 'BOOKED') {
+          if (cancelledReqs > 0 && approvedReqs == 0) {
+            status = 'CANCELLED';
+          }
+        }
+
         final note = item['message'] ?? '';
         final requestsCount = item['requests']?['total'] ?? 0;
         final split = item['whoPays']?['label'] ?? 'Split';
