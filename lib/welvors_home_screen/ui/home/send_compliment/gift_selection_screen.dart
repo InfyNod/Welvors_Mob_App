@@ -79,6 +79,31 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
   List<SelectedGift> get _visibleGifts =>
       _giftsByCategory[_categories[_selectedCategory]]!;
 
+  final Map<int, GlobalKey> _categoryKeys = {};
+
+  @override
+  void initState() {
+    super.initState();
+    for (int i = 0; i < _categories.length; i++) {
+      _categoryKeys[i] = GlobalKey();
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCategory(_selectedCategory);
+    });
+  }
+
+  void _scrollToCategory(int index) {
+    final key = _categoryKeys[index];
+    if (key != null && key.currentContext != null) {
+      Scrollable.ensureVisible(
+        key.currentContext!,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
@@ -143,113 +168,135 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Container(
-            width: double.infinity,
-            height: 290,
-            padding: const EdgeInsets.fromLTRB(24, 110, 24, 20),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFFFE9F3), Color(0xFFF0EDFF)],
+          // Background Gradient (smoothly fading to white)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 350,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFFE9F3), Color(0xFFF0EDFF), Colors.white],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.0, 0.6, 1.0],
+                ),
               ),
             ),
-            child: Column(
-              children: [
-                Image.asset('assets/gift.png', height: 78, width: 78),
-                const SizedBox(height: 19),
-                Text('Send a Gift', style: AppText.h1.copyWith(fontSize: 25)),
-                const SizedBox(height: 5),
-                Text.rich(
-                  TextSpan(
-                    text: 'to ',
-                    style: AppText.body.copyWith(
-                      color: AppColors.ink60,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                    ),
-                    children: [
+          ),
+          Column(
+            children: [
+              // Header
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(24, 110, 24, 16),
+                child: Column(
+                  children: [
+                    Image.asset('assets/gift.png', height: 78, width: 78),
+                    const SizedBox(height: 19),
+                    Text('Send a Gift', style: AppText.h1.copyWith(fontSize: 25)),
+                    const SizedBox(height: 5),
+                    Text.rich(
                       TextSpan(
-                        text: widget.recipientName ?? 'them',
-                        style: AppText.body.copyWith(
-                          color: AppColors.primaryDark,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' · they’ll get a notification',
+                        text: 'to ',
                         style: AppText.body.copyWith(
                           color: AppColors.ink60,
                           fontWeight: FontWeight.w500,
                           fontSize: 12,
                         ),
+                        children: [
+                          TextSpan(
+                            text: widget.recipientName ?? 'them',
+                            style: AppText.body.copyWith(
+                              color: AppColors.primaryDark,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' · they’ll get a notification',
+                            style: AppText.body.copyWith(
+                              color: AppColors.ink60,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 70, // Increased to accommodate padding and shadow
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              itemCount: _categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final selected = index == _selectedCategory;
-                final primaryPink = const Color(0xFFE43A6A);
-                
-                return GestureDetector(
-                  onTap: () => setState(() {
-                    _selectedCategory = index;
-                    _selectedGift = null;
-                  }),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: selected ? primaryPink : Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: selected ? Colors.transparent : Colors.grey.shade200,
-                      ),
-                      boxShadow: selected
-                          ? null
-                          : [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
+              ),
+              
+              // Categories List (Animated and centering)
+              SizedBox(
+                height: 36,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: List.generate(_categories.length, (index) {
+                      final selected = index == _selectedCategory;
+                      final primaryPink = const Color(0xFFE43A6A);
+                      
+                      return GestureDetector(
+                        key: _categoryKeys[index],
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = index;
+                            _selectedGift = null;
+                          });
+                          _scrollToCategory(index);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: selected ? primaryPink : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: selected ? Colors.transparent : Colors.grey.shade200,
+                            ),
+                            boxShadow: selected
+                                ? null
+                                : [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                _categoryIcons[index],
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _categories[index],
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: selected ? Colors.white : Colors.black87,
+                                ),
                               ),
                             ],
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          _categoryIcons[index],
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _categories[index],
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: selected ? Colors.white : Colors.black87,
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    }),
                   ),
-                );
-              },
-            ),
-          ),
+                ),
+              ),
+              const SizedBox(height: 8),
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -411,6 +458,8 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
           ),
         ],
       ),
-    );
+    ],
+  ),
+);
   }
 }
