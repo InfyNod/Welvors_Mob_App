@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
@@ -87,6 +88,9 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
     for (int i = 0; i < _categories.length; i++) {
       _categoryKeys[i] = GlobalKey();
     }
+    _messageFocusNode.addListener(() {
+      setState(() {});
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToCategory(_selectedCategory);
     });
@@ -195,9 +199,17 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                 padding: const EdgeInsets.fromLTRB(24, 110, 24, 16),
                 child: Column(
                   children: [
-                    Image.asset('assets/gift.png', height: 78, width: 78),
-                    const SizedBox(height: 19),
-                    Text('Send a Gift', style: AppText.h1.copyWith(fontSize: 25)),
+                    Lottie.asset(
+                      'assets/Referral.json',
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Send a Gift',
+                      style: AppText.h1.copyWith(fontSize: 25),
+                    ),
                     const SizedBox(height: 5),
                     Text.rich(
                       TextSpan(
@@ -230,7 +242,7 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                   ],
                 ),
               ),
-              
+
               // Categories List (Animated and centering)
               SizedBox(
                 height: 36,
@@ -242,7 +254,7 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                     children: List.generate(_categories.length, (index) {
                       final selected = index == _selectedCategory;
                       final primaryPink = const Color(0xFFE43A6A);
-                      
+
                       return GestureDetector(
                         key: _categoryKeys[index],
                         onTap: () {
@@ -255,13 +267,18 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 8,
+                          ),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: selected ? primaryPink : Colors.white,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: selected ? Colors.transparent : Colors.grey.shade200,
+                              color: selected
+                                  ? Colors.transparent
+                                  : Colors.grey.shade200,
                             ),
                             boxShadow: selected
                                 ? null
@@ -285,7 +302,9 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  color: selected ? Colors.white : Colors.black87,
+                                  color: selected
+                                      ? Colors.white
+                                      : Colors.black87,
                                 ),
                               ),
                             ],
@@ -297,169 +316,217 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-              itemCount: _visibleGifts.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: .82,
-              ),
-              itemBuilder: (context, index) {
-                final gift = _visibleGifts[index];
-                final selected = gift.id == _selectedGift?.id;
-                return GestureDetector(
-                  onTap: () => setState(() => _selectedGift = gift),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: selected ? AppColors.primary : AppColors.line,
-                        width: selected ? 2 : 1,
-                      ),
-                      boxShadow: AppColors.shadow,
-                    ),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: selected
-                                  ? AppColors.primarySoft
-                                  : const Color(0xFFF7F2F0),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(17),
-                              ),
-                            ),
-                            child: Text(
-                              gift.emoji,
-                              style: const TextStyle(fontSize: 58),
-                            ),
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                  itemCount: _visibleGifts.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: .75,
+                  ),
+                  itemBuilder: (context, index) {
+                    final gift = _visibleGifts[index];
+                    final selected = gift.id == _selectedGift?.id;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedGift = gift),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: selected
+                                ? const Color(0xFFE43A6A)
+                                : Colors.grey.shade100,
+                            width: selected ? 2 : 1,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: selected 
+                                  ? const Color(0xFFE43A6A).withOpacity(0.3)
+                                  : Colors.black.withOpacity(0.07),
+                              blurRadius: selected ? 18 : 10,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-                          child: Column(
-                            children: [
-                              Text(
-                                gift.name,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppText.h4,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '🪙 ${gift.coins}',
-                                style: AppText.pill.copyWith(
-                                  color: AppColors.gold,
-                                  fontWeight: FontWeight.w700,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  gradient: selected
+                                      ? const LinearGradient(
+                                          colors: [Color(0xFFFFF0F5), Color(0xFFFFE4EE)],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        )
+                                      : const LinearGradient(
+                                          colors: [Color(0xFFF9F9F9), Color(0xFFF1F1F1)],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(19),
+                                  ),
+                                ),
+                                child: AnimatedScale(
+                                  scale: selected ? 1.15 : 1.0,
+                                  duration: const Duration(milliseconds: 200),
+                                  child: Text(
+                                    gift.emoji,
+                                    style: const TextStyle(fontSize: 42),
+                                  ),
                                 ),
                               ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    gift.name,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF9E6),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text('🪙', style: TextStyle(fontSize: 11)),
+                                        const SizedBox(width: 3),
+                                        Text(
+                                          '${gift.coins}',
+                                          style: const TextStyle(
+                                            color: Color(0xFFD4AF37),
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: _selectedGift == null
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          decoration: BoxDecoration(
+                            color: _messageFocusNode.hasFocus
+                                ? const Color(0xFFFFF0F5)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: _messageFocusNode.hasFocus
+                                    ? const Color(0xFFE43A6A).withOpacity(0.2)
+                                    : Colors.black.withOpacity(0.06),
+                                blurRadius: _messageFocusNode.hasFocus ? 14 : 8,
+                                offset: const Offset(0, 4),
+                              ),
                             ],
+                            border: Border.all(
+                              color: _messageFocusNode.hasFocus
+                                  ? const Color(0xFFE43A6A)
+                                  : Colors.grey.shade200,
+                              width: _messageFocusNode.hasFocus ? 1.5 : 1,
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _messageController,
+                            focusNode: _messageFocusNode,
+                            maxLines: 1,
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                            decoration: InputDecoration(
+                              hintText: 'Add a cute message (optional)',
+                              hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+                              prefixIcon: const Icon(
+                                Icons.favorite_border_rounded,
+                                size: 18,
+                                color: Color(0xFFE43A6A),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-            child: SizedBox(
-              height: 30,
-              child: TextField(
-                controller: _messageController,
-                focusNode: _messageFocusNode,
-                maxLines: 1,
-                textAlignVertical: TextAlignVertical.center,
-                style: const TextStyle(fontSize: 13, height: 1.0),
-                decoration: InputDecoration(
-                  hintText: 'Add a message (optional)',
-                  hintStyle: const TextStyle(fontSize: 13, height: 1.0),
-                  prefixIcon: const Icon(
-                    Icons.chat_bubble_outline_rounded,
-                    size: 15,
-                  ),
-                  prefixIconConstraints: const BoxConstraints(
-                    minWidth: 35,
-                    minHeight: 30,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 10,
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFFF3EEE8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+                      ),
               ),
-            ),
-          ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              child: Container(
-                width: double.infinity,
-                height: 52,
-                child: FilledButton(
-                  onPressed: _selectedGift == null
-                      ? null
-                      : () => Navigator.pop(
-                          context,
-                          SelectedGift(
-                            id: _selectedGift!.id,
-                            name: _selectedGift!.name,
-                            emoji: _selectedGift!.emoji,
-                            coins: _selectedGift!.coins,
-                            message: _messageController.text.trim(),
-                          ),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                  child: Container(
+                    width: double.infinity,
+                    height: 52,
+                    child: FilledButton(
+                      onPressed: _selectedGift == null
+                          ? null
+                          : () => Navigator.pop(
+                              context,
+                              SelectedGift(
+                                id: _selectedGift!.id,
+                                name: _selectedGift!.name,
+                                emoji: _selectedGift!.emoji,
+                                coins: _selectedGift!.coins,
+                                message: _messageController.text.trim(),
+                              ),
+                            ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.primaryDark,
+                        disabledBackgroundColor: AppColors.soft,
+                        disabledForegroundColor: AppColors.muted,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primaryDark,
-                    disabledBackgroundColor: AppColors.soft,
-                    disabledForegroundColor: AppColors.muted,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Text(
-                    _selectedGift == null
-                        ? 'Select a gift'
-                        : 'Select ${_selectedGift!.name}',
-                    style: AppText.pill.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: _selectedGift == null ? null : Colors.white,
+                      ),
+                      child: Text(
+                        _selectedGift == null
+                            ? 'Select a gift'
+                            : 'Select ${_selectedGift!.name}',
+                        style: AppText.pill.copyWith(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: _selectedGift == null ? null : Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         ],
       ),
-    ],
-  ),
-);
+    );
   }
 }
