@@ -36,14 +36,20 @@ class SentLikesScreen extends StatelessWidget {
               context.read<AdmirersBloc>().add(LoadAdmirersData());
               await Future.delayed(const Duration(milliseconds: 1500));
             },
-            child: ListView.separated(
+            child: ListView.builder(
               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               itemCount: sentCards.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 15),
               itemBuilder: (context, index) {
                 final card = sentCards[index];
-                return _buildSentCard(card);
+                return AnimatedSentCardItem(
+                  key: ValueKey(card['id'] ?? index),
+                  card: card,
+                  builder: (c, onSent) => Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: _buildSentCard(c, onSent),
+                  ),
+                );
               },
             ),
           );
@@ -53,7 +59,7 @@ class SentLikesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSentCard(Map<String, dynamic> card) {
+  Widget _buildSentCard(Map<String, dynamic> card, VoidCallback onSent) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -76,7 +82,7 @@ class SentLikesScreen extends StatelessWidget {
           _buildHeader(card),
           _buildBody(card),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
-          _buildFooter(card),
+          _buildFooter(card, onSent),
         ],
       ),
     );
@@ -197,7 +203,7 @@ class SentLikesScreen extends StatelessWidget {
   }
 
 
-  Widget _buildFooter(Map<String, dynamic> card) {
+  Widget _buildFooter(Map<String, dynamic> card, VoidCallback onSent) {
     int progressState = card['progressState'] ?? 0;
 
     return Padding(
@@ -230,7 +236,7 @@ class SentLikesScreen extends StatelessWidget {
               ),
             ],
           ),
-          _buildActionButton(card),
+          _buildActionButton(card, onSent),
         ],
       ),
     );
@@ -269,11 +275,12 @@ class SentLikesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(Map<String, dynamic> card) {
+  Widget _buildActionButton(Map<String, dynamic> card, VoidCallback onSent) {
     return AnimatedRoseButton(
       text: card['actionText'] ?? 'Send a rose',
       baseColor: Color(card['actionBgColor'] ?? 0xFFE43A6A),
       textColor: Color(card['actionTextColor'] ?? 0xFFFFFFFF),
+      onSent: onSent,
     );
   }
 }
@@ -282,12 +289,14 @@ class AnimatedRoseButton extends StatefulWidget {
   final String text;
   final Color baseColor;
   final Color textColor;
+  final VoidCallback? onSent;
 
   const AnimatedRoseButton({
     super.key,
     required this.text,
     required this.baseColor,
     required this.textColor,
+    this.onSent,
   });
 
   @override
@@ -351,6 +360,10 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
     // Show custom bouncy popup message
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
+
+    if (widget.onSent != null) {
+      widget.onSent!();
+    }
 
     overlayEntry = OverlayEntry(
       builder: (context) {
@@ -473,6 +486,76 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AnimatedSentCardItem extends StatefulWidget {
+  final Map<String, dynamic> card;
+  final Widget Function(Map<String, dynamic> card, VoidCallback onSent) builder;
+
+  const AnimatedSentCardItem({
+    super.key,
+    required this.card,
+    required this.builder,
+  });
+
+  @override
+  State<AnimatedSentCardItem> createState() => _AnimatedSentCardItemState();
+}
+
+class _AnimatedSentCardItemState extends State<AnimatedSentCardItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _slideController;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _sizeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _slideController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(1.5, 0.0),
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeInOut,
+    ));
+    _sizeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _slideController.dispose();
+    super.dispose();
+  }
+
+  void _handleSent() {
+    // Wait for the popup message to be seen, then slide out
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted) {
+        _slideController.forward();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizeTransition(
+      sizeFactor: _sizeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: widget.builder(widget.card, _handleSent),
       ),
     );
   }
