@@ -132,32 +132,50 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
         context.read<AdmirersBloc>().add(LoadAdmirersData());
         await Future.delayed(const Duration(milliseconds: 1500));
       },
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            _buildReceivedGrid(),
-            if (_likeCards.isNotEmpty) _buildPremiumBanner(),
-            const SizedBox(height: 24), // Bottom padding for scrolling
-          ],
-        ),
-      ),
+      child: _likeCards.isEmpty
+          ? const CustomScrollView(
+              physics: BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              slivers: [
+                SliverFillRemaining(
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text(
+                        'No received likes yet',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _buildReceivedGrid(),
+                  if (_likeCards.isNotEmpty) _buildPremiumBanner(),
+                  const SizedBox(height: 24), // Bottom padding for scrolling
+                ],
+              ),
+            ),
     );
   }
 
   Widget _buildReceivedGrid() {
     if (_likeCards.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40),
-        child: Text(
-          'No more likes',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey.shade500,
-            fontWeight: FontWeight.w500,
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 80),
+        child: const Center(
+          child: Text(
+            'No received likes yet',
+            style: TextStyle(color: Colors.grey),
           ),
         ),
       );

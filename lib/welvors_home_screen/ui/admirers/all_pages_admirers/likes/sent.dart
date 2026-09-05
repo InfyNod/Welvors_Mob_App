@@ -4,8 +4,15 @@ import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 
-class SentLikesScreen extends StatelessWidget {
+class SentLikesScreen extends StatefulWidget {
   const SentLikesScreen({super.key});
+
+  @override
+  State<SentLikesScreen> createState() => _SentLikesScreenState();
+}
+
+class _SentLikesScreenState extends State<SentLikesScreen> {
+  final Set<String> _hiddenCardIds = {};
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +23,8 @@ class SentLikesScreen extends StatelessWidget {
             child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
           );
         } else if (state is AdmirersLoaded) {
-          final sentCards = state.sentLikes;
+          final allSentCards = state.sentLikes;
+          final sentCards = allSentCards.where((c) => !_hiddenCardIds.contains(c['id']?.toString() ?? '')).toList();
 
           if (sentCards.isEmpty) {
             return const Center(
@@ -33,6 +41,9 @@ class SentLikesScreen extends StatelessWidget {
           return RefreshIndicator(
             color: const Color(0xFFE43A6A),
             onRefresh: () async {
+              setState(() {
+                _hiddenCardIds.clear();
+              });
               context.read<AdmirersBloc>().add(LoadAdmirersData());
               await Future.delayed(const Duration(milliseconds: 1500));
             },
@@ -45,6 +56,11 @@ class SentLikesScreen extends StatelessWidget {
                 return AnimatedSentCardItem(
                   key: ValueKey(card['id'] ?? index),
                   card: card,
+                  onAnimationComplete: () {
+                    setState(() {
+                      _hiddenCardIds.add(card['id']?.toString() ?? index.toString());
+                    });
+                  },
                   builder: (c, onSent) => Padding(
                     padding: const EdgeInsets.only(bottom: 15),
                     child: _buildSentCard(c, onSent),
@@ -494,11 +510,13 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
 class AnimatedSentCardItem extends StatefulWidget {
   final Map<String, dynamic> card;
   final Widget Function(Map<String, dynamic> card, VoidCallback onSent) builder;
+  final VoidCallback? onAnimationComplete;
 
   const AnimatedSentCardItem({
     super.key,
     required this.card,
     required this.builder,
+    this.onAnimationComplete,
   });
 
   @override
@@ -544,7 +562,11 @@ class _AnimatedSentCardItemState extends State<AnimatedSentCardItem>
     // Wait for the popup message to be seen, then slide out
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) {
-        _slideController.forward();
+        _slideController.forward().then((_) {
+          if (mounted && widget.onAnimationComplete != null) {
+            widget.onAnimationComplete!();
+          }
+        });
       }
     });
   }
