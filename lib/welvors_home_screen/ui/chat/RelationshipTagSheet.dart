@@ -5,7 +5,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosyste
 class RelationshipTagSheet extends StatefulWidget {
   final ValueChanged<String> onSend;
 
-  const RelationshipTagSheet({required this.onSend});
+  const RelationshipTagSheet({super.key, required this.onSend});
 
   @override
   State<RelationshipTagSheet> createState() => _RelationshipTagSheetState();

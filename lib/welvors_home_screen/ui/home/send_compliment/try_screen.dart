@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 class ComplimentIdeasScreen extends StatefulWidget {
   final String? initialText;
 
-  const ComplimentIdeasScreen({Key? key, this.initialText}) : super(key: key);
+  const ComplimentIdeasScreen({super.key, this.initialText});
 
   static Future<String?> show(BuildContext context, {String? initialText}) {
     return Navigator.push<String>(

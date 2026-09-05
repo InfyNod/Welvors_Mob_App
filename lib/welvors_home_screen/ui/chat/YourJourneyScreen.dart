@@ -4,7 +4,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosyste
 class YourJourneyScreen extends StatefulWidget {
   final VoidCallback? function;
 
-  const YourJourneyScreen({Key? key, this.function}) : super(key: key);
+  const YourJourneyScreen({super.key, this.function});
 
   @override
   State<YourJourneyScreen> createState() => _YourJourneyScreenState();

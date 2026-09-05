@@ -38,7 +38,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   ? Image.network(
                       widget.user.image,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _videoFallback(),
+                      errorBuilder: (_, _, _) => _videoFallback(),
                     )
                   : _videoFallback(),
             ),

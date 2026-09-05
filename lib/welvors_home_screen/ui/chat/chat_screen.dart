@@ -28,21 +28,19 @@ class _ChatScreen_State extends State<ChatScreen_> {
   Future<String> _init() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // final token = prefs.getString('auth_token');
+    final savedToken = prefs.getString('auth_token')?.trim() ?? '';
+    final token = savedToken.startsWith('')
+        ? savedToken.substring(7).trim()
+        : savedToken;
 
-    final token =
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
-
-    if (token.isNotEmpty) {
-      SocketService().connect(token: token);
-    } else {
+    if (token.isEmpty) {
       debugPrint('❌ CHAT: no auth_token found - socket not connected');
     }
 
-    return ChatRepository.userIdFromToken(
-      token,
-      fallback: '46d3f097-2825-4a41-adc5-8747e3b07f2b',
-    );
+    // Socket connection is intentionally started by _ChatListView AFTER
+    // online/offline listeners are registered. This prevents missing the
+    // first user:online event during socket connect.
+    return ChatRepository.userIdFromToken(token, fallback: '');
   }
 
   @override
@@ -120,6 +118,228 @@ class _NewMatch {
   }
 }
 
+int? _openSwipeIndex;
+VoidCallback? _closeOpenSwipe;
+
+void _onSwipeOpened(int index, VoidCallback close) {
+  // Agar koi doosri conversation open hai,
+  // pehle usko close karo.
+  if (_openSwipeIndex != null && _openSwipeIndex != index) {
+    _closeOpenSwipe?.call();
+  }
+
+  _openSwipeIndex = index;
+  _closeOpenSwipe = close;
+}
+
+void _onSwipeClosed(int index) {
+  if (_openSwipeIndex == index) {
+    _openSwipeIndex = null;
+    _closeOpenSwipe = null;
+  }
+}
+
+void _closeSwipe() {
+  _closeOpenSwipe?.call();
+  _openSwipeIndex = null;
+  _closeOpenSwipe = null;
+}
+// ==========================================================
+// SWIPE TO DELETE
+// ==========================================================
+
+class _SwipeDeleteChatTile extends StatefulWidget {
+  final int index;
+  final Widget child;
+  final VoidCallback onDelete;
+
+  final void Function(int index, VoidCallback close) onOpen;
+  final void Function(int index) onClose;
+
+  const _SwipeDeleteChatTile({
+    required this.index,
+    required this.child,
+    required this.onDelete,
+    required this.onOpen,
+    required this.onClose,
+  });
+
+  @override
+  State<_SwipeDeleteChatTile> createState() => _SwipeDeleteChatTileState();
+}
+
+class _SwipeDeleteChatTileState extends State<_SwipeDeleteChatTile> {
+  double _dragOffset = 0.0;
+
+  bool _isOpen = false;
+
+  // ===========================================================
+  // CLOSE THIS TILE
+  // ===========================================================
+
+  void _close() {
+    if (!mounted) return;
+
+    if (_dragOffset == 0) {
+      return;
+    }
+
+    setState(() {
+      _dragOffset = 0.0;
+      _isOpen = false;
+    });
+
+    widget.onClose(widget.index);
+  }
+
+  // ===========================================================
+  // OPEN THIS TILE
+  // ===========================================================
+
+  void _open(double maxReveal) {
+    if (!mounted) return;
+
+    setState(() {
+      _dragOffset = maxReveal;
+      _isOpen = true;
+    });
+
+    // Parent ko batao ki ye tile open hai
+    widget.onOpen(widget.index, _close);
+  }
+
+  // ===========================================================
+  // BUILD
+  // ===========================================================
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 20% ko 50% kar diya
+        final double maxReveal = constraints.maxWidth * 0.20;
+
+        final bool showDeleteButton = _dragOffset >= maxReveal;
+
+        return ClipRect(
+          child: Stack(
+            children: [
+              // =================================================
+              // DELETE AREA - FIXED RIGHT SIDE
+              // =================================================
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 0,
+                width: maxReveal,
+                child: IgnorePointer(
+                  ignoring: !showDeleteButton,
+
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+
+                    opacity: showDeleteButton ? 1.0 : 0.0,
+
+                    child: Container(
+                      color: Colors.white,
+                      margin: EdgeInsets.only(left: 10),
+                      alignment: Alignment.center,
+
+                      child: Material(
+                        color: AppColors.primary,
+
+                        borderRadius: BorderRadius.circular(12),
+
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+
+                          onTap: () {
+                            widget.onDelete();
+                          },
+
+                          child: const SizedBox(
+                            width: 64,
+                            height: 64,
+
+                            child: Center(
+                              child: Icon(
+                                Icons.delete_outline_rounded,
+                                color: AppColors.white,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // =================================================
+              // CHAT TILE
+              // =================================================
+              Transform.translate(
+                offset: Offset(-_dragOffset, 0),
+
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+
+                  // =============================================
+                  // SWIPE
+                  // =============================================
+                  onHorizontalDragUpdate: (details) {
+                    final double next = (_dragOffset - details.delta.dx).clamp(
+                      0.0,
+                      maxReveal,
+                    );
+
+                    setState(() {
+                      _dragOffset = next;
+
+                      if (_dragOffset < maxReveal) {
+                        _isOpen = false;
+                      }
+                    });
+                  },
+
+                  // =============================================
+                  // RELEASE
+                  // =============================================
+                  onHorizontalDragEnd: (_) {
+                    if (_dragOffset >= maxReveal * 0.2) {
+                      // Open
+                      _open(maxReveal);
+                    } else {
+                      // Close
+                      _close();
+                    }
+                  },
+
+                  child: widget.child,
+                ),
+              ),
+
+              // =================================================
+              // FULL WIDTH DIVIDER
+              // =================================================
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+
+                child: IgnorePointer(
+                  child: Container(height: 1, color: AppColors.line),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
 // ==========================================================
 // CHAT LIST
 // ==========================================================
@@ -138,8 +358,8 @@ class _ChatListViewState extends State<_ChatListView> {
   // LAYOUT CONSTANTS
   // ==========================================================
 
-  static const double headerHeight = 80;
-  static const double searchHeight = 65;
+  static const double headerHeight = 70;
+  static const double searchHeight = 60;
   static const double filterHeight = 50;
   static const double firstCardHeight = 132.0;
 
@@ -220,12 +440,10 @@ class _ChatListViewState extends State<_ChatListView> {
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token =
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs";
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("auth_token");
       final uri = Uri.parse(
-        'https://api.welvors.com/api/user/matches/new',
+        'https://dating-app-backend-plum.vercel.app/api/user/matches/new',
       );
 
       final response = await http.get(
@@ -233,7 +451,8 @@ class _ChatListViewState extends State<_ChatListView> {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+          if (token?.isNotEmpty == true) 
+            'Authorization': token!.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
         },
       );
 
@@ -311,6 +530,11 @@ class _ChatListViewState extends State<_ChatListView> {
 
   final Map<String, bool> _typingUsers = {};
 
+  // Live online/offline status received from socket.
+  // This is local UI state so the chat list rebuilds immediately without
+  // waiting for a tab change or another Bloc event.
+  final Map<String, bool> _onlineUsers = {};
+
   // ==========================================================
   // INIT
   // ==========================================================
@@ -318,13 +542,18 @@ class _ChatListViewState extends State<_ChatListView> {
   @override
   void initState() {
     super.initState();
-
+    _filterKeys.addAll(List.generate(filters.length, (_) => GlobalKey()));
     _socketService = SocketService();
     _loadNewMatches();
 
     _scrollController.addListener(_onScroll);
 
     _registerTypingListeners();
+    _registerOnlineStatusListeners();
+
+    // Connect only after listeners are attached. SocketService queues any
+    // listeners while creating the socket, so user:online cannot be missed.
+    _socketService.ensureConnected();
 
     debugPrint('🟢 CHAT LIST: initState completed');
   }
@@ -369,6 +598,79 @@ class _ChatListViewState extends State<_ChatListView> {
       '🟢 CHAT LIST: socket connected = '
       '${_socketService.socket?.connected}',
     );
+  }
+
+  // ==========================================================
+  // ONLINE / OFFLINE LISTENERS
+  // ==========================================================
+
+  void _registerOnlineStatusListeners() {
+    if (!mounted) return;
+
+    if (_socketService.socket == null) {
+      debugPrint(
+        '⏳ CHAT LIST: SOCKET NULL - retrying online listener registration...',
+      );
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _registerOnlineStatusListeners();
+      });
+      return;
+    }
+
+    _socketService.offListener('user:online', _onUserOnline);
+    _socketService.offListener('user:offline', _onUserOffline);
+
+    _socketService.on('user:online', _onUserOnline);
+    _socketService.on('user:offline', _onUserOffline);
+
+    debugPrint('🟢 CHAT LIST: user:online listener registered');
+    debugPrint('🟢 CHAT LIST: user:offline listener registered');
+  }
+
+  String? _extractUserId(dynamic data) {
+    if (data is Map) {
+      final direct = data['userId'] ?? data['id'];
+      if (direct != null && direct.toString().isNotEmpty) {
+        return direct.toString();
+      }
+
+      final nested = data['data'];
+      if (nested is Map) {
+        final value = nested['userId'] ?? nested['id'];
+        if (value != null && value.toString().isNotEmpty) {
+          return value.toString();
+        }
+      }
+    }
+    return null;
+  }
+
+  void _onUserOnline(dynamic data) {
+    final userId = _extractUserId(data);
+    debugPrint('🟢 user:online RECEIVED => $data | userId=$userId');
+    if (!mounted ||
+        userId == null ||
+        userId.isEmpty ||
+        userId == _currentUserId)
+      return;
+
+    setState(() {
+      _onlineUsers[userId] = true;
+    });
+  }
+
+  void _onUserOffline(dynamic data) {
+    final userId = _extractUserId(data);
+    debugPrint('🔴 user:offline RECEIVED => $data | userId=$userId');
+    if (!mounted ||
+        userId == null ||
+        userId.isEmpty ||
+        userId == _currentUserId)
+      return;
+
+    setState(() {
+      _onlineUsers[userId] = false;
+    });
   }
 
   // ==========================================================
@@ -658,8 +960,10 @@ class _ChatListViewState extends State<_ChatListView> {
   void dispose() {
     _socketService.off('typing:start');
     _socketService.off('typing:stop');
+    _socketService.offListener('user:online', _onUserOnline);
+    _socketService.offListener('user:offline', _onUserOffline);
 
-    debugPrint('🔴 CHAT LIST: typing listeners removed');
+    debugPrint('🔴 CHAT LIST: socket listeners removed');
 
     searchController.dispose();
 
@@ -733,10 +1037,28 @@ class _ChatListViewState extends State<_ChatListView> {
       padding: const EdgeInsets.fromLTRB(20, 0, 16, 0),
       child: Row(
         children: [
+          // Expanded(
+          //   child: Text('Messages', style: TextStyle(color: Colors.black)),
+          // ),
           Expanded(
-            child: Text(
-              'Messages',
-              style: AppText.h1.copyWith(fontSize: 20, letterSpacing: -.7),
+            child: RichText(
+              text: const TextSpan(
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Mess',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  TextSpan(
+                    text: 'ages',
+                    style: TextStyle(color: Color(0xFFE43A6A)), // Pink
+                  ),
+                ],
+              ),
             ),
           ),
           _iconButton(
@@ -756,6 +1078,7 @@ class _ChatListViewState extends State<_ChatListView> {
     return Container(
       color: AppColors.canvas,
       padding: const EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.only(bottom: 10),
       child: TextField(
         controller: searchController,
         focusNode: _searchFocusNode,
@@ -807,7 +1130,7 @@ class _ChatListViewState extends State<_ChatListView> {
     }
 
     return SizedBox(
-      height: 154,
+      height: _newMatchesLoading ? 0 : 154,
       child: Column(
         children: [
           Padding(
@@ -838,26 +1161,28 @@ class _ChatListViewState extends State<_ChatListView> {
             ),
           ),
           SizedBox(
-            height: 116,
-            child: _newMatchesLoading
-                ? ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    scrollDirection: Axis.horizontal,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 4,
-                    separatorBuilder: (_, __) => const SizedBox(width: 17),
-                    itemBuilder: (_, index) => _newMatchShimmer(index),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: _newMatchesData.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 17),
-                    itemBuilder: (_, index) {
-                      return _newMatchItem(_newMatchesData[index]);
-                    },
-                  ),
+            height: _newMatchesLoading ? 0 : 116,
+            child:
+                //  _newMatchesLoading
+                //     ? ListView.separated(
+                //         padding: const EdgeInsets.symmetric(horizontal: 20),
+                //         scrollDirection: Axis.horizontal,
+                //         physics: const NeverScrollableScrollPhysics(),
+                //         itemCount: 4,
+                //         separatorBuilder: (_, __) => const SizedBox(width: 17),
+                //         itemBuilder: (_, index) => _newMatchShimmer(index),
+                //       )
+                //     :
+                ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: _newMatchesData.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 17),
+                  itemBuilder: (_, index) {
+                    return _newMatchItem(_newMatchesData[index]);
+                  },
+                ),
           ),
         ],
       ),
@@ -925,7 +1250,7 @@ class _ChatListViewState extends State<_ChatListView> {
                           ? Image.network(
                               match.image,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
+                              errorBuilder: (_, _, _) => Container(
                                 color: AppColors.line,
                                 child: const Icon(
                                   Icons.person,
@@ -1005,25 +1330,182 @@ class _ChatListViewState extends State<_ChatListView> {
   // FILTERS
   // ==========================================================
 
+  //   Widget _filters() {
+  //     return SizedBox(
+  //       height: 50,
+  //       child: ListView.separated(
+  //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+  //         scrollDirection: Axis.horizontal,
+  //         physics: const BouncingScrollPhysics(),
+  //         itemCount: filters.length,
+  //         separatorBuilder: (_, __) => const SizedBox(width: 10),
+  //         itemBuilder: (_, index) {
+  //           return BlocBuilder<ChatBloc, ChatState>(
+  //             builder: (_, state) {
+  //               final bool selected = state.filter == filters[index];
+
+  //               return GestureDetector(
+  //                 // onTap: () {
+  //                 //   context.read<ChatBloc>().add(
+  //                 //     SelectFilterEvent(filters[index]),
+  //                 //   );
+  //                 // },
+  //                 onTap: () {
+  //   final selectedFilter = filters[index];
+
+  //   String type;
+
+  //   switch (selectedFilter) {
+  //     case 'All':
+  //       type = 'all';
+  //       break;
+
+  //     case 'Unread':
+  //       type = 'unread';
+  //       break;
+
+  //     case 'Nearby':
+  //       type = 'nearby';
+  //       break;
+
+  //     case 'Date Invites':
+  //       type = 'date_invite';
+  //       break;
+
+  //     case 'Gift':
+  //       type = 'gift';
+  //       break;
+
+  //     default:
+  //       type = 'all';
+  //   }
+
+  //   context.read<ChatBloc>().add(
+  //     LoadChatsEvent(
+  //       type: type,
+  //     ),
+  //   );
+  // },
+  //                 child: AnimatedContainer(
+  //                   duration: const Duration(milliseconds: 180),
+  //                   padding: const EdgeInsets.symmetric(horizontal: 24),
+  //                   alignment: Alignment.center,
+  //                   decoration: BoxDecoration(
+  //                     color: selected ? AppColors.primary : Colors.white,
+  //                     borderRadius: BorderRadius.circular(26),
+  //                     border: Border.all(
+  //                       color: selected ? AppColors.primary : AppColors.line,
+  //                     ),
+  //                     boxShadow: selected
+  //                         ? const [
+  //                             BoxShadow(
+  //                               color: Color(0x16000000),
+  //                               blurRadius: 8,
+  //                               offset: Offset(0, 3),
+  //                             ),
+  //                           ]
+  //                         : null,
+  //                   ),
+  //                   child: Text(
+  //                     filters[index],
+  //                     style: AppText.body.copyWith(
+  //                       fontSize: 15,
+  //                       color: selected ? Colors.white : AppColors.ink60,
+  //                       fontWeight: FontWeight.w700,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               );
+  //             },
+  //           );
+  //         },
+  //       ),
+  //     );
+  //   }
+  final ScrollController _filterScrollController = ScrollController();
+
+  final List<GlobalKey> _filterKeys = [];
+  void _centerSelectedFilter(int index) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      final itemContext = _filterKeys[index].currentContext;
+
+      if (itemContext == null) return;
+
+      Scrollable.ensureVisible(
+        itemContext,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.5,
+      );
+    });
+  }
+
   Widget _filters() {
     return SizedBox(
       height: 50,
       child: ListView.separated(
+        controller: _filterScrollController,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (_, index) {
           return BlocBuilder<ChatBloc, ChatState>(
             builder: (_, state) {
               final bool selected = state.filter == filters[index];
 
               return GestureDetector(
+                key: _filterKeys[index],
                 onTap: () {
-                  context.read<ChatBloc>().add(
-                    SelectFilterEvent(filters[index]),
+                  final selectedFilter = filters[index];
+
+                  String type;
+
+                  switch (selectedFilter) {
+                    case 'All':
+                      type = 'all';
+                      break;
+
+                    case 'Online':
+                      type = 'online';
+                      break;
+
+                    case 'Unread':
+                      type = 'unread';
+                      break;
+
+                    case 'Nearby':
+                      type = 'nearby';
+                      break;
+
+                    case 'Date Invites':
+                      type = 'date_invite';
+                      break;
+
+                    case 'Gift':
+                      type = 'gift';
+                      break;
+
+                    default:
+                      type = 'all';
+                  }
+
+                  debugPrint(
+                    '🔎 Filter clicked: '
+                    '$selectedFilter -> $type',
                   );
+
+                  context.read<ChatBloc>().add(
+                    SelectFilterEvent(selectedFilter),
+                  );
+
+                  context.read<ChatBloc>().add(LoadChatsEvent(type: type));
+
+                  // ⭐ Selected filter ko center mein lao
+                  _centerSelectedFilter(index);
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
@@ -1093,12 +1575,17 @@ class _ChatListViewState extends State<_ChatListView> {
             ),
           );
         }
-
         return SliverPadding(
           padding: const EdgeInsets.fromLTRB(20, 3, 20, 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              return _chatTile(state.filteredChats[index]);
+              final user = state.filteredChats[index];
+
+              return _chatTile(
+                user,
+                isLast: index == state.filteredChats.length - 1,
+                index: index,
+              );
             }, childCount: state.filteredChats.length),
           ),
         );
@@ -1110,7 +1597,7 @@ class _ChatListViewState extends State<_ChatListView> {
   // CHAT TILE
   // ==========================================================
 
-  Widget _chatTile(ChatUser user) {
+  Widget _chatTile(ChatUser user, {bool isLast = false, required int index}) {
     final double progress =
         (double.tryParse(user.progress.replaceAll('%', '')) ?? 0) / 100;
 
@@ -1127,220 +1614,341 @@ class _ChatListViewState extends State<_ChatListView> {
     // ========================================================
 
     final bool isTyping = _typingUsers[user.userId] == true;
+    final bool isOnline = _onlineUsers.containsKey(user.userId)
+        ? _onlineUsers[user.userId] == true
+        : user.online;
 
-    return GestureDetector(
-      onTap: () => _openChat(user),
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.line)),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // =================================================
-            // AVATAR
-            // =================================================
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                _avatar(user.image, 70),
-                if (user.online)
-                  Positioned(
-                    right: -1,
-                    bottom: 1,
-                    child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: AppColors.green,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.canvas, width: 3),
+    return _SwipeDeleteChatTile(
+      index: index,
+      onOpen: _onSwipeOpened,
+      onClose: _onSwipeClosed,
+      onDelete: () => _showDeleteConversationDialog(user),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          _closeSwipe();
+          _openChat(user);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: AppColors.line)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // =================================================
+              // AVATAR
+              // =================================================
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _avatar(user.image, 70),
+                  if (isOnline)
+                    Positioned(
+                      right: -1,
+                      bottom: 1,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: AppColors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColors.canvas, width: 3),
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                ],
+              ),
 
-            const SizedBox(width: 14),
+              const SizedBox(width: 14),
 
-            // =================================================
-            // CONTENT
-            // =================================================
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ===========================================
-                  // NAME / MATCH / TIME
-                  // ===========================================
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '${user.name}, ${user.age}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppText.h2.copyWith(fontSize: 15),
-                        ),
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      if (user.match.isNotEmpty)
-                        _miniPill(
-                          '${user.match}% Match',
-                          AppColors.primarySoft,
-                          AppColors.primaryDark,
-                        ),
-
-                      if (user.match.isNotEmpty) const SizedBox(width: 6),
-
-                      if (user.trust.isNotEmpty)
-                        _miniPill(
-                          '${user.trust}% Trust',
-                          AppColors.greenSoft,
-                          AppColors.green,
-                        ),
-
-                      const SizedBox(width: 6),
-
-                      Text(
-                        user.time,
-                        style: AppText.sub.copyWith(fontSize: 12),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 5),
-
-                  // ===========================================
-                  // PREVIEW / TYPING
-                  // ===========================================
-                  // ===========================================
-                  // PREVIEW / TYPING
-                  // ===========================================
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 150),
-                          // alignment: Alignment.centerLeft,
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                          child: Align(
-                            key: ValueKey(
-                              isTyping
-                                  ? 'typing-${user.userId}'
-                                  : 'preview-${user.userId}',
-                            ),
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              isTyping ? 'Typing...' : user.preview,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppText.body.copyWith(
-                                fontSize: 15,
-                                color: isTyping
-                                    ? AppColors.green
-                                    : user.unread > 0
-                                    ? Colors.black
-                                    : AppColors.ink60,
-                                fontWeight: isTyping
-                                    ? FontWeight.w800
-                                    : user.unread > 0
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // ========================================
-                      // UNREAD
-                      // ========================================
-                      if (user.unread > 0) ...[
-                        const SizedBox(width: 8),
-
-                        Container(
-                          width: 25,
-                          height: 25,
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            color: AppColors.green,
-                            shape: BoxShape.circle,
-                          ),
+              // =================================================
+              // CONTENT
+              // =================================================
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ===========================================
+                    // NAME / MATCH / TIME
+                    // ===========================================
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
                           child: Text(
-                            '${user.unread}',
-                            style: AppText.pill.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                            ),
+                            '${user.name}, ${user.age}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppText.h2.copyWith(fontSize: 15),
                           ),
+                        ),
+
+                        Wrap(
+                          children: [
+                            const SizedBox(width: 8),
+
+                            if (user.match.isNotEmpty)
+                              _miniPill(
+                                '${user.match}% Match',
+                                AppColors.primarySoft,
+                                AppColors.primaryDark,
+                              ),
+
+                            if (user.match.isNotEmpty) const SizedBox(width: 6),
+
+                            if (user.trust.isNotEmpty)
+                              _miniPill(
+                                '${user.trust}% Trust',
+                                AppColors.greenSoft,
+                                AppColors.green,
+                              ),
+
+                            const SizedBox(width: 6),
+
+                            Text(
+                              user.time,
+                              style: AppText.sub.copyWith(fontSize: 12),
+                            ),
+                          ],
                         ),
                       ],
-                    ],
-                  ),
+                    ),
 
-                  const SizedBox(height: 4),
+                    const SizedBox(height: 5),
 
-                  // ===========================================
-                  // PROGRESS / REWARD
-                  // ===========================================
-                  if (user.progress != '0%' || user.reward.isNotEmpty)
+                    // ===========================================
+                    // PREVIEW / TYPING
+                    // ===========================================
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (user.progress != '0%')
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.45,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: LinearProgressIndicator(
-                                value: progress,
-                                minHeight: 7,
-                                borderRadius: BorderRadius.circular(10),
-                                backgroundColor: Colors.white.withValues(
-                                  alpha: 0.28,
-                                ),
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  progressColor,
+                        Expanded(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 150),
+                            // alignment: Alignment.centerLeft,
+                            transitionBuilder: (child, animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                            child: Align(
+                              key: ValueKey(
+                                isTyping
+                                    ? 'typing-${user.userId}'
+                                    : 'preview-${user.userId}',
+                              ),
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                isTyping ? 'Typing...' : user.preview,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppText.body.copyWith(
+                                  fontSize: 15,
+                                  color: isTyping
+                                      ? AppColors.green
+                                      : user.unread > 0
+                                      ? Colors.black
+                                      : AppColors.ink60,
+                                  fontWeight: isTyping
+                                      ? FontWeight.w800
+                                      : user.unread > 0
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
                                 ),
                               ),
                             ),
                           ),
+                        ),
 
-                        if (user.reward.isNotEmpty)
-                          Expanded(
+                        // ========================================
+                        // UNREAD
+                        // ========================================
+                        if (user.unread > 0) ...[
+                          const SizedBox(width: 8),
+
+                          Container(
+                            width: 25,
+                            height: 25,
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(
+                              color: AppColors.green,
+                              shape: BoxShape.circle,
+                            ),
                             child: Text(
-                              user.reward,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppText.sub.copyWith(
-                                fontSize: 11.5,
-                                color: user.reward.contains('Deadline')
-                                    ? AppColors.primary
-                                    : AppColors.green,
+                              '${user.unread}',
+                              style: AppText.pill.copyWith(
+                                color: Colors.white,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
+                        ],
                       ],
                     ),
-                ],
+
+                    const SizedBox(height: 4),
+
+                    // ===========================================
+                    // PROGRESS / REWARD
+                    // ===========================================
+                    if (user.progress != '0%' || user.reward.isNotEmpty)
+                      Row(
+                        children: [
+                          if (user.progress != '0%')
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.45,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: LinearProgressIndicator(
+                                  value: progress,
+                                  minHeight: 7,
+                                  borderRadius: BorderRadius.circular(10),
+                                  backgroundColor: Colors.white.withValues(
+                                    alpha: 0.28,
+                                  ),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    progressColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          if (user.reward.isNotEmpty)
+                            Expanded(
+                              child: Text(
+                                user.reward,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppText.sub.copyWith(
+                                  fontSize: 11.5,
+                                  color: user.reward.contains('Deadline')
+                                      ? AppColors.primary
+                                      : AppColors.green,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Future<void> _showDeleteConversationDialog(ChatUser user) async {
+    final conversationId = (user.conversationId ?? '').trim();
+    if (conversationId.isEmpty) {
+      debugPrint('❌ DELETE CHAT: conversationId is missing for ${user.name}');
+      return;
+    }
+
+    const accentColor = Color(0xFFD6336C);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 36, 24, 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon badge
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.warning_rounded,
+                  color: accentColor,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Title
+              const Text(
+                'Delete conversation?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Message
+              Text(
+                "This will delete your conversation with ${user.name}.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.4,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Primary action (filled)
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accentColor,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Clear Conversation',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Secondary action (text)
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.grey.shade700,
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(0, 0),
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (!mounted || confirmed != true) return;
+
+    context.read<ChatBloc>().add(
+      DeleteConversationEvent(conversationId: conversationId),
     );
   }
 
@@ -1369,7 +1977,7 @@ class _ChatListViewState extends State<_ChatListView> {
             width: size,
             height: size,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) {
+            errorBuilder: (_, _, _) {
               return const ColoredBox(
                 color: AppColors.soft,
                 child: Icon(Icons.person, color: AppColors.muted),
@@ -1433,7 +2041,7 @@ class _ChatListViewState extends State<_ChatListView> {
 
     // ❌ Yahan message:read mat bhejo.
     // Message read individual message ke messageId se hoga.
-
+    // debugPrint("user>>>idd>>${user.userId}");
     Navigator.push(
       context,
       MaterialPageRoute(

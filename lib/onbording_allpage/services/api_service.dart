@@ -976,4 +976,155 @@ class ApiService {
       }
     }
   }
+
+  // --- Dummy API Methods added for merged chat/compliment code ---
+
+  static Future<Map<String, dynamic>> sendEngagement({
+    required String receiverId,
+    String? targetType,
+    String? targetId,
+    String? mediaUrl,
+    bool? includeRose,
+    String? complimentMessage,
+    int? giftId,
+    String? giftMessage,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final authHeader = token != null && token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
+      
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/engagement/send'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': authHeader,
+        },
+        body: jsonEncode({
+          'receiverId': receiverId,
+          if (targetType != null) 'targetType': targetType,
+          if (targetId != null) 'targetId': targetId,
+          if (mediaUrl != null) 'mediaUrl': mediaUrl,
+          if (complimentMessage != null && complimentMessage.isNotEmpty) 
+            'compliment': {'message': complimentMessage},
+          if (includeRose == true) 
+            'rose': {},
+          if (giftId != null) 
+            'gift': {'giftId': giftId, if (giftMessage != null) 'message': giftMessage},
+        }),
+      );
+      debugPrint('SEND ENGAGEMENT STATUS: ${response.statusCode}');
+      debugPrint('SEND ENGAGEMENT BODY: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body);
+      }
+      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  static Future<Map<String, dynamic>> sendCompliment({
+    required String receiverId,
+    required String message,
+    String? targetType,
+    String? targetId,
+    String? mediaUrl,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/compliment'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'receiverId': receiverId,
+          'message': message,
+          'targetType': targetType,
+          'targetId': targetId,
+          'mediaUrl': mediaUrl,
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body);
+      }
+      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  static Future<Map<String, dynamic>> sendRose({
+    required String receiverId,
+    required int giftId,
+    String? message,
+    String? targetType,
+    String? targetId,
+    String? mediaUrl,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/rose'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'receiverId': receiverId,
+          'giftId': giftId,
+          'message': message,
+          'targetType': targetType,
+          'targetId': targetId,
+          'mediaUrl': mediaUrl,
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body);
+      }
+      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  static Future<Map<String, dynamic>> sendGift({
+    required String receiverId,
+    required int giftId,
+    String? message,
+    String? targetType,
+    String? targetId,
+    String? mediaUrl,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/gift'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'receiverId': receiverId,
+          'giftId': giftId,
+          'message': message,
+          'targetType': targetType,
+          'targetId': targetId,
+          'mediaUrl': mediaUrl,
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body);
+      }
+      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
 }
+

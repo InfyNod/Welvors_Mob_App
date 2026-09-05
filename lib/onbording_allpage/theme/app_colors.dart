@@ -18,6 +18,12 @@ class AppColors {
   static const Color canvas = Color(
     0xFFFCF7F3,
   ); // HSL(30, 57%, 97%) scaffold bg
+
+  // Add dummy colors required by merged code
+  static const Color colorf3d4dc = Color(0xFFf3d4dc);
+  static const Color colorc7395e = Color(0xFFc7395e);
+  static const Color colore85a7a = Color(0xFFe85a7a);
+
   static const Color green = Color(0xFF2EAF6B);
   static const Color greenSoft = Color(0xFFE8F8EF);
   static const Color blue = Color(0xFF3DA9FF);

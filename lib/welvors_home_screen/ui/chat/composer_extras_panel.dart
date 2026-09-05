@@ -23,6 +23,7 @@ class GifItem {
 /// Composer extras:
 /// Emoji / Stickers / Meme & Fun / Effects / GIF / Gifts
 class ComposerExtrasPanel extends StatefulWidget {
+  final int initialTab;
   final ValueChanged<String> onEmojiSelected;
   final ValueChanged<String> onStickerSelected;
   final void Function(String emoji, String label) onMemeSelected;
@@ -36,6 +37,7 @@ class ComposerExtrasPanel extends StatefulWidget {
 
   const ComposerExtrasPanel({
     super.key,
+    this.initialTab = 0,
     required this.onEmojiSelected,
     required this.onStickerSelected,
     required this.onMemeSelected,
@@ -49,7 +51,19 @@ class ComposerExtrasPanel extends StatefulWidget {
 }
 
 class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
-  int _mainTab = 0;
+  late int _mainTab = widget.initialTab;
+  GiftItem? _selectedGift;
+
+  @override
+  void didUpdateWidget(covariant ComposerExtrasPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTab != widget.initialTab) {
+      setState(() {
+        _mainTab = widget.initialTab;
+        _selectedGift = null;
+      });
+    }
+  }
 
   int _stickerCategory = 0;
   int _gifCategory = 0;
@@ -158,7 +172,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
   // --------------------------------------------------------------
 
   static const List<Map<String, String>> _effects = [
-    {'emoji': '🎊', 'label': 'Confetti'},
+    {'emoji': '🎊', 'label': 'Effect'},
     {'emoji': '❤️', 'label': 'Heart Rain'},
     {'emoji': '🌹', 'label': 'Rose Petals'},
     {'emoji': '🎈', 'label': 'Balloons'},
@@ -226,6 +240,16 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
       GiftItem('Blossoms', '🌸', 30),
       GiftItem('Dried rose', '🥀', 15),
       GiftItem('Lotus', '🪷', 40),
+      GiftItem('Sunflower', '🌻', 25),
+      GiftItem('White rose', '🤍', 20),
+      GiftItem('Red tulip', '🌷', 30),
+      GiftItem('Lavender', '🪻', 35),
+      GiftItem('Cherry blossom', '🌸', 45),
+      GiftItem('Orchid', '🌺', 55),
+      GiftItem('Flower crown', '💐', 70),
+      GiftItem('Golden rose', '🌹', 100),
+      GiftItem('Heart flowers', '💮', 65),
+      GiftItem('Spring bouquet', '🌼', 80),
     ],
     'Treats': [
       GiftItem('Cake', '🍰', 25),
@@ -234,6 +258,16 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
       GiftItem('Coffee', '☕', 10),
       GiftItem('Donut', '🍩', 12),
       GiftItem('Cookies', '🍪', 18),
+      GiftItem('Cupcake', '🧁', 20),
+      GiftItem('Candy', '🍬', 10),
+      GiftItem('Lollipop', '🍭', 15),
+      GiftItem('Macaron', '🍡', 28),
+      GiftItem('Strawberry', '🍓', 16),
+      GiftItem('Pizza', '🍕', 22),
+      GiftItem('Sushi', '🍣', 35),
+      GiftItem('Hot chocolate', '☕', 18),
+      GiftItem('Sweet box', '🍱', 45),
+      GiftItem('Birthday cake', '🎂', 60),
     ],
     'Cute Gifts': [
       GiftItem('Teddy bear', '🧸', 45),
@@ -242,6 +276,16 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
       GiftItem('Puppy', '🐶', 70),
       GiftItem('Kitten', '🐱', 65),
       GiftItem('Panda', '🐼', 55),
+      GiftItem('Koala', '🐨', 50),
+      GiftItem('Penguin', '🐧', 48),
+      GiftItem('Unicorn', '🦄', 75),
+      GiftItem('Baby chick', '🐥', 35),
+      GiftItem('Duckling', '🦆', 32),
+      GiftItem('Frog', '🐸', 30),
+      GiftItem('Monkey', '🐵', 42),
+      GiftItem('Panda hug', '🤗', 58),
+      GiftItem('Cute hearts', '🥰', 65),
+      GiftItem('Magic star', '🌟', 80),
     ],
     'Jewellery': [
       GiftItem('Ring', '💍', 200),
@@ -250,6 +294,16 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
       GiftItem('Earrings', '💎', 90),
       GiftItem('Crown', '👑', 250),
       GiftItem('Watch', '⌚', 180),
+      GiftItem('Diamond', '💎', 300),
+      GiftItem('Gold ring', '💍', 280),
+      GiftItem('Pearl', '🫧', 220),
+      GiftItem('Ruby', '🔴', 350),
+      GiftItem('Sapphire', '🔵', 360),
+      GiftItem('Gold chain', '⛓️', 275),
+      GiftItem('Tiara', '👸', 240),
+      GiftItem('Silver ring', '💠', 190),
+      GiftItem('Luxury gem', '🔶', 400),
+      GiftItem('Diamond box', '🎁', 450),
     ],
     'Fashion': [
       GiftItem('Dress', '👗', 120),
@@ -258,6 +312,16 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
       GiftItem('Sunglasses', '🕶️', 60),
       GiftItem('Scarf', '🧣', 40),
       GiftItem('Hat', '👒', 35),
+      GiftItem('Saree', '🥻', 160),
+      GiftItem('Jacket', '🧥', 130),
+      GiftItem('Heels', '👠', 145),
+      GiftItem('Sneakers', '👟', 100),
+      GiftItem('Tie', '👔', 75),
+      GiftItem('Purse', '👛', 125),
+      GiftItem('Watch band', '⌚', 95),
+      GiftItem('Sunglasses gold', '🕶️', 110),
+      GiftItem('Fashion crown', '👑', 200),
+      GiftItem('Silk gloves', '🧤', 65),
     ],
   };
 
@@ -270,7 +334,9 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
     return SafeArea(
       child: Container(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.30,
+          maxHeight:
+              MediaQuery.of(context).size.height *
+              (_mainTab == 5 ? 0.50 : 0.30),
         ),
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -279,9 +345,10 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildMainTabBar(),
-
-            const Divider(height: 1, color: AppColors.line),
+            if (_mainTab != 5) ...[
+              _buildMainTabBar(),
+              const Divider(height: 1, color: AppColors.line),
+            ],
 
             Flexible(child: _buildTabContent()),
           ],
@@ -312,7 +379,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
               });
             },
             child: Container(
-              width: 60,
+              width: MediaQuery.of(context).size.width / 4.65,
               padding: const EdgeInsets.symmetric(vertical: 8),
               margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
@@ -378,18 +445,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         return _gifPanel();
 
       case 5:
-        return _categorizedGrid(
-          categories: _giftCategories,
-          selected: _giftCategory,
-          onCategory: (i) {
-            setState(() {
-              _giftCategory = i;
-            });
-          },
-          builder: () {
-            return _giftTileGrid(_gifts[_giftCategories[_giftCategory]]!);
-          },
-        );
+        return _giftPanel();
 
       default:
         return const SizedBox.shrink();
@@ -770,12 +826,127 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
     }
 
     // Send selected GIF URL to ChatDetailScreen.
-    widget.onGifSelected(result.url, category);
+    // widget.onGifSelected(result.url, category);
   }
 
   // --------------------------------------------------------------
   // GIFTS GRID
   // --------------------------------------------------------------
+
+  Widget _giftPanel() {
+    final gifts = _gifts[_giftCategories[_giftCategory]]!;
+
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 12),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFE9F3), Color(0xFFF0EDFF)],
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Image.asset('assets/gift.png', height: 56, width: 56),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Send a Gift', style: AppText.h2),
+                        const SizedBox(height: 2),
+                        Text.rich(
+                          TextSpan(
+                            text: 'to your match · they’ll get a notification',
+                            style: AppText.sub.copyWith(fontSize: 11.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(
+                    Icons.toll_rounded,
+                    color: AppColors.gold,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 3),
+                  Text('5,258', style: AppText.pill.copyWith(fontSize: 13)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 35,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _giftCategories.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final selected = index == _giftCategory;
+                    return GestureDetector(
+                      onTap: () => setState(() {
+                        _giftCategory = index;
+                        _selectedGift = null;
+                      }),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? AppColors.primaryDark
+                              : Colors.white70,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          _giftCategories[index],
+                          style: AppText.pill.copyWith(
+                            fontSize: 11,
+                            color: selected ? Colors.white : AppColors.ink60,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(child: _giftTileGrid(gifts)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          child: SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: FilledButton(
+              onPressed: _selectedGift == null
+                  ? null
+                  : () => widget.onGiftSelected(_selectedGift!),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primaryDark,
+                disabledBackgroundColor: AppColors.soft,
+                foregroundColor: Colors.white,
+                disabledForegroundColor: AppColors.muted,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                _selectedGift == null
+                    ? 'Select a gift'
+                    : 'Send ${_selectedGift!.name}',
+                style: AppText.pill.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _giftTileGrid(List<GiftItem> items) {
     return GridView.builder(
@@ -791,13 +962,19 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         final gift = items[index];
 
         return GestureDetector(
-          onTap: () {
-            widget.onGiftSelected(gift);
-          },
+          onTap: () => setState(() => _selectedGift = gift),
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF3E6),
+              color: _selectedGift == gift
+                  ? AppColors.primarySoft
+                  : const Color(0xFFFFFDFC),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: _selectedGift == gift
+                    ? AppColors.primary
+                    : AppColors.line,
+                width: _selectedGift == gift ? 2 : 1,
+              ),
             ),
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(vertical: 8),

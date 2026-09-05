@@ -606,7 +606,7 @@ class _ProfileDetailsView extends StatelessWidget {
             const SizedBox(height: 16),
             // Slot 1: After THE BASICS
             if (hasVideo) ...[
-              ProfileVideoPlayer(videoPath: profile.videoUrl!, isSelfPreview: isSelfPreview),
+              ProfileVideoPlayer(videoPath: profile.videoUrl!, isSelfPreview: isSelfPreview, profile: profile),
               const SizedBox(height: 16),
             ] else if (profile.images.length > 1) ...[
               _buildImageWithRose(context, profile.images[1]),
@@ -1651,7 +1651,7 @@ class _ProfileDetailsView extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 if (isSelfPreview) return;
-                ComplimentingBottomSheet.show(context, type: 'Photo');
+                ComplimentingBottomSheet.show(context, type: 'Photo', profilemodel: profile);
               },
               child: Container(
                 width: 65,
@@ -2140,7 +2140,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     if (isSelfPreview) return;
-                    ComplimentingBottomSheet.show(context, type: 'Prompt');
+                    ComplimentingBottomSheet.show(context, type: 'Prompt', profilemodel: profile);
                   },
                   child: Container(
                     width: 65,
@@ -2680,7 +2680,8 @@ class _ProfileCardUI extends StatelessWidget {
 class ProfileVideoPlayer extends StatefulWidget {
   final String videoPath;
   final bool isSelfPreview;
-  const ProfileVideoPlayer({super.key, required this.videoPath, this.isSelfPreview = false});
+  final ProfileModel? profile;
+  const ProfileVideoPlayer({super.key, required this.videoPath, this.isSelfPreview = false, this.profile});
 
   @override
   State<ProfileVideoPlayer> createState() => _ProfileVideoPlayerState();
@@ -2937,7 +2938,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
               child: GestureDetector(
                 onTap: () {
                   if (widget.isSelfPreview) return;
-                  ComplimentingBottomSheet.show(context, type: 'Video intro');
+                  ComplimentingBottomSheet.show(context, type: 'Video intro', profilemodel: widget.profile);
                 },
                 child: Container(
                   width: 65,

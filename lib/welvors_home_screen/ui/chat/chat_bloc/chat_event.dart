@@ -9,7 +9,12 @@ abstract class ChatEvent extends Equatable {
 }
 
 class LoadChatsEvent extends ChatEvent {
-  const LoadChatsEvent();
+  final String type;
+
+  const LoadChatsEvent({this.type = 'all'});
+
+  @override
+  List<Object?> get props => [type];
 }
 
 class SearchChatsEvent extends ChatEvent {
@@ -68,12 +73,16 @@ class SendMessageEvent extends ChatEvent {
   final ChatMessageType type;
 
   final String? conversationId;
+
   // Common message
   final String? typemsg;
   final String? message;
 
   // Image
   final String? imageUrl;
+
+  // Video
+  final String? videoUrl;
 
   // Reply
   final String? replyToId;
@@ -107,12 +116,21 @@ class SendMessageEvent extends ChatEvent {
   final bool seen;
   final String? hintLine;
 
-  // Compliment
+  // Compliment / Location
   final String? locationLabel;
+
+  // LOCATION
+  final double? latitude;
+  final double? longitude;
+
   final bool isNew;
 
   // Proposal
   final String? proposalId;
+
+  // CONTACT
+  final String? contactName;
+  final String? contactPhoneNumber;
 
   // Date Invite
   final String? inviteTitle;
@@ -123,12 +141,21 @@ class SendMessageEvent extends ChatEvent {
     required this.chatId,
     required this.type,
     required this.typemsg,
+
     this.conversationId,
+
     // Common
     this.message,
 
     // Image
     this.imageUrl,
+
+    // Video
+    this.videoUrl,
+
+    // CONTACT
+    this.contactName,
+    this.contactPhoneNumber,
 
     // Reply
     this.replyToId,
@@ -162,8 +189,11 @@ class SendMessageEvent extends ChatEvent {
     this.seen = false,
     this.hintLine,
 
-    // Compliment
+    // LOCATION
     this.locationLabel,
+    this.latitude,
+    this.longitude,
+
     this.isNew = false,
 
     // Proposal
@@ -179,44 +209,96 @@ class SendMessageEvent extends ChatEvent {
   List<Object?> get props => [
     chatId,
     type,
+    conversationId,
+
+    // Common
     typemsg,
     message,
 
+    // Image
     imageUrl,
+
+    // Video
+    videoUrl,
+
+    // Reply
     replyToId,
     replyText,
     replyImageUrl,
     replyFileUrl,
     replyType,
+
+    // Audio
     audioUrl,
 
+    // Document
     fileUrl,
     fileName,
     fileSize,
 
+    // Gift
     giftId,
     giftName,
     giftEmoji,
     giftCoins,
     giftClaimed,
 
+    // Gift progress
     messageProgress,
     messageTarget,
     expiresIn,
 
+    // Rose / Compliment
     coinAmount,
     seen,
     hintLine,
 
+    // LOCATION
     locationLabel,
+    latitude,
+    longitude,
+
     isNew,
 
+    // Proposal
     proposalId,
 
+    // CONTACT
+    contactName,
+    contactPhoneNumber,
+
+    // Date Invite
     inviteTitle,
     inviteVenue,
     inviteStatus,
   ];
+}
+
+class UserOnlineSocketEvent extends ChatEvent {
+  final String userId;
+
+  const UserOnlineSocketEvent(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+class UserOfflineSocketEvent extends ChatEvent {
+  final String userId;
+
+  const UserOfflineSocketEvent(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+class IncomingSocketMessageListEvent extends ChatEvent {
+  final Map<String, dynamic> payload;
+
+  const IncomingSocketMessageListEvent(this.payload);
+
+  @override
+  List<Object?> get props => [payload];
 }
 
 class MessageDeliveredSocketEvent extends ChatEvent {
@@ -247,4 +329,18 @@ class MessageReadSocketEvent extends ChatEvent {
 
   @override
   List<Object?> get props => [messageId, conversationId];
+}
+
+class DeleteConversationEvent extends ChatEvent {
+  final String conversationId;
+  const DeleteConversationEvent({required this.conversationId});
+  @override
+  List<Object?> get props => [conversationId];
+}
+
+class ClearConversationEvent extends ChatEvent {
+  final String conversationId;
+  const ClearConversationEvent({required this.conversationId});
+  @override
+  List<Object?> get props => [conversationId];
 }

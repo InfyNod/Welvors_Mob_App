@@ -24,7 +24,7 @@ class VoiceCallScreen extends StatefulWidget {
 class _VoiceCallScreenState extends State<VoiceCallScreen> {
   bool _muted = false;
   bool _speaker = true;
-  bool _connected = true;
+  final bool _connected = true;
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +142,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
             ? Image.network(
                 widget.user.image,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _fallbackAvatar(),
+                errorBuilder: (_, _, _) => _fallbackAvatar(),
               )
             : _fallbackAvatar(),
       ),

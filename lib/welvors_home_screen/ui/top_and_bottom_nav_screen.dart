@@ -191,6 +191,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                                 type: 'Profile',
                                 profileName: name,
                                 profileImageUrl: imageUrl,
+                                profilemodel: profile,
                               );
                             }
                           }

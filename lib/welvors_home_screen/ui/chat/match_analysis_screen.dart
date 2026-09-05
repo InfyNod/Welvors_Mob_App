@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MatchAnalysisScreen extends StatelessWidget {
-  const MatchAnalysisScreen({Key? key}) : super(key: key);
+  const MatchAnalysisScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -11,6 +11,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final Map<String, bool> _messageHasMore = {};
   final ChatRepository repository;
   final SocketService socketService;
+  final Set<String> _handledSocketMessageIds = <String>{};
   ChatBloc({required this.repository, required this.socketService})
     : super(const ChatState()) {
     on<LoadChatsEvent>(_loadChats);
@@ -23,24 +24,202 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<MessageReadSocketEvent>(_messageReadSocketEvent);
     on<MessageDeliveredSocketEvent>(_messageDeliveredSocketEvent);
     on<DeleteMessageEvent>(_deleteMessageEvent);
+    on<DeleteConversationEvent>(_deleteConversationEvent);
+    on<ClearConversationEvent>(_clearConversationEvent);
+    on<UserOnlineSocketEvent>(_userOnlineSocketEvent);
+    on<UserOfflineSocketEvent>(_userOfflineSocketEvent);
+    on<IncomingSocketMessageListEvent>(_incomingSocketMessageListEvent);
 
-    // Register this listener in the BLoC itself. The BLoC owns the chat-list
-    // state, so the update cannot be lost because ChatScreen rebuilds or
-    // because its socket listener is registered a little later.
-    socketService.off('conversation:update');
+    // The BLoC owns chat-list socket listeners. Never use socketService.off(event)
+    // here because ChatScreen/ChatDetailScreen share the same singleton socket.
+    // Removing the whole event would silently break another screen's listener.
     socketService.on('conversation:update', _onConversationUpdateSocket);
-
-    // Server confirms delivery of our sent messages.
-    socketService.off('message:delivered');
     socketService.on('message:delivered', _onMessageDeliveredSocket);
-
-    // Server sends message:read when the other participant has opened/read
-    // one of our messages. This listener updates the local ticks immediately.
-    socketService.off('message:read');
     socketService.on('message:read', _onMessageReadSocket);
+    socketService.on('message:receive', _onMessageReceiveSocket);
+    socketService.on('user:online', _onUserOnlineSocket);
+    socketService.on('user:offline', _onUserOfflineSocket);
 
-    debugPrint('🟢 CHAT BLOC: conversation:update listener registered');
-    debugPrint('🟢 CHAT BLOC: message:read listener registered');
+    debugPrint('🟢 CHAT BLOC: real-time socket listeners registered');
+  }
+
+  String? _socketUserId(dynamic payload) {
+    dynamic data = payload;
+    if (data is List) {
+      if (data.isEmpty) return null;
+      data = data.first;
+    }
+
+    for (var i = 0; i < 4; i++) {
+      if (data is! Map) return null;
+      final map = Map<String, dynamic>.from(data);
+      final direct = map['userId'] ?? map['user_id'] ?? map['id'];
+      if (direct != null && direct.toString().trim().isNotEmpty) {
+        return direct.toString().trim();
+      }
+      if (map['data'] is Map) {
+        data = map['data'];
+        continue;
+      }
+      if (map['user'] is Map) {
+        data = map['user'];
+        continue;
+      }
+      return null;
+    }
+    return null;
+  }
+
+  void _onUserOnlineSocket(dynamic payload) {
+    final userId = _socketUserId(payload);
+    debugPrint('🟢 CHAT BLOC user:online => $payload | userId=$userId');
+    if (userId == null || userId.isEmpty) return;
+    add(UserOnlineSocketEvent(userId));
+  }
+
+  void _onUserOfflineSocket(dynamic payload) {
+    final userId = _socketUserId(payload);
+    debugPrint('🔴 CHAT BLOC user:offline => $payload | userId=$userId');
+    if (userId == null || userId.isEmpty) return;
+    add(UserOfflineSocketEvent(userId));
+  }
+
+  void _onMessageReceiveSocket(dynamic payload) {
+    debugPrint('📩 CHAT BLOC message:receive => $payload');
+    dynamic data = payload;
+    if (data is List) {
+      if (data.isEmpty) return;
+      data = data.first;
+    }
+    if (data is! Map) return;
+
+    final normalized = _unwrapMessagePayload(Map<String, dynamic>.from(data));
+    add(IncomingSocketMessageListEvent(normalized));
+  }
+
+  void _userOnlineSocketEvent(
+    UserOnlineSocketEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    _updateUserOnlineState(event.userId, true, emit);
+  }
+
+  void _userOfflineSocketEvent(
+    UserOfflineSocketEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    _updateUserOnlineState(event.userId, false, emit);
+  }
+
+  void _updateUserOnlineState(
+    String userId,
+    bool online,
+    Emitter<ChatState> emit,
+  ) {
+    bool changed = false;
+    final updatedAll = state.allChats
+        .map((chat) {
+          if (chat.userId != userId || chat.online == online) return chat;
+          changed = true;
+          return chat.copyWith(online: online);
+        })
+        .toList(growable: false);
+
+    if (!changed) return;
+
+    final filtered = _applyFilter(
+      List<ChatUser>.from(updatedAll),
+      state.filter,
+    );
+    final query = state.search.trim().toLowerCase();
+    final searched = query.isEmpty
+        ? filtered
+        : filtered
+              .where(
+                (chat) =>
+                    chat.name.toLowerCase().contains(query) ||
+                    chat.preview.toLowerCase().contains(query),
+              )
+              .toList(growable: false);
+
+    emit(state.copyWith(allChats: updatedAll, filteredChats: searched));
+  }
+
+  void _incomingSocketMessageListEvent(
+    IncomingSocketMessageListEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final payload = _unwrapMessagePayload(event.payload);
+    final conversationId =
+        (payload['conversationId'] ?? payload['conversation_id'] ?? '')
+            .toString()
+            .trim();
+    if (conversationId.isEmpty) {
+      debugPrint(
+        '⚠️ message:receive ignored for chat list: conversationId missing',
+      );
+      return;
+    }
+
+    final messageId =
+        (payload['id'] ?? payload['messageId'] ?? payload['_id'] ?? '')
+            .toString()
+            .trim();
+    if (messageId.isNotEmpty) {
+      if (_handledSocketMessageIds.contains(messageId)) {
+        debugPrint('ℹ️ Duplicate message:receive ignored => $messageId');
+        return;
+      }
+      _handledSocketMessageIds.add(messageId);
+      if (_handledSocketMessageIds.length > 500) {
+        _handledSocketMessageIds.remove(_handledSocketMessageIds.first);
+      }
+    }
+
+    final content =
+        (payload['content'] ?? payload['text'] ?? payload['message'] ?? '')
+            .toString();
+    final createdAt =
+        (payload['createdAt'] ??
+                payload['created_at'] ??
+                DateTime.now().toIso8601String())
+            .toString();
+
+    final index = state.allChats.indexWhere(
+      (chat) => (chat.conversationId ?? '').trim() == conversationId,
+    );
+    if (index == -1) {
+      add(const LoadChatsEvent());
+      return;
+    }
+
+    final oldChat = state.allChats[index];
+    final updatedChat = oldChat.copyWith(
+      preview: content.isNotEmpty ? content : oldChat.preview,
+      time: ChatUser.formatConversationTime(createdAt),
+      // Do not double increment when conversation:update and message:receive
+      // arrive for the same message. conversation:update can later provide the
+      // authoritative unreadCount.
+      unread: oldChat.unread,
+    );
+
+    final updatedAll = <ChatUser>[
+      updatedChat,
+      ...state.allChats.where((c) => c.id != oldChat.id),
+    ];
+    var filtered = _applyFilter(List<ChatUser>.from(updatedAll), state.filter);
+    final query = state.search.trim().toLowerCase();
+    if (query.isNotEmpty) {
+      filtered = filtered
+          .where(
+            (chat) =>
+                chat.name.toLowerCase().contains(query) ||
+                chat.preview.toLowerCase().contains(query),
+          )
+          .toList(growable: false);
+    }
+
+    emit(state.copyWith(allChats: updatedAll, filteredChats: filtered));
   }
 
   void _onMessageReadSocket(dynamic payload) {
@@ -126,15 +305,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       if (index == -1) continue;
 
       final message = messages[index];
-      // if (!message.isMine || message.delivered) return;
+      if (!message.isMine || message.delivered) return;
 
-      // final updated = List<ChatMessage>.from(messages);
-      // updated[index] = message.copyWith(delivered: true);
+      final updated = List<ChatMessage>.from(messages);
+      updated[index] = message.copyWith(delivered: true);
 
       final updatedMessages = Map<String, List<ChatMessage>>.from(
         state.messages,
       );
-      // updatedMessages[entry.key] = updated;
+      updatedMessages[entry.key] = updated;
 
       emit(state.copyWith(messages: updatedMessages));
       debugPrint('✅ message:delivered applied to ${event.messageId}');
@@ -154,7 +333,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
       // Sender-side only.
       if (target == null || !target.isMine) {
-        debugPrint('⚠️ DELETE MESSAGE: sender-side message only');
+        debugPrint('⚠️ DELETE MESSAGE: sender-side message only>>>>$target');
         return;
       }
 
@@ -190,7 +369,163 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       return;
     }
 
-    add(ConversationUpdateEvent(Map<String, dynamic>.from(data)));
+    dynamic normalized = data;
+    for (var i = 0; i < 4; i++) {
+      if (normalized is! Map) break;
+      final map = Map<String, dynamic>.from(normalized);
+      if (map['conversationId'] != null || map['conversation_id'] != null) {
+        normalized = map;
+        break;
+      }
+      if (map['data'] is Map) {
+        normalized = map['data'];
+        continue;
+      }
+      if (map['conversation'] is Map) {
+        normalized = map['conversation'];
+        continue;
+      }
+      break;
+    }
+
+    if (normalized is Map) {
+      add(ConversationUpdateEvent(Map<String, dynamic>.from(normalized)));
+    }
+  }
+
+  Future<void> _deleteConversationEvent(
+    DeleteConversationEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final id = event.conversationId.trim();
+    if (id.isEmpty) return;
+
+    // The "Card Showcase" dummy thread isn't a real conversation on the
+    // backend, so there's nothing to delete there — just drop it locally.
+    if (id == ChatRepository.demoAllCardsUserId) {
+      final all = state.allChats
+          .where((chat) => (chat.conversationId ?? '').trim() != id)
+          .toList(growable: false);
+      final filtered = _applyFilter(List<ChatUser>.from(all), state.filter);
+
+      emit(
+        state.copyWith(
+          allChats: all,
+          filteredChats: filtered,
+          chatAction: 'deleted',
+          chatActionError: null,
+        ),
+      );
+      return;
+    }
+
+    emit(state.copyWith(chatAction: 'deleting', chatActionError: null));
+    try {
+      await repository.deleteConversation(id);
+
+      final all = state.allChats
+          .where((chat) => (chat.conversationId ?? '').trim() != id)
+          .toList(growable: false);
+      final filtered = _applyFilter(List<ChatUser>.from(all), state.filter);
+      final search = state.search.trim().toLowerCase();
+      final finalFiltered = search.isEmpty
+          ? filtered
+          : filtered
+                .where((chat) {
+                  return chat.name.toLowerCase().contains(search);
+                })
+                .toList(growable: false);
+
+      final messages = Map<String, List<ChatMessage>>.from(state.messages)
+        ..remove(id);
+      final cursors = Map<String, String?>.from(state.messageNextCursor)
+        ..remove(id);
+      final hasMore = Map<String, bool>.from(state.messageHasMore)..remove(id);
+
+      emit(
+        state.copyWith(
+          allChats: all,
+          filteredChats: finalFiltered,
+          messages: messages,
+          messageNextCursor: cursors,
+          messageHasMore: hasMore,
+          chatAction: 'deleted',
+          chatActionError: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          chatAction: 'delete_error',
+          chatActionError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _clearConversationEvent(
+    ClearConversationEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final id = event.conversationId.trim();
+    if (id.isEmpty) return;
+
+    // Same idea as delete above — clear the dummy showcase thread locally
+    // instead of calling a backend that has never heard of it.
+    if (id == ChatRepository.demoAllCardsUserId) {
+      final messages = Map<String, List<ChatMessage>>.from(state.messages);
+      messages[id] = const <ChatMessage>[];
+
+      emit(
+        state.copyWith(
+          messages: messages,
+          chatAction: 'cleared',
+          chatActionError: null,
+        ),
+      );
+      return;
+    }
+
+    emit(state.copyWith(chatAction: 'clearing', chatActionError: null));
+    try {
+      await repository.clearConversation(id);
+
+      final messages = Map<String, List<ChatMessage>>.from(state.messages);
+      messages[id] = const <ChatMessage>[];
+
+      final updatedAll = state.allChats
+          .map((chat) {
+            if ((chat.conversationId ?? '').trim() != id) return chat;
+            return chat.copyWith(preview: '', unread: 0);
+          })
+          .toList(growable: false);
+
+      final updatedFiltered = _applyFilter(
+        List<ChatUser>.from(updatedAll),
+        state.filter,
+      );
+
+      emit(
+        state.copyWith(
+          allChats: updatedAll,
+          filteredChats: updatedFiltered,
+          messages: messages,
+          messageNextCursor: Map<String, String?>.from(state.messageNextCursor)
+            ..remove(id),
+          messageHasMore: Map<String, bool>.from(state.messageHasMore)
+            ..remove(id),
+          chatAction: 'cleared',
+          chatActionError: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          chatAction: 'clear_error',
+          chatActionError: e.toString(),
+        ),
+      );
+    }
   }
 
   // ============================================================
@@ -201,16 +536,33 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(loading: true));
 
     try {
-      final chats = await repository.fetchChats();
+      debugPrint('🔄 Loading chats => type=${event.type}');
+
+      final chats = await repository.fetchChats(type: event.type);
+
+      debugPrint(
+        '✅ Chats loaded => '
+        'type=${event.type}, count=${chats.length}',
+      );
 
       emit(
-        state.copyWith(loading: false, allChats: chats, filteredChats: chats),
+        state.copyWith(
+          loading: false,
+          allChats: event.type == 'all' ? chats : state.allChats,
+          filteredChats: chats,
+        ),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint(
+        '❌ Load chats error '
+        'type=${event.type}: $e',
+      );
+
+      debugPrintStack(stackTrace: stackTrace);
+
       emit(state.copyWith(loading: false));
     }
   }
-
   // ============================================================
   // CONVERSATION UPDATE -> CHAT LIST
   // ============================================================
@@ -239,6 +591,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final createdAt = (lastMessage['createdAt'] ?? data['createdAt'] ?? '')
         .toString();
 
+    // Media messages carry no text content — fall back to a label so the
+    // chat-list card doesn't show stale/blank text for the last message.
+    final rawType =
+        (lastMessage['type'] ??
+                lastMessage['messageType'] ??
+                lastMessage['typemsg'] ??
+                data['type'] ??
+                data['messageType'] ??
+                '')
+            .toString()
+            .trim()
+            .toUpperCase();
+    final mediaLabel = _mediaPreviewLabel(rawType);
+
     final unreadRaw = data['unreadCount'];
     final hasUnreadCount = unreadRaw != null;
     final unread = ChatUser.toInt(unreadRaw);
@@ -261,7 +627,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     final oldChat = current[index];
     final updatedChat = oldChat.copyWith(
-      preview: content.isNotEmpty ? content : oldChat.preview,
+      preview: content.isNotEmpty ? content : (mediaLabel ?? oldChat.preview),
       time: createdAt.isNotEmpty
           ? ChatUser.formatConversationTime(createdAt)
           : oldChat.time,
@@ -364,6 +730,38 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   // ============================================================
+  // CHAT LIST PREVIEW LABEL FOR MEDIA MESSAGES
+  // Media messages have no text content, so the last-message spot on
+  // the chat-list card falls back to one of these labels instead of
+  // showing blank/stale text.
+  // ============================================================
+  String? _mediaPreviewLabel(String type) {
+    switch (type) {
+      case 'IMAGE':
+        return '📷 Photo';
+      case 'VIDEO':
+        return '🎥 Video';
+      case 'AUDIO':
+        return '🎤 Voice message';
+      case 'FILE':
+      case 'DOCUMENT':
+        return '📄 Document';
+      default:
+        return null;
+    }
+  }
+
+  // ============================================================
+  // MESSAGE STATE KEY
+  // ============================================================
+  // Keep every conversation in its own bucket. The UI may use the other
+  // user's id as chatId, but messages are uniquely scoped by conversationId.
+  String _messageKey(String chatId, String? conversationId) {
+    final conversation = (conversationId ?? '').trim();
+    return conversation.isNotEmpty ? conversation : chatId.trim();
+  }
+
+  // ============================================================
   // LOAD CHAT MESSAGES
   // ============================================================
 
@@ -372,30 +770,55 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     try {
+      debugPrint(
+        '➡️ FETCH MESSAGES: chatId=${event.chatId} '
+        'conversationId=${event.conversationId} cursor=${event.cursor}',
+      );
+
+      final conversationId = (event.conversationId ?? '').trim();
       final page = await repository.fetchMessages(
         event.chatId,
-        conversationId: event.conversationId,
+        conversationId: conversationId.isEmpty ? null : conversationId,
         limit: 10,
         cursor: event.cursor,
+      );
+
+      debugPrint(
+        '⬅️ FETCH RESULT: count=${page.messages.length} '
+        'nextCursor=${page.nextCursor} hasMore=${page.hasMore}',
+      );
+
+      final key = _messageKey(event.chatId, event.conversationId);
+
+      debugPrint(
+        '📥 LOAD MESSAGES -> chatId=${event.chatId} conversationId=${event.conversationId} key=$key count=${page.messages.length}',
       );
 
       final updatedMessages = Map<String, List<ChatMessage>>.from(
         state.messages,
       );
 
-      updatedMessages[event.chatId] = _mergeMessages(
-        state.messages[event.chatId] ?? const <ChatMessage>[],
+      updatedMessages[key] = _mergeMessages(
+        state.messages[key] ?? const <ChatMessage>[],
         page.messages,
       );
 
-      _messageNextCursor[event.chatId] = page.nextCursor;
-      _messageHasMore[event.chatId] =
-          page.nextCursor != null && page.nextCursor!.isNotEmpty;
+      _messageNextCursor[key] = page.nextCursor;
+      _messageHasMore[key] =
+          page.hasMore &&
+          page.nextCursor != null &&
+          page.nextCursor!.isNotEmpty;
+
+      debugPrint(
+        '📌 PAGINATION STATE | key=$key '
+        'hasMore=${_messageHasMore[key]} '
+        'nextCursor=${_messageNextCursor[key]}',
+      );
 
       final nextCursors = Map<String, String?>.from(state.messageNextCursor);
       final hasMoreMap = Map<String, bool>.from(state.messageHasMore);
-      nextCursors[event.chatId] = page.nextCursor;
-      hasMoreMap[event.chatId] = _messageHasMore[event.chatId] ?? false;
+      nextCursors[key] = page.nextCursor;
+      hasMoreMap[key] = _messageHasMore[key] ?? false;
 
       emit(
         state.copyWith(
@@ -404,8 +827,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           messageHasMore: hasMoreMap,
         ),
       );
-    } catch (e) {
-      // Keep existing state if API fails.
+    } catch (e, st) {
+      debugPrint('❌ LOAD MESSAGES ERROR: $e');
+      debugPrintStack(stackTrace: st);
+      // Do not replace existing messages with an empty list on failure.
     }
   }
 
@@ -469,6 +894,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   // ============================================================
 
   void joinConversation(String conversationId) {
+    // The "Card Showcase" dummy thread (see ChatRepository.demoAllCardsUser)
+    // never existed on the backend, so joining it on the real socket would
+    // just be a wasted/failing round-trip. Its messages are served entirely
+    // from local demo data, so there's nothing to join.
+    if (conversationId == ChatRepository.demoAllCardsUserId) return;
+
     socketService.emit('conversation:join', {'conversationId': conversationId});
   }
 
@@ -552,6 +983,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     print('✅ MESSAGE READ EVENT SENT: $conversationId');
   }
 
+  //<navneet>
   String _getSocketMessageType(SendMessageEvent event) {
     // IMAGE MUST ALWAYS BE IMAGE
     if (event.type == ChatMessageType.image) {
@@ -563,10 +995,32 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       return 'IMAGE';
     }
 
+    if (event.type == ChatMessageType.video ||
+        (event.typemsg ?? '').trim().toUpperCase() == 'VIDEO') {
+      return 'VIDEO';
+    }
+
     if (event.type == ChatMessageType.audio) {
       return 'AUDIO';
     }
-
+    if (event.type == ChatMessageType.effect) {
+      return 'EFFECT';
+    }
+    if (event.type == ChatMessageType.gift) {
+      return 'GIFT';
+    }
+    if (event.type == ChatMessageType.dateNOWPLAN) {
+      return 'DATE_NOW_PLAN';
+    }
+    if (event.type == ChatMessageType.eventInvite) {
+      return 'EVENT';
+    }
+    if (event.type == ChatMessageType.contact) {
+      return 'CONTACT';
+    }
+    if (event.type == ChatMessageType.location) {
+      return 'LOCATION';
+    }
     return 'TEXT';
   }
 
@@ -575,63 +1029,185 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // 1. CHECK MESSAGE TYPE
     // ==========================================================
 
+    final String eventTypeMsg = (event.typemsg ?? '').trim().toUpperCase();
+
     final bool isImage =
-        event.type == ChatMessageType.image ||
-        (event.typemsg ?? '').trim().toUpperCase() == 'IMAGE';
+        event.type == ChatMessageType.image || eventTypeMsg == 'IMAGE';
+
+    final bool isVideo =
+        event.type == ChatMessageType.video || eventTypeMsg == 'VIDEO';
+
+    final bool isAudio =
+        event.type == ChatMessageType.audio || eventTypeMsg == 'AUDIO';
+
+    final bool isFile =
+        event.type == ChatMessageType.document || eventTypeMsg == 'FILE';
+
+    final bool isContact =
+        event.type == ChatMessageType.contact || eventTypeMsg == 'CONTACT';
+
+    final bool isLocation =
+        event.type == ChatMessageType.location || eventTypeMsg == 'LOCATION';
+
+    final bool isMedia = isImage || isVideo || isAudio || isFile;
+
+    // ==========================================================
+    // 2. SOCKET MESSAGE TYPE
+    // ==========================================================
 
     final String socketMessageType = isImage
         ? 'IMAGE'
+        : isVideo
+        ? 'VIDEO'
+        : isAudio
+        ? 'AUDIO'
+        : isFile
+        ? 'FILE'
+        : isContact
+        ? 'CONTACT'
+        : isLocation
+        ? 'LOCATION'
         : _getSocketMessageType(event);
 
     // ==========================================================
-    // 2. SEND MESSAGE THROUGH SOCKET
+    // 3. CREATE SOCKET PAYLOAD
     // ==========================================================
 
     final socketPayload = <String, dynamic>{
       'conversationId': event.conversationId,
 
-      // IMAGE => null
-      'content': isImage ? null : (event.message ?? ''),
+      // IMAGE / VIDEO / AUDIO / FILE / CONTACT / LOCATION => null
+      'content': (isMedia || isContact || isLocation)
+          ? null
+          : (event.message ?? ''),
 
-      // IMAGE => IMAGE
       'messageType': socketMessageType,
     };
 
     // ==========================================================
-    // 3. IMAGE URL
+    // 4. MEDIA URL
     // ==========================================================
 
     if (isImage && (event.imageUrl ?? '').trim().isNotEmpty) {
       socketPayload['mediaUrl'] = event.imageUrl!.trim();
     }
 
+    if (isVideo && (event.videoUrl ?? '').trim().isNotEmpty) {
+      socketPayload['mediaUrl'] = event.videoUrl!.trim();
+    }
+
+    if (isAudio && (event.audioUrl ?? '').trim().isNotEmpty) {
+      socketPayload['mediaUrl'] = event.audioUrl!.trim();
+    }
+
+    if (isFile && (event.fileUrl ?? '').trim().isNotEmpty) {
+      socketPayload['mediaUrl'] = event.fileUrl!.trim();
+    }
+
+    // ==========================================================
+    // 5. CONTACT
+    // ==========================================================
+
+    if (isContact) {
+      socketPayload['mediaUrl'] = null;
+
+      socketPayload['metadata'] = {
+        'contact': {
+          'name': event.contactName ?? '',
+          'phoneNumber': event.contactPhoneNumber ?? '',
+        },
+      };
+    }
+
+    // ==========================================================
+    // 6. LOCATION
+    // ==========================================================
+
+    if (isLocation) {
+      socketPayload['mediaUrl'] = null;
+
+      socketPayload['metadata'] = {
+        'location': {
+          'latitude': event.latitude,
+          'longitude': event.longitude,
+          'label': event.locationLabel ?? '',
+        },
+      };
+    }
+
+    // ==========================================================
+    // 7. DEBUG LOG
+    // ==========================================================
+
     debugPrint('========================================');
     debugPrint('📤 MESSAGE SEND');
-    debugPrint('📦 SOCKET PAYLOAD => $socketPayload');
+    debugPrint('📌 type => $eventTypeMsg');
     debugPrint('📌 messageType => $socketMessageType');
-    debugPrint('🖼️ mediaUrl => ${event.imageUrl}');
+
+    debugPrint('🖼️ imageUrl => ${event.imageUrl}');
+    debugPrint('🎬 videoUrl => ${event.videoUrl}');
+    debugPrint('🎵 audioUrl => ${event.audioUrl}');
+    debugPrint('📄 fileUrl => ${event.fileUrl}');
+
+    if (isContact) {
+      debugPrint('👤 contactName => ${event.contactName}');
+      debugPrint('📞 contactPhoneNumber => ${event.contactPhoneNumber}');
+    }
+
+    if (isLocation) {
+      debugPrint('📍 LOCATION');
+      debugPrint('🌐 latitude => ${event.latitude}');
+      debugPrint('🌐 longitude => ${event.longitude}');
+      debugPrint('🏷️ label => ${event.locationLabel}');
+    }
+
+    debugPrint('📦 SOCKET PAYLOAD => $socketPayload');
     debugPrint('========================================');
 
-    socketService.emitWhenConnected('message:send', socketPayload);
-
     // ==========================================================
-    // 4. GET OLD MESSAGES
+    // 8. SEND THROUGH SOCKET
     // ==========================================================
 
-    final oldMessages = state.messages[event.chatId] ?? const <ChatMessage>[];
+    if (event.conversationId != ChatRepository.demoAllCardsUserId) {
+      socketService.emitWhenConnected('message:send', socketPayload);
+    }
 
     // ==========================================================
-    // 3. CREATE LOCAL MESSAGE
+    // 9. GET OLD MESSAGES
+    // ==========================================================
+
+    final messageKey = _messageKey(event.chatId, event.conversationId);
+
+    final oldMessages = state.messages[messageKey] ?? const <ChatMessage>[];
+
+    // ==========================================================
+    // 10. CREATE LOCAL MESSAGE
     // ==========================================================
 
     final message = ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
 
-      // IMAGE => empty text
-      text: isImage ? '' : (event.message ?? ''),
+      // ========================================================
+      // TEXT
+      // ========================================================
+      text: (isMedia || isContact || isLocation) ? '' : (event.message ?? ''),
 
-      // IMPORTANT
-      typemsg: isImage ? 'IMAGE' : event.typemsg,
+      // ========================================================
+      // MESSAGE TYPE
+      // ========================================================
+      typemsg: isImage
+          ? 'IMAGE'
+          : isVideo
+          ? 'VIDEO'
+          : isAudio
+          ? 'AUDIO'
+          : isFile
+          ? 'FILE'
+          : isContact
+          ? 'CONTACT'
+          : isLocation
+          ? 'LOCATION'
+          : event.typemsg,
 
       time: DateTime.now().toIso8601String(),
 
@@ -640,17 +1216,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // Dynamic type
       type: event.type,
 
-      // IMAGE URL
+      // ========================================================
+      // IMAGE
+      // ========================================================
       imageUrl: event.imageUrl,
 
       // ========================================================
-      // REPLY
+      // VIDEO
       // ========================================================
-      replyToId: event.replyToId,
-      replyText: event.replyText,
-      replyImageUrl: event.replyImageUrl,
-      replyFileUrl: event.replyFileUrl,
-      replyType: event.replyType,
+      videoUrl: event.videoUrl,
 
       // ========================================================
       // AUDIO
@@ -663,6 +1237,31 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       fileUrl: event.fileUrl,
       fileName: event.fileName,
       fileSize: event.fileSize,
+
+      // ========================================================
+      // CONTACT
+      // ========================================================
+      contactName: isContact ? event.contactName : null,
+
+      contactPhoneNumber: isContact ? event.contactPhoneNumber : null,
+
+      // ========================================================
+      // LOCATION
+      // ========================================================
+      latitude: isLocation ? event.latitude : null,
+
+      longitude: isLocation ? event.longitude : null,
+
+      locationLabel: event.locationLabel,
+
+      // ========================================================
+      // REPLY
+      // ========================================================
+      replyToId: event.replyToId,
+      replyText: event.replyText,
+      replyImageUrl: event.replyImageUrl,
+      replyFileUrl: event.replyFileUrl,
+      replyType: event.replyType,
 
       // ========================================================
       // GIFT
@@ -686,7 +1285,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       coinAmount: event.coinAmount,
       seen: event.seen,
       hintLine: event.hintLine,
-      locationLabel: event.locationLabel,
       isNew: event.isNew,
 
       // ========================================================
@@ -703,15 +1301,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
 
     // ==========================================================
-    // 4. UPDATE LOCAL MESSAGE LIST
+    // 11. UPDATE LOCAL MESSAGE LIST
     // ==========================================================
 
     final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
 
-    updatedMessages[event.chatId] = _mergeMessages(oldMessages, [message]);
+    updatedMessages[messageKey] = _mergeMessages(oldMessages, [message]);
 
     // ==========================================================
-    // 7. UPDATE CHAT LIST ONLY ONCE
+    // 12. UPDATE CHAT LIST
     // ==========================================================
 
     final chatList = List<ChatUser>.from(state.allChats);
@@ -727,21 +1325,46 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (chatIndex >= 0) {
       final oldChat = chatList[chatIndex];
 
-      // IMAGE preview
+      // ========================================================
+      // PREVIEW
+      // ========================================================
+
       final String sentPreview = isImage
-          ? '📷 Image'
+          ? _mediaPreviewLabel('IMAGE')!
+          : isVideo
+          ? _mediaPreviewLabel('VIDEO')!
+          : isAudio
+          ? _mediaPreviewLabel('AUDIO')!
+          : isFile
+          ? _mediaPreviewLabel('FILE')!
+          : isContact
+          ? 'Contact'
+          : isLocation
+          ? 'Location'
           : (event.message ?? '').trim();
+
+      // ========================================================
+      // UPDATED CHAT
+      // ========================================================
 
       final updatedChat = oldChat.copyWith(
         preview: sentPreview.isEmpty ? oldChat.preview : sentPreview,
+
         time: ChatUser.formatConversationTime(message.time),
+
         unread: 0,
       );
 
-      // Remove current chat
+      // ========================================================
+      // REMOVE CURRENT CHAT
+      // ========================================================
+
       chatList.removeAt(chatIndex);
 
-      // Put at top
+      // ========================================================
+      // PUT AT TOP
+      // ========================================================
+
       chatList.insert(0, updatedChat);
 
       debugPrint('📋 CHAT LIST LIVE UPDATE SUCCESS');
@@ -751,11 +1374,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       debugPrint('📋 preview = ${updatedChat.preview}');
     } else {
       debugPrint(
-        '⚠️ CHAT LIST LIVE UPDATE: chat not found | chatId=${event.chatId} | conversationId=$conversationId',
+        '⚠️ CHAT LIST LIVE UPDATE: '
+        'chat not found | '
+        'chatId=${event.chatId} | '
+        'conversationId=$conversationId',
       );
     }
 
+    // ==========================================================
+    // 13. APPLY FILTER
+    // ==========================================================
+
     final filtered = _applyFilter(List<ChatUser>.from(chatList), state.filter);
+
+    // ==========================================================
+    // 14. APPLY SEARCH
+    // ==========================================================
 
     final query = state.search.trim().toLowerCase();
 
@@ -767,7 +1401,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           }).toList();
 
     // ==========================================================
-    // 6. EMIT UPDATED STATE
+    // 15. EMIT UPDATED STATE
     // ==========================================================
 
     emit(
@@ -776,84 +1410,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         allChats: chatList,
         filteredChats: searched,
       ),
-    ); // ==========================================================
-    // 5. UPDATE CHAT LIST IMMEDIATELY
-    // ==========================================================
-
-    final newPreview = (event.message ?? '').trim();
-
-    if (conversationId.isNotEmpty && newPreview.isNotEmpty) {
-      final index = state.allChats.indexWhere(
-        (chat) => (chat.conversationId ?? '').trim() == conversationId,
-      );
-
-      if (index != -1) {
-        final oldChat = state.allChats[index];
-
-        final updatedChat = oldChat.copyWith(
-          preview: newPreview,
-          time: ChatUser.formatConversationTime(
-            DateTime.now().toIso8601String(),
-          ),
-        );
-
-        // IMPORTANT:
-        // index se remove karo, id se nahi.
-        // Isse baaki users accidentally remove nahi honge.
-        final updatedAllChats = <ChatUser>[];
-
-        for (int i = 0; i < state.allChats.length; i++) {
-          if (i != index) {
-            updatedAllChats.add(state.allChats[i]);
-          }
-        }
-
-        // Sent chat ko TOP par lao.
-        updatedAllChats.insert(0, updatedChat);
-
-        // Search/filter ko dobara apply karo.
-        var updatedFilteredChats = _applyFilter(
-          List<ChatUser>.from(updatedAllChats),
-          state.filter,
-        );
-
-        final search = state.search.trim().toLowerCase();
-
-        if (search.isNotEmpty) {
-          updatedFilteredChats = updatedFilteredChats.where((chat) {
-            return chat.name.toLowerCase().contains(search) ||
-                chat.preview.toLowerCase().contains(search);
-          }).toList();
-        }
-
-        debugPrint('========================================');
-        debugPrint('✅ CHAT LIST LIVE UPDATE');
-        debugPrint('conversationId: $conversationId');
-        debugPrint('user: ${updatedChat.name}');
-        debugPrint('preview: $newPreview');
-        debugPrint('old list count: ${state.allChats.length}');
-        debugPrint('new list count: ${updatedAllChats.length}');
-        debugPrint('order: ${updatedAllChats.map((e) => e.name).toList()}');
-        debugPrint('========================================');
-
-        emit(
-          state.copyWith(
-            messages: updatedMessages,
-            allChats: updatedAllChats,
-            filteredChats: updatedFilteredChats,
-          ),
-        );
-
-        return;
-      }
-
-      debugPrint(
-        '⚠️ CHAT LIST UPDATE FAILED: conversation not found: $conversationId',
-      );
-    }
-
-    // Normal message state update if chat wasn't found.
-    emit(state.copyWith(messages: updatedMessages));
+    );
   }
 
   // ============================================================
@@ -898,14 +1455,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       currentUserId: repository.currentUserId,
     );
 
-    final oldMessages = state.messages[event.chatId] ?? const <ChatMessage>[];
+    final payloadConversationId =
+        (payload['conversationId'] ?? payload['conversation_id'] ?? '')
+            .toString()
+            .trim();
+    final key = _messageKey(
+      event.chatId,
+      payloadConversationId.isEmpty ? null : payloadConversationId,
+    );
+
+    final oldMessages = state.messages[key] ?? const <ChatMessage>[];
 
     final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
 
-    updatedMessages[event.chatId] = _mergeIncomingMessage(
-      oldMessages,
-      incoming,
-    );
+    updatedMessages[key] = _mergeIncomingMessage(oldMessages, incoming);
 
     emit(state.copyWith(messages: updatedMessages));
   }
@@ -924,22 +1487,171 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   static final RegExp _tempIdPattern = RegExp(r'^\d+$');
 
+  // List<ChatMessage> _mergeIncomingMessage(
+  //   List<ChatMessage> existing,
+  //   ChatMessage incoming,
+  // ) {
+  //   if (incoming.isMine) {
+  //     final incomingType = (incoming.typemsg ?? '').trim().toUpperCase();
+  //     final isMedia = const {
+  //       'IMAGE',
+  //       'VIDEO',
+  //       'AUDIO',
+  //       'FILE',
+  //     }.contains(incomingType);
+
+  //     int matchIndex = -1;
+  //     if (isMedia) {
+  //       DateTime? oldestTime;
+  //       for (int i = 0; i < existing.length; i++) {
+  //         final message = existing[i];
+  //         if (!message.isMine || !_tempIdPattern.hasMatch(message.id)) continue;
+  //         if ((message.typemsg ?? '').trim().toUpperCase() != incomingType)
+  //           continue;
+
+  //         final parsedTime = DateTime.tryParse(message.time);
+  //         if (matchIndex == -1 ||
+  //             (parsedTime != null &&
+  //                 (oldestTime == null || parsedTime.isBefore(oldestTime)))) {
+  //           matchIndex = i;
+  //           oldestTime = parsedTime ?? oldestTime;
+  //         }
+  //       }
+  //     } else {
+  //       matchIndex = existing.indexWhere((message) {
+  //         if (!message.isMine || !_tempIdPattern.hasMatch(message.id))
+  //           return false;
+  //         if (const {
+  //           'IMAGE',
+  //           'VIDEO',
+  //           'AUDIO',
+  //           'FILE',
+  //         }.contains((message.typemsg ?? '').trim().toUpperCase()))
+  //           return false;
+  //         return message.text.isNotEmpty && message.text == incoming.text;
+  //       });
+  //     }
+
+  //     if (matchIndex != -1) {
+  //       final local = existing[matchIndex];
+  //       final replaced = List<ChatMessage>.from(existing);
+
+  //       // Preserve local metadata if the socket echo does not return it.
+  //       replaced[matchIndex] = incoming.copyWith(
+  //         fileName: incoming.fileName ?? local.fileName,
+  //         fileSize: incoming.fileSize ?? local.fileSize,
+  //         fileUrl: incoming.fileUrl ?? local.fileUrl,
+  //         imageUrl: incoming.imageUrl ?? local.imageUrl,
+  //         videoUrl: incoming.videoUrl ?? local.videoUrl,
+  //         audioUrl: incoming.audioUrl ?? local.audioUrl,
+  //       );
+
+  //       replaced.sort((a, b) => ChatMessage.compareByTime(b, a));
+  //       return replaced;
+  //     }
+  //   }
+
+  //   return _mergeMessages(existing, [incoming]);
+  // }
+
   List<ChatMessage> _mergeIncomingMessage(
     List<ChatMessage> existing,
     ChatMessage incoming,
   ) {
     if (incoming.isMine) {
-      final bool incomingIsImage =
-          (incoming.typemsg ?? '').trim().toUpperCase() == 'IMAGE';
+      final incomingType = (incoming.typemsg ?? '').trim().toUpperCase();
+
+      final isMedia = const {
+        'IMAGE',
+        'VIDEO',
+        'AUDIO',
+        'FILE',
+      }.contains(incomingType);
+
+      final isContact = incomingType == 'CONTACT';
+      final isLocation = incomingType == 'LOCATION';
 
       int matchIndex = -1;
 
-      if (incomingIsImage) {
-        // IMAGES: the server can re-host/normalize the URL, so the echoed
-        // imageUrl doesn't always string-match what we uploaded. Instead,
-        // match the OLDEST still-unconfirmed optimistic image bubble
-        // (local timestamp id) - echoes arrive in the same order the
-        // images were sent, so FIFO is a safe way to pair them up.
+      // ============================================================
+      // CONTACT
+      // ============================================================
+      if (isContact) {
+        final incomingName = (incoming.contactName ?? '').trim();
+        final incomingPhone = (incoming.contactPhoneNumber ?? '').trim();
+
+        for (int i = 0; i < existing.length; i++) {
+          final message = existing[i];
+
+          // Only match optimistic local message
+          if (!message.isMine) continue;
+          if (!_tempIdPattern.hasMatch(message.id)) continue;
+
+          final localType = (message.typemsg ?? '').trim().toUpperCase();
+
+          if (localType != 'CONTACT') continue;
+
+          final localName = (message.contactName ?? '').trim();
+
+          final localPhone = (message.contactPhoneNumber ?? '').trim();
+
+          if (localName == incomingName && localPhone == incomingPhone) {
+            matchIndex = i;
+            break;
+          }
+        }
+      }
+      // ============================================================
+      // LOCATION
+      // ============================================================
+      else if (isLocation) {
+        final incomingLatitude = incoming.latitude;
+        final incomingLongitude = incoming.longitude;
+        final incomingLabel = (incoming.locationLabel ?? '').trim();
+
+        for (int i = 0; i < existing.length; i++) {
+          final message = existing[i];
+
+          // Only match optimistic local message
+          if (!message.isMine) continue;
+          if (!_tempIdPattern.hasMatch(message.id)) continue;
+
+          final localType = (message.typemsg ?? '').trim().toUpperCase();
+
+          if (localType != 'LOCATION') continue;
+
+          final localLatitude = message.latitude;
+          final localLongitude = message.longitude;
+          final localLabel = (message.locationLabel ?? '').trim();
+
+          // Match coordinates first.
+          bool coordinatesMatch = false;
+
+          if (incomingLatitude != null &&
+              incomingLongitude != null &&
+              localLatitude != null &&
+              localLongitude != null) {
+            coordinatesMatch =
+                (localLatitude - incomingLatitude).abs() < 0.000001 &&
+                (localLongitude - incomingLongitude).abs() < 0.000001;
+          }
+
+          // Fallback to label if coordinates are unavailable.
+          final bool labelMatch =
+              incomingLabel.isNotEmpty &&
+              localLabel.isNotEmpty &&
+              incomingLabel == localLabel;
+
+          if (coordinatesMatch || labelMatch) {
+            matchIndex = i;
+            break;
+          }
+        }
+      }
+      // ============================================================
+      // IMAGE / VIDEO / AUDIO / FILE
+      // ============================================================
+      else if (isMedia) {
         DateTime? oldestTime;
 
         for (int i = 0; i < existing.length; i++) {
@@ -949,7 +1661,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             continue;
           }
 
-          if ((message.typemsg ?? '').trim().toUpperCase() != 'IMAGE') {
+          if ((message.typemsg ?? '').trim().toUpperCase() != incomingType) {
             continue;
           }
 
@@ -962,14 +1674,24 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             oldestTime = parsedTime ?? oldestTime;
           }
         }
-      } else {
-        // TEXT: exact content match against an unconfirmed local bubble.
+      }
+      // ============================================================
+      // TEXT / OTHER
+      // ============================================================
+      else {
         matchIndex = existing.indexWhere((message) {
           if (!message.isMine || !_tempIdPattern.hasMatch(message.id)) {
             return false;
           }
 
-          if ((message.typemsg ?? '').trim().toUpperCase() == 'IMAGE') {
+          if (const {
+            'IMAGE',
+            'VIDEO',
+            'AUDIO',
+            'FILE',
+            'CONTACT',
+            'LOCATION',
+          }.contains((message.typemsg ?? '').trim().toUpperCase())) {
             return false;
           }
 
@@ -977,14 +1699,58 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         });
       }
 
+      // ============================================================
+      // REPLACE OPTIMISTIC MESSAGE WITH SERVER MESSAGE
+      // ============================================================
       if (matchIndex != -1) {
+        final local = existing[matchIndex];
+
         final replaced = List<ChatMessage>.from(existing);
-        replaced[matchIndex] = incoming;
+
+        replaced[matchIndex] = incoming.copyWith(
+          // ========================================================
+          // Media metadata
+          // ========================================================
+          fileName: incoming.fileName ?? local.fileName,
+          fileSize: incoming.fileSize ?? local.fileSize,
+          fileUrl: incoming.fileUrl ?? local.fileUrl,
+          imageUrl: incoming.imageUrl ?? local.imageUrl,
+          videoUrl: incoming.videoUrl ?? local.videoUrl,
+          audioUrl: incoming.audioUrl ?? local.audioUrl,
+
+          // ========================================================
+          // CONTACT metadata
+          // ========================================================
+          contactName: incoming.contactName ?? local.contactName,
+          contactPhoneNumber:
+              incoming.contactPhoneNumber ?? local.contactPhoneNumber,
+
+          // ========================================================
+          // LOCATION metadata
+          // ========================================================
+          latitude: incoming.latitude ?? local.latitude,
+          longitude: incoming.longitude ?? local.longitude,
+          locationLabel: incoming.locationLabel ?? local.locationLabel,
+
+          // ========================================================
+          // Reply metadata
+          // ========================================================
+          replyToId: incoming.replyToId ?? local.replyToId,
+          replyText: incoming.replyText ?? local.replyText,
+          replyImageUrl: incoming.replyImageUrl ?? local.replyImageUrl,
+          replyFileUrl: incoming.replyFileUrl ?? local.replyFileUrl,
+          replyType: incoming.replyType ?? local.replyType,
+        );
+
         replaced.sort((a, b) => ChatMessage.compareByTime(b, a));
+
         return replaced;
       }
     }
 
+    // ============================================================
+    // NO OPTIMISTIC MESSAGE MATCHED
+    // ============================================================
     return _mergeMessages(existing, [incoming]);
   }
 
@@ -1034,6 +1800,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   // ============================================================
   // CURRENT TIME
   // ============================================================
+
+  @override
+  Future<void> close() {
+    socketService.offListener(
+      'conversation:update',
+      _onConversationUpdateSocket,
+    );
+    socketService.offListener('message:delivered', _onMessageDeliveredSocket);
+    socketService.offListener('message:read', _onMessageReadSocket);
+    socketService.offListener('message:receive', _onMessageReceiveSocket);
+    socketService.offListener('user:online', _onUserOnlineSocket);
+    socketService.offListener('user:offline', _onUserOfflineSocket);
+    return super.close();
+  }
 
   String _currentTime() {
     final now = DateTime.now();
