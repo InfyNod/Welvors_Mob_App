@@ -354,7 +354,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                           color: Colors.pink.shade400,
                         ),
                         const SizedBox(width: 6),
-                        Expanded(
+                        Flexible(
                           child: Text(
                             badgeText,
                             style: TextStyle(

@@ -335,7 +335,7 @@ class _TermsServiceScreenState extends State<TermsServiceScreen> {
                           color: Colors.pink.shade400,
                         ),
                         const SizedBox(width: 6),
-                        Expanded(
+                        Flexible(
                           child: Text(
                             badgeText,
                             style: TextStyle(
