@@ -146,7 +146,7 @@ class BasicDetailsSection extends StatelessWidget {
                           headerText: 'What\'s your gender?',
                           subHeaderText: 'You can select what appears on your profile.',
                           currentValue: state.gender,
-                          options: ['Woman', 'Man', 'Non binary', 'Prefer not to say', 'Everyone'],
+                          options: ['Woman', 'Man', 'Non binary', 'Prefer not to say'],
                         ),
                       ),
                     );

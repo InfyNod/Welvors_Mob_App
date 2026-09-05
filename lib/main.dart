@@ -65,7 +65,7 @@ import 'package:flutter/services.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Remove grey shadow from Android status bar and make it transparent with dark icons
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -103,9 +103,9 @@ class WelvorsApp extends StatelessWidget {
         initialRoute: initialRoute,
         builder: (context, child) {
           return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: const TextScaler.linear(1.0),
-            ),
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(1.0)),
             child: child!,
           );
         },
@@ -113,7 +113,8 @@ class WelvorsApp extends StatelessWidget {
           '/splash': (context) => const SplashScreen(),
           '/home': (context) => const TopAndBottomNavScreen(),
           '/landing': (context) => const LandingScreen(),
-          '/TrustVerificationScreen': (context) => const TrustVerificationScreen(),
+          '/TrustVerificationScreen': (context) =>
+              const TrustVerificationScreen(),
         },
       ),
     );

@@ -11,8 +11,6 @@ class WhoYouAreSeeingSection extends StatelessWidget {
     'Men',
     'Women',
     'Non binary',
-    'Prefer not to say',
-    'Everyone',
   ];
 
   final List<String> _sexualOrientationOptions = const [

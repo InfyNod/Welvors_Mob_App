@@ -63,8 +63,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
             _selectedPreference = 'Man';
           } else if (pref == 'WOMEN') {
             _selectedPreference = 'Women';
-          } else if (pref == 'EVERYONE') {
-            _selectedPreference = 'Everyone';
+          } else if (pref == 'NON_BINARY') {
+            _selectedPreference = 'Non-binary';
           } else {
             _selectedPreference = pref;
           }
@@ -360,22 +360,25 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                 ),
 
                 _buildCard(
-                  title: 'Everyone',
-                  subtitle: 'Show me everyone',
+                  title: 'Non-binary',
+                  subtitle: 'Show me non-binary people',
                   icon: Icons.transgender,
                   iconColor: AppColors.gold,
                   iconBg: AppColors.gold.withOpacity(0.15),
-                  isSelected: _selectedPreference == 'Everyone',
+                  isSelected: _selectedPreference == 'Non-binary',
                   onTap: () {
                     setState(() {
-                      if (_selectedPreference == 'Everyone') {
+                      if (_selectedPreference == 'Non-binary') {
                         _selectedPreference = null;
                       } else {
-                        _selectedPreference = 'Everyone';
+                        _selectedPreference = 'Non-binary';
                         _selectedSubPreferences.clear();
                       }
                     });
                   },
+                  expandedContent: _buildOrientationOptions(
+                    helperText: 'Leave blank to see all non-binary people.',
+                  ),
                 ),
               ],
             ),
@@ -394,10 +397,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                 ? () async {
                     setState(() => _isLoading = true);
 
-                    userData.interestedIn = _selectedPreference ?? 'Everyone';
+                    userData.interestedIn = _selectedPreference ?? 'Non-binary';
 
-                    // Backend Prisma schema expects the Gender enum, usually uppercase like 'WOMEN', 'MEN', 'EVERYONE'
-                    String interestedInValue = 'EVERYONE';
+                    // Backend Prisma schema expects the Gender enum, usually uppercase like 'WOMEN', 'MEN', 'NON_BINARY'
+                    String interestedInValue = 'NON_BINARY';
                     if (_selectedPreference == 'Man') interestedInValue = 'MEN';
                     if (_selectedPreference == 'Women')
                       interestedInValue = 'WOMEN';

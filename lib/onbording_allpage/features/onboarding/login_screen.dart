@@ -454,7 +454,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             GestureDetector(
                               behavior: HitTestBehavior.opaque,
                               onTap: () {
-                                _otpFocusNode.requestFocus();
+                                if (!_otpFocusNode.hasFocus) {
+                                  FocusScope.of(context).requestFocus(_otpFocusNode);
+                                } else {
+                                  SystemChannels.textInput.invokeMethod('TextInput.show');
+                                }
                               },
                               child: Container(
                                 height: 56,
