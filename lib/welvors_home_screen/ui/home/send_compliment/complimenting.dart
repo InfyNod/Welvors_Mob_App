@@ -1665,12 +1665,16 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 8),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: isSelected ? primaryPink : Colors.black87,
+          Flexible(
+            child: Text(
+              text,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: isSelected ? primaryPink : Colors.black87,
+              ),
             ),
           ),
           if (isSelected) ...[
