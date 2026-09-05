@@ -129,7 +129,11 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.auto_awesome_rounded, size: 14, color: _primaryColor),
+                    Icon(
+                      Icons.auto_awesome_rounded,
+                      size: 14,
+                      color: _primaryColor,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'COMPLIMENTING',
@@ -155,7 +159,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                           ),
                           child: CircleAvatar(
                             radius: 18,
-                            backgroundImage: NetworkImage(widget.profileImageUrl!),
+                            backgroundImage: NetworkImage(
+                              widget.profileImageUrl!,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -252,10 +258,11 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       // 'Try' Button
                       GestureDetector(
                         onTap: () async {
-                          final selectedCompliment = await ComplimentIdeasScreen.show(
-                            context,
-                            initialText: _textController.text,
-                          );
+                          final selectedCompliment =
+                              await ComplimentIdeasScreen.show(
+                                context,
+                                initialText: _textController.text,
+                              );
                           if (selectedCompliment != null) {
                             setState(() {
                               _textController.text = selectedCompliment;
@@ -355,34 +362,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 // Bottom Actions
                 Row(
                   children: [
-                    // Like Button
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: _primaryColor.withOpacity(0.3),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.favorite, color: _primaryColor, size: 20),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Like',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              color: _primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
+
                     // Send Button
                     Expanded(
                       child: GestureDetector(
