@@ -165,12 +165,15 @@ class _CommunityGuidelinesScreenState extends State<CommunityGuidelinesScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0, right: 12.0),
-                          child: Icon(
-                            Icons.check_circle_rounded,
-                            size: 16,
-                            color: const Color(0xFFE43A6A).withOpacity(0.8),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 0.0, right: 8.0),
+                          child: Text(
+                            "•",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black87,
+                              height: 1.2,
+                            ),
                           ),
                         ),
                         Expanded(child: _buildRichText(itemContent)),
