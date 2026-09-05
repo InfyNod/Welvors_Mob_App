@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'ticket_screen.dart';
 import 'view_details/event_details.dart';
 import 'cancel/cancel_drawer.dart';
+import 'cancel/track_refund_status.dart';
 import 'service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
@@ -759,7 +760,12 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     if (isCancelled)
                       GestureDetector(
                         onTap: () {
-                          // TODO: Add tracking logic later
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TrackRefundScreen(),
+                            ),
+                          );
                         },
                         child: Container(
                           margin: const EdgeInsets.only(left: 8),

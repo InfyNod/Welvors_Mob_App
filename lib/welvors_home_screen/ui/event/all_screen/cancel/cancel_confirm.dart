@@ -447,21 +447,54 @@ class CancelConfirmScreen extends StatelessWidget {
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'FREQUENTLY ASKED QUESTIONS',
+                        'FREQUENTLY ASKED',
                         style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                          letterSpacing: 0.8,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black54,
+                          letterSpacing: 1.2,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildFaqItem('What is the 3-day refund window?'),
-                    const SizedBox(height: 12),
-                    _buildFaqItem('How is the refund calculated?'),
-                    const SizedBox(height: 12),
-                    _buildFaqItem('What happens to my spot?'),
+                    const SizedBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.10),
+                            blurRadius: 20,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 8),
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          const _CancelFaqItem(
+                            question: 'What is the 3-day refund window?',
+                            answer: 'Refunds are automatically calculated based on the host\'s policy. Cancellations made 3+ days before the event receive a full refund.',
+                          ),
+                          _buildFaqDivider(),
+                          const _CancelFaqItem(
+                            question: 'How is the refund calculated?',
+                            answer: 'Refunds are processed to the original payment method within 5-7 business days.',
+                          ),
+                          _buildFaqDivider(),
+                          const _CancelFaqItem(
+                            question: 'What happens to my spot?',
+                            answer: 'Your spot will be released and made available to other users.',
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 0),
                   ],
                 ],
@@ -600,51 +633,96 @@ class CancelConfirmScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFaqItem(String title) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12, // Reduced vertical padding for smaller height
-            ),
-            child: Row(
+  Widget _buildFaqDivider() {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: Colors.grey.shade100,
+      indent: 16,
+      endIndent: 16,
+    );
+  }
+}
+
+class _CancelFaqItem extends StatefulWidget {
+  final String question;
+  final String answer;
+
+  const _CancelFaqItem({
+    required this.question,
+    required this.answer,
+  });
+
+  @override
+  State<_CancelFaqItem> createState() => _CancelFaqItemState();
+}
+
+class _CancelFaqItemState extends State<_CancelFaqItem> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
+      },
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
-                    title,
+                    widget.question,
                     style: const TextStyle(
                       fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       color: Colors.black87,
                     ),
                   ),
                 ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.grey,
-                  size: 20,
+                const SizedBox(width: 16),
+                AnimatedRotation(
+                  turns: _isExpanded ? 0.125 : 0,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  child: Icon(
+                    Icons.add,
+                    color: _isExpanded ? Colors.pink.shade300 : Colors.grey.shade400,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
-          ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: double.infinity,
+                child: _isExpanded
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          widget.answer,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            height: 1.5,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ),
+          ],
         ),
       ),
     );
