@@ -732,11 +732,16 @@ class _EditDobScreenState extends State<EditDobScreen> {
 
                 GestureDetector(
                   onTap: () async {
+                    final now = DateTime.now();
+                    final eighteenYearsAgo = DateTime(now.year - 18, now.month, now.day);
+                    
                     final picked = await showDatePicker(
                       context: context,
-                      initialDate: _selectedDate ?? DateTime(2000),
+                      initialDate: _selectedDate != null && _selectedDate!.isBefore(eighteenYearsAgo)
+                          ? _selectedDate!
+                          : eighteenYearsAgo,
                       firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
+                      lastDate: eighteenYearsAgo,
                       builder: (context, child) {
                         return Theme(
                           data: Theme.of(context).copyWith(
