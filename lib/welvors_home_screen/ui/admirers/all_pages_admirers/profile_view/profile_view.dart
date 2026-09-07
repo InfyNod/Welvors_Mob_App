@@ -14,7 +14,8 @@ class AdmirerProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Real backend MongoDB ObjectIDs are used
-    final String userIdStr = userCard['userId']?.toString() ?? userCard['id'].toString();
+    final String userIdStr =
+        userCard['userId']?.toString() ?? userCard['id'].toString();
 
     return ProfileDetailScreen(
       userId: userIdStr,
@@ -62,17 +63,16 @@ class AdmirerProfileView extends StatelessWidget {
                 Navigator.pop(context); // Go back after action
               },
             ),
-            
+
             const SizedBox(width: 32), // Spacing between buttons
-            
             // Like Button
             _PremiumActionButton(
               icon: Icons.favorite_rounded,
               iconColor: Colors.white,
               backgroundColor: const Color(0xFFE43A6A), // Premium Pink
               shadowColor: const Color(0xFFE43A6A).withOpacity(0.4),
-              iconSize: 28,
-              padding: 18,
+              iconSize: 26,
+              padding: 16,
               onTap: () {
                 onAction(userCard['id'], 'Liked back 💖');
                 Navigator.pop(context); // Go back after action
@@ -122,9 +122,10 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.85).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.85,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
