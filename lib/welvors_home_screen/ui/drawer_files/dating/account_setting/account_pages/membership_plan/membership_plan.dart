@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'invoice_drawer.dart';
 
 class MembershipPlanScreen extends StatelessWidget {
   const MembershipPlanScreen({super.key});
@@ -181,7 +182,7 @@ class MembershipPlanScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildHistoryItem(
+                    _buildHistoryItem(context: context, 
                       emoji: '💎',
                       bgColor: const Color(0xFFE6F0FA),
                       title: 'VIP · 3 months',
@@ -196,7 +197,7 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(
+                    _buildHistoryItem(context: context, 
                       emoji: '⭐',
                       bgColor: const Color(0xFFFFF7E6),
                       title: 'Premium+ · 6 months',
@@ -211,7 +212,7 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(
+                    _buildHistoryItem(context: context, 
                       emoji: '⭐',
                       bgColor: const Color(0xFFFFF7E6),
                       title: 'Premium+ · 1 month',
@@ -226,7 +227,7 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(
+                    _buildHistoryItem(context: context, 
                       emoji: '💎',
                       bgColor: const Color(0xFFE6F0FA),
                       title: 'VIP · 1 month',
@@ -241,7 +242,7 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(
+                    _buildHistoryItem(context: context, 
                       emoji: '⭐',
                       bgColor: const Color(0xFFFFF7E6),
                       title: 'Premium+ · 1 month',
@@ -377,6 +378,7 @@ class MembershipPlanScreen extends StatelessWidget {
   }
 
   Widget _buildHistoryItem({
+    required BuildContext context,
     required String emoji,
     required Color bgColor,
     required String title,
@@ -455,12 +457,21 @@ class MembershipPlanScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               InkWell(
-                onTap: () {},
-                borderRadius: BorderRadius.circular(4),
-                child: Padding(
+                onTap: () {
+                  showInvoiceBottomSheet(context);
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFFE43A6A).withOpacity(0.4),
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    color: const Color(0xFFE43A6A).withOpacity(0.05),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -470,7 +481,7 @@ class MembershipPlanScreen extends StatelessWidget {
                         size: 14,
                         color: Color(0xFFE43A6A),
                       ),
-                      const SizedBox(width: 2),
+                      const SizedBox(width: 4),
                       Text(
                         'Invoice',
                         style: TextStyle(
