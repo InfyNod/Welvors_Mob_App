@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 
-class BankUpiScreen extends StatelessWidget {
+class BankUpiScreen extends StatefulWidget {
   const BankUpiScreen({super.key});
+
+  @override
+  State<BankUpiScreen> createState() => _BankUpiScreenState();
+}
+
+class _BankUpiScreenState extends State<BankUpiScreen> {
+  List<Map<String, dynamic>> upiIds = [
+    {'id': '1', 'title': 'tanishka@oksbi', 'isPrimary': true},
+    {'id': '2', 'title': '9876543210@ybl', 'isPrimary': false},
+  ];
+  
+  bool showBankAccount = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F7F2), // Light beige background
+      backgroundColor: const Color.fromARGB(
+        255,
+        255,
+        255,
+        255,
+      ), // Light beige background
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF9F7F2),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: Padding(
@@ -108,7 +125,7 @@ class BankUpiScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // BANK ACCOUNTS Section
             const Text(
               'BANK ACCOUNTS',
@@ -120,27 +137,33 @@ class BankUpiScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _buildAccountCard(
-              emoji: '🏦',
-              iconBgColor: const Color(0xFFE8F6EF),
-              title: 'HDFC Bank',
-              subtitle: 'Tanishka Sharma · 50100•••••4821',
-              isPrimary: true,
-              buttons: [
-                _buildActionBtn('Edit', false),
-                _buildActionBtn('Remove', true),
-              ],
-            ),
-            const SizedBox(height: 12),
+            if (showBankAccount)
+              _buildAccountCard(
+                emoji: '🏦',
+                iconBgColor: const Color(0xFFE8F6EF),
+                title: 'HDFC Bank',
+                subtitle: 'Tanishka Sharma · 50100•••••4821',
+                isPrimary: true,
+                buttons: [
+                  _buildActionBtn('Edit', false, () {}),
+                  _buildActionBtn('Remove', true, () {
+                    setState(() {
+                      showBankAccount = false;
+                    });
+                  }),
+                ],
+              ),
+            if (showBankAccount)
+              const SizedBox(height: 12),
             GestureDetector(
               onTap: () {
                 showAddBankAccountBottomSheet(context);
               },
               child: _buildAddButton('+ Add bank account'),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // UPI IDS Section
             const Text(
               'UPI IDS',
@@ -152,33 +175,45 @@ class BankUpiScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _buildAccountCard(
-              emoji: '📲',
-              iconBgColor: const Color(0xFFEFEAF9), // Light purple
-              title: 'tanishka@oksbi',
-              subtitle: 'UPI ID',
-              isPrimary: true,
-              buttons: [
-                _buildActionBtn('Edit', false),
-                _buildActionBtn('Remove', true),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildAccountCard(
-              emoji: '📲',
-              iconBgColor: const Color(0xFFEFEAF9),
-              title: '9876543210@ybl',
-              subtitle: 'UPI ID',
-              isPrimary: false,
-              buttons: [
-                _buildActionBtn('Set primary', false),
-                _buildActionBtn('Edit', false),
-                _buildActionBtn('Remove', true),
-              ],
-            ),
+            ...upiIds.map((upi) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: _buildAccountCard(
+                  emoji: '📲',
+                  iconBgColor: const Color(0xFFEFEAF9),
+                  title: upi['title'],
+                  subtitle: 'UPI ID',
+                  isPrimary: upi['isPrimary'],
+                  buttons: [
+                    if (!upi['isPrimary'])
+                      _buildActionBtn('Set primary', false, () {
+                        setState(() {
+                          for (var u in upiIds) {
+                            u['isPrimary'] = false;
+                          }
+                          upi['isPrimary'] = true;
+                          upiIds.sort(
+                            (a, b) => (b['isPrimary'] ? 1 : 0).compareTo(
+                              a['isPrimary'] ? 1 : 0,
+                            ),
+                          );
+                        });
+                      }),
+                    _buildActionBtn('Edit', false, () {
+                      showEditUpiBottomSheet(context, upi['title']);
+                    }),
+                    _buildActionBtn('Remove', true, () {
+                      setState(() {
+                        upiIds.remove(upi);
+                      });
+                    }),
+                  ],
+                ),
+              );
+            }),
             const SizedBox(height: 12),
             _buildAddButton('+ Add UPI ID'),
-            
+
             const SizedBox(height: 32),
             // Footer text
             Text(
@@ -210,7 +245,9 @@ class BankUpiScreen extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isPrimary ? const Color(0xFFFA6A85).withOpacity(0.5) : Colors.transparent,
+          color: isPrimary
+              ? const Color(0xFFFA6A85).withOpacity(0.5)
+              : Colors.transparent,
           width: 1.5,
         ),
         boxShadow: [
@@ -264,7 +301,10 @@ class BankUpiScreen extends StatelessWidget {
                 ),
                 if (isPrimary)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFDF0F3),
                       borderRadius: BorderRadius.circular(6),
@@ -303,21 +343,24 @@ class BankUpiScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionBtn(String text, bool isDestructive) {
-    return Container(
-      height: 36,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: isDestructive ? const Color(0xFFE43A6A) : Colors.black87,
+  Widget _buildActionBtn(String text, bool isDestructive, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: isDestructive ? const Color(0xFFE43A6A) : Colors.black87,
+          ),
         ),
       ),
     );
@@ -461,7 +504,7 @@ void showAddBankAccountBottomSheet(BuildContext context) {
   );
 }
 
-Widget _buildInputField(String label, String hint) {
+Widget _buildInputField(String label, String hint, [String? initialValue]) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -474,11 +517,15 @@ Widget _buildInputField(String label, String hint) {
         ),
       ),
       const SizedBox(height: 8),
-      TextField(
+      TextFormField(
+        initialValue: initialValue,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: Colors.grey.shade300),
@@ -494,5 +541,110 @@ Widget _buildInputField(String label, String hint) {
         ),
       ),
     ],
+  );
+}
+
+void showEditUpiBottomSheet(BuildContext context, String currentUpi) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 24,
+            right: 24,
+            bottom: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const Text(
+                'Edit UPI ID',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildInputField('UPI ID (VPA)', '', currentUpi),
+              const SizedBox(height: 8),
+              Text(
+                'Example: yourname@oksbi, 98765xxxxx@ybl',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE43A6A),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Save changes',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
   );
 }
