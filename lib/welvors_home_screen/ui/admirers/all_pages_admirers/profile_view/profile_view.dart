@@ -30,12 +30,12 @@ class AdmirerProfileView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             offset: const Offset(0, -10),
-            blurRadius: 20,
+            blurRadius: 10,
           ),
           BoxShadow(
             color: Colors.black.withOpacity(0.02),
