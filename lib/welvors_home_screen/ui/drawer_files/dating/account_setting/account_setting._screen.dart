@@ -511,7 +511,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
-                      color: isDanger ? const Color(0xFFE43A6A) : Colors.black87,
+                      color: isDanger
+                          ? const Color(0xFFE43A6A)
+                          : Colors.black87,
                     ),
                   ),
                   if (subtitle != null) ...[
