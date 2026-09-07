@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
-void showCancelAutoRenewBottomSheet(BuildContext context) {
+void showCancelAutoRenewBottomSheet(BuildContext context, VoidCallback onCancelled) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return const _CancelAutoRenewSheet();
+      return _CancelAutoRenewSheet(onCancelled: onCancelled);
     },
   );
 }
 
 class _CancelAutoRenewSheet extends StatefulWidget {
-  const _CancelAutoRenewSheet();
+  final VoidCallback onCancelled;
+  const _CancelAutoRenewSheet({super.key, required this.onCancelled});
 
   @override
   State<_CancelAutoRenewSheet> createState() => _CancelAutoRenewSheetState();
@@ -133,7 +134,7 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
                 onPressed: _selectedReason != null
                     ? () {
                         Navigator.pop(context);
-                        showCancelWarningBottomSheet(context);
+                        showCancelWarningBottomSheet(context, _selectedReason!, widget.onCancelled);
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
@@ -185,19 +186,21 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
   }
 }
 
-void showCancelWarningBottomSheet(BuildContext context) {
+void showCancelWarningBottomSheet(BuildContext context, String reason, VoidCallback onCancelled) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return const _CancelWarningSheet();
+      return _CancelWarningSheet(reason: reason, onCancelled: onCancelled);
     },
   );
 }
 
 class _CancelWarningSheet extends StatelessWidget {
-  const _CancelWarningSheet();
+  final String reason;
+  final VoidCallback onCancelled;
+  const _CancelWarningSheet({super.key, required this.reason, required this.onCancelled});
 
   @override
   Widget build(BuildContext context) {
@@ -344,8 +347,8 @@ class _CancelWarningSheet extends StatelessWidget {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                   // Handle final cancel
                    Navigator.pop(context);
+                   showCancelConfirmationBottomSheet(context, reason, onCancelled);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDF5A5A), // Softer Red
@@ -405,6 +408,173 @@ class _CancelWarningSheet extends StatelessWidget {
             fontSize: 13,
             color: Colors.grey.shade700,
             fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+void showCancelConfirmationBottomSheet(BuildContext context, String reason, VoidCallback onCancelled) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return _CancelConfirmationSheet(reason: reason, onCancelled: onCancelled);
+    },
+  );
+}
+
+class _CancelConfirmationSheet extends StatelessWidget {
+  final String reason;
+  final VoidCallback onCancelled;
+  const _CancelConfirmationSheet({super.key, required this.reason, required this.onCancelled});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: const EdgeInsets.only(top: 12, left: 24, right: 24, bottom: 32),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag Handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Icon
+            Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                color: Color(0xFFE8F6EF), // Light green
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: const Icon(Icons.check, color: Colors.black87, size: 28),
+            ),
+            const SizedBox(height: 16),
+            // Title
+            const Text(
+              'Auto-renew cancelled',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            // Subtitle
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey.shade600,
+                    height: 1.4,
+                  ),
+                  children: const [
+                    TextSpan(text: 'Your VIP stays active until '),
+                    TextSpan(text: '12 Aug 2026', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                    TextSpan(text: '. After that your account moves to Free — nothing is charged again.'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Details Container
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF2EFE9), // Beige
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: _buildDetailCol('REASON NOTED', reason)),
+                      Expanded(child: _buildDetailCol('ACCESS UNTIL', '12 Aug 2026')),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(child: _buildDetailCol('NEXT CHARGE', 'None')),
+                      Expanded(child: _buildDetailCol('REFUND', 'Not applicable')),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Done Button
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () {
+                   Navigator.pop(context);
+                   onCancelled();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE43A6A),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: const Text(
+                  'Done',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailCol(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: Colors.black45,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
         ),
       ],

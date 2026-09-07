@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'invoice_drawer.dart';
 import 'cancel_auto_renew.dart';
 
-class MembershipPlanScreen extends StatelessWidget {
+class MembershipPlanScreen extends StatefulWidget {
   const MembershipPlanScreen({super.key});
+
+  @override
+  State<MembershipPlanScreen> createState() => _MembershipPlanScreenState();
+}
+
+class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
+  bool isAutoRenewCancelled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +99,7 @@ class MembershipPlanScreen extends StatelessWidget {
                     _buildInfoRow(
                       emoji: '📅',
                       bgColor: const Color(0xFFEEF2F6),
-                      title: 'Renews on',
+                      title: isAutoRenewCancelled ? 'Access until' : 'Renews on',
                       subtitle: '12 Aug 2026',
                     ),
                     const Divider(height: 1, color: Color(0xFFF0F0F0)),
@@ -130,30 +137,94 @@ class MembershipPlanScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton(
-                  onPressed: () {
-                    showCancelAutoRenewBottomSheet(context);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+              if (isAutoRenewCancelled)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFDF5), // Light beige
+                    border: Border.all(color: const Color(0xFFF2D1A3)), // Soft brown/orange
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Text(
-                    'Cancel auto-renew',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Auto-renew is off',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF8B5E34), // Brown text
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Your VIP benefits stay active until 12 Aug 2026, then your account moves to Free.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 44,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            setState(() {
+                              isAutoRenewCancelled = false;
+                            });
+                          },
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            side: const BorderSide(color: Color(0xFFDCA76F)), // Orange-brown border
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Turn auto-renew back on',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB07D46), // Or brownish
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      showCancelAutoRenewBottomSheet(context, () {
+                        setState(() {
+                          isAutoRenewCancelled = true;
+                        });
+                      });
+                    },
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Cancel auto-renew',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                 ),
-              ),
               const SizedBox(height: 32),
               // Plan History Title
               const Text(
