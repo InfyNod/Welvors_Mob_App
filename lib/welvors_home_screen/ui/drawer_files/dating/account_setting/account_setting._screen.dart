@@ -8,6 +8,7 @@ import 'account_pages/personal_info.dart';
 import 'account_pages/membership_plan/membership_plan.dart';
 import 'account_pages/bank_upi.dart';
 import 'account_pages/privacy_controls/privacy_controls_screen.dart';
+import 'account_pages/push_notification.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 
 class AccountSettingScreen extends StatefulWidget {
@@ -290,6 +291,14 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 iconBgColor: const Color(0xFFFDF6E3),
                 title: 'Push Notifications',
                 subtitle: 'Matches, messages, likes',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PushNotificationScreen(),
+                    ),
+                  );
+                },
               ),
               const Divider(
                 height: 1,
