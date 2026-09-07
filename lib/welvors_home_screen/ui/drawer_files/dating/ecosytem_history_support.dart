@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../date_now/date_api_service/date_now_api_service.dart';
 import 'logout/logout_screen.dart';
+import 'account_setting/account_setting._screen.dart';
 
 class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
@@ -255,6 +256,14 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 iconBgColor: const Color(0xFFE3F2FD), // Light blue
                 title: 'Account Settings',
                 subtitle: 'Privacy, Notifications, Security',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AccountSettingScreen(),
+                    ),
+                  );
+                },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
               _buildSimpleTile(
