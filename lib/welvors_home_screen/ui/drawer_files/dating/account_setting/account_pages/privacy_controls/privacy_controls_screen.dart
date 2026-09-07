@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'who_message.dart';
 
 class PrivacyControlsScreen extends StatefulWidget {
   const PrivacyControlsScreen({super.key});
@@ -80,7 +81,14 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                     color: Colors.grey.shade400,
                     size: 18,
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WhoMessageScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildDivider(),
                 _buildListItem(
