@@ -75,24 +75,10 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                   emoji: '💬',
                   iconBgColor: const Color(0xFFE8F1FC),
                   title: 'Who can message me',
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Matches only',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.chevron_right,
-                        color: Colors.grey.shade400,
-                        size: 18,
-                      ),
-                    ],
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: Colors.grey.shade400,
+                    size: 18,
                   ),
                   onTap: () {},
                 ),
@@ -242,9 +228,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
     Widget content = Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
-        crossAxisAlignment: subtitle != null
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 40,
@@ -262,7 +246,6 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (subtitle == null) const SizedBox(height: 8),
                 Text(
                   title,
                   style: const TextStyle(
