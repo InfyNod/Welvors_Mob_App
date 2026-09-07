@@ -5,6 +5,7 @@ import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import 'reveal_drawer.dart';
+import '../profile_view/profile_view.dart';
 
 class ReceivedLikesScreen extends StatefulWidget {
   const ReceivedLikesScreen({super.key});
@@ -211,6 +212,17 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
               ? Color(card['badgeTextColor'])
               : null,
           isBlurred: card['isBlurred'],
+          onTapProfile: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdmirerProfileView(
+                  userCard: card,
+                  onAction: _handleAction,
+                ),
+              ),
+            );
+          },
           onRevealAction: () {
             setState(() {
               card['isBlurred'] = false;
@@ -317,6 +329,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
     Color? badgeTextColor,
     required bool isBlurred,
     VoidCallback? onRevealAction,
+    VoidCallback? onTapProfile,
   }) {
     return GestureDetector(
       onTap: () {
@@ -330,6 +343,10 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
               }
             },
           );
+        } else {
+          if (onTapProfile != null) {
+            onTapProfile();
+          }
         }
       },
       child: ClipRRect(

@@ -56,6 +56,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
               item['interactionId'] ??
               user['id'] ??
               DateTime.now().millisecondsSinceEpoch,
+          'userId': user['id'] ?? item['interactionId'] ?? DateTime.now().millisecondsSinceEpoch,
           'name': user['name'] ?? 'Unknown',
           'age': (user['age'] ?? '25').toString(),
           'matchPercent': '${user['matchScore'] ?? 85}%',
@@ -83,6 +84,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
               item['interactionId'] ??
               user['id'] ??
               DateTime.now().millisecondsSinceEpoch,
+          'userId': user['id'] ?? item['interactionId'] ?? DateTime.now().millisecondsSinceEpoch,
           'name': user['name'] ?? 'Unknown',
           'age': (user['age'] ?? '25').toString(),
           'timeInfo':
@@ -105,6 +107,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
               item['interactionId'] ??
               user['id'] ??
               DateTime.now().millisecondsSinceEpoch,
+          'userId': user['id'] ?? item['interactionId'] ?? DateTime.now().millisecondsSinceEpoch,
           'name': user['name'] ?? 'Unknown',
           'age': (user['age'] ?? '25').toString(),
           'distance': '${user['distanceKm'] ?? 5} km',
@@ -129,6 +132,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
               item['interactionId'] ??
               user['id'] ??
               DateTime.now().millisecondsSinceEpoch,
+          'userId': user['id'] ?? item['interactionId'] ?? DateTime.now().millisecondsSinceEpoch,
           'name': user['name'] ?? 'Unknown',
           'age': (user['age'] ?? '25').toString(),
           'timeInfo':
@@ -184,6 +188,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
     return [
       {
         'id': 0,
+        'userId': 0,
         'name': 'Marcus',
         'age': '29',
         'matchPercent': '75%',
@@ -197,6 +202,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
       },
       {
         'id': 1,
+        'userId': 1,
         'name': 'Jordan',
         'age': '27',
         'matchPercent': '88%',
@@ -210,6 +216,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
       },
       {
         'id': 2,
+        'userId': 2,
         'name': 'Sarah',
         'age': '25',
         'matchPercent': '92%',
@@ -223,6 +230,7 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
       },
       {
         'id': 3,
+        'userId': 3,
         'name': 'Emily',
         'age': '23',
         'matchPercent': '81%',
