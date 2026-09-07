@@ -93,7 +93,7 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
             ..._reasons.map((reason) {
               final isSelected = _selectedReason == reason;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: InkWell(
                   onTap: () {
                     setState(() {
@@ -103,7 +103,7 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
                       color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.05) : Colors.white,
                       border: Border.all(
