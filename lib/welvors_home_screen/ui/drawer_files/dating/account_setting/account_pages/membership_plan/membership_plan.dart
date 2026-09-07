@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'invoice_drawer.dart';
+import 'cancel_auto_renew.dart';
 
 class MembershipPlanScreen extends StatelessWidget {
   const MembershipPlanScreen({super.key});
@@ -133,7 +134,9 @@ class MembershipPlanScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showCancelAutoRenewBottomSheet(context);
+                  },
                   style: OutlinedButton.styleFrom(
                     backgroundColor: Colors.white,
                     side: BorderSide(color: Colors.grey.shade300),
