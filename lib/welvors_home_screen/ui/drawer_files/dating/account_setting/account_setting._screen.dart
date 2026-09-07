@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../edit_profile/bloc/profile_edit_cubit.dart';
+import '../edit_profile/bloc/profile_edit_state.dart';
+import 'account_pages/personal_info.dart';
+import 'account_pages/membership_plan/membership_plan.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 
 class AccountSettingScreen extends StatefulWidget {
@@ -37,23 +41,46 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F5),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Navigator.pop(context),
+        scrolledUnderElevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black,
+                size: 16,
+              ),
+            ),
+          ),
         ),
         title: const Text(
           'Account Settings',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.black87,
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
+        centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -61,20 +88,44 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           // Profile Card
           BlocBuilder<ProfileEditCubit, ProfileEditState>(
             builder: (context, state) {
-              final name = state.fullName.isNotEmpty ? state.fullName : 'Welvors User';
+              final name = state.fullName.isNotEmpty
+                  ? state.fullName
+                  : 'Welvors User';
               final age = _calculateAge(state.dob);
-              final email = state.email.isNotEmpty ? state.email : 'user@gmail.com';
-              
+              final email = state.email.isNotEmpty
+                  ? state.email
+                  : 'user@gmail.com';
+
+              final firstPhoto = state.photos.isNotEmpty
+                  ? state.photos.first
+                  : null;
+              final hasPhoto = firstPhoto != null && !firstPhoto.isEmpty;
+              ImageProvider? imageProvider;
+              if (hasPhoto) {
+                if (firstPhoto.isNetwork) {
+                  imageProvider = NetworkImage(firstPhoto.url!);
+                } else if (firstPhoto.isLocal) {
+                  imageProvider = FileImage(File(firstPhoto.localFile!.path));
+                }
+              }
+
               return Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 16,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -83,13 +134,21 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                     Container(
                       width: 60,
                       height: 60,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Color(0xFFE4A99B), Color(0xFFA66657)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                        gradient: hasPhoto
+                            ? null
+                            : const LinearGradient(
+                                colors: [Color(0xFFE4A99B), Color(0xFFA66657)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                        image: hasPhoto && imageProvider != null
+                            ? DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -115,7 +174,10 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                           ),
                           const SizedBox(height: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFE8F6EF),
                               borderRadius: BorderRadius.circular(10),
@@ -135,7 +197,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   ],
                 ),
               );
-            }
+            },
           ),
           const SizedBox(height: 24),
           _buildSectionTitle('ACCOUNT'),
@@ -146,13 +208,34 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 iconBgColor: const Color(0xFFE6F0FA),
                 title: 'Personal Information',
                 subtitle: 'Name, email, phone, date of birth',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PersonalInfoScreen(),
+                    ),
+                  );
+                },
               ),
-              const Divider(height: 1, indent: 60, endIndent: 20, color: Color(0xFFF0F0F0)),
+              const Divider(
+                height: 1,
+                indent: 60,
+                endIndent: 20,
+                color: Color(0xFFF0F0F0),
+              ),
               _buildListItem(
                 iconWidget: const Text('💎', style: TextStyle(fontSize: 18)),
                 iconBgColor: const Color(0xFFE6F9FA),
                 title: 'Membership Plan',
                 subtitle: 'VIP • renews 12 Aug 2026',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MembershipPlanScreen(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -190,7 +273,12 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 title: 'Push Notifications',
                 subtitle: 'Matches, messages, likes',
               ),
-              const Divider(height: 1, indent: 60, endIndent: 20, color: Color(0xFFF0F0F0)),
+              const Divider(
+                height: 1,
+                indent: 60,
+                endIndent: 20,
+                color: Color(0xFFF0F0F0),
+              ),
               _buildListItem(
                 iconWidget: const Text('✉️', style: TextStyle(fontSize: 18)),
                 iconBgColor: const Color(0xFFEEF2F6),
@@ -208,17 +296,142 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           _buildCard(
             children: [
               _buildListItem(
-                iconWidget: const Icon(Icons.delete_outline, color: Color(0xFFE43A6A)),
-                iconBgColor: const Color(0xFFFDF0F3),
+                iconWidget: const Text('⏸️', style: TextStyle(fontSize: 18)),
+                iconBgColor: const Color(0xFFFFF3E0), // Light Orange
+                title: 'Pause Account',
+                subtitle: 'Hide your profile temporarily',
+                onTap: () => _showPauseAccountSheet(context),
+              ),
+              const Divider(
+                height: 1,
+                indent: 60,
+                endIndent: 20,
+                color: Color(0xFFF0F0F0),
+              ),
+              _buildListItem(
+                iconWidget: const Icon(
+                  Icons.delete_outline,
+                  color: Color(0xFFE43A6A),
+                ),
+                iconBgColor: const Color(0xFFFDF0F3), // Light Red
                 title: 'Delete Account',
-                subtitle: 'Permanently remove your account and data',
+                subtitle: 'Permanently erase everything',
                 isDanger: true,
               ),
             ],
           ),
+          const SizedBox(height: 32),
+          // Footer Text
+          Center(
+            child: Text(
+              'Welvors v3.2.1 • Terms • Privacy Policy',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade500,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           const SizedBox(height: 40),
         ],
       ),
+    );
+  }
+
+  void _showPauseAccountSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFF3E0),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: const Text('⏸️', style: TextStyle(fontSize: 32)),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Pause your account?',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Your profile will be hidden from everyone. Your matches and chats stay safe. Unpause anytime.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey.shade600,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // TODO: Implement pause logic
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF57C00),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'Pause account',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -244,15 +457,20 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 4,
+            spreadRadius: 0,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 
@@ -265,48 +483,65 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     bool toggleValue = false,
     Function(bool)? onToggle,
     bool isDanger = false,
+    VoidCallback? onTap,
   }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: iconBgColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        alignment: Alignment.center,
-        child: iconWidget,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
-          color: isDanger ? const Color(0xFFE43A6A) : Colors.black87,
-        ),
-      ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade500,
+    return InkWell(
+      onTap: isToggle ? null : (onTap ?? () {}),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(10),
               ),
-            )
-          : null,
-      trailing: isToggle
-          ? CupertinoSwitch(
-              value: toggleValue,
-              activeColor: const Color(0xFFE43A6A),
-              onChanged: onToggle,
-            )
-          : const Icon(
-              Icons.chevron_right,
-              color: Colors.grey,
-              size: 20,
+              alignment: Alignment.center,
+              child: iconWidget,
             ),
-      onTap: isToggle ? null : () {},
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: isDanger ? const Color(0xFFE43A6A) : Colors.black87,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            isToggle
+                ? CupertinoSwitch(
+                    value: toggleValue,
+                    activeColor: const Color(0xFFE43A6A),
+                    onChanged: onToggle,
+                  )
+                : Icon(
+                    Icons.chevron_right_rounded,
+                    color: Colors.grey.shade300,
+                    size: 20,
+                  ),
+          ],
+        ),
+      ),
     );
   }
 }
