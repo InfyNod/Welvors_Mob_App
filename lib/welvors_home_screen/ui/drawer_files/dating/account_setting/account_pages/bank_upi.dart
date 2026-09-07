@@ -77,9 +77,16 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 16,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -212,7 +219,12 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
               );
             }),
             const SizedBox(height: 12),
-            _buildAddButton('+ Add UPI ID'),
+            GestureDetector(
+              onTap: () {
+                showAddUpiBottomSheet(context);
+              },
+              child: _buildAddButton('+ Add UPI ID'),
+            ),
 
             const SizedBox(height: 32),
             // Footer text
@@ -252,9 +264,16 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
         ),
         boxShadow: [
           BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -375,9 +394,16 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -610,6 +636,113 @@ void showEditUpiBottomSheet(BuildContext context, String currentUpi) {
                   ),
                   child: const Text(
                     'Save changes',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+void showAddUpiBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 24,
+            right: 24,
+            bottom: 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const Text(
+                'Add UPI ID',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildInputField('UPI ID (VPA)', 'e.g. yourname@oksbi'),
+              const SizedBox(height: 8),
+              Text(
+                'Example: yourname@oksbi, 98765xxxxx@ybl',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE43A6A),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Add UPI ID',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

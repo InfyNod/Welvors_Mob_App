@@ -7,6 +7,7 @@ import '../edit_profile/bloc/profile_edit_state.dart';
 import 'account_pages/personal_info.dart';
 import 'account_pages/membership_plan/membership_plan.dart';
 import 'account_pages/bank_upi.dart';
+import 'account_pages/privacy_controls/privacy_controls_screen.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 
 class AccountSettingScreen extends StatefulWidget {
@@ -269,6 +270,14 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 iconBgColor: const Color(0xFFF9F5E6),
                 title: 'Privacy Controls',
                 subtitle: 'Visibility, contacts, blocked users',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacyControlsScreen(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
