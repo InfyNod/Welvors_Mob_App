@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'who_message.dart';
+import 'blocked_users.dart';
+import 'who_message.dart';
 
 class PrivacyControlsScreen extends StatefulWidget {
   const PrivacyControlsScreen({super.key});
@@ -109,7 +111,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                 _buildDivider(),
                 _buildListItem(
                   emoji: '🙊',
-                  iconBgColor: const Color(0xFFFCE8EE),
+                  iconBgColor: const Color.fromARGB(255, 239, 209, 240),
                   title: 'Ghost Mode',
                   subtitle: 'Browse without being seen',
                   trailing: CupertinoSwitch(
@@ -133,7 +135,12 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
               children: [
                 _buildListItem(
                   emoji: '🚫',
-                  iconBgColor: const Color(0xFFFCE8EE), // Light red
+                  iconBgColor: const Color.fromARGB(
+                    255,
+                    252,
+                    232,
+                    233,
+                  ), // Light red
                   title: 'Blocked users',
                   subtitle: '4 people blocked',
                   trailing: Icon(
@@ -141,7 +148,14 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                     color: Colors.grey.shade400,
                     size: 18,
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BlockedUsersScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _buildDivider(),
                 _buildListItem(
