@@ -49,10 +49,13 @@ class MembershipPlanScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Top Info Card
               Container(
@@ -182,7 +185,8 @@ class MembershipPlanScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildHistoryItem(context: context, 
+                    _buildHistoryItem(
+                      context: context,
                       emoji: '💎',
                       bgColor: const Color(0xFFE6F0FA),
                       title: 'VIP · 3 months',
@@ -197,7 +201,8 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(context: context, 
+                    _buildHistoryItem(
+                      context: context,
                       emoji: '⭐',
                       bgColor: const Color(0xFFFFF7E6),
                       title: 'Premium+ · 6 months',
@@ -212,7 +217,8 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(context: context, 
+                    _buildHistoryItem(
+                      context: context,
                       emoji: '⭐',
                       bgColor: const Color(0xFFFFF7E6),
                       title: 'Premium+ · 1 month',
@@ -227,7 +233,8 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(context: context, 
+                    _buildHistoryItem(
+                      context: context,
                       emoji: '💎',
                       bgColor: const Color(0xFFE6F0FA),
                       title: 'VIP · 1 month',
@@ -242,7 +249,8 @@ class MembershipPlanScreen extends StatelessWidget {
                       indent: 70,
                       color: Color(0xFFF0F0F0),
                     ),
-                    _buildHistoryItem(context: context, 
+                    _buildHistoryItem(
+                      context: context,
                       emoji: '⭐',
                       bgColor: const Color(0xFFFFF7E6),
                       title: 'Premium+ · 1 month',
@@ -255,66 +263,76 @@ class MembershipPlanScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              // Footer
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF2EFE9),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Total paid to date',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    const Text(
-                      '₹11,596',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Text('📧', style: TextStyle(fontSize: 16)),
-                  label: const Text(
-                    'Email all invoices',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
+        ),
+      ),
+      // Footer outside ScrollView
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              decoration: const BoxDecoration(color: Colors.white),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF2EFE9),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total paid to date',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        const Text(
+                          '₹11,596',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Text('📧', style: TextStyle(fontSize: 16)),
+                      label: const Text(
+                        'Email all invoices',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

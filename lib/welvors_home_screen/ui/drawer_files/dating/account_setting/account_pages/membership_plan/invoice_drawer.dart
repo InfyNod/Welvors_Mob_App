@@ -11,7 +11,12 @@ void showInvoiceBottomSheet(BuildContext context) {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        padding: const EdgeInsets.only(top: 12, left: 20, right: 20, bottom: 32),
+        padding: const EdgeInsets.only(
+          top: 12,
+          left: 20,
+          right: 20,
+          bottom: 20,
+        ),
         child: SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -92,7 +97,9 @@ void showInvoiceBottomSheet(BuildContext context) {
                         40,
                         (index) => Expanded(
                           child: Container(
-                            color: index % 2 == 0 ? Colors.transparent : Colors.grey.shade300,
+                            color: index % 2 == 0
+                                ? Colors.transparent
+                                : Colors.grey.shade300,
                             height: 1,
                           ),
                         ),
@@ -103,18 +110,22 @@ void showInvoiceBottomSheet(BuildContext context) {
                     Row(
                       children: [
                         Expanded(
-                          child: _buildDetailCol('INVOICE NO.', 'INV-2025-1002'),
+                          child: _buildDetailCol(
+                            'INVOICE NO.',
+                            'INV-2025-1002',
+                          ),
                         ),
-                        Expanded(
-                          child: _buildDetailCol('DATE', '02 Oct 2025'),
-                        ),
+                        Expanded(child: _buildDetailCol('DATE', '02 Oct 2025')),
                       ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
-                          child: _buildDetailCol('BILLED TO', 'Tanishka Sharma'),
+                          child: _buildDetailCol(
+                            'BILLED TO',
+                            'Tanishka Sharma',
+                          ),
                         ),
                         Expanded(
                           child: _buildDetailCol('GSTIN', '27AAJCI0350F1ZU'),
@@ -123,15 +134,31 @@ void showInvoiceBottomSheet(BuildContext context) {
                     ),
                     const SizedBox(height: 24),
                     // Items
-                    _buildRow('Premium+ membership · 1 month', '₹847', isBoldAmount: true),
+                    _buildRow(
+                      'Premium+ membership · 1 month',
+                      '₹847',
+                      isBoldAmount: true,
+                    ),
                     const SizedBox(height: 8),
                     _buildRow('GST (18%)', '₹152', isBoldAmount: true),
                     const SizedBox(height: 12),
                     const Divider(color: Colors.black, thickness: 1.5),
                     const SizedBox(height: 8),
-                    _buildRow('Total paid', '₹999', isBoldLabel: true, isBoldAmount: true, amountSize: 16),
+                    _buildRow(
+                      'Total paid',
+                      '₹999',
+                      isBoldLabel: true,
+                      isBoldAmount: true,
+                      amountSize: 16,
+                    ),
                     const SizedBox(height: 20),
-                    _buildRow('Paid via', 'Wallet · 🪙 999', labelColor: Colors.black45, amountSize: 12, isBoldAmount: true),
+                    _buildRow(
+                      'Paid via',
+                      'Wallet · 🪙 999',
+                      labelColor: Colors.black45,
+                      amountSize: 12,
+                      isBoldAmount: true,
+                    ),
                     const SizedBox(height: 20),
                     // Footer disclaimer
                     Text(
@@ -152,7 +179,11 @@ void showInvoiceBottomSheet(BuildContext context) {
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.arrow_downward, color: Colors.white, size: 18),
+                  icon: const Icon(
+                    Icons.arrow_downward,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                   label: const Text(
                     'Download PDF',
                     style: TextStyle(
