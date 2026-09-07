@@ -6,6 +6,7 @@ import '../edit_profile/bloc/profile_edit_cubit.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 import 'account_pages/personal_info.dart';
 import 'account_pages/membership_plan/membership_plan.dart';
+import 'account_pages/bank_upi.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 
 class AccountSettingScreen extends StatefulWidget {
@@ -248,6 +249,14 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 iconBgColor: const Color(0xFFE6FAE6),
                 title: 'Bank & UPI',
                 subtitle: '1 bank • 2 UPI IDs',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BankUpiScreen(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
