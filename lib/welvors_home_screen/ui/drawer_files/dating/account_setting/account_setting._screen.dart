@@ -9,6 +9,7 @@ import 'account_pages/membership_plan/membership_plan.dart';
 import 'account_pages/bank_upi.dart';
 import 'account_pages/privacy_controls/privacy_controls_screen.dart';
 import 'account_pages/push_notification.dart';
+import 'account_pages/pause_delete_drawer.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 
 class AccountSettingScreen extends StatefulWidget {
@@ -327,7 +328,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 iconBgColor: const Color(0xFFFFF3E0), // Light Orange
                 title: 'Pause Account',
                 subtitle: 'Hide your profile temporarily',
-                onTap: () => _showPauseAccountSheet(context),
+                onTap: () => showPauseAccountBottomSheet(context),
               ),
               const Divider(
                 height: 1,
@@ -344,6 +345,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 title: 'Delete Account',
                 subtitle: 'Permanently erase everything',
                 isDanger: true,
+                onTap: () => showDeleteAccountBottomSheet(context),
               ),
             ],
           ),
@@ -365,102 +367,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     );
   }
 
-  void _showPauseAccountSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFFF3E0),
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: const Text('⏸️', style: TextStyle(fontSize: 32)),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Pause your account?',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Your profile will be hidden from everyone. Your matches and chats stay safe. Unpause anytime.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey.shade600,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement pause logic
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF57C00),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Pause account',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: TextButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
+
 
   Widget _buildSectionTitle(String title) {
     return Padding(
