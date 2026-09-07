@@ -407,7 +407,7 @@ class MembershipPlanScreen extends StatelessWidget {
     required String amount,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -439,7 +439,7 @@ class MembershipPlanScreen extends StatelessWidget {
                   subtitle,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -473,7 +473,7 @@ class MembershipPlanScreen extends StatelessWidget {
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               InkWell(
                 onTap: () {
                   showInvoiceBottomSheet(context);
