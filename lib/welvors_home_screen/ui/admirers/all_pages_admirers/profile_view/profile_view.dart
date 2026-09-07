@@ -26,39 +26,53 @@ class AdmirerProfileView extends StatelessWidget {
 
   Widget _buildAdmirerActions(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            offset: const Offset(0, -4),
-            blurRadius: 16,
+            color: Colors.black.withOpacity(0.04),
+            offset: const Offset(0, -10),
+            blurRadius: 20,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            offset: const Offset(0, -2),
+            blurRadius: 6,
           ),
         ],
       ),
       child: SafeArea(
+        top: false,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Reject Button
-            _buildActionButton(
+            _PremiumActionButton(
               icon: Icons.close_rounded,
-              color: Colors.black87,
-              backgroundColor: Colors.grey.shade100,
+              iconColor: const Color(0xFF4A4A4A),
+              backgroundColor: Colors.white,
+              borderColor: const Color(0xFFEAEAEA),
+              shadowColor: Colors.black.withOpacity(0.08),
+              iconSize: 24,
+              padding: 14,
               onTap: () {
                 onAction(userCard['id'], 'Rejected ❌');
                 Navigator.pop(context); // Go back after action
               },
             ),
             
+            const SizedBox(width: 32), // Spacing between buttons
+            
             // Like Button
-            _buildActionButton(
+            _PremiumActionButton(
               icon: Icons.favorite_rounded,
-              color: Colors.white,
-              backgroundColor: const Color(0xFFE43A6A), // Pink
-              iconSize: 32,
-              padding: 20,
+              iconColor: Colors.white,
+              backgroundColor: const Color(0xFFE43A6A), // Premium Pink
+              shadowColor: const Color(0xFFE43A6A).withOpacity(0.4),
+              iconSize: 28,
+              padding: 18,
               onTap: () {
                 onAction(userCard['id'], 'Liked back 💖');
                 Navigator.pop(context); // Go back after action
@@ -69,34 +83,103 @@ class AdmirerProfileView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required Color color,
-    required Color backgroundColor,
-    required VoidCallback onTap,
-    double iconSize = 28,
-    double padding = 16,
-  }) {
+class _PremiumActionButton extends StatefulWidget {
+  final IconData icon;
+  final Color iconColor;
+  final Color backgroundColor;
+  final Color shadowColor;
+  final Color? borderColor;
+  final double iconSize;
+  final double padding;
+  final VoidCallback onTap;
+
+  const _PremiumActionButton({
+    required this.icon,
+    required this.iconColor,
+    required this.backgroundColor,
+    required this.shadowColor,
+    this.borderColor,
+    required this.iconSize,
+    required this.padding,
+    required this.onTap,
+  });
+
+  @override
+  State<_PremiumActionButton> createState() => _PremiumActionButtonState();
+}
+
+class _PremiumActionButtonState extends State<_PremiumActionButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.85).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _controller.reverse();
+    widget.onTap();
+  }
+
+  void _onTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(padding),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: backgroundColor.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Icon(
-          icon,
-          color: color,
-          size: iconSize,
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Container(
+          padding: EdgeInsets.all(widget.padding),
+          decoration: BoxDecoration(
+            color: widget.backgroundColor,
+            shape: BoxShape.circle,
+            border: widget.borderColor != null
+                ? Border.all(color: widget.borderColor!, width: 1.5)
+                : null,
+            boxShadow: [
+              BoxShadow(
+                color: widget.shadowColor,
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: widget.shadowColor.withOpacity(0.5),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Icon(
+            widget.icon,
+            color: widget.iconColor,
+            size: widget.iconSize,
+          ),
         ),
       ),
     );
