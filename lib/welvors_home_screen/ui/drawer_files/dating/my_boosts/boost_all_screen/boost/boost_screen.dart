@@ -48,52 +48,62 @@ class _BoostScreenState extends State<BoostScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeroBanner(),
+            _buildTopBanner(),
+            const SizedBox(height: 14),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'CHOOSE YOUR PACK',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildPackageSelection(),
             const SizedBox(height: 24),
-            const Text(
-              'CHOOSE YOUR PACK',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.2,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'WHY BOOST WORKS',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            ...List.generate(_packages.length, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildPackageCard(index),
-              );
-            }),
-            const SizedBox(height: 16),
-            const Text(
-              'WHY BOOST WORKS',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildWhyBoostWorksSection(),
             ),
-            const SizedBox(height: 16),
-            _buildWhyBoostWorksSection(),
             const SizedBox(height: 24),
-            const Text(
-              'BOOST VS SUPER BOOST',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'BOOST VS SUPER BOOST',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            _buildComparisonSection(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildComparisonSection(),
+            ),
             const SizedBox(height: 24),
             Row(
               children: [
@@ -114,7 +124,10 @@ class _BoostScreenState extends State<BoostScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            _buildPremiumBanner(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildPremiumBanner(),
+            ),
             const SizedBox(height: 2),
           ],
         ),
@@ -123,336 +136,314 @@ class _BoostScreenState extends State<BoostScreen> {
     );
   }
 
-  Widget _buildHeroBanner() {
+  Widget _buildTopBanner() {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color.fromRGBO(252, 131, 160, 1.0), Color(0xFFDE2957)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
         borderRadius: BorderRadius.circular(20),
-      ),
-      child: Stack(
-        children: [
-          // Faint lightning bolt background
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Transform.rotate(
-              angle: 5.9,
-              child: Opacity(
-                opacity: 0.2,
-                child: const Text('⚡️', style: TextStyle(fontSize: 120)),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20), // reduced padding
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('⚡️', style: TextStyle(fontSize: 12)),
-                      SizedBox(width: 4),
-                      Text(
-                        '30 MINUTES • NEARBY',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Be a top profile\nin your area',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    height: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Get 5x more profile views and stand out to\nyour most compatible matches instantly.',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12, // slightly smaller to save space
-                    fontWeight: FontWeight.w500,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildStatItem('5x', 'MORE VIEWS'),
-                    _buildStatItem('3x', 'MORE MATCHES'),
-                    _buildStatItem('30m', 'DURATION'),
-                  ],
-                ),
-              ],
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
+        image: const DecorationImage(
+          image: AssetImage('assets/boost.jpeg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              Colors.black.withOpacity(0.3),
+              const Color(0xFFDE2957).withOpacity(0.45),
+              const Color(0xFFDE2957).withOpacity(0.55),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('⚡', style: TextStyle(fontSize: 12)),
+                  SizedBox(width: 4),
+                  Text(
+                    '30 MINUTES • NEARBY',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Be a top profile\nin your area',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.w900,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Get 5× more profile views and stand out to\nyour most compatible matches instantly.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                height: 1.3,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Divider(color: Colors.white24, height: 1),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem('5×', 'MORE VIEWS'),
+                _buildStatItem('3×', 'MORE MATCHES'),
+                _buildStatItem('30m', 'DURATION'),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildStatItem(String value, String label) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
         ),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label.replaceFirst(' ', '\n'), // Splits MORE VIEWS to 2 lines
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                height: 1.1,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildPackageSelection() {
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: List.generate(_packages.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: _buildPackageCard(index),
+            );
+          }),
+        ),
+      ),
     );
   }
 
   Widget _buildPackageCard(int index) {
-    final isSelected = _selectedPackageIndex == index;
-    final package = _packages[index];
-    final hasTag = package['tag'] != null;
+    final pkg = _packages[index];
+    final bool isSelected = _selectedPackageIndex == index;
+    final String? tag = pkg['tag'];
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedPackageIndex = index;
-            });
-          },
-          child: AnimatedContainer(
+    Color themeColor = const Color(0xFFDE2957);
+    Color themeBgColor = const Color(0xFFFDF0F3);
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPackageIndex = index;
+        });
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          AnimatedContainer(
             duration: const Duration(milliseconds: 200),
+            width: 105,
             padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 12,
-              bottom: 10,
+              top: 18,
+              bottom: 12,
+              left: 8,
+              right: 8,
             ),
             decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFFFDF0F3) : Colors.white,
+              color: isSelected ? themeBgColor : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected
-                    ? const Color(0xFFE43A6A)
-                    : Colors.grey.shade200,
+                color: isSelected ? themeColor : Colors.grey.shade200,
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.1),
-                        blurRadius: 8,
+                        color: themeColor.withOpacity(0.15),
+                        blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
                     ]
-                  : null,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    // Count
-                    Text(
-                      package['title'],
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      package['subtitle'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                    const Spacer(),
-                    // Price
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          package['pricePerItem'],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        if (package['totalPrice'] != null)
-                          Text(
-                            package['totalPrice'].split(' ')[0] + ' total',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // Dotted Divider
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final boxWidth = constraints.constrainWidth();
-                    const dashWidth = 4.0;
-                    final dashCount = (boxWidth / (2 * dashWidth)).floor();
-                    return Flex(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      direction: Axis.horizontal,
-                      children: List.generate(dashCount, (_) {
-                        return SizedBox(
-                          width: dashWidth,
-                          height: 1.5,
-                          child: const DecoratedBox(
-                            decoration: BoxDecoration(color: Color(0xFFE5E5E5)),
-                          ),
-                        );
-                      }),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    if (package['discount'] != null) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color.fromRGBO(232, 249, 240, 1.0),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          package['discount'],
-                          style: const TextStyle(
-                            color: Color.fromRGBO(44, 175, 107, 1.0),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        package['oldPrice'],
-                        style: TextStyle(
-                          color: Colors.grey.shade400,
-                          fontSize: 12,
-                          decoration: TextDecoration.lineThrough,
-                        ),
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
                     ],
-                    const Spacer(),
-                    // Checkmark (always visible now)
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isSelected
-                            ? const Color(0xFFE43A6A)
-                            : Colors.transparent,
-                        border: Border.all(
-                          color: isSelected
-                              ? const Color(0xFFE43A6A)
-                              : Colors.grey.shade300,
-                          width: 1,
-                        ),
-                      ),
-                      child: isSelected
-                          ? const Icon(
-                              Icons.check,
-                              size: 14,
-                              color: Colors.white,
-                            )
-                          : null,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  pkg['title'],
+                  style: TextStyle(
+                    color: isSelected ? themeColor : Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  pkg['subtitle'],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w600,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  pkg['pricePerItem'].toString().replaceFirst(' each', '/each'),
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  pkg['totalPrice'],
+                  style: const TextStyle(color: Colors.black45, fontSize: 9),
+                ),
+                const SizedBox(height: 8),
+                // Radio button circle
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? themeColor : Colors.grey.shade300,
+                      width: 1.5,
                     ),
-                  ],
+                  ),
+                  child: isSelected
+                      ? Center(
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: themeColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        )
+                      : null,
                 ),
               ],
             ),
           ),
-        ),
-        if (hasTag)
-          Positioned(
-            left: 16,
-            top: -10,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: package['tag'] == 'BEST VALUE'
-                      ? [const Color(0xFFFFD54F), const Color(0xFFF6B042)]
-                      : [const Color(0xFFFA6A85), const Color(0xFFDE2957)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+          if (tag != null && tag.isNotEmpty)
+            Positioned(
+              top: -10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
                 ),
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(
-                    color: package['tag'] == 'BEST VALUE'
-                        ? const Color(0xFFF6B042).withOpacity(0.3)
-                        : const Color(0xFFDE2957).withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: index == 0
+                        ? [const Color(0xFFFA6A85), const Color(0xFFDE2957)]
+                        : [const Color(0xFFFFD54F), const Color(0xFFF18C28)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: Text(
-                package['tag'],
-                style: TextStyle(
-                  color: package['tag'] == 'BEST VALUE'
-                      ? Colors.black87
-                      : Colors.white,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          (index == 0
+                                  ? const Color(0xFFDE2957)
+                                  : const Color(0xFFF18C28))
+                              .withOpacity(0.4),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  tag,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -502,13 +493,9 @@ class _BoostScreenState extends State<BoostScreen> {
             height: 54,
             child: ElevatedButton(
               onPressed: () {
-                GetBoostsDrawer.show(
-                  context,
-                  selectedPkg,
-                  () {
-                    setState(() {});
-                  },
-                );
+                GetBoostsDrawer.show(context, selectedPkg, () {
+                  setState(() {});
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE43A6A),
