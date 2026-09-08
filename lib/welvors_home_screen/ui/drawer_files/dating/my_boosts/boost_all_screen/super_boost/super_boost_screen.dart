@@ -277,20 +277,18 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
   }
 
   Widget _buildPackageSelection() {
-    return Center(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: List.generate(_packages.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: List.generate(_packages.length, (index) {
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: _buildPackageCard(index),
-            );
-          }),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -315,7 +313,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 105,
+            width: double.infinity,
             padding: const EdgeInsets.only(
               top: 18,
               bottom: 12,

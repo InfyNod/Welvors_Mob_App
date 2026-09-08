@@ -106,20 +106,18 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
               ),
             ),
             const SizedBox(height: 16),
-            Center(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: List.generate(_packages.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: List.generate(_packages.length, (index) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: _buildPackageCard(index),
-                    );
-                  }),
-                ),
+                    ),
+                  );
+                }),
               ),
             ),
             const SizedBox(height: 16),
@@ -401,7 +399,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 105,
+            width: double.infinity,
             padding: const EdgeInsets.only(
               top: 18,
               bottom: 12,
