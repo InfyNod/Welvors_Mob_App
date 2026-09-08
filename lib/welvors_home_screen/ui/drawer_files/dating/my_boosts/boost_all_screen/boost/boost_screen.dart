@@ -217,13 +217,16 @@ class _BoostScreenState extends State<BoostScreen> {
             const SizedBox(height: 16),
             const Divider(color: Colors.white24, height: 1),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildStatItem('5×', 'MORE VIEWS'),
-                _buildStatItem('3×', 'MORE MATCHES'),
-                _buildStatItem('30m', 'DURATION'),
-              ],
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildStatItem('5×', 'MORE VIEWS'),
+                  _buildStatItem('3×', 'MORE MATCHES'),
+                  _buildStatItem('30m', 'DURATION'),
+                ],
+              ),
             ),
           ],
         ),
@@ -235,37 +238,39 @@ class _BoostScreenState extends State<BoostScreen> {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.2),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white.withOpacity(0.3)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label.replaceFirst(' ', '\n'), // Splits MORE VIEWS to 2 lines
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
-                height: 1.1,
-                letterSpacing: 1.0,
+              const SizedBox(height: 2),
+              Text(
+                label.replaceFirst(' ', '\n'), // Splits MORE VIEWS to 2 lines
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 8,
+                  fontWeight: FontWeight.w800,
+                  height: 1.1,
+                  letterSpacing: 1.0,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
