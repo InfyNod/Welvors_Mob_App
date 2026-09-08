@@ -95,7 +95,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${widget.selectedPackage['title']}',
+                            '${widget.selectedPackage['title']} ${widget.selectedPackage['subtitle']}',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                       ),
                     ),
                     Text(
-                      '₹${widget.selectedPackage['price']}',
+                      '🪙 ${widget.selectedPackage['totalPrice']}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -165,7 +165,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context); // Close the bottom sheet
-                    final itemsToAdd = widget.selectedPackage['count'] as int;
+                    final itemsToAdd = int.parse(widget.selectedPackage['title'].toString());
                     final newBalance = DatePlanWallet.availablePlans + itemsToAdd;
                     DatePlansPaymentProcessingDialog.show(
                       context: context,
@@ -186,7 +186,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                     ),
                   ),
                   child: Text(
-                    'Pay ₹${widget.selectedPackage['price']}',
+                    'Pay 🪙 ${widget.selectedPackage['totalPrice']}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
