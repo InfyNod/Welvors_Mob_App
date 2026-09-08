@@ -81,7 +81,8 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
         },
         {
           'title': 'Pro tip: Reference a specific detail',
-          'subtitle':'"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
+          'subtitle':
+              '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
         },
       ];
       _isLoading = false;
@@ -224,7 +225,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
           ),
         ],
         image: const DecorationImage(
-          image: AssetImage('assets/compliment.jpeg'),
+          image: AssetImage('assets/compliment_img.jpeg'),
           fit: BoxFit.cover,
         ),
       ),
@@ -234,8 +235,8 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
           gradient: LinearGradient(
             colors: [
               Colors.black.withOpacity(0.3),
+              const Color(0xFF632EB7).withOpacity(0.45),
               const Color(0xFF632EB7).withOpacity(0.55),
-              const Color(0xFF632EB7).withOpacity(0.65),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,

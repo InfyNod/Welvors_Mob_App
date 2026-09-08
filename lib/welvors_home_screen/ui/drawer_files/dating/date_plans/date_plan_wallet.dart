@@ -161,7 +161,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildFeatureList(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -174,12 +174,12 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildWhyBuyPlansList(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -192,12 +192,12 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildGoodToKnowList(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 100),
           ],
         ),
       ),
@@ -218,7 +218,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
           ),
         ],
         image: const DecorationImage(
-          image: AssetImage('assets/date_plan.jpeg'),
+          image: AssetImage('assets/dateplan.jpeg'),
           fit: BoxFit.cover,
         ),
       ),
@@ -524,21 +524,26 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: index == 1
-                        ? const Color(0xFFF18C28) // Orange for Most Popular
-                        : const Color.fromARGB(
-                            255,
-                            36,
-                            35,
-                            31,
-                          ), // Yellow for Best Value
+                    gradient: LinearGradient(
+                      colors: index == 1
+                          ? [
+                              const Color.fromARGB(255, 238, 161, 84),
+                              const Color(0xFFF18C28),
+                            ] // Gold/Orange for Most Popular
+                          : [
+                              const Color(0xFF434343),
+                              Colors.black,
+                            ], // Black/Dark for Best Value
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
                         color:
                             (index == 1
                                     ? const Color(0xFFF18C28)
-                                    : const Color(0xFFFFD54F))
+                                    : Colors.black)
                                 .withOpacity(0.4),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
@@ -814,7 +819,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -826,13 +831,10 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Center(
-                  child: Text(
-                    emoji,
-                    style: const TextStyle(fontSize: 18),
-                  ),
+                  child: Text(emoji, style: const TextStyle(fontSize: 18)),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -845,7 +847,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: const TextStyle(

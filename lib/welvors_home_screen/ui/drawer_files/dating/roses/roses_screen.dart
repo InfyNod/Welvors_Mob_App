@@ -204,7 +204,7 @@ class _RosesScreenState extends State<RosesScreen> {
           ),
         ],
         image: const DecorationImage(
-          image: AssetImage('assets/rose_send.jpeg'),
+          image: AssetImage('assets/perpose1.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -214,8 +214,8 @@ class _RosesScreenState extends State<RosesScreen> {
           gradient: LinearGradient(
             colors: [
               Colors.black.withOpacity(0.3),
-              const Color(0xFFE0182C).withOpacity(0.55),
-              const Color(0xFFE0182C).withOpacity(0.65),
+              const Color(0xFFE0182C).withOpacity(0.35),
+              const Color(0xFFE0182C).withOpacity(0.45),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
