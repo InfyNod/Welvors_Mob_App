@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'get_compliments_drawer.dart';
 
 class ComplimentsScreen extends StatefulWidget {
-  static int availableCompliments = 5;
+  static int availableCompliments = 3;
 
   const ComplimentsScreen({super.key});
 
@@ -12,35 +12,82 @@ class ComplimentsScreen extends StatefulWidget {
 
 class _ComplimentsScreenState extends State<ComplimentsScreen> {
   int _selectedPackageIndex = 1;
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _packages = [];
+  List<Map<String, dynamic>> _infoList = [];
 
-  final List<Map<String, dynamic>> _packages = [
-    {
-      'title': '05',
-      'subtitle': 'Compliments',
-      'pricePerItem': '₹49 each',
-      'totalPrice': '₹245',
-      'extra': '+ 2 free weekly',
-      'tag': null,
-    },
-    {
-      'title': '15',
-      'subtitle': 'Compliments',
-      'pricePerItem': '₹37 each',
-      'discount': 'Save 25%',
-      'totalPrice': '₹549',
-      'extra': '+ 2 free weekly',
-      'tag': 'MOST POPULAR',
-    },
-    {
-      'title': '30',
-      'subtitle': 'Compliments',
-      'pricePerItem': '₹29 each',
-      'discount': 'Save 40%',
-      'totalPrice': '₹899',
-      'extra': '+ 2 free weekly',
-      'tag': 'BEST VALUE',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    if (!mounted) return;
+    setState(() {
+      ComplimentsScreen.availableCompliments = 5;
+
+      _packages = [
+        {
+          'title': '05',
+          'subtitle': 'Compliments',
+          'pricePerItem': '₹49 /each',
+          'totalPrice': '₹245',
+          'tag': 'Save 20%',
+        },
+        {
+          'title': '15',
+          'subtitle': 'Compliments',
+          'pricePerItem': '₹37 /each',
+          'totalPrice': '₹549',
+          'tag': 'Save 35%',
+        },
+        {
+          'title': '30',
+          'subtitle': 'Compliments',
+          'pricePerItem': '₹32 /each',
+          'totalPrice': '₹959',
+          'tag': 'BEST VALUE',
+        },
+      ];
+
+      _infoList = [
+        {
+          'title': 'Words that work',
+          'subtitle':
+              'Likes with a compliment get replies 4× more often than plain likes.',
+          'tag': 'PROVEN',
+        },
+        {
+          'title': 'Up to 140 chars',
+          'subtitle':
+              'Just enough to be witty, not enough to overshare. Sweet spot for first impressions.',
+          'tag': 'NEW',
+        },
+        {
+          'title': 'Attached to a specific photo or prompt',
+          'subtitle':
+              'Anchor your note to what caught your eye — much more personal.',
+        },
+        {
+          'title': 'Goes to their top notifications',
+          'subtitle':
+              'Compliments skip the regular queue — your message lands at the top.',
+        },
+        {
+          'title': 'Compliments never expire',
+          'subtitle':
+              'Buy now, use anytime. Save them for the right person — no rush.',
+        },
+        {
+          'title': 'Pro tip: Reference a specific detail',
+          'subtitle':
+              '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
+        },
+      ];
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,251 +134,257 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTopBanner(),
-            const SizedBox(height: 24),
-            const Text(
-              'YOUR IMPACT',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 190),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTopBanner(),
+
+                  const SizedBox(height: 24),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'GET MORE COMPLIMENTS',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(_packages.length, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            child: _buildPackageCard(index),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Center(
+                    child: Text(
+                      'Most popular · best value picks save you up to 38% per compliment',
+                      style: TextStyle(color: Colors.black45, fontSize: 11),
+                    ),
+                  ),
+                  if (_infoList.isNotEmpty) ...[
+                    const SizedBox(height: 32),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'WHY COMPLIMENTS WORK',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildWhyComplimentsWorkSection(),
+                    ),
+                  ],
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            _buildImpactSection(),
-            const SizedBox(height: 32),
-            const Text(
-              'GET MORE COMPLIMENTS',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...List.generate(_packages.length, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: _buildPackageCard(index),
-              );
-            }),
-            const SizedBox(height: 16),
-            const Text(
-              'WHY COMPLIMENTS WORK',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildWhyComplimentsWorkSection(),
-            const SizedBox(height: 16),
-            _buildProTipBanner(),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomSheet: _isLoading ? null : _buildBottomBar(),
     );
   }
 
   Widget _buildTopBanner() {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color.fromRGBO(252, 131, 160, 1.0), // Pink start
-            Color(0xFFDE2957), // Darker pink end
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFDE2957).withOpacity(0.3),
+            color: Colors.black.withOpacity(0.15),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
         ],
+        image: const DecorationImage(
+          image: AssetImage('assets/compliment.jpeg'),
+          fit: BoxFit.cover,
+        ),
       ),
-      child: Stack(
-        children: [
-          // Background graphic (Gift/Heart emoji)
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Transform.rotate(
-              angle: 5.9,
-              child: Opacity(
-                opacity: 0.2,
-                child: const Text('💝', style: TextStyle(fontSize: 120)),
-              ),
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              Colors.black.withOpacity(0.3),
+              const Color(0xFF9B66F7).withOpacity(0.55),
+              const Color(0xFF9B66F7).withOpacity(0.65),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    const Text('💌', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 6),
-                    Text(
-                      'SAY MORE WITH WORDS',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Send a compliment.\nGet 4× more matches.',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                const Icon(Icons.star, color: Colors.white, size: 12),
+                const SizedBox(width: 4),
                 Text(
-                  'Stand out by adding a thoughtful note with\nyour like — on a photo or prompt.',
+                  'SAY MORE WITH WORDS',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
-                    fontSize: 13,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Inner card
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(
-                      0.2,
-                    ), // Semi-transparent white
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            '${ComplimentsScreen.availableCompliments}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Compliments available',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '2 free per week · Renews in 3 days',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.favorite, color: Colors.white, size: 22),
-                    ],
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            const Text(
+              'Send a compliment.\nGet 4× more matches.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Stand out by adding a thoughtful note with your like — on a photo or prompt.',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildInsideBannerCard(
+                    Icons.chat_bubble,
+                    const Color(0xFFD1B2FF),
+                    'Note on\nany photo',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildInsideBannerCard(
+                    Icons.trending_up,
+                    const Color(0xFF81C995),
+                    '4× more\nmatches',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildInsideBannerCard(
+                    Icons.auto_awesome,
+                    const Color(0xFFFFD54F),
+                    'Shows in\ntheir likes',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildInsideBannerCard(
+                    Icons.card_giftcard,
+                    const Color(0xFFF48FB1),
+                    '2 free\neach week',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // COMPLIMENTS AVAILABLE
+            const Text(
+              'COMPLIMENTS AVAILABLE',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  '${ComplimentsScreen.availableCompliments}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 42,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'compliments',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 0),
+            Text(
+              '2 free every week · renews in 3 days',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildImpactSection() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildImpactCard('12', 'SENT', const Color(0xFFDE2957)),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildImpactCard('8', 'REPLIED', const Color(0xFF34A853)),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildImpactCard('67%', 'REPLY RATE', const Color(0xFFF6B042)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImpactCard(String value, String label, Color valueColor) {
+  Widget _buildInsideBannerCard(
+    IconData iconData,
+    Color iconColor,
+    String label,
+  ) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 16,
-            spreadRadius: 2,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            value,
-            style: TextStyle(
-              color: valueColor,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Icon(iconData, color: iconColor, size: 18),
           const SizedBox(height: 4),
           Text(
             label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
             style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 10,
+              color: Colors.white,
+              fontSize: 9,
               fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+              height: 1.1,
             ),
           ),
         ],
@@ -355,58 +408,59 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
       child: Column(
         children: [
           _buildWhyComplimentsWorkItem(
-            icon: Icons.favorite,
-            iconColor: const Color(0xFFE94086),
-            iconBgColor: const Color(0xFFFCE4EC),
+            icon: Icons.chat_bubble,
+            iconColor: const Color(0xFF9B66F7),
+            iconBgColor: const Color(0xFFF3E5F5),
             title: 'Words that work',
-            subtitle: 'More than a swipe',
+            subtitle:
+                'Likes with a compliment get replies 4× more often than plain likes.',
+            tag: 'PROVEN',
+            tagColor: const Color(0xFF9B66F7),
+            tagBgColor: const Color(0xFFF3E5F5),
             isFirst: true,
           ),
           _buildWhyComplimentsWorkItem(
-            icon: Icons.chat_bubble_outline,
-            iconColor: const Color(0xFFE94086),
-            iconBgColor: const Color(0xFFFCE4EC),
-            title: '4× higher reply rate',
-            subtitle:
-                'Likes with a compliment get replies 4× more often\nthan plain likes.',
-            tag: 'PROVEN',
-            tagColor: const Color(0xFFE94086),
-            tagBgColor: const Color(0xFFFCE4EC),
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.star,
-            iconColor: const Color(0xFFF6B042),
-            iconBgColor: const Color(0xFFFFF3E0),
-            title: 'Up to 140 chars',
-            subtitle:
-                'Just enough to be witty, not enough to overshare.\nSweet spot for first impressions.',
-            tag: 'NEW',
-            tagColor: const Color(0xFFF6B042),
-            tagBgColor: const Color(0xFFFFF3E0),
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.remove_red_eye,
-            iconColor: const Color(0xFF2383F6),
-            iconBgColor: const Color(0xFFE3F0FF),
-            title: 'Attached to a specific photo or prompt',
-            subtitle:
-                'Anchor your note to what caught your eye — much\nmore personal.',
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.check_circle_outline,
+            icon: Icons.text_snippet,
             iconColor: const Color(0xFF34A853),
             iconBgColor: const Color(0xFFE6F4EA),
-            title: 'Goes to their top notifications',
+            title: 'Up to 140 chars',
             subtitle:
-                'Compliments skip the regular queue — your\nmessage lands at the top.',
+                'Just enough to be witty, not enough to overshare. Sweet spot for first impressions.',
+            tag: 'NEW',
+            tagColor: const Color(0xFF34A853),
+            tagBgColor: const Color(0xFFE6F4EA),
           ),
           _buildWhyComplimentsWorkItem(
-            icon: Icons.access_time,
+            icon: Icons.photo,
+            iconColor: const Color(0xFFF6B042),
+            iconBgColor: const Color(0xFFFFF3E0),
+            title: 'Attached to a specific photo or prompt',
+            subtitle:
+                'Anchor your note to what caught your eye — much more personal.',
+          ),
+          _buildWhyComplimentsWorkItem(
+            icon: Icons.notifications_active,
             iconColor: const Color(0xFFE94086),
             iconBgColor: const Color(0xFFFCE4EC),
+            title: 'Goes to their top notifications',
+            subtitle:
+                'Compliments skip the regular queue — your message lands at the top.',
+          ),
+          _buildWhyComplimentsWorkItem(
+            icon: Icons.timelapse,
+            iconColor: const Color(0xFF2383F6),
+            iconBgColor: const Color(0xFFE3F0FF),
             title: 'Compliments never expire',
             subtitle:
-                'Buy now, use anytime. Save them for the right\nperson — no rush.',
+                'Buy now, use anytime. Save them for the right person — no rush.',
+          ),
+          _buildWhyComplimentsWorkItem(
+            icon: Icons.lightbulb,
+            iconColor: const Color(0xFF9B66F7),
+            iconBgColor: const Color(0xFFF3E5F5),
+            title: 'Pro tip: Reference a specific detail',
+            subtitle:
+                '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
             isLast: true,
           ),
         ],
@@ -532,7 +586,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
-              Icons.format_quote,
+              Icons.wb_sunny_rounded,
               color: Colors.white,
               size: 20,
             ),
@@ -543,7 +597,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Pro tip: Reference a specific detail',
+                  'Pro tip: Send Compliments between 8–10 PM',
                   style: TextStyle(
                     color: Colors.black87,
                     fontSize: 14,
@@ -552,7 +606,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
+                  "That's when match rates are highest — 2× higher than mornings.",
                   style: TextStyle(
                     color: Colors.black.withOpacity(0.6),
                     fontSize: 12,
@@ -572,201 +626,167 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
     final bool isSelected = _selectedPackageIndex == index;
     final String? tag = pkg['tag'];
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedPackageIndex = index;
-            });
-          },
-          child: AnimatedContainer(
+    Color themeColor = const Color(0xFF9B66F7); // Red/Pink for all
+    Color themeBgColor = const Color(0xFFF3E5F5);
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPackageIndex = index;
+        });
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(16),
+            width: 105,
+            padding: const EdgeInsets.only(
+              top: 18,
+              bottom: 12,
+              left: 8,
+              right: 8,
+            ),
             decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFFFDF0F3) : Colors.white,
+              color: isSelected ? themeBgColor : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected
-                    ? const Color(0xFFE43A6A)
-                    : const Color(0xFFE5E5E5),
-                width: isSelected ? 2 : 1,
+                color: isSelected ? themeColor : const Color(0xFFEAEAEA),
+                width: isSelected ? 2.0 : 1.0,
               ),
               boxShadow: [
                 if (!isSelected)
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
               ],
             ),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Icon Box
+                Text(
+                  pkg['title'],
+                  style: TextStyle(
+                    color: isSelected ? themeColor : Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const Text(
+                  'Compliments',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  pkg['pricePerItem'].toString().replaceFirst(' each', '/each'),
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${pkg['totalPrice']} total',
+                  style: const TextStyle(color: Colors.black45, fontSize: 9),
+                ),
+                const SizedBox(height: 8),
+                // Radio button circle
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 20,
+                  height: 20,
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? const Color(0xFFE43A6A).withOpacity(0.1)
-                        : const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Icon(
-                          Icons.mail,
-                          color: isSelected
-                              ? const Color(0xFFFA6A85).withOpacity(0.2)
-                              : Colors.grey.shade300,
-                          size: 28,
-                        ),
-                        Icon(
-                          Icons.favorite,
-                          color: isSelected
-                              ? const Color(0xFFE43A6A)
-                              : Colors.grey.shade400,
-                          size: 14,
-                        ),
-                      ],
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? themeColor : Colors.grey.shade300,
+                      width: 1.5,
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                // Title and subtitle
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            pkg['title'],
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                  child: isSelected
+                      ? Center(
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: themeColor,
+                              shape: BoxShape.circle,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            pkg['subtitle'],
-                            style: const TextStyle(
-                              color: Colors.black87,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            pkg['pricePerItem'],
-                            style: const TextStyle(
-                              color: Colors.black54,
-                              fontSize: 12,
-                            ),
-                          ),
-                          if (pkg['discount'] != null) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE8F5E9),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                pkg['discount'],
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 44, 171, 104),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Right side price
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      pkg['totalPrice'],
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      pkg['extra'],
-                      style: const TextStyle(
-                        color: Colors.black54,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
+                        )
+                      : null,
                 ),
               ],
             ),
           ),
-        ),
-        if (tag != null)
-          Positioned(
-            top: -10,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: tag == 'MOST POPULAR'
-                      ? [const Color(0xFFFA6A85), const Color(0xFFDE2957)]
-                      : [const Color(0xFFFFD54F), const Color(0xFFF6B042)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+          if (tag != null && tag.isNotEmpty)
+            Positioned(
+              top: -10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
                 ),
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(
-                    color: tag == 'MOST POPULAR'
-                        ? const Color(0xFFDE2957).withOpacity(0.3)
-                        : const Color(0xFFF6B042).withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: index == 0
+                        ? [
+                            const Color(0xFFFFD54F),
+                            const Color(0xFFF6B042),
+                          ] // Gold
+                        : index == 2
+                        ? [const Color(0xFF434343), Colors.black] // Black/Dark
+                        : [
+                            const Color(0xFFB388FF),
+                            const Color(0xFF9B66F7),
+                          ], // Red/Pink
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: Text(
-                tag,
-                style: TextStyle(
-                  color: tag == 'BEST VALUE' ? Colors.black87 : Colors.white,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          (index == 0
+                                  ? const Color(0xFFF6B042)
+                                  : index == 2
+                                  ? Colors.black
+                                  : const Color(0xFF9B66F7))
+                              .withOpacity(0.4),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  tag,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildBottomBar() {
-    final selectedPkg = _packages[_selectedPackageIndex];
+    if (_packages.isEmpty) return const SizedBox.shrink();
+
+    int index = _selectedPackageIndex;
+    if (index >= _packages.length) index = 0;
+
+    final selectedPkg = _packages[index];
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -781,7 +801,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${int.parse(selectedPkg['title'])} COMPLIMENTS · ${selectedPkg['tag'] ?? 'TRY IT OUT'}',
+                '${int.parse(selectedPkg['title'])} ROSES · ${selectedPkg['tag'] ?? 'TRY IT OUT'}',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 11,
@@ -810,29 +830,25 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE43A6A),
+                backgroundColor: const Color(0xFF9B66F7),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.favorite, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    'Get Compliments',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              child: Text(
+                'Get ${int.parse(selectedPkg['title'])} Compliments for ${selectedPkg['totalPrice']}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 12),
           const Text(
-            'Never expire · Use anytime',
+            'Compliments never expire · Used anytime',
             style: TextStyle(color: Colors.black45, fontSize: 11),
           ),
         ],
