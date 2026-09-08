@@ -34,7 +34,11 @@ abstract class SectionColors {
 class HomeScreen extends StatefulWidget {
   final bool isPreview;
   final bool isSelfPreview;
-  const HomeScreen({super.key, this.isPreview = false, this.isSelfPreview = false});
+  const HomeScreen({
+    super.key,
+    this.isPreview = false,
+    this.isSelfPreview = false,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -99,10 +103,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           horizontal: 16.0,
                           vertical: 8.0,
                         ),
-                        child: _CardsStack(isPreview: widget.isPreview, isSelfPreview: widget.isSelfPreview),
+                        child: _CardsStack(
+                          isPreview: widget.isPreview,
+                          isSelfPreview: widget.isSelfPreview,
+                        ),
                       ),
                     ),
-                    _ProfileDetailsView(profile: currentProfile, isSelfPreview: widget.isSelfPreview),
+                    _ProfileDetailsView(
+                      profile: currentProfile,
+                      isSelfPreview: widget.isSelfPreview,
+                    ),
                     const SizedBox(height: 14),
                   ],
                 ),
@@ -228,7 +238,10 @@ class _ProfileDetailsView extends StatelessWidget {
   final ProfileModel profile;
   final bool isSelfPreview;
 
-  const _ProfileDetailsView({required this.profile, this.isSelfPreview = false});
+  const _ProfileDetailsView({
+    required this.profile,
+    this.isSelfPreview = false,
+  });
 
   bool _hasValidData(dynamic data) {
     if (data == null) return false;
@@ -606,7 +619,11 @@ class _ProfileDetailsView extends StatelessWidget {
             const SizedBox(height: 16),
             // Slot 1: After THE BASICS
             if (hasVideo) ...[
-              ProfileVideoPlayer(videoPath: profile.videoUrl!, isSelfPreview: isSelfPreview, profile: profile),
+              ProfileVideoPlayer(
+                videoPath: profile.videoUrl!,
+                isSelfPreview: isSelfPreview,
+                profile: profile,
+              ),
               const SizedBox(height: 16),
             ] else if (profile.images.length > 1) ...[
               _buildImageWithRose(context, profile.images[1]),
@@ -1651,7 +1668,11 @@ class _ProfileDetailsView extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 if (isSelfPreview) return;
-                ComplimentingBottomSheet.show(context, type: 'Photo', profilemodel: profile);
+                ComplimentingBottomSheet.show(
+                  context,
+                  type: 'Photo',
+                  profilemodel: profile,
+                );
               },
               child: Container(
                 width: 65,
@@ -2140,7 +2161,11 @@ class _ProfileDetailsView extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     if (isSelfPreview) return;
-                    ComplimentingBottomSheet.show(context, type: 'Prompt', profilemodel: profile);
+                    ComplimentingBottomSheet.show(
+                      context,
+                      type: 'Prompt',
+                      profilemodel: profile,
+                    );
                   },
                   child: Container(
                     width: 65,
@@ -2422,8 +2447,8 @@ class _ProfileCardUI extends StatelessWidget {
         image: DecorationImage(
           image: profile.images.isNotEmpty
               ? (profile.images.first.startsWith('http')
-                  ? NetworkImage(profile.images.first) as ImageProvider
-                  : FileImage(File(profile.images.first)))
+                    ? NetworkImage(profile.images.first) as ImageProvider
+                    : FileImage(File(profile.images.first)))
               : const AssetImage('assets/dummyphoto.jpeg') as ImageProvider,
           fit: BoxFit.cover,
           filterQuality: FilterQuality.high,
@@ -2541,19 +2566,10 @@ class _ProfileCardUI extends StatelessWidget {
                       _buildTag(profile.replyTime, Colors.orange),
                     ],
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   // Name & Age
                   Row(
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
                       Text(
                         profile.name,
                         style: const TextStyle(
@@ -2579,7 +2595,7 @@ class _ProfileCardUI extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 05),
+                  const SizedBox(height: 2),
                   // Location
                   _buildInfoRow(Icons.location_on, profile.location),
                   // Job
@@ -2681,7 +2697,12 @@ class ProfileVideoPlayer extends StatefulWidget {
   final String videoPath;
   final bool isSelfPreview;
   final ProfileModel? profile;
-  const ProfileVideoPlayer({super.key, required this.videoPath, this.isSelfPreview = false, this.profile});
+  const ProfileVideoPlayer({
+    super.key,
+    required this.videoPath,
+    this.isSelfPreview = false,
+    this.profile,
+  });
 
   @override
   State<ProfileVideoPlayer> createState() => _ProfileVideoPlayerState();
@@ -2938,7 +2959,11 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
               child: GestureDetector(
                 onTap: () {
                   if (widget.isSelfPreview) return;
-                  ComplimentingBottomSheet.show(context, type: 'Video intro', profilemodel: widget.profile);
+                  ComplimentingBottomSheet.show(
+                    context,
+                    type: 'Video intro',
+                    profilemodel: widget.profile,
+                  );
                 },
                 child: Container(
                   width: 65,
