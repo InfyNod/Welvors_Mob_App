@@ -52,6 +52,7 @@ class AdmirerProfileView extends StatelessWidget {
             // Reject Button
             _PremiumActionButton(
               icon: Icons.close_rounded,
+              label: 'Reject',
               iconColor: const Color(0xFF4A4A4A),
               backgroundColor: Colors.white,
               borderColor: const Color(0xFFEAEAEA),
@@ -68,6 +69,7 @@ class AdmirerProfileView extends StatelessWidget {
             // Like Button
             _PremiumActionButton(
               icon: Icons.favorite_rounded,
+              label: 'Match',
               iconColor: Colors.white,
               backgroundColor: const Color(0xFFE43A6A), // Premium Pink
               shadowColor: const Color(0xFFE43A6A).withOpacity(0.4),
@@ -87,6 +89,7 @@ class AdmirerProfileView extends StatelessWidget {
 
 class _PremiumActionButton extends StatefulWidget {
   final IconData icon;
+  final String label;
   final Color iconColor;
   final Color backgroundColor;
   final Color shadowColor;
@@ -97,6 +100,7 @@ class _PremiumActionButton extends StatefulWidget {
 
   const _PremiumActionButton({
     required this.icon,
+    required this.label,
     required this.iconColor,
     required this.backgroundColor,
     required this.shadowColor,
@@ -156,10 +160,10 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Container(
-          padding: EdgeInsets.all(widget.padding),
+          padding: EdgeInsets.symmetric(horizontal: widget.padding * 1.5, vertical: widget.padding),
           decoration: BoxDecoration(
             color: widget.backgroundColor,
-            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(30),
             border: widget.borderColor != null
                 ? Border.all(color: widget.borderColor!, width: 1.5)
                 : null,
@@ -176,10 +180,25 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
               ),
             ],
           ),
-          child: Icon(
-            widget.icon,
-            color: widget.iconColor,
-            size: widget.iconSize,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                widget.icon,
+                color: widget.iconColor,
+                size: widget.iconSize,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                widget.label,
+                style: TextStyle(
+                  color: widget.iconColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
           ),
         ),
       ),
