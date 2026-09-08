@@ -162,6 +162,42 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
               child: _buildFeatureList(),
             ),
             const SizedBox(height: 32),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'WHY PEOPLE BUY PLANS',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildWhyBuyPlansList(),
+            ),
+            const SizedBox(height: 32),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'GOOD TO KNOW',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildGoodToKnowList(),
+            ),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -365,8 +401,13 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 104,
-            padding: const EdgeInsets.fromLTRB(8, 20, 8, 16),
+            width: 105,
+            padding: const EdgeInsets.only(
+              top: 18,
+              bottom: 12,
+              left: 8,
+              right: 8,
+            ),
             decoration: BoxDecoration(
               color: isSelected ? themeBgColor : Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -395,53 +436,54 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
               children: [
                 Text(
                   pkg['title'],
-                  style: const TextStyle(
-                    fontSize: 26,
+                  style: TextStyle(
+                    color: isSelected ? themeColor : Colors.black,
+                    fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    height: 1.0,
-                    color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   pkg['subtitle'],
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 10,
-                    color: Colors.black87,
+                    color: Colors.black54,
                     fontWeight: FontWeight.w600,
+                    height: 1.0,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.token, size: 12, color: Colors.grey.shade600),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 2),
                     Text(
                       '${pkg['pricePerItem']}/each',
                       style: const TextStyle(
                         color: Colors.black87,
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.token, size: 10, color: Colors.grey.shade400),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 2),
                     Text(
                       '${pkg['totalPrice']} total',
-                      style: const TextStyle(color: Colors.black45, fontSize: 9),
+                      style: const TextStyle(
+                        color: Colors.black45,
+                        fontSize: 9,
+                      ),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 // Radio button circle
                 Container(
                   width: 20,
@@ -484,14 +526,20 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
                   decoration: BoxDecoration(
                     color: index == 1
                         ? const Color(0xFFF18C28) // Orange for Most Popular
-                        : const Color(0xFFFFD54F), // Yellow for Best Value
+                        : const Color.fromARGB(
+                            255,
+                            36,
+                            35,
+                            31,
+                          ), // Yellow for Best Value
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: (index == 1
-                                ? const Color(0xFFF18C28)
-                                : const Color(0xFFFFD54F))
-                            .withOpacity(0.4),
+                        color:
+                            (index == 1
+                                    ? const Color(0xFFF18C28)
+                                    : const Color(0xFFFFD54F))
+                                .withOpacity(0.4),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -584,7 +632,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Never expire · Unused plans stay in your wallet',
+            'Date Plans never expire. Unused plans stay in your wallet.',
             style: TextStyle(color: Colors.black45, fontSize: 11),
           ),
         ],
@@ -608,20 +656,145 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
       child: Column(
         children: [
           _buildFeatureItem(
+            emoji: '📍',
+            emojiBgColor: const Color(0xFFFFF3E0),
             number: '1',
             title: 'You post a real plan',
-            subtitle: 'Pick the activity, venue, time and who pays — coffee, dinner, drinks or walk.',
+            subtitle:
+                'Pick the activity, venue, time and who pays — coffee, dinner, drinks, a walk. One plan covers one posting.',
             isFirst: true,
           ),
           _buildFeatureItem(
+            emoji: '👀',
+            emojiBgColor: const Color(0xFFE3F2FD),
             number: '2',
-            title: 'People see it locally',
-            subtitle: 'Your plan is shown to people nearby. They can ask to join.',
+            title: 'Nearby people see it live',
+            subtitle:
+                'It goes into the Date Now feed for everyone matching your filters, until the time passes.',
           ),
           _buildFeatureItem(
+            emoji: '✉️',
+            emojiBgColor: const Color(0xFFF5F5F5),
             number: '3',
-            title: 'Approve & meet',
-            subtitle: 'Check their profile, accept the best one, and chat to confirm details.',
+            title: 'They request to join',
+            subtitle:
+                'Requests arrive with a message and a bill suggestion. Nobody gets your exact location — only the venue.',
+          ),
+          _buildFeatureItem(
+            emoji: '🤝',
+            emojiBgColor: const Color(0xFFFFF8E1),
+            number: '4',
+            title: 'You approve who joins',
+            subtitle:
+                'Approve one person for a one-on-one, or a few for a small group meet — everyone approved drops straight into chat with the date details.',
+          ),
+          _buildFeatureItem(
+            emoji: '💞',
+            emojiBgColor: const Color(0xFFFCE4EC),
+            number: '5',
+            title: 'You meet in real life',
+            subtitle:
+                'Show up, enjoy the evening, and share how it went afterwards. Good dates lift your Trust Score and bring better people to your next plan.',
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWhyBuyPlansList() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildFeatureItem(
+            emoji: '⚡',
+            emojiBgColor: const Color(0xFFFFF9C4),
+            number: null,
+            title: 'Skip weeks of texting',
+            subtitle:
+                'You meet the same evening instead of chatting for three weeks and fading out.',
+            isFirst: true,
+          ),
+          _buildFeatureItem(
+            emoji: '🎯',
+            emojiBgColor: const Color(0xFFE1F5FE),
+            number: null,
+            title: 'You set the terms',
+            subtitle:
+                'Your venue, your time, your bill preference, and which plans a Free, Premium, VIP or Elite member can see.',
+          ),
+          _buildFeatureItem(
+            emoji: '🚀',
+            emojiBgColor: const Color(0xFFFFF3E0),
+            number: null,
+            title: 'Boost-ready',
+            subtitle:
+                'Any live plan can be pinned to the top of the feed for 3 hours — more views, more requests.',
+          ),
+          _buildFeatureItem(
+            emoji: '♾️',
+            emojiBgColor: const Color(0xFFE8F5E9),
+            number: null,
+            title: 'Nothing is wasted',
+            subtitle:
+                'Plans never expire. If a plan gets no requests or you cancel before it starts, the plan returns to your wallet.',
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGoodToKnowList() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildFeatureItem(
+            emoji: '🪙',
+            emojiBgColor: const Color(0xFFF5F5F5),
+            number: null,
+            title: 'Paid with wallet coins',
+            subtitle:
+                '1 plan = 🪙 100 at single rate, less in a pack. Coins from referrals and gifts count too.',
+            isFirst: true,
+          ),
+          _buildFeatureItem(
+            emoji: '📆',
+            emojiBgColor: const Color(0xFFFCE4EC),
+            number: null,
+            title: 'Up to 2 live at a time',
+            subtitle:
+                'You can host two plans simultaneously — one today, one for the weekend.',
+          ),
+          _buildFeatureItem(
+            emoji: '🛡️',
+            emojiBgColor: const Color(0xFFFFEBEE),
+            number: null,
+            title: 'Verified members only',
+            subtitle:
+                'Only ID-verified members can send you a request, and you can report anyone in one tap.',
             isLast: true,
           ),
         ],
@@ -630,7 +803,9 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
   }
 
   Widget _buildFeatureItem({
-    required String number,
+    required String emoji,
+    required Color emojiBgColor,
+    String? number,
     required String title,
     required String subtitle,
     bool isFirst = false,
@@ -639,24 +814,31 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '$number · ',
-                style: const TextStyle(
-                  color: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: emojiBgColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    emoji,
+                    style: const TextStyle(fontSize: 18),
+                  ),
                 ),
               ),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      number != null ? '$number · $title' : title,
                       style: const TextStyle(
                         color: Colors.black87,
                         fontSize: 14,
