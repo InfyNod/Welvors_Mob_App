@@ -48,7 +48,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
