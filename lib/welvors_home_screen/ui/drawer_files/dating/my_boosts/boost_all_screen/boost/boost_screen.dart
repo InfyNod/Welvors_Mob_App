@@ -420,7 +420,10 @@ class _BoostScreenState extends State<BoostScreen> {
                   gradient: LinearGradient(
                     colors: index == 0
                         ? [const Color(0xFFFA6A85), const Color(0xFFDE2957)]
-                        : [const Color(0xFFFFD54F), const Color(0xFFF18C28)],
+                        : [
+                            const Color.fromARGB(255, 78, 78, 77),
+                            const Color.fromARGB(255, 12, 12, 12),
+                          ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
