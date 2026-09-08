@@ -177,6 +177,11 @@ class _RosesScreenState extends State<RosesScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: _buildWhyRosesWorkSection(),
                     ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildProTipBanner(),
+                    ),
                   ],
                 ],
               ),
@@ -577,18 +582,17 @@ class _RosesScreenState extends State<RosesScreen> {
 
   Widget _buildProTipBanner() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
         gradient: const LinearGradient(
           colors: [
-            Color.fromARGB(255, 255, 245, 225),
-            Color(0xFFFFF0F5),
-            Color.fromARGB(255, 251, 226, 234),
+            Color(0xFFFEF5E3), // rgba(254, 245, 227)
+            Color(0xFFFCE2EB), // rgba(252, 226, 235)
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -596,11 +600,11 @@ class _RosesScreenState extends State<RosesScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF6B042),
-              borderRadius: BorderRadius.circular(12),
+              color: const Color(0xFFF5B667),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
-              Icons.wb_sunny_rounded,
+              Icons.format_quote_rounded,
               color: Colors.white,
               size: 20,
             ),
@@ -622,7 +626,7 @@ class _RosesScreenState extends State<RosesScreen> {
                 Text(
                   "That's when match rates are highest — 2× higher than mornings.",
                   style: TextStyle(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black54,
                     fontSize: 12,
                     height: 1.4,
                   ),

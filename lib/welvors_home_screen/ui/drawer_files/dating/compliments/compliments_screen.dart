@@ -81,8 +81,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
         },
         {
           'title': 'Pro tip: Reference a specific detail',
-          'subtitle':
-              '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
+          'subtitle':'"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
         },
       ];
       _isLoading = false;
