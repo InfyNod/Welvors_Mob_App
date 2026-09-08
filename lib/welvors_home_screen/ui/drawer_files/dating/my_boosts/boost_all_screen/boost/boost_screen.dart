@@ -15,13 +15,13 @@ class _BoostScreenState extends State<BoostScreen> {
 
   final List<Map<String, dynamic>> _packages = [
     {
-      'title': '20',
+      'title': '03',
       'subtitle': 'Boosts',
-      'pricePerItem': '₹175/each',
-      'discount': 'Save 51%',
-      'oldPrice': '₹356/each',
-      'totalPrice': '₹3,500 total',
-      'tag': 'BEST VALUE',
+      'pricePerItem': '₹356/each',
+      'discount': null,
+      'oldPrice': null,
+      'totalPrice': '₹1,068 total',
+      'tag': null,
     },
     {
       'title': '10',
@@ -33,13 +33,13 @@ class _BoostScreenState extends State<BoostScreen> {
       'tag': 'POPULAR',
     },
     {
-      'title': '03',
+      'title': '20',
       'subtitle': 'Boosts',
-      'pricePerItem': '₹356/each',
-      'discount': null,
-      'oldPrice': null,
-      'totalPrice': '₹1,068 total',
-      'tag': null,
+      'pricePerItem': '₹175/each',
+      'discount': 'Save 51%',
+      'oldPrice': '₹356/each',
+      'totalPrice': '₹3,500 total',
+      'tag': 'BEST VALUE',
     },
   ];
 
@@ -418,12 +418,9 @@ class _BoostScreenState extends State<BoostScreen> {
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: index == 0
+                    colors: tag == 'BEST VALUE'
                         ? [const Color(0xFFFA6A85), const Color(0xFFDE2957)]
-                        : [
-                            const Color.fromARGB(255, 78, 78, 77),
-                            const Color.fromARGB(255, 12, 12, 12),
-                          ],
+                        : [const Color(0xFF4A4A4A), const Color(0xFF1A1A1A)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -431,9 +428,9 @@ class _BoostScreenState extends State<BoostScreen> {
                   boxShadow: [
                     BoxShadow(
                       color:
-                          (index == 0
+                          (tag == 'BEST VALUE'
                                   ? const Color(0xFFDE2957)
-                                  : const Color(0xFFF18C28))
+                                  : Colors.black)
                               .withOpacity(0.4),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
