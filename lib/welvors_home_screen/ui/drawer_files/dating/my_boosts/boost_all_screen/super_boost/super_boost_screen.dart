@@ -159,9 +159,9 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
-              Colors.black.withOpacity(0.3),
-              const Color(0xFFCBA164).withOpacity(0.45),
-              const Color(0xFFCBA164).withOpacity(0.55),
+              Color.fromARGB(255, 166, 150, 126).withOpacity(0.3),
+              const Color.fromARGB(255, 0, 0, 0).withOpacity(0.45),
+              const Color.fromARGB(255, 22, 22, 22).withOpacity(0.55),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
