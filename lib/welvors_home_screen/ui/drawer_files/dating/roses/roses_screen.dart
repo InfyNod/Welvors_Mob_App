@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'get_roses_drawer.dart';
+import 'service_rose.dart';
 
 class RosesScreen extends StatefulWidget {
   static int availableRoses = 3;
@@ -12,35 +13,61 @@ class RosesScreen extends StatefulWidget {
 
 class _RosesScreenState extends State<RosesScreen> {
   int _selectedPackageIndex = 1;
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _packages = [];
+  List<Map<String, dynamic>> _infoList = [];
 
-  final List<Map<String, dynamic>> _packages = [
-    {
-      'title': '05',
-      'subtitle': 'Roses',
-      'pricePerItem': '₹59 each',
-      'totalPrice': '₹295',
-      'extra': '+ 1 free daily',
-      'tag': null,
-    },
-    {
-      'title': '15',
-      'subtitle': 'Roses',
-      'pricePerItem': '₹46 each',
-      'discount': 'Save 22%',
-      'totalPrice': '₹699',
-      'extra': '+ 1 free daily',
-      'tag': 'MOST POPULAR',
-    },
-    {
-      'title': '30',
-      'subtitle': 'Roses',
-      'pricePerItem': '₹39 each',
-      'discount': 'Save 33%',
-      'totalPrice': '₹1,170',
-      'extra': '+ 1 free daily',
-      'tag': 'BEST VALUE',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final service = RoseApiService();
+    final data = await service.getRosesData();
+    if (data != null && mounted) {
+      setState(() {
+        RosesScreen.availableRoses = data['availableRoses'] ?? 0;
+
+        final packs = data['packs'] as List<dynamic>? ?? [];
+        _packages = packs.map((p) {
+          final title = p['title'].toString();
+          // Extract just the number for the large text
+          final numberMatch = RegExp(r'\d+').firstMatch(title);
+          final numberStr = numberMatch != null ? numberMatch.group(0) : '0';
+
+          String? tagStr;
+          final badge = p['badge']?.toString();
+          if (badge == 'MOST_POPULAR') {
+            tagStr = 'Save 22%';
+          } else if (badge == 'BEST_VALUE') {
+            tagStr = 'Save 38%';
+          }
+
+          return {
+            'id': p['id'],
+            'title': numberStr!.padLeft(2, '0'),
+            'subtitle': 'Roses',
+            'pricePerItem': '₹${p['pricePerUnit']} each',
+            'totalPrice': '₹${p['totalPrice']}',
+            'extra':
+                '+ 1 free daily', // Mocked extra info since API doesn't provide it
+            'tag': tagStr,
+          };
+        }).toList();
+
+        _infoList = List<Map<String, dynamic>>.from(data['info'] ?? []);
+        _isLoading = false;
+      });
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,219 +114,250 @@ class _RosesScreenState extends State<RosesScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTopBanner(),
-            const SizedBox(height: 24),
-            const Text(
-              'YOUR IMPACT',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 190),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTopBanner(),
+                  const SizedBox(height: 15),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'GET MORE ROSES',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(_packages.length, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            child: _buildPackageCard(index),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Center(
+                    child: Text(
+                      'Most popular · best value picks save you up to 38% per rose',
+                      style: TextStyle(color: Colors.black45, fontSize: 11),
+                    ),
+                  ),
+                  if (_infoList.isNotEmpty) ...[
+                    const SizedBox(height: 32),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'WHY ROSES WORK',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildWhyRosesWorkSection(),
+                    ),
+                  ],
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            _buildImpactSection(),
-            const SizedBox(height: 32),
-            const Text(
-              'GET MORE ROSES',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...List.generate(_packages.length, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: _buildPackageCard(index),
-              );
-            }),
-            const SizedBox(height: 16),
-            const Text(
-              'WHY ROSES WORK',
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildWhyRosesWorkSection(),
-            const SizedBox(height: 16),
-            _buildProTipBanner(),
-            const SizedBox(height: 2),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomSheet: _isLoading ? null : _buildBottomBar(),
     );
   }
 
   Widget _buildTopBanner() {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color.fromRGBO(57, 162, 250, 1.0),
-            Color.fromRGBO(23, 113, 202, 1.0),
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromRGBO(23, 113, 202, 0.3),
+            color: Colors.black.withOpacity(0.15),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
         ],
+        image: const DecorationImage(
+          image: AssetImage('assets/rose_send.jpeg'),
+          fit: BoxFit.cover,
+        ),
       ),
-      child: Stack(
-        children: [
-          // Background graphic (stars)
-          Positioned(
-            right: 10,
-            top: 15,
-            child: Transform.rotate(
-              angle: -0.3,
-              child: Icon(
-                Icons.star,
-                size: 90,
-                color: Colors.white.withOpacity(0.15),
-              ),
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              Colors.black.withOpacity(0.3),
+              const Color(0xFFE94057).withOpacity(0.65),
+              const Color(0xFFE94057).withOpacity(0.75),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          Positioned(
-            right: 100,
-            top: 90,
-            child: Transform.rotate(
-              angle: -0.8,
-              child: Icon(
-                Icons.star,
-                size: 20,
-                color: Colors.white.withOpacity(0.2),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 30,
-            top: 120,
-            child: Transform.rotate(
-              angle: 0.8,
-              child: Icon(
-                Icons.auto_awesome,
-                size: 28,
-                color: Colors.white.withOpacity(0.3),
-              ),
-            ),
-          ),
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.white, size: 14),
-                    const SizedBox(width: 4),
-                    Text(
-                      'STAND OUT',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Make the first\nmove count',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const Icon(Icons.star, color: Colors.white, size: 12),
+                const SizedBox(width: 4),
                 Text(
-                  'Roses get 3× more replies. Your profile\nshows on top with a blue star.',
+                  'STAND OUT',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Inner card
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(77, 152, 229, 1.0),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            '${RosesScreen.availableRoses}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Roses available',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '1 free per day · Renews in 14h 22m',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.star, color: Colors.white, size: 20),
-                    ],
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            const Text(
+              'Make the first\nmove count',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Roses get 3× more replies. Your profile\nshows on top with a blue star.',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // The 4 info tiles row
+            if (_infoList.isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(
+                  _infoList.length > 4 ? 4 : _infoList.length,
+                  (index) {
+                    final info = _infoList[index];
+                    IconData iconData = Icons.star;
+                    if (index == 1) iconData = Icons.trending_up;
+                    if (index == 2) iconData = Icons.chat_bubble_outline;
+                    if (index == 3) iconData = Icons.bolt;
+
+                    return Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(
+                          right:
+                              index ==
+                                  (_infoList.length > 4
+                                      ? 3
+                                      : _infoList.length - 1)
+                              ? 0
+                              : 6,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(iconData, color: Colors.white, size: 16),
+                            const SizedBox(height: 4),
+                            Text(
+                              info['title'] ?? '',
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
+                                height: 1.1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            const SizedBox(height: 12),
+            // ROSES AVAILABLE
+            const Text(
+              'ROSES AVAILABLE',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  '${RosesScreen.availableRoses}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 42,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'roses',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 0),
+            Text(
+              'Each rose puts your profile on top with a star · never expires',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -582,198 +640,167 @@ class _RosesScreenState extends State<RosesScreen> {
     final bool isSelected = _selectedPackageIndex == index;
     final String? tag = pkg['tag'];
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedPackageIndex = index;
-            });
-          },
-          child: AnimatedContainer(
+    Color themeColor = const Color(0xFFE94057); // Red/Pink for all
+    Color themeBgColor = const Color(0xFFFFF0F3);
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPackageIndex = index;
+        });
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(16),
+            width: 105,
+            padding: const EdgeInsets.only(
+              top: 18,
+              bottom: 12,
+              left: 8,
+              right: 8,
+            ),
             decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFFF0F7FF) : Colors.white,
+              color: isSelected ? themeBgColor : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected
-                    ? const Color(0xFF2383F6)
-                    : const Color(0xFFE5E5E5),
-                width: isSelected ? 2 : 1,
+                color: isSelected ? themeColor : const Color(0xFFEAEAEA),
+                width: isSelected ? 2.0 : 1.0,
               ),
               boxShadow: [
                 if (!isSelected)
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
               ],
             ),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Star Icon Box
+                Text(
+                  pkg['title'],
+                  style: TextStyle(
+                    color: isSelected ? themeColor : Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const Text(
+                  'Roses',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  pkg['pricePerItem'].toString().replaceFirst(' each', '/each'),
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${pkg['totalPrice']} total',
+                  style: const TextStyle(color: Colors.black45, fontSize: 9),
+                ),
+                const SizedBox(height: 8),
+                // Radio button circle
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 20,
+                  height: 20,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: isSelected
-                          ? [
-                              const Color(0xFF2383F6),
-                              const Color(0xFF6FB1FF), // lighter blue
-                            ]
-                          : [
-                              const Color(0xFFD6E9FF),
-                              const Color(0xFFEAF4FF), // lighter greyish blue
-                            ],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? themeColor : Colors.grey.shade300,
+                      width: 1.5,
                     ),
-                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.star,
-                    color: isSelected ? Colors.white : const Color(0xFF2383F6),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // Title and subtitle
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            pkg['title'],
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                  child: isSelected
+                      ? Center(
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: themeColor,
+                              shape: BoxShape.circle,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            pkg['subtitle'],
-                            style: const TextStyle(
-                              color: Colors.black87,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            pkg['pricePerItem'],
-                            style: const TextStyle(
-                              color: Colors.black54,
-                              fontSize: 12,
-                            ),
-                          ),
-                          if (pkg['discount'] != null) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE8F5E9),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                pkg['discount'],
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 44, 171, 104),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Right side price
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      pkg['totalPrice'],
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      pkg['extra'],
-                      style: const TextStyle(
-                        color: Colors.black54,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
+                        )
+                      : null,
                 ),
               ],
             ),
           ),
-        ),
-        if (tag != null)
-          Positioned(
-            top: -10,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: tag == 'MOST POPULAR'
-                      ? [
-                          const Color.fromARGB(255, 56, 154, 231),
-                          const Color.fromARGB(255, 85, 170, 240),
-                        ]
-                      : [const Color(0xFFFFD54F), const Color(0xFFF6B042)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+          if (tag != null && tag.isNotEmpty)
+            Positioned(
+              top: -10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
                 ),
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(
-                    color: tag == 'MOST POPULAR'
-                        ? const Color(0xFF4598F7).withOpacity(0.3)
-                        : const Color(0xFFF6B042).withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: index == 0
+                        ? [
+                            const Color(0xFFFFD54F),
+                            const Color(0xFFF6B042),
+                          ] // Gold
+                        : index == 2
+                        ? [const Color(0xFF434343), Colors.black] // Black/Dark
+                        : [
+                            const Color(0xFFFF6575),
+                            const Color(0xFFE94057),
+                          ], // Red/Pink
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: Text(
-                tag,
-                style: TextStyle(
-                  color: tag == 'BEST VALUE' ? Colors.black87 : Colors.white,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          (index == 0
+                                  ? const Color(0xFFF6B042)
+                                  : index == 2
+                                  ? Colors.black
+                                  : const Color(0xFFE94057))
+                              .withOpacity(0.4),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  tag,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildBottomBar() {
-    final selectedPkg = _packages[_selectedPackageIndex];
+    if (_packages.isEmpty) return const SizedBox.shrink();
+
+    int index = _selectedPackageIndex;
+    if (index >= _packages.length) index = 0;
+
+    final selectedPkg = _packages[index];
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -817,23 +844,19 @@ class _RosesScreenState extends State<RosesScreen> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(61, 169, 255, 1.0),
+                backgroundColor: const Color(0xFFE94057),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.star, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    'Get Roses',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              child: Text(
+                'Get ${int.parse(selectedPkg['title'])} Roses for ${selectedPkg['totalPrice']}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

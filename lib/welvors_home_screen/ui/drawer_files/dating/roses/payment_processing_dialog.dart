@@ -99,7 +99,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color.fromRGBO(61, 169, 255, 1.0),
+                      const Color(0xFFE94057),
                     ),
                   ),
                 ),
@@ -124,7 +124,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                 ),
               ] else ...[
                 Lottie.asset(
-                  'assets/Payment_roses.json',
+                  'assets/red_success.json',
                   width: 100,
                   height: 100,
                   repeat: false,
@@ -191,7 +191,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                       widget.onDone(); // Callback to trigger UI updates
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(61, 169, 255, 1.0),
+                      backgroundColor: const Color(0xFFE94057),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
