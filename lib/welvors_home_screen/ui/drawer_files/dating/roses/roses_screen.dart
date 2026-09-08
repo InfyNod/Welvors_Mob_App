@@ -209,8 +209,8 @@ class _RosesScreenState extends State<RosesScreen> {
           gradient: LinearGradient(
             colors: [
               Colors.black.withOpacity(0.3),
+              const Color(0xFFE0182C).withOpacity(0.55),
               const Color(0xFFE0182C).withOpacity(0.65),
-              const Color(0xFFE0182C).withOpacity(0.75),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
