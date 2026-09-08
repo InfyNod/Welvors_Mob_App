@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../date_now/profile/profile_detail.dart';
+import 'match_dialog.dart';
 
 class AdmirerProfileView extends StatelessWidget {
   final Map<String, dynamic> userCard;
@@ -76,8 +77,26 @@ class AdmirerProfileView extends StatelessWidget {
               iconSize: 26,
               padding: 16,
               onTap: () {
-                onAction(userCard['id'], 'Liked back 💖');
-                Navigator.pop(context); // Go back after action
+                MatchDialog.show(
+                  context,
+                  matchedUserName: userCard['name'] ?? 'User',
+                  matchedUserImageUrl: userCard['imageUrl'] ?? '',
+                  onMessage: () {
+                    onAction(userCard['id'], 'Liked back 💖');
+                    Navigator.pop(context); // Close dialog
+                    Navigator.pop(context); // Go back from profile
+                  },
+                  onSendRose: () {
+                    onAction(userCard['id'], 'Sent Rose 🌹');
+                    Navigator.pop(context); // Close dialog
+                    Navigator.pop(context); // Go back from profile
+                  },
+                  onKeepBrowsing: () {
+                    onAction(userCard['id'], 'Liked back 💖');
+                    Navigator.pop(context); // Close dialog
+                    Navigator.pop(context); // Go back from profile
+                  },
+                );
               },
             ),
           ],
