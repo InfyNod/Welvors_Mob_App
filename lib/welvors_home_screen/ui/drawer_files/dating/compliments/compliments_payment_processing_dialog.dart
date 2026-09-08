@@ -100,7 +100,7 @@ class _ComplimentsPaymentProcessingDialogState
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFFE43A6A),
+                      Color(0xFF632EB7),
                     ),
                   ),
                 ),
@@ -127,7 +127,7 @@ class _ComplimentsPaymentProcessingDialogState
                 Transform.translate(
                   offset: const Offset(0, -20),
                   child: Lottie.asset(
-                    'assets/succeess.json',
+                    'assets/Success_compliment.json',
                     width: 160,
                     height: 160,
                     repeat: false,
@@ -195,7 +195,7 @@ class _ComplimentsPaymentProcessingDialogState
                       widget.onDone(); // Callback to trigger UI updates
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE43A6A),
+                      backgroundColor: const Color(0xFF632EB7),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

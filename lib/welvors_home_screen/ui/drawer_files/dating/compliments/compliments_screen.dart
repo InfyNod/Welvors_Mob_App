@@ -198,6 +198,11 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: _buildWhyComplimentsWorkSection(),
                     ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildProTipCard(),
+                    ),
                   ],
                 ],
               ),
@@ -230,8 +235,8 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
           gradient: LinearGradient(
             colors: [
               Colors.black.withOpacity(0.3),
-              const Color(0xFF9B66F7).withOpacity(0.55),
-              const Color(0xFF9B66F7).withOpacity(0.65),
+              const Color(0xFF632EB7).withOpacity(0.55),
+              const Color(0xFF632EB7).withOpacity(0.65),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -243,7 +248,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.star, color: Colors.white, size: 12),
+                const Icon(Icons.email, color: Colors.white, size: 12),
                 const SizedBox(width: 4),
                 Text(
                   'SAY MORE WITH WORDS',
@@ -280,8 +285,8 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
               children: [
                 Expanded(
                   child: _buildInsideBannerCard(
-                    Icons.chat_bubble,
-                    const Color(0xFFD1B2FF),
+                    Icons.chat_bubble_outline_outlined,
+                    Colors.white,
                     'Note on\nany photo',
                   ),
                 ),
@@ -289,7 +294,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 Expanded(
                   child: _buildInsideBannerCard(
                     Icons.trending_up,
-                    const Color(0xFF81C995),
+                    Colors.white,
                     '4× more\nmatches',
                   ),
                 ),
@@ -297,7 +302,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 Expanded(
                   child: _buildInsideBannerCard(
                     Icons.auto_awesome,
-                    const Color(0xFFFFD54F),
+                    Colors.white,
                     'Shows in\ntheir likes',
                   ),
                 ),
@@ -305,7 +310,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 Expanded(
                   child: _buildInsideBannerCard(
                     Icons.card_giftcard,
-                    const Color(0xFFF48FB1),
+                    Colors.white,
                     '2 free\neach week',
                   ),
                 ),
@@ -374,7 +379,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(iconData, color: iconColor, size: 18),
+          Icon(iconData, color: iconColor, size: 16),
           const SizedBox(height: 4),
           Text(
             label,
@@ -408,60 +413,118 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
       child: Column(
         children: [
           _buildWhyComplimentsWorkItem(
-            icon: Icons.chat_bubble,
-            iconColor: const Color(0xFF9B66F7),
+            icon: Icons.favorite,
+            iconColor: const Color(0xFF632EB7),
             iconBgColor: const Color(0xFFF3E5F5),
             title: 'Words that work',
-            subtitle:
-                'Likes with a compliment get replies 4× more often than plain likes.',
-            tag: 'PROVEN',
-            tagColor: const Color(0xFF9B66F7),
-            tagBgColor: const Color(0xFFF3E5F5),
+            subtitle: 'More than a swipe',
             isFirst: true,
           ),
           _buildWhyComplimentsWorkItem(
-            icon: Icons.text_snippet,
-            iconColor: const Color(0xFF34A853),
-            iconBgColor: const Color(0xFFE6F4EA),
+            icon: Icons.chat_bubble_outline,
+            iconColor: const Color(0xFF632EB7),
+            iconBgColor: const Color(0xFFF3E5F5),
+            title: '4× higher reply rate',
+            subtitle:
+                'Likes with a compliment get replies 4× more often than plain likes.',
+            tag: 'PROVEN',
+            tagColor: const Color(0xFF632EB7),
+            tagBgColor: const Color(0xFFF3E5F5),
+          ),
+          _buildWhyComplimentsWorkItem(
+            icon: Icons.star,
+            iconColor: const Color(0xFFF09B59),
+            iconBgColor: const Color(0xFFFFF2E8),
             title: 'Up to 140 chars',
             subtitle:
                 'Just enough to be witty, not enough to overshare. Sweet spot for first impressions.',
             tag: 'NEW',
-            tagColor: const Color(0xFF34A853),
-            tagBgColor: const Color(0xFFE6F4EA),
+            tagColor: const Color(0xFFF09B59),
+            tagBgColor: const Color(0xFFFFF2E8),
           ),
           _buildWhyComplimentsWorkItem(
-            icon: Icons.photo,
-            iconColor: const Color(0xFFF6B042),
-            iconBgColor: const Color(0xFFFFF3E0),
+            icon: Icons.remove_red_eye_outlined,
+            iconColor: const Color(0xFF63A4FF),
+            iconBgColor: const Color(0xFFEAF2FF),
             title: 'Attached to a specific photo or prompt',
             subtitle:
                 'Anchor your note to what caught your eye — much more personal.',
           ),
           _buildWhyComplimentsWorkItem(
-            icon: Icons.notifications_active,
-            iconColor: const Color(0xFFE94086),
-            iconBgColor: const Color(0xFFFCE4EC),
+            icon: Icons.check,
+            iconColor: const Color(0xFF6FCF97),
+            iconBgColor: const Color(0xFFEAFAF1),
             title: 'Goes to their top notifications',
             subtitle:
                 'Compliments skip the regular queue — your message lands at the top.',
           ),
           _buildWhyComplimentsWorkItem(
-            icon: Icons.timelapse,
-            iconColor: const Color(0xFF2383F6),
-            iconBgColor: const Color(0xFFE3F0FF),
+            icon: Icons.access_time,
+            iconColor: const Color(0xFF632EB7),
+            iconBgColor: const Color(0xFFF3E5F5),
             title: 'Compliments never expire',
             subtitle:
                 'Buy now, use anytime. Save them for the right person — no rush.',
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.lightbulb,
-            iconColor: const Color(0xFF9B66F7),
-            iconBgColor: const Color(0xFFF3E5F5),
-            title: 'Pro tip: Reference a specific detail',
-            subtitle:
-                '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
             isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProTipCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFFEF5E3), // rgba(254, 245, 227)
+            Color(0xFFFCE2EB), // rgba(252, 226, 235)
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5B667), // Solid warm amber
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.format_quote_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Pro tip: Reference a specific detail',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -474,6 +537,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
     required Color iconBgColor,
     required String title,
     required String subtitle,
+    List<String>? bulletPoints,
     String? tag,
     Color? tagColor,
     Color? tagBgColor,
@@ -535,7 +599,40 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    if (bulletPoints != null && bulletPoints.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      ...bulletPoints.map(
+                        (bp) => Padding(
+                          padding: const EdgeInsets.only(bottom: 2),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 5, right: 6),
+                                child: Icon(
+                                  Icons.circle,
+                                  size: 4,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  bp,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                    ] else ...[
+                      const SizedBox(height: 4),
+                    ],
                     Text(
                       subtitle,
                       style: const TextStyle(
@@ -553,8 +650,9 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
         if (!isLast)
           Divider(
             height: 1,
+            thickness: 1,
             color: Colors.grey.withOpacity(0.15),
-            indent: 56, // Align with text
+            indent: 16,
             endIndent: 16,
           ),
       ],
@@ -626,7 +724,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
     final bool isSelected = _selectedPackageIndex == index;
     final String? tag = pkg['tag'];
 
-    Color themeColor = const Color(0xFF9B66F7); // Red/Pink for all
+    Color themeColor = const Color(0xFF632EB7); // Red/Pink for all
     Color themeBgColor = const Color(0xFFF3E5F5);
 
     return GestureDetector(
@@ -745,7 +843,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                         ? [const Color(0xFF434343), Colors.black] // Black/Dark
                         : [
                             const Color(0xFFB388FF),
-                            const Color(0xFF9B66F7),
+                            const Color(0xFF632EB7),
                           ], // Red/Pink
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -758,7 +856,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                                   ? const Color(0xFFF6B042)
                                   : index == 2
                                   ? Colors.black
-                                  : const Color(0xFF9B66F7))
+                                  : const Color(0xFF632EB7))
                               .withOpacity(0.4),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -830,7 +928,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF9B66F7),
+                backgroundColor: const Color(0xFF632EB7),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(

@@ -12,7 +12,11 @@ class GetComplimentsDrawer extends StatefulWidget {
     required this.onPurchased,
   });
 
-  static void show(BuildContext context, Map<String, dynamic> package, VoidCallback onPurchased) {
+  static void show(
+    BuildContext context,
+    Map<String, dynamic> package,
+    VoidCallback onPurchased,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -44,7 +48,12 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.only(top: 12, left: 20, right: 20, bottom: 16),
+          padding: const EdgeInsets.only(
+            top: 12,
+            left: 20,
+            right: 20,
+            bottom: 16,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,13 +80,10 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
               const SizedBox(height: 4),
               Text(
                 'Review your pack and choose how to pay.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade500,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
               ),
               const SizedBox(height: 16),
-              
+
               // Package Summary Card
               Container(
                 padding: const EdgeInsets.all(12),
@@ -124,7 +130,7 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 20),
               const Text(
                 'PAY USING',
@@ -136,7 +142,7 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               // Payment Methods
               _buildPaymentOption(
                 id: 'wallet',
@@ -155,9 +161,9 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                 title: 'Card',
                 subtitle: 'Credit / Debit',
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Pay Button
               SizedBox(
                 width: double.infinity,
@@ -165,8 +171,11 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context); // Close the bottom sheet
-                    final itemsToAdd = int.parse(widget.selectedPackage['title']);
-                    final newBalance = ComplimentsScreen.availableCompliments + itemsToAdd;
+                    final itemsToAdd = int.parse(
+                      widget.selectedPackage['title'],
+                    );
+                    final newBalance =
+                        ComplimentsScreen.availableCompliments + itemsToAdd;
                     ComplimentsPaymentProcessingDialog.show(
                       context: context,
                       selectedPackage: widget.selectedPackage,
@@ -178,7 +187,7 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE43A6A), // Brand Pink
+                    backgroundColor: const Color(0xFF632EB7), // Brand Pink
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -194,7 +203,6 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                   ),
                 ),
               ),
-              
             ],
           ),
         ),
@@ -208,7 +216,7 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
     required String subtitle,
   }) {
     final isSelected = _selectedPaymentMethod == id;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -221,7 +229,7 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
+            color: isSelected ? const Color(0xFF632EB7) : Colors.grey.shade200,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -242,10 +250,7 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -255,9 +260,11 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
               height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
+                color: isSelected ? const Color(0xFF632EB7) : Colors.white,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade300,
+                  color: isSelected
+                      ? const Color(0xFF632EB7)
+                      : Colors.grey.shade300,
                   width: 1,
                 ),
               ),
