@@ -30,7 +30,7 @@ class _DateNowScreenState extends State<DateNowScreen>
   bool _isLoading = true;
   List<Map<String, dynamic>> _fetchedPlans = [];
   final Set<String> _removedPlanIds = {};
-  
+
   late PageController _pageController;
 
   @override

@@ -178,7 +178,7 @@ class ProfileModel extends Equatable {
 
     return ProfileModel(
       id: this.id,
-      images: (parsedImages.isNotEmpty && parsedImages.length > this.images.length) ? parsedImages : this.images,
+      images: this.images.isNotEmpty ? this.images : parsedImages,
       videoUrl: parsedVideo,
       name: (this.name != 'Unknown' && this.name.isNotEmpty) ? this.name : (details['full_name'] ?? details['fullName'] ?? this.name),
       age: details['age'] ?? this.age,

@@ -254,9 +254,15 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
               .toList();
 
           List<String> locParts = [];
-          if (profileData['area'] != null && profileData['area'].toString().isNotEmpty) locParts.add(extractString(profileData['area']));
-          if (profileData['city'] != null && profileData['city'].toString().isNotEmpty) locParts.add(extractString(profileData['city']));
-          if (profileData['state'] != null && profileData['state'].toString().isNotEmpty) locParts.add(extractString(profileData['state']));
+          if (profileData['area'] != null &&
+              profileData['area'].toString().isNotEmpty)
+            locParts.add(extractString(profileData['area']));
+          if (profileData['city'] != null &&
+              profileData['city'].toString().isNotEmpty)
+            locParts.add(extractString(profileData['city']));
+          if (profileData['state'] != null &&
+              profileData['state'].toString().isNotEmpty)
+            locParts.add(extractString(profileData['state']));
           String combinedLocation = locParts.join(', ');
 
           // Create base profile. We use fallback values in case the API doesn't provide them.
