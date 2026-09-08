@@ -178,7 +178,7 @@ class _GetRosesDrawerState extends State<GetRosesDrawer> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE94057), // Brand Red
+                    backgroundColor: const Color(0xFFE0182C), // Brand Red
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -221,7 +221,7 @@ class _GetRosesDrawerState extends State<GetRosesDrawer> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFFE94057) : Colors.grey.shade200,
+            color: isSelected ? const Color(0xFFE0182C) : Colors.grey.shade200,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -255,9 +255,9 @@ class _GetRosesDrawerState extends State<GetRosesDrawer> {
               height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? const Color(0xFFE94057) : Colors.white,
+                color: isSelected ? const Color(0xFFE0182C) : Colors.white,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFFE94057) : Colors.grey.shade300,
+                  color: isSelected ? const Color(0xFFE0182C) : Colors.grey.shade300,
                   width: 1,
                 ),
               ),

@@ -209,8 +209,8 @@ class _RosesScreenState extends State<RosesScreen> {
           gradient: LinearGradient(
             colors: [
               Colors.black.withOpacity(0.3),
-              const Color(0xFFE94057).withOpacity(0.65),
-              const Color(0xFFE94057).withOpacity(0.75),
+              const Color(0xFFE0182C).withOpacity(0.65),
+              const Color(0xFFE0182C).withOpacity(0.75),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -247,7 +247,7 @@ class _RosesScreenState extends State<RosesScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Roses get 3× more replies. Your profile\nshows on top with a blue star.',
+              'Roses get 3× more replies. Your profile\nshows on top with a star.',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.9),
                 fontSize: 13,
@@ -366,7 +366,7 @@ class _RosesScreenState extends State<RosesScreen> {
     return Row(
       children: [
         Expanded(
-          child: _buildImpactCard('24', 'SENT', const Color(0xFF2383F6)),
+          child: _buildImpactCard('24', 'SENT', const Color(0xFFE0182C)),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -435,22 +435,22 @@ class _RosesScreenState extends State<RosesScreen> {
         children: [
           _buildWhyRosesWorkItem(
             icon: Icons.star,
-            iconColor: const Color(0xFF2383F6),
-            iconBgColor: const Color(0xFFE3F0FF),
+            iconColor: const Color(0xFFE0182C),
+            iconBgColor: const Color(0xFFFFEBEE),
             title: 'Stand out instantly',
             subtitle: 'When you really like someone',
             isFirst: true,
           ),
           _buildWhyRosesWorkItem(
             icon: Icons.star,
-            iconColor: const Color(0xFF2383F6),
-            iconBgColor: const Color(0xFFE3F0FF),
+            iconColor: const Color(0xFFE0182C),
+            iconBgColor: const Color(0xFFFFEBEE),
             title: 'They see you first',
             subtitle:
-                'Your profile jumps to the top of their deck with a blue star.',
+                'Your profile jumps to the top of their deck with a star.',
             tag: 'PRIORITY',
-            tagColor: const Color(0xFF2383F6),
-            tagBgColor: const Color(0xFFE3F0FF),
+            tagColor: const Color(0xFFE0182C),
+            tagBgColor: const Color(0xFFFFEBEE),
           ),
           _buildWhyRosesWorkItem(
             icon: Icons.trending_up,
@@ -640,8 +640,8 @@ class _RosesScreenState extends State<RosesScreen> {
     final bool isSelected = _selectedPackageIndex == index;
     final String? tag = pkg['tag'];
 
-    Color themeColor = const Color(0xFFE94057); // Red/Pink for all
-    Color themeBgColor = const Color(0xFFFFF0F3);
+    Color themeColor = const Color(0xFFE0182C); // Red/Pink for all
+    Color themeBgColor = const Color(0xFFFFEBEE);
 
     return GestureDetector(
       onTap: () {
@@ -758,8 +758,8 @@ class _RosesScreenState extends State<RosesScreen> {
                         : index == 2
                         ? [const Color(0xFF434343), Colors.black] // Black/Dark
                         : [
-                            const Color(0xFFFF6575),
-                            const Color(0xFFE94057),
+                            const Color(0xFFFF435A),
+                            const Color(0xFFE0182C),
                           ], // Red/Pink
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -772,7 +772,7 @@ class _RosesScreenState extends State<RosesScreen> {
                                   ? const Color(0xFFF6B042)
                                   : index == 2
                                   ? Colors.black
-                                  : const Color(0xFFE94057))
+                                  : const Color(0xFFE0182C))
                               .withOpacity(0.4),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -844,7 +844,7 @@ class _RosesScreenState extends State<RosesScreen> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE94057),
+                backgroundColor: const Color(0xFFE0182C),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(

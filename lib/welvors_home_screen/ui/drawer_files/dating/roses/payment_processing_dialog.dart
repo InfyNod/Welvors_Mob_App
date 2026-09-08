@@ -99,7 +99,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      const Color(0xFFE94057),
+                      const Color(0xFFE0182C),
                     ),
                   ),
                 ),
@@ -191,7 +191,7 @@ class _PaymentProcessingDialogState extends State<PaymentProcessingDialog> {
                       widget.onDone(); // Callback to trigger UI updates
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE94057),
+                      backgroundColor: const Color(0xFFE0182C),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
