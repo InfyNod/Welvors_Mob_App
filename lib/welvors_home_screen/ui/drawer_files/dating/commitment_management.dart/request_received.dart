@@ -55,29 +55,26 @@ class _RequestsSectionState extends State<RequestsSection> {
         Color bgColor = const Color(0xFFFDF0F3);
         Color textColor = const Color(0xFFC73A5E);
         IconData icon = Icons.favorite_border;
-        String intentName = 'Serious relationship';
+        String intentName = p['message'] ?? 'Serious relationship';
 
         if (tag == 'IN_RELATIONSHIP') {
            bgColor = const Color(0xFFF2E6EA);
            textColor = const Color(0xFF8B6B78);
            icon = Icons.favorite_border;
-           intentName = 'Serious relationship';
         } else if (tag.contains('OPEN')) {
             bgColor = const Color(0xFFE8F5E9);
             textColor = const Color(0xFF2E7D32);
             icon = Icons.all_inclusive;
-            intentName = 'Open relationship';
         } else if (tag.contains('MARR')) {
             bgColor = const Color(0xFFFDF6E3);
             textColor = const Color(0xFF9E6B17);
             icon = Icons.diamond_outlined;
-            intentName = 'Dating to marry';
         }
 
         // Profile image
         String imageUrl = '';
         if (sender['photos'] != null && sender['photos'].isNotEmpty) {
-           imageUrl = sender['photos'][0] is Map ? sender['photos'][0]['url'] ?? '' : sender['photos'][0].toString();
+           imageUrl = sender['photos'][0] is Map ? sender['photos'][0]['media_url'] ?? '' : sender['photos'][0].toString();
         }
 
         formatted.add({

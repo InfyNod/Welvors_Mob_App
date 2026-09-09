@@ -238,11 +238,16 @@ class _CommitmentScreenView extends StatelessWidget {
                         offset: const Offset(0, 4),
                       ),
                     ],
-                    image: DecorationImage(
-                      image: NetworkImage(state.selfImageUrl),
-                      fit: BoxFit.cover,
-                    ),
+                    image: state.selfImageUrl.isNotEmpty
+                        ? DecorationImage(
+                            image: NetworkImage(state.selfImageUrl),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
                   ),
+                  child: state.selfImageUrl.isEmpty
+                      ? const Icon(Icons.person, color: Colors.white, size: 30)
+                      : null,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -366,13 +371,16 @@ class _CommitmentScreenView extends StatelessWidget {
                                   color: Colors.white,
                                   width: 3,
                                 ),
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                    state.imageUrl,
-                                  ), // Woman (Priya)
-                                  fit: BoxFit.cover,
-                                ),
+                                image: state.imageUrl.isNotEmpty
+                                    ? DecorationImage(
+                                        image: NetworkImage(state.imageUrl),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
                               ),
+                              child: state.imageUrl.isEmpty
+                                  ? const Icon(Icons.person, color: Colors.white)
+                                  : null,
                             ),
                           ),
                           Positioned(
@@ -386,13 +394,16 @@ class _CommitmentScreenView extends StatelessWidget {
                                   color: Colors.white,
                                   width: 3,
                                 ),
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                    state.selfImageUrl,
-                                  ), // User (Self)
-                                  fit: BoxFit.cover,
-                                ),
+                                image: state.selfImageUrl.isNotEmpty
+                                    ? DecorationImage(
+                                        image: NetworkImage(state.selfImageUrl),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
                               ),
+                              child: state.selfImageUrl.isEmpty
+                                  ? const Icon(Icons.person, color: Colors.white)
+                                  : null,
                             ),
                           ),
                         ],
@@ -480,32 +491,38 @@ class _CommitmentScreenView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: state.intentColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            state.intentIcon,
-                            size: 13,
-                            color: state.intentTextColor,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            state.intent,
-                            style: TextStyle(
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: state.intentColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              state.intentIcon,
+                              size: 13,
                               color: state.intentTextColor,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                state.intent,
+                                style: TextStyle(
+                                  color: state.intentTextColor,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
