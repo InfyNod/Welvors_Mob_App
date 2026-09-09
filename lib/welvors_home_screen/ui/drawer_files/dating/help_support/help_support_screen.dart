@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'all_screen_help/live_chat.dart';
-import 'all_screen_help/account_pofile.dart';
-import 'all_screen_help/safety_privacy.dart';
-import 'all_screen_help/plan_wallet.dart';
-import 'all_screen_help/matches_date.dart';
+
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -86,45 +83,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
-            /*
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search for help...',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 14,
-                  ),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey.shade400),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFE85A7A),
-                      width: 1.5,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  isDense: true,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            */
-
-            // Contact Options (Row)
             Row(
               children: [
                 Expanded(
@@ -161,85 +119,41 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 ),
               ],
             ),
-
-            const SizedBox(height: 32),
-            const Text(
-              'BROWSE BY TOPIC',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Colors.black54,
-                letterSpacing: 1.2,
-              ),
-            ),
             const SizedBox(height: 16),
-
-            // Topics Grid
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio:
-                  1.8, // Adjusted to prevent overflow while keeping it compact
+            Row(
               children: [
-                _buildTopicCard(
-                  emoji: '👤',
-                  title: 'Account & Profile',
-                  subtitle: 'Login, verification',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountProfileScreen(),
-                      ),
-                    );
-                  },
+                Expanded(
+                  child: _buildContactCard(
+                    emoji: '📞',
+                    iconBgColor: Colors.green.shade50,
+                    title: 'Request a Call',
+                    subtitle: 'We call you back\n',
+                    statusText: 'Mon–Sat, 10am–7pm',
+                    statusColor: Colors.grey.shade600,
+                    onTap: () {
+                      _showComingSoon();
+                    },
+                  ),
                 ),
-                _buildTopicCard(
-                  emoji: '🛡️',
-                  title: 'Safety & Privacy',
-                  subtitle: 'Block, report, data',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SafetyPrivacyScreen(),
-                      ),
-                    );
-                  },
-                ),
-                _buildTopicCard(
-                  emoji: '💳',
-                  title: 'Plans & Wallet',
-                  subtitle: 'Payments, refunds',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PlanWalletScreen(),
-                      ),
-                    );
-                  },
-                ),
-                _buildTopicCard(
-                  emoji: '💕',
-                  title: 'Matches & Dates',
-                  subtitle: 'Likes, events, plans',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MatchesDateScreen(),
-                      ),
-                    );
-                  },
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildContactCard(
+                    emoji: '🟢',
+                    iconBgColor: Colors.green.shade50,
+                    title: 'WhatsApp',
+                    subtitle: '+91 97653 03735\n',
+                    statusText: 'Fastest reply',
+                    statusColor: Colors.green,
+                    onTap: () {
+                      _showComingSoon();
+                    },
+                  ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 32),
+
             const Text(
               'POPULAR QUESTIONS',
               style: TextStyle(
@@ -301,94 +215,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             ),
 
             const SizedBox(height: 32),
-            const Text(
-              'SAFETY',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Colors.black54,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
 
-            // Safety Centre Card
-            GestureDetector(
-              onTap: () => _showComingSoon(),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFBE4E7), Colors.white],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.10),
-                      blurRadius: 16,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text('🛡️', style: TextStyle(fontSize: 22)),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Safety Centre',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Dating safety tips, emergency help, and how to report someone.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                              height: 1.3,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.chevron_right,
-                      color: Colors.pink.shade300,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
             const SizedBox(height: 20),
             Center(
@@ -505,68 +332,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     );
   }
 
-  Widget _buildTopicCard({
-    required String emoji,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.10),
-              blurRadius: 16,
-              spreadRadius: 0,
-              offset: const Offset(0, 8),
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              spreadRadius: 0,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 24)),
-            const SizedBox(height: 6),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 2),
-            Expanded(
-              child: Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade500,
-                  height: 1.2,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildMoreItem({
     required String emoji,

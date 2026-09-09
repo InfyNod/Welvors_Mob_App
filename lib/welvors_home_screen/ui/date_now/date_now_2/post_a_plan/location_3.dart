@@ -942,11 +942,18 @@ class _Location3ViewState extends State<Location3View> {
     return GestureDetector(
       onTap: () async {
         if (label == 'Choose date') {
+          DateTime firstD = DateTime.now();
+          DateTime initialD = _customDate ?? firstD;
+          if (initialD.weekday != 6 && initialD.weekday != 7) {
+            initialD = firstD.add(Duration(days: 6 - firstD.weekday));
+          }
           DateTime? picked = await showDatePicker(
             context: context,
-            initialDate: _customDate ?? DateTime.now(),
-            firstDate: DateTime.now(),
-            lastDate: DateTime.now().add(const Duration(days: 7)),
+            initialDate: initialD,
+            firstDate: firstD,
+            lastDate: firstD.add(const Duration(days: 30)),
+            selectableDayPredicate: (DateTime val) =>
+                val.weekday == 6 || val.weekday == 7,
             builder: (context, child) {
               return Theme(
                 data: Theme.of(context).copyWith(
