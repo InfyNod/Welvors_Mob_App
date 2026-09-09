@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'get_date_plans_drawer.dart';
+import 'service_date.dart';
 
 class DatePlanWallet extends StatefulWidget {
   static int availablePlans = 3;
@@ -12,33 +13,63 @@ class DatePlanWallet extends StatefulWidget {
 
 class _DatePlanWalletState extends State<DatePlanWallet> {
   int _selectedPackageIndex = 1;
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _packages = [];
+  List<Map<String, dynamic>> _howOnePlanWorks = [];
+  List<Map<String, dynamic>> _whyPeopleBuyPlans = [];
+  List<Map<String, dynamic>> _goodToKnow = [];
 
-  final List<Map<String, dynamic>> _packages = [
-    {
-      'title': '03',
-      'subtitle': 'Date Plans',
-      'pricePerItem': '90',
-      'totalPrice': '270',
-      'saveTag': 'Save 10%',
-      'topTag': null,
-    },
-    {
-      'title': '05',
-      'subtitle': 'Date Plans',
-      'pricePerItem': '86',
-      'totalPrice': '430',
-      'saveTag': 'Save 14%',
-      'topTag': 'MOST POPULAR',
-    },
-    {
-      'title': '10',
-      'subtitle': 'Date Plans',
-      'pricePerItem': '80',
-      'totalPrice': '800',
-      'saveTag': 'Save 20%',
-      'topTag': 'BEST VALUE',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final service = DatePlanApiService();
+    final data = await service.getDatePlansData();
+    if (data != null && mounted) {
+      setState(() {
+        DatePlanWallet.availablePlans = data['availableDatePlan'] ?? 0;
+
+        final packs = data['packages'] as List<dynamic>? ?? [];
+        _packages = packs.map((p) {
+          final planCount = p['planCount']?.toString() ?? '0';
+          final discount = p['discount']?.toString() ?? '0';
+          String saveTag = int.tryParse(discount) != null && int.parse(discount) > 0 ? 'Save $discount%' : '';
+          
+          String? topTag;
+          if (p['isPopular'] == true) {
+            topTag = 'MOST POPULAR';
+          } else if (int.tryParse(discount) != null && int.parse(discount) >= 20) {
+             topTag = 'BEST VALUE';
+          }
+
+          return {
+            'id': p['id'],
+            'title': planCount.padLeft(2, '0'),
+            'subtitle': 'Date Plans',
+            'pricePerItem': p['pricePerPlan']?.toString() ?? '0',
+            'totalPrice': p['price']?.toString() ?? '0',
+            'saveTag': saveTag.isNotEmpty ? saveTag : null,
+            'topTag': topTag,
+          };
+        }).toList();
+
+        final info = data['info'] ?? {};
+        _howOnePlanWorks = List<Map<String, dynamic>>.from(info['howOnePlanWorks'] ?? []);
+        _whyPeopleBuyPlans = List<Map<String, dynamic>>.from(info['whyPeopleBuyPlans'] ?? []);
+        _goodToKnow = List<Map<String, dynamic>>.from(info['goodToKnow'] ?? []);
+        _isLoading = false;
+      });
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +116,10 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
           ),
         ),
       ),
-      bottomSheet: _buildBottomBar(),
-      body: SingleChildScrollView(
+      bottomSheet: _isLoading ? null : _buildBottomBar(),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,7 +416,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
     final pkg = _packages[index];
     final bool isSelected = _selectedPackageIndex == index;
     final String? topTag = pkg['topTag'];
-    final String saveTag = pkg['saveTag'];
+    final String? saveTag = pkg['saveTag'];
 
     Color themeColor = const Color(0xFFF18C28); // Orange/Brown for all plans
     Color themeBgColor = const Color(0xFFFFF9F0);
@@ -585,7 +618,7 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${selectedPkg['title']} PLANS · ${selectedPkg['topTag'] ?? selectedPkg['saveTag']}',
+                '${selectedPkg['title']} PLANS · ${selectedPkg['topTag'] ?? selectedPkg['saveTag'] ?? 'TRY IT OUT'}',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 11,
@@ -644,6 +677,16 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
   }
 
   Widget _buildFeatureList() {
+    if (_howOnePlanWorks.isEmpty) return const SizedBox.shrink();
+
+    final emojisData = [
+      {'emoji': '📍', 'bgColor': const Color(0xFFFFF3E0)},
+      {'emoji': '👀', 'bgColor': const Color(0xFFE3F2FD)},
+      {'emoji': '✉️', 'bgColor': const Color(0xFFF5F5F5)},
+      {'emoji': '🤝', 'bgColor': const Color(0xFFFFF8E1)},
+      {'emoji': '💞', 'bgColor': const Color(0xFFFCE4EC)},
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -657,55 +700,33 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
         ],
       ),
       child: Column(
-        children: [
-          _buildFeatureItem(
-            emoji: '📍',
-            emojiBgColor: const Color(0xFFFFF3E0),
-            number: '1',
-            title: 'You post a real plan',
-            subtitle:
-                'Pick the activity, venue, time and who pays — coffee, dinner, drinks, a walk. One plan covers one posting.',
-            isFirst: true,
-          ),
-          _buildFeatureItem(
-            emoji: '👀',
-            emojiBgColor: const Color(0xFFE3F2FD),
-            number: '2',
-            title: 'Nearby people see it live',
-            subtitle:
-                'It goes into the Date Now feed for everyone matching your filters, until the time passes.',
-          ),
-          _buildFeatureItem(
-            emoji: '✉️',
-            emojiBgColor: const Color(0xFFF5F5F5),
-            number: '3',
-            title: 'They request to join',
-            subtitle:
-                'Requests arrive with a message and a bill suggestion. Nobody gets your exact location — only the venue.',
-          ),
-          _buildFeatureItem(
-            emoji: '🤝',
-            emojiBgColor: const Color(0xFFFFF8E1),
-            number: '4',
-            title: 'You approve who joins',
-            subtitle:
-                'Approve one person for a one-on-one, or a few for a small group meet — everyone approved drops straight into chat with the date details.',
-          ),
-          _buildFeatureItem(
-            emoji: '💞',
-            emojiBgColor: const Color(0xFFFCE4EC),
-            number: '5',
-            title: 'You meet in real life',
-            subtitle:
-                'Show up, enjoy the evening, and share how it went afterwards. Good dates lift your Trust Score and bring better people to your next plan.',
-            isLast: true,
-          ),
-        ],
+        children: List.generate(_howOnePlanWorks.length, (index) {
+          final info = _howOnePlanWorks[index];
+          final emojiMap = emojisData[index % emojisData.length];
+          return _buildFeatureItem(
+            emoji: emojiMap['emoji'] as String,
+            emojiBgColor: emojiMap['bgColor'] as Color,
+            number: '${index + 1}',
+            title: info['title'] ?? '',
+            subtitle: info['description'] ?? '',
+            isFirst: index == 0,
+            isLast: index == _howOnePlanWorks.length - 1,
+          );
+        }),
       ),
     );
   }
 
   Widget _buildWhyBuyPlansList() {
+    if (_whyPeopleBuyPlans.isEmpty) return const SizedBox.shrink();
+
+    final emojisData = [
+      {'emoji': '⚡', 'bgColor': const Color(0xFFFFF9C4)},
+      {'emoji': '🎯', 'bgColor': const Color(0xFFE1F5FE)},
+      {'emoji': '🚀', 'bgColor': const Color(0xFFFFF3E0)},
+      {'emoji': '♾️', 'bgColor': const Color(0xFFE8F5E9)},
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -719,47 +740,32 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
         ],
       ),
       child: Column(
-        children: [
-          _buildFeatureItem(
-            emoji: '⚡',
-            emojiBgColor: const Color(0xFFFFF9C4),
+        children: List.generate(_whyPeopleBuyPlans.length, (index) {
+          final info = _whyPeopleBuyPlans[index];
+          final emojiMap = emojisData[index % emojisData.length];
+          return _buildFeatureItem(
+            emoji: emojiMap['emoji'] as String,
+            emojiBgColor: emojiMap['bgColor'] as Color,
             number: null,
-            title: 'Skip weeks of texting',
-            subtitle:
-                'You meet the same evening instead of chatting for three weeks and fading out.',
-            isFirst: true,
-          ),
-          _buildFeatureItem(
-            emoji: '🎯',
-            emojiBgColor: const Color(0xFFE1F5FE),
-            number: null,
-            title: 'You set the terms',
-            subtitle:
-                'Your venue, your time, your bill preference, and which plans a Free, Premium, VIP or Elite member can see.',
-          ),
-          _buildFeatureItem(
-            emoji: '🚀',
-            emojiBgColor: const Color(0xFFFFF3E0),
-            number: null,
-            title: 'Boost-ready',
-            subtitle:
-                'Any live plan can be pinned to the top of the feed for 3 hours — more views, more requests.',
-          ),
-          _buildFeatureItem(
-            emoji: '♾️',
-            emojiBgColor: const Color(0xFFE8F5E9),
-            number: null,
-            title: 'Nothing is wasted',
-            subtitle:
-                'Plans never expire. If a plan gets no requests or you cancel before it starts, the plan returns to your wallet.',
-            isLast: true,
-          ),
-        ],
+            title: info['title'] ?? '',
+            subtitle: info['description'] ?? '',
+            isFirst: index == 0,
+            isLast: index == _whyPeopleBuyPlans.length - 1,
+          );
+        }),
       ),
     );
   }
 
   Widget _buildGoodToKnowList() {
+    if (_goodToKnow.isEmpty) return const SizedBox.shrink();
+
+    final emojisData = [
+      {'emoji': '🪙', 'bgColor': const Color(0xFFF5F5F5)},
+      {'emoji': '📆', 'bgColor': const Color(0xFFFCE4EC)},
+      {'emoji': '🛡️', 'bgColor': const Color(0xFFFFEBEE)},
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -773,34 +779,19 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
         ],
       ),
       child: Column(
-        children: [
-          _buildFeatureItem(
-            emoji: '🪙',
-            emojiBgColor: const Color(0xFFF5F5F5),
+        children: List.generate(_goodToKnow.length, (index) {
+          final info = _goodToKnow[index];
+          final emojiMap = emojisData[index % emojisData.length];
+          return _buildFeatureItem(
+            emoji: emojiMap['emoji'] as String,
+            emojiBgColor: emojiMap['bgColor'] as Color,
             number: null,
-            title: 'Paid with wallet coins',
-            subtitle:
-                '1 plan = 🪙 100 at single rate, less in a pack. Coins from referrals and gifts count too.',
-            isFirst: true,
-          ),
-          _buildFeatureItem(
-            emoji: '📆',
-            emojiBgColor: const Color(0xFFFCE4EC),
-            number: null,
-            title: 'Up to 2 live at a time',
-            subtitle:
-                'You can host two plans simultaneously — one today, one for the weekend.',
-          ),
-          _buildFeatureItem(
-            emoji: '🛡️',
-            emojiBgColor: const Color(0xFFFFEBEE),
-            number: null,
-            title: 'Verified members only',
-            subtitle:
-                'Only ID-verified members can send you a request, and you can report anyone in one tap.',
-            isLast: true,
-          ),
-        ],
+            title: info['title'] ?? '',
+            subtitle: info['description'] ?? '',
+            isFirst: index == 0,
+            isLast: index == _goodToKnow.length - 1,
+          );
+        }),
       ),
     );
   }
