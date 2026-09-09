@@ -117,6 +117,9 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     _amountController.addListener(() {
       setState(() {});
     });
@@ -213,14 +216,14 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
+                          color: _tabController.index == 1 ? const Color(0xFFFBE4E7) : Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
+                        child: Text(
                           '6',
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.black54,
+                            color: _tabController.index == 1 ? const Color(0xFFE85A7A) : Colors.black54,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -815,7 +818,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
                       subtitle,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade500,
+                        color: Colors.grey.shade700,
                       ),
                     ),
                   ],
@@ -872,7 +875,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
               children: [
                 Text(
                   'Credited to wallet',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
                 ),
                 Row(
                   children: [
@@ -898,7 +901,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
             style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
-              color: Colors.grey.shade400,
+              color: Colors.grey.shade600,
               letterSpacing: 0.8,
             ),
           ),
@@ -913,7 +916,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
         ),
         Text(
           value,
