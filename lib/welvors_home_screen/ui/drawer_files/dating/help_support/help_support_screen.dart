@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'all_screen_help/live_chat.dart';
-
+import 'all_screen_help/call_back.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -131,7 +131,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     statusText: 'Mon–Sat, 10am–7pm',
                     statusColor: Colors.grey.shade600,
                     onTap: () {
-                      _showComingSoon();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CallBackScreen(),
+                        ),
+                      );
                     },
                   ),
                 ),
