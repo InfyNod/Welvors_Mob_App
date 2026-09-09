@@ -456,23 +456,361 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
   }
 
   Widget _buildHistoryTab() {
-    // Placeholder for history tab, matching the UI style
-    return Center(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.history, size: 48, color: Colors.grey.shade300),
+          // Total Added Banner
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'TOTAL ADDED',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const Text(
+                  '₹10,350',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF2CAF6B),
+                  ),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 16),
-          Text(
-            'No history yet',
+
+          // Filters
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip('All 6', true),
+                const SizedBox(width: 8),
+                _buildFilterChip('Success 5', false),
+                const SizedBox(width: 8),
+                _buildFilterChip('Failed 1', false),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // This Month Section
+          const Text(
+            'THIS MONTH',
             style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w600,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          _buildHistoryCard(
+            title: 'Added via UPI',
+            subtitle: '12 Aug · tanishka@oksbi',
+            amount: '+₹2,000',
+            status: 'SUCCESS',
+            isSuccess: true,
+            icon: '📱',
+            iconBg: const Color(0xFFE9F6ED),
+            txnId: 'TOP-4471209',
+            hasDetails: true,
+            amountPaid: '₹2,000',
+            bonusCoins: '+₹100',
+            credited: '2,100',
+          ),
+          const SizedBox(height: 12),
+
+          _buildHistoryCard(
+            title: 'Added via Card',
+            subtitle: '6 Aug · HDFC •••• 4821',
+            amount: '+₹1,000',
+            status: 'SUCCESS',
+            isSuccess: true,
+            icon: '💳',
+            iconBg: const Color(0xFFFFF4E0),
+            txnId: 'TOP-4409866',
+          ),
+          const SizedBox(height: 12),
+
+          _buildHistoryCard(
+            title: 'Add money failed',
+            subtitle: '3 Aug · UPI timed out · not charged',
+            amount: '+₹500',
+            status: 'FAILED',
+            isSuccess: false,
+            icon: '📱',
+            iconBg: const Color(0xFFFBE4E7),
+            txnId: 'TOP-4388120',
+          ),
+
+          const SizedBox(height: 24),
+
+          // July Section
+          const Text(
+            'JULY 2026',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          _buildHistoryCard(
+            title: 'Added via UPI',
+            subtitle: '24 Jul · tanishka@oksbi',
+            amount: '+₹5,000',
+            status: 'SUCCESS',
+            isSuccess: true,
+            icon: '📱',
+            iconBg: const Color(0xFFE9F6ED),
+            txnId: 'TOP-4188735',
+            hasDetails: true,
+            amountPaid: '₹5,000',
+            bonusCoins: '+₹250',
+            credited: '5,250',
+          ),
+          const SizedBox(height: 12),
+
+          _buildHistoryCard(
+            title: 'Added via Net banking',
+            subtitle: '11 Jul · HDFC Bank',
+            amount: '+₹1,500',
+            status: 'SUCCESS',
+            isSuccess: true,
+            icon: '🏦',
+            iconBg: const Color(0xFFE8F1FA),
+            txnId: 'TOP-4092214',
+          ),
+          const SizedBox(height: 12),
+
+          _buildHistoryCard(
+            title: 'Added via UPI',
+            subtitle: '2 Jul · tanishka@oksbi',
+            amount: '+₹500',
+            status: 'SUCCESS',
+            isSuccess: true,
+            icon: '📱',
+            iconBg: const Color(0xFFE9F6ED),
+            txnId: 'TOP-4001558',
+          ),
+          
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, bool isSelected) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: isSelected ? const Color(0xFFFBE4E7) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade300,
+        ),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isSelected ? const Color(0xFFE85A7A) : Colors.black87,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryCard({
+    required String title,
+    required String subtitle,
+    required String amount,
+    required String status,
+    required bool isSuccess,
+    required String icon,
+    required Color iconBg,
+    required String txnId,
+    bool hasDetails = false,
+    String? amountPaid,
+    String? bonusCoins,
+    String? credited,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Text(icon, style: const TextStyle(fontSize: 18)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    amount,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: isSuccess ? const Color(0xFF2CAF6B) : const Color(0xFFE85A7A),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    status,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: isSuccess ? const Color(0xFF2CAF6B) : const Color(0xFFE85A7A),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          
+          if (hasDetails) ...[
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.grey.shade200,
+                    style: BorderStyle.solid, // Flutter doesn't support dotted directly without custom painter, using solid light line for now
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildDetailRow('Amount paid', amountPaid ?? ''),
+            const SizedBox(height: 6),
+            _buildDetailRow('Bonus coins', bonusCoins ?? '', isGreen: true),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Credited to wallet',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+                Row(
+                  children: [
+                    const Text('🪙', style: TextStyle(fontSize: 12)),
+                    const SizedBox(width: 4),
+                    Text(
+                      credited ?? '',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+          
+          const SizedBox(height: 12),
+          Text(
+            txnId,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade400,
+              letterSpacing: 1.0,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, {bool isGreen = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: isGreen ? const Color(0xFF2CAF6B) : Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 }
