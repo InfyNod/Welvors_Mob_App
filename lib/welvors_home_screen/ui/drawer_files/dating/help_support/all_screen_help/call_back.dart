@@ -7,7 +7,8 @@ class CallBackScreen extends StatefulWidget {
   State<CallBackScreen> createState() => _CallBackScreenState();
 }
 
-class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProviderStateMixin {
+class _CallBackScreenState extends State<CallBackScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _selectedDay = 'Today';
   String _selectedTime = '12-2 PM';
@@ -96,8 +97,8 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             child: TabBar(
               controller: _tabController,
               isScrollable: true,
-              labelColor: const Color(0xFFED5A79),
-              unselectedLabelColor: Colors.grey.shade500,
+              labelColor: const Color(0xFFE85A7A),
+              unselectedLabelColor: Colors.grey.shade600,
               labelStyle: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
@@ -107,10 +108,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
                 fontSize: 14,
               ),
               indicator: const UnderlineTabIndicator(
-                borderSide: BorderSide(
-                  color: Color(0xFFED5A79),
-                  width: 2,
-                ),
+                borderSide: BorderSide(color: Color(0xFFE85A7A), width: 2),
               ),
               dividerColor: Colors.transparent,
               tabAlignment: TabAlignment.start,
@@ -124,9 +122,14 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
                       const Text('History'),
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: _tabController.index == 1 ? const Color(0xFFFBE4E7) : Colors.grey.shade200,
+                          color: _tabController.index == 1
+                              ? const Color(0xFFFBE4E7)
+                              : Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -134,7 +137,9 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: _tabController.index == 1 ? const Color(0xFFED5A79) : Colors.grey.shade600,
+                            color: _tabController.index == 1
+                                ? const Color(0xFFE85A7A)
+                                : Colors.grey.shade700,
                           ),
                         ),
                       ),
@@ -148,10 +153,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildRequestTab(),
-          _buildHistoryTab(),
-        ],
+        children: [_buildRequestTab(), _buildHistoryTab()],
       ),
       bottomSheet: _buildBottomSheet(),
     );
@@ -176,7 +178,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             text: TextSpan(
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey.shade600,
+                color: Colors.grey.shade700,
                 height: 1.4,
               ),
               children: const [
@@ -265,7 +267,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
               'Calls are made Mon–Sat, 10am–7pm IST. If we miss you, we\'ll try once more and then email you.',
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+                color: Colors.grey.shade700,
                 height: 1.4,
               ),
             ),
@@ -295,7 +297,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             'Every call we\'ve made to you, and how it ended.',
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade600,
+              color: Colors.grey.shade700,
               height: 1.4,
             ),
           ),
@@ -305,7 +307,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             title: 'Payment or refund',
             statusText: 'RESOLVED',
             isResolved: true,
-            subtitle: 'Yesterday · 4–6 PM · Priya S. · 6 min',
+            subtitle: 'Yesterday · 4-6 PM · Priya S. · 6 min',
             description:
                 'Refund of ₹499 approved — credited in 3–5 working days.',
             referenceId: 'CB-884120',
@@ -315,7 +317,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             title: 'Verification',
             statusText: 'RESOLVED',
             isResolved: true,
-            subtitle: 'Thu, 28 Aug · 12–2 PM · Rohan M. · 11 min',
+            subtitle: 'Thu, 28 Aug · 12-2 PM · Rohan M. · 11 min',
             description:
                 'Re-uploaded ID accepted. Trust level moved to Identity Verified.',
             referenceId: 'CB-871905',
@@ -325,7 +327,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             title: 'Safety concern',
             statusText: 'MISSED',
             isResolved: false,
-            subtitle: 'Mon, 25 Aug · 10–12 PM',
+            subtitle: 'Mon, 25 Aug · 10-12 PM',
             description:
                 'We called twice, no answer — details emailed to you instead.',
             referenceId: 'CB-863477',
@@ -335,7 +337,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             title: 'Account or login',
             statusText: 'RESOLVED',
             isResolved: true,
-            subtitle: 'Fri, 22 Aug · 6–7 PM · Sana P. · 4 min',
+            subtitle: 'Fri, 22 Aug · 6-7 PM · Sana P. · 4 min',
             description:
                 'Login issue was a stale session. Resolved on the call.',
             referenceId: 'CB-857001',
@@ -386,7 +388,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: Colors.black87,
+                  color: Colors.black,
                 ),
               ),
               Container(
@@ -411,14 +413,14 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 16),
           Text(
             description,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade700,
+              color: Colors.grey.shade800,
               height: 1.4,
             ),
           ),
@@ -427,7 +429,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             referenceId,
             style: TextStyle(
               fontSize: 10,
-              color: Colors.grey.shade400,
+              color: Colors.grey.shade500,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -460,10 +462,10 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFED5A79),
+            backgroundColor: const Color(0xFFE85A7A),
             elevation: 0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
           child: Text(
@@ -481,15 +483,13 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
     );
   }
 
-
-
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
       style: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
-        color: Colors.grey.shade500,
+        color: Colors.grey.shade600,
         letterSpacing: 1.2,
       ),
     );
@@ -507,7 +507,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFFBE4E7) : Colors.white,
           border: Border.all(
-            color: isSelected ? const Color(0xFFED5A79) : Colors.grey.shade300,
+            color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade400,
             width: 1,
           ),
           borderRadius: BorderRadius.circular(24),
@@ -515,7 +515,7 @@ class _CallBackScreenState extends State<CallBackScreen> with SingleTickerProvid
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? const Color(0xFFED5A79) : Colors.black87,
+            color: isSelected ? const Color(0xFFE85A7A) : Colors.black87,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             fontSize: 13,
           ),
