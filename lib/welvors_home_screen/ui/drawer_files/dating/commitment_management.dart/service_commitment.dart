@@ -34,7 +34,7 @@ class CommitmentApiService {
       final token = await TokenHelper.getToken() ?? "";
       final url = 'https://api.welvors.com/api/user/relationship-tags/$relationshipId/end';
       
-      final response = await http.post(
+      final response = await http.patch(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
