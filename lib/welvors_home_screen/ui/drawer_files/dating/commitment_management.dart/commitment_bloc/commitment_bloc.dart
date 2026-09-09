@@ -143,11 +143,8 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   ) async {
     final currentState = state;
     if (currentState is CommitmentLoaded) {
-      // Call the API to end the commitment
-      final success = await CommitmentApiService().endCommitment(currentState.relationshipId);
-      
-      if (success) {
-        emit(CommitmentEndingSplash());
+      // The API call is now handled in the UI before this event is dispatched.
+      emit(CommitmentEndingSplash());
         await Future.delayed(const Duration(milliseconds: 5000));
         emit(
           CommitmentEnded(
@@ -155,10 +152,6 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
             userName: currentState.selfName,
           ),
         );
-      } else {
-        // Optionally handle error, for now we just show a snackbar in the UI or fallback
-        // We'll proceed with the splash for UX if preferred, or just not emit
-      }
     }
   }
 

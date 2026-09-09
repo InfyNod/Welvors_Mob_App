@@ -454,17 +454,8 @@ class _RequestsSectionState extends State<RequestsSection> {
                   final success = await CommitmentApiService().respondToProposal(id, true);
                   if (success && mounted) {
                     Navigator.pop(ctx);
-                    context.read<CommitmentBloc>().add(ApproveRequestEvent(
-                      partnerName: name,
-                      intent: intent,
-                      imageUrl: imageUrl,
-                      intentColor: intentColor,
-                      intentTextColor: intentTextColor,
-                      intentIcon: intentIcon,
-                    ));
-                    setState(() {
-                      _requests.removeWhere((req) => req['id'] == id);
-                    });
+                    // Fetch real relationship data from server to get valid relationshipId
+                    context.read<CommitmentBloc>().add(LoadCommitmentData());
                   }
                 },
                 child: Container(

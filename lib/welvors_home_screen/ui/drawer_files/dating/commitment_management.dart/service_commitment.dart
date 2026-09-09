@@ -29,7 +29,7 @@ class CommitmentApiService {
     }
   }
 
-  Future<bool> endCommitment(String relationshipId) async {
+  Future<String> endCommitment(String relationshipId) async {
     try {
       final token = await TokenHelper.getToken() ?? "";
       final url = 'https://api.welvors.com/api/user/relationship-tags/$relationshipId/end';
@@ -44,12 +44,15 @@ class CommitmentApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
-        return data['success'] == true;
+        if (data['success'] == true) {
+          return "success";
+        }
+        return data['message'] ?? "API Success is false";
       }
-      return false;
+      return "HTTP ${response.statusCode}: ${response.body}";
     } catch (e) {
       print('Error ending commitment: $e');
-      return false;
+      return "Exception: $e";
     }
   }
 

@@ -7,6 +7,7 @@ import 'commitment_bloc/commitment_state.dart';
 import 'request_received.dart';
 import 'end_status.dart';
 import 'splash_screen_brekup.dart';
+import 'service_commitment.dart';
 
 class CommitmentScreen extends StatelessWidget {
   const CommitmentScreen({super.key});
@@ -1011,11 +1012,35 @@ class _CommitmentScreenView extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               GestureDetector(
-                onTap: () {
-                  Navigator.pop(ctx);
-                  context.read<CommitmentBloc>().add(
-                    EndExclusiveStatusRequested(),
-                  );
+                onTap: () async {
+                  final bloc = context.read<CommitmentBloc>();
+                  final currentState = bloc.state;
+
+                  if (currentState is CommitmentLoaded) {
+                    // Show a loading indicator
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(child: CircularProgressIndicator()),
+                    );
+
+                    final result = await CommitmentApiService().endCommitment(currentState.relationshipId);
+                    
+                    if (context.mounted) {
+                      Navigator.pop(context); // Close loading dialog
+                      Navigator.pop(ctx);     // Close bottom sheet
+                      
+                      if (result == "success") {
+                        bloc.add(EndExclusiveStatusRequested());
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("API Failed: $result")),
+                        );
+                        // Trigger the UI flow anyway so it doesn't feel stuck
+                        bloc.add(EndExclusiveStatusRequested());
+                      }
+                    }
+                  }
                 },
                 child: Container(
                   height: 54,
