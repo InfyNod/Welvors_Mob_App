@@ -11,7 +11,7 @@ class EndStatusBody extends StatelessWidget {
   const EndStatusBody({
     super.key,
     required this.partnerName,
-    this.userName = 'Rahul', // Fallback name
+    this.userName = 'You', // Fallback name
   });
 
   @override

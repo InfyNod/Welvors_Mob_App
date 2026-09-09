@@ -967,6 +967,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () async {
+                              debugPrint("plan>>>>>>>${plan}");
                               final requestSent =
                                   await showRequestDateBottomSheet(
                                     context,

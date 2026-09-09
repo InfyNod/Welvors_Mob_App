@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 import 'get_boosts_drawer.dart';
-
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_all_screen/boost/service_boost.dart';
 class BoostScreen extends StatefulWidget {
   static int availableBoosts = 0;
 
@@ -12,43 +12,59 @@ class BoostScreen extends StatefulWidget {
 }
 
 class _BoostScreenState extends State<BoostScreen> {
-  int _selectedPackageIndex = 1; // 10 Boosts is selected by default
+  int _selectedPackageIndex = 0;
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _packages = [];
+  List<dynamic> _whyBoostWorks = [];
+  Map<String, dynamic>? _boostVsSuperBoost;
 
-  final List<Map<String, dynamic>> _packages = [
-    {
-      'title': '03',
-      'subtitle': 'Boosts',
-      'pricePerItem': '₹356/each',
-      'discount': null,
-      'oldPrice': null,
-      'totalPrice': '₹1,068 total',
-      'tag': null,
-    },
-    {
-      'title': '10',
-      'subtitle': 'Boosts',
-      'pricePerItem': '₹215/each',
-      'discount': 'Save 40%',
-      'oldPrice': '₹356/each',
-      'totalPrice': '₹2,150 total',
-      'tag': 'POPULAR',
-    },
-    {
-      'title': '20',
-      'subtitle': 'Boosts',
-      'pricePerItem': '₹175/each',
-      'discount': 'Save 51%',
-      'oldPrice': '₹356/each',
-      'totalPrice': '₹3,500 total',
-      'tag': 'BEST VALUE',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchBoostsData();
+  }
+
+  Future<void> _fetchBoostsData() async {
+    setState(() => _isLoading = true);
+    final data = await BoostApiService().getBoostsData();
+    if (data != null && data['boosts'] != null && data['boosts'].isNotEmpty) {
+      final boostData = data['boosts'][0];
+      final options = boostData['options'] as List<dynamic>? ?? [];
+      
+      _packages = options.map((opt) {
+        return {
+          'title': opt['boostCount'].toString(),
+          'subtitle': 'Boosts',
+          'pricePerItem': '₹${opt['discounted_price']}/each',
+          'discount': opt['discount_percent'] != null && opt['discount_percent'] > 0 
+              ? 'Save ${opt['discount_percent']}%' 
+              : null,
+          'oldPrice': opt['discount_percent'] != null && opt['discount_percent'] > 0 
+              ? '₹${opt['pricePerBoost']}/each' 
+              : null,
+          'totalPrice': '₹${opt['totalPrice']} total',
+          'tag': opt['is_popular'] == true ? 'POPULAR' : (opt['is_best_value'] == true ? 'BEST VALUE' : null),
+          'raw': opt,
+        };
+      }).toList();
+      
+      _whyBoostWorks = boostData['whyBoostWorks'] as List<dynamic>? ?? [];
+      _boostVsSuperBoost = boostData['boostVsSuperBoost'] as Map<String, dynamic>?;
+      BoostScreen.availableBoosts = data['availableBoost'] ?? 0;
+
+      int selectedIdx = _packages.indexWhere((p) => p['tag'] == 'POPULAR');
+      _selectedPackageIndex = selectedIdx == -1 ? 0 : selectedIdx;
+    }
+    setState(() => _isLoading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))) 
+          : SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,42 +86,49 @@ class _BoostScreenState extends State<BoostScreen> {
             const SizedBox(height: 16),
             _buildPackageSelection(),
             const SizedBox(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'WHY BOOST WORKS',
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
+            
+            if (_whyBoostWorks.isNotEmpty) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'WHY BOOST WORKS',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildWhyBoostWorksSection(),
-            ),
-            const SizedBox(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'BOOST VS SUPER BOOST',
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _buildWhyBoostWorksSection(),
+              ),
+              const SizedBox(height: 24),
+            ],
+
+            if (_boostVsSuperBoost != null && _boostVsSuperBoost!['features'] != null) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'BOOST VS SUPER BOOST',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildComparisonSection(),
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _buildComparisonSection(),
+              ),
+              const SizedBox(height: 24),
+            ],
+
             Row(
               children: [
                 Expanded(child: Divider(color: Colors.grey.shade300)),
@@ -133,7 +156,7 @@ class _BoostScreenState extends State<BoostScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomNavigationBar: _isLoading || _packages.isEmpty ? null : _buildBottomBar(),
     );
   }
 
@@ -546,85 +569,40 @@ class _BoostScreenState extends State<BoostScreen> {
         ],
       ),
       child: Column(
-        children: [
-          _buildWhyBoostWorkItem(
-            icon: Icons.bolt,
-            iconColor: const Color(0xFFE43A6A),
-            iconBgColor: const Color(0xFFFDF0F3),
-            title: 'Boost · 1 Hr',
-            subtitle: 'Quick visibility lift',
-            tag: '⚡ INSTANT',
+        children: _whyBoostWorks.asMap().entries.map((entry) {
+          final int index = entry.key;
+          final dynamic item = entry.value;
+          final bool isLast = index == _whyBoostWorks.length - 1;
+          
+          IconData iconData = Icons.star;
+          if (item['icon'] == 'zap') iconData = Icons.bolt;
+          if (item['icon'] == 'trending-up') iconData = Icons.trending_up;
+          if (item['icon'] == 'heart') iconData = Icons.favorite;
+
+          Color iconColor = const Color(0xFFE43A6A);
+          Color iconBgColor = const Color(0xFFFDF0F3);
+          
+          if (item['icon'] == 'trending-up') {
+            iconColor = const Color(0xFF34A853);
+            iconBgColor = const Color(0xFFE6F4EA);
+          } else if (item['icon'] == 'heart') {
+            iconColor = const Color(0xFFF6B042);
+            iconBgColor = const Color(0xFFFFF3E0);
+          }
+
+          return _buildWhyBoostWorkItem(
+            icon: iconData,
+            iconColor: iconColor,
+            iconBgColor: iconBgColor,
+            title: item['title'] ?? '',
+            subtitle: item['description'] ?? '',
+            tag: item['tag'],
             tagColor: const Color(0xFFE43A6A),
             tagBgColor: const Color(0xFFFDF0F3),
-            isFirst: true,
-          ),
-          _buildWhyBoostWorkItem(
-            icon: Icons.bolt,
-            iconColor: const Color(0xFFE43A6A),
-            iconBgColor: const Color(0xFFFDF0F3),
-            title: 'Top of nearby decks',
-            subtitle:
-                'Your profile jumps to position 1 in the discovery\ndeck within 2 km of you.',
-            tag: 'INSTANT',
-            tagColor: const Color(0xFFE43A6A),
-            tagBgColor: const Color(0xFFFDF0F3),
-          ),
-          _buildWhyBoostWorkItem(
-            icon: Icons.trending_up,
-            iconColor: const Color(0xFF34A853),
-            iconBgColor: const Color(0xFFE6F4EA),
-            title: '5× more profile views',
-            subtitle:
-                'On average, boosted profiles receive 245% more\nviews than regular ones in the same window.',
-            tag: '+245%',
-            tagColor: const Color(0xFFE43A6A),
-            tagBgColor: const Color(0xFFFDF0F3),
-          ),
-          _buildWhyBoostWorkItem(
-            icon: Icons.favorite,
-            iconColor: const Color(0xFFF6B042),
-            iconBgColor: const Color(0xFFFFF3E0),
-            title: '3× higher match rate',
-            subtitle:
-                'Better signal to compatible users means 3× more\nright-swipes during your boost.',
-          ),
-          _buildWhyBoostWorkItem(
-            icon: Icons.chat_bubble_outline,
-            iconColor: const Color(0xFF2383F6),
-            iconBgColor: const Color(0xFFE3F0FF),
-            title: '3× faster replies',
-            subtitle:
-                'Boosted profiles are seen as more active — your\nmessages get replies sooner.',
-          ),
-          _buildWhyBoostWorkItem(
-            icon: Icons.search,
-            iconColor: const Color(0xFF8E24AA),
-            iconBgColor: const Color(0xFFF3E5F5),
-            title: 'Smart audience targeting',
-            subtitle:
-                'Algorithm prioritizes showing you to people who\nmatch your filters and intent.',
-          ),
-          _buildWhyBoostWorkItem(
-            icon: Icons.monitor_heart_sharp,
-            iconColor: const Color(0xFFE43A6A),
-            iconBgColor: const Color(0xFFFDF0F3),
-            title: 'Live performance dashboard',
-            subtitle:
-                'Watch views, likes and visibility lift update in\nreal-time during your boost.',
-            tag: 'NEW',
-            tagColor: const Color(0xFFE43A6A),
-            tagBgColor: const Color(0xFFFDF0F3),
-          ),
-          _buildWhyBoostWorkItem(
-            icon: Icons.access_time,
-            iconColor: const Color(0xFF34A853),
-            iconBgColor: const Color(0xFFE6F4EA),
-            title: 'Boosts never expire',
-            subtitle:
-                'Buy now, use whenever you want. Save them for\npeak hours like Friday 8 PM.',
-            isLast: true,
-          ),
-        ],
+            isFirst: index == 0,
+            isLast: isLast,
+          );
+        }).toList(),
       ),
     );
   }
@@ -791,14 +769,18 @@ class _BoostScreenState extends State<BoostScreen> {
               ],
             ),
           ),
-          _buildComparisonRow('Duration', '1 hr', '3 hours'),
-          _buildComparisonRow('Visibility lift', '5x', '10x'),
-          _buildComparisonRow('Reach', 'Nearby', 'Citywide'),
-          _buildComparisonRow('Top of search', '✓', '✓Priority'),
-          _buildComparisonRow('Smart targeting', 'Basic', 'Advanced AI'),
-          _buildComparisonRow('Verified-only mode', '—', '✓'),
-          _buildComparisonRow('Reply rate boost', '3x', '5x'),
-          _buildComparisonRow('Live analytics', '✓', '✓Detailed', isLast: true),
+          if (_boostVsSuperBoost != null && _boostVsSuperBoost!['features'] != null)
+            ...(_boostVsSuperBoost!['features'] as List<dynamic>).asMap().entries.map((entry) {
+              final int index = entry.key;
+              final dynamic featureObj = entry.value;
+              final bool isLast = index == (_boostVsSuperBoost!['features'] as List<dynamic>).length - 1;
+              return _buildComparisonRow(
+                featureObj['feature'] ?? '',
+                featureObj['boost'] ?? '',
+                featureObj['super'] ?? '',
+                isLast: isLast,
+              );
+            }),
         ],
       ),
     );

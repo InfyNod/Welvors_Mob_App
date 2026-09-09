@@ -18,9 +18,12 @@ class CommitmentLoaded extends CommitmentState {
   final String intent;
   final bool isIdentityVerified;
   final String imageUrl;
+  final String selfImageUrl;
+  final String selfName;
   final Color intentColor;
   final Color intentTextColor;
   final IconData intentIcon;
+  final String confirmationLabel;
 
   const CommitmentLoaded({
     required this.partnerName,
@@ -28,9 +31,12 @@ class CommitmentLoaded extends CommitmentState {
     required this.intent,
     required this.isIdentityVerified,
     required this.imageUrl,
+    required this.selfImageUrl,
+    required this.selfName,
     required this.intentColor,
     required this.intentTextColor,
     required this.intentIcon,
+    required this.confirmationLabel,
   });
 
   @override
@@ -40,9 +46,12 @@ class CommitmentLoaded extends CommitmentState {
         intent,
         isIdentityVerified,
         imageUrl,
+        selfImageUrl,
+        selfName,
         intentColor,
         intentTextColor,
         intentIcon,
+        confirmationLabel,
       ];
 }
 
@@ -70,5 +79,13 @@ class CommitmentEnded extends CommitmentState {
   List<Object?> get props => [partnerName, userName];
 }
 
-class CommitmentSingle extends CommitmentState {}
+class CommitmentSingle extends CommitmentState {
+  final String selfImageUrl;
+  final String selfName;
+
+  const CommitmentSingle({required this.selfImageUrl, required this.selfName});
+
+  @override
+  List<Object?> get props => [selfImageUrl, selfName];
+}
 

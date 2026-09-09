@@ -157,7 +157,7 @@ class _CommitmentScreenView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _buildSingleProfileCard(),
+                            _buildSingleProfileCard(state),
                             const SizedBox(height: 24),
                             _buildInfoFooter(),
                             const SizedBox(height: 24),
@@ -184,7 +184,7 @@ class _CommitmentScreenView extends StatelessWidget {
     );
   }
 
-  Widget _buildSingleProfileCard() {
+  Widget _buildSingleProfileCard(CommitmentSingle state) {
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
@@ -233,9 +233,9 @@ class _CommitmentScreenView extends StatelessWidget {
                         offset: const Offset(0, 4),
                       ),
                     ],
-                    image: const DecorationImage(
+                    image: DecorationImage(
                       image: NetworkImage(
-                        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
+                        state.selfImageUrl,
                       ),
                       fit: BoxFit.cover,
                     ),
@@ -383,10 +383,10 @@ class _CommitmentScreenView extends StatelessWidget {
                                   color: Colors.white,
                                   width: 3,
                                 ),
-                                image: const DecorationImage(
+                                image: DecorationImage(
                                   image: NetworkImage(
-                                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-                                  ), // Man
+                                    state.selfImageUrl,
+                                  ), // User (Self)
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -529,7 +529,7 @@ class _CommitmentScreenView extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      ' · Mutually confirmed',
+                      ' · ${state.confirmationLabel}',
                       style: TextStyle(
                         fontSize: 14,
                         color: const Color(0xFF5F5C56),

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'commitment_event.dart';
 import 'commitment_state.dart';
+import '../service_commitment.dart';
 
 class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   // Use static variables to mock persistence across screen navigations.
   static bool _isSingle = false;
   static CommitmentLoaded? _currentCommitment;
+  static String? _selfImageUrl;
+  static String? _selfName;
 
   static bool get isSingle => _isSingle;
   static CommitmentLoaded? get currentCommitment => _currentCommitment;
@@ -14,8 +17,18 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   static String _getFormattedCurrentDate() {
     final now = DateTime.now();
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${now.day} ${months[now.month - 1]}';
   }
@@ -38,9 +51,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       intent: event.intent,
       isIdentityVerified: true,
       imageUrl: event.imageUrl,
+      selfImageUrl: '',
+      selfName: 'You',
       intentColor: event.intentColor,
       intentTextColor: event.intentTextColor,
       intentIcon: event.intentIcon,
+      confirmationLabel: 'Mutually confirmed',
     );
     emit(_currentCommitment!);
   }
@@ -50,26 +66,70 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     Emitter<CommitmentState> emit,
   ) async {
     try {
-      if (_isSingle) {
-        emit(CommitmentSingle());
-        return;
+      emit(CommitmentLoading());
+      final data = await CommitmentApiService().getCommitmentData();
+
+      if (data != null && data['hasCommitment'] == true) {
+        final commitments = data['commitments'] as List<dynamic>? ?? [];
+        if (commitments.isNotEmpty) {
+          final commitment = commitments[0];
+          final partner = commitment['partner'] ?? {};
+          final self = commitment['self'] ?? {};
+          final tagLabel = commitment['tagLabel'] ?? 'Dating';
+          final confirmationLabel =
+              commitment['confirmation']?['label'] ?? 'Mutually confirmed';
+
+          Color bgColor = const Color(0xFFFDF0F3);
+          Color textColor = const Color(0xFFC73A5E);
+          IconData icon = Icons.favorite_border;
+
+          if (tagLabel.toLowerCase().contains('open')) {
+            bgColor = const Color(0xFFE8F5E9);
+            textColor = const Color(0xFF2E7D32);
+            icon = Icons.all_inclusive;
+          } else if (tagLabel.toLowerCase().contains('marry') ||
+              tagLabel.toLowerCase().contains('marriage')) {
+            bgColor = const Color(0xFFFDF6E3);
+            textColor = const Color(0xFF9E6B17);
+            icon = Icons.diamond_outlined;
+          }
+
+          _selfImageUrl = self['photo'];
+          _selfName = self['firstName'];
+
+          _currentCommitment = CommitmentLoaded(
+            partnerName: partner['firstName'] ?? 'Partner',
+            duration: commitment['sinceLabel'] ?? _getFormattedCurrentDate(),
+            intent: tagLabel,
+            isIdentityVerified: partner['identityVerified'] == true,
+            imageUrl: partner['photo'] ?? '',
+            selfImageUrl: _selfImageUrl ?? '',
+            selfName: _selfName ?? 'You',
+            intentColor: bgColor,
+            intentTextColor: textColor,
+            intentIcon: icon,
+            confirmationLabel: confirmationLabel,
+          );
+          _isSingle = false;
+          emit(_currentCommitment!);
+          return;
+        }
       }
 
-      if (_currentCommitment == null) {
-        // Default initial data
-        _currentCommitment = CommitmentLoaded(
-          partnerName: 'Priya',
-          duration: _getFormattedCurrentDate(), // dynamic date
-          intent: 'Dating to marry',
-          isIdentityVerified: true,
-          imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-          intentColor: const Color(0xFFFDF6E3),
-          intentTextColor: const Color(0xFF9E6B17),
-          intentIcon: Icons.diamond_outlined,
-        );
-      }
+      _isSingle = true;
+      _currentCommitment = null;
+
+      // Fallback for self image if single, since we don't have the API single response structure
+      String selfImg = _selfImageUrl ?? '';
+      String selfNm = _selfName ?? 'You';
       
-      emit(_currentCommitment!);
+      if (data != null && data['data'] != null && data['data']['self'] != null) {
+        selfImg = data['data']['self']['photo'] ?? selfImg;
+        selfNm = data['data']['self']['firstName'] ?? selfNm;
+        _selfImageUrl = selfImg;
+        _selfName = selfNm;
+      }
+      emit(CommitmentSingle(selfImageUrl: selfImg, selfName: selfNm));
     } catch (e) {
       emit(CommitmentError(e.toString()));
     }
@@ -83,10 +143,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     if (currentState is CommitmentLoaded) {
       emit(CommitmentEndingSplash());
       await Future.delayed(const Duration(milliseconds: 5000));
-      emit(CommitmentEnded(
-        partnerName: currentState.partnerName,
-        userName: 'Rahul', // Replace with dynamic user logic if available
-      ));
+      emit(
+        CommitmentEnded(
+          partnerName: currentState.partnerName,
+          userName: currentState.selfName,
+        ),
+      );
     }
   }
 
@@ -96,6 +158,11 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   ) async {
     _isSingle = true; // Mock saving the state to backend
     _currentCommitment = null;
-    emit(CommitmentSingle());
+    emit(
+      CommitmentSingle(
+        selfImageUrl: _selfImageUrl ?? '',
+        selfName: _selfName ?? 'You',
+      ),
+    );
   }
 }
