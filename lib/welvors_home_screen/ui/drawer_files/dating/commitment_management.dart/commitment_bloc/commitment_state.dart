@@ -24,6 +24,7 @@ class CommitmentLoaded extends CommitmentState {
   final Color intentTextColor;
   final IconData intentIcon;
   final String confirmationLabel;
+  final String relationshipId;
 
   const CommitmentLoaded({
     required this.partnerName,
@@ -37,6 +38,7 @@ class CommitmentLoaded extends CommitmentState {
     required this.intentTextColor,
     required this.intentIcon,
     required this.confirmationLabel,
+    required this.relationshipId,
   });
 
   @override
@@ -52,6 +54,7 @@ class CommitmentLoaded extends CommitmentState {
         intentTextColor,
         intentIcon,
         confirmationLabel,
+        relationshipId,
       ];
 }
 

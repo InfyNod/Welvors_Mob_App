@@ -57,6 +57,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       intentTextColor: event.intentTextColor,
       intentIcon: event.intentIcon,
       confirmationLabel: 'Mutually confirmed',
+      relationshipId: 'dummy-id',
     );
     emit(_currentCommitment!);
   }
@@ -109,6 +110,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
             intentTextColor: textColor,
             intentIcon: icon,
             confirmationLabel: confirmationLabel,
+            relationshipId: commitment['relationshipId'] ?? '',
           );
           _isSingle = false;
           emit(_currentCommitment!);
@@ -141,14 +143,22 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   ) async {
     final currentState = state;
     if (currentState is CommitmentLoaded) {
-      emit(CommitmentEndingSplash());
-      await Future.delayed(const Duration(milliseconds: 5000));
-      emit(
-        CommitmentEnded(
-          partnerName: currentState.partnerName,
-          userName: currentState.selfName,
-        ),
-      );
+      // Call the API to end the commitment
+      final success = await CommitmentApiService().endCommitment(currentState.relationshipId);
+      
+      if (success) {
+        emit(CommitmentEndingSplash());
+        await Future.delayed(const Duration(milliseconds: 5000));
+        emit(
+          CommitmentEnded(
+            partnerName: currentState.partnerName,
+            userName: currentState.selfName,
+          ),
+        );
+      } else {
+        // Optionally handle error, for now we just show a snackbar in the UI or fallback
+        // We'll proceed with the splash for UX if preferred, or just not emit
+      }
     }
   }
 

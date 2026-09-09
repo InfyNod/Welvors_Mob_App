@@ -28,4 +28,28 @@ class CommitmentApiService {
       return null;
     }
   }
+
+  Future<bool> endCommitment(String relationshipId) async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final url = 'https://api.welvors.com/api/user/relationship-tags/$relationshipId/end';
+      
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        return data['success'] == true;
+      }
+      return false;
+    } catch (e) {
+      print('Error ending commitment: $e');
+      return false;
+    }
+  }
 }
