@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'commitment_bloc/commitment_bloc.dart';
 import 'commitment_bloc/commitment_event.dart';
 import 'commitment_bloc/commitment_state.dart';
+import 'service_commitment.dart';
 
 class RequestsSection extends StatefulWidget {
   const RequestsSection({super.key});
@@ -14,55 +15,104 @@ class RequestsSection extends StatefulWidget {
 class _RequestsSectionState extends State<RequestsSection> {
   bool _isExpanded = false;
 
-  static final List<Map<String, dynamic>> _requests = [
-    {
-      'name': 'Ananya',
-      'age': '27',
-      'timeText': 'Requested to go exclusive · 2 days ago',
-      'intent': 'Serious relationship',
-      'intentIcon': Icons.favorite_border,
-      'intentColor': const Color(0xFFF2E6EA),
-      'intentTextColor': const Color(0xFF8B6B78),
-      'imageUrl':
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-    },
-    {
-      'name': 'Meera',
-      'age': '29',
-      'timeText': 'Requested to go exclusive · 5 days ago',
-      'intent': 'Dating to marry',
-      'intentIcon': Icons.diamond_outlined,
-      'intentColor': const Color(0xFFFDF6E3),
-      'intentTextColor': const Color(0xFF9E6B17),
-      'imageUrl':
-          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-    },
-    {
-      'name': 'Priya',
-      'age': '26',
-      'timeText': 'Requested to go exclusive · 1 week ago',
-      'intent': 'Dating to marry',
-      'intentIcon': Icons.diamond_outlined,
-      'intentColor': const Color(0xFFFDF6E3),
-      'intentTextColor': const Color(0xFF9E6B17),
-      'imageUrl':
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-    },
-    {
-      'name': 'Neha',
-      'age': '28',
-      'timeText': 'Requested to go exclusive · 2 weeks ago',
-      'intent': 'Serious relationship',
-      'intentIcon': Icons.favorite_border,
-      'intentColor': const Color(0xFFF2E6EA),
-      'intentTextColor': const Color(0xFF8B6B78),
-      'imageUrl':
-          'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-    },
-  ];
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _requests = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProposals();
+  }
+
+  Future<void> _fetchProposals() async {
+    final proposals = await CommitmentApiService().getReceivedProposals();
+    if (proposals != null && mounted) {
+      final List<Map<String, dynamic>> formatted = [];
+      for (var p in proposals) {
+        final sender = p['sender'] ?? {};
+        final tag = p['tag'] ?? 'IN_RELATIONSHIP';
+        final createdAtStr = p['createdAt'];
+        
+        // Form time ago
+        String timeText = 'Requested to go exclusive';
+        if (createdAtStr != null) {
+          try {
+            final DateTime created = DateTime.parse(createdAtStr);
+            final diff = DateTime.now().difference(created);
+            if (diff.inDays > 0) {
+              timeText += ' · ${diff.inDays} ${diff.inDays == 1 ? 'day' : 'days'} ago';
+            } else if (diff.inHours > 0) {
+              timeText += ' · ${diff.inHours} ${diff.inHours == 1 ? 'hour' : 'hours'} ago';
+            } else if (diff.inMinutes > 0) {
+              timeText += ' · ${diff.inMinutes} ${diff.inMinutes == 1 ? 'min' : 'mins'} ago';
+            } else {
+              timeText += ' · Just now';
+            }
+          } catch (_) {}
+        }
+
+        // Default intent
+        Color bgColor = const Color(0xFFFDF0F3);
+        Color textColor = const Color(0xFFC73A5E);
+        IconData icon = Icons.favorite_border;
+        String intentName = 'Serious relationship';
+
+        if (tag == 'IN_RELATIONSHIP') {
+           bgColor = const Color(0xFFF2E6EA);
+           textColor = const Color(0xFF8B6B78);
+           icon = Icons.favorite_border;
+           intentName = 'Serious relationship';
+        } else if (tag.contains('OPEN')) {
+            bgColor = const Color(0xFFE8F5E9);
+            textColor = const Color(0xFF2E7D32);
+            icon = Icons.all_inclusive;
+            intentName = 'Open relationship';
+        } else if (tag.contains('MARR')) {
+            bgColor = const Color(0xFFFDF6E3);
+            textColor = const Color(0xFF9E6B17);
+            icon = Icons.diamond_outlined;
+            intentName = 'Dating to marry';
+        }
+
+        // Profile image
+        String imageUrl = '';
+        if (sender['photos'] != null && sender['photos'].isNotEmpty) {
+           imageUrl = sender['photos'][0] is Map ? sender['photos'][0]['url'] ?? '' : sender['photos'][0].toString();
+        }
+
+        formatted.add({
+          'id': p['id'],
+          'name': sender['fullName'] ?? 'Someone',
+          'age': sender['age']?.toString() ?? '--',
+          'timeText': timeText,
+          'intent': intentName,
+          'intentIcon': icon,
+          'intentColor': bgColor,
+          'intentTextColor': textColor,
+          'imageUrl': imageUrl,
+        });
+      }
+      setState(() {
+        _requests = formatted;
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_requests.isEmpty) {
+      return const SizedBox.shrink(); // Hide the section if no requests
+    }
+
     // If not expanded, show up to 3 items
     final int displayCount = _isExpanded
         ? _requests.length
@@ -123,6 +173,7 @@ class _RequestsSectionState extends State<RequestsSection> {
           const SizedBox(height: 20),
           for (int i = 0; i < displayCount; i++) ...[
             _buildRequestItem(
+              id: _requests[i]['id'],
               name: _requests[i]['name'],
               age: _requests[i]['age'],
               timeText: _requests[i]['timeText'],
@@ -184,6 +235,7 @@ class _RequestsSectionState extends State<RequestsSection> {
   }
 
   Widget _buildRequestItem({
+    required String id,
     required String name,
     required String age,
     required String timeText,
@@ -199,7 +251,12 @@ class _RequestsSectionState extends State<RequestsSection> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(radius: 20, backgroundImage: NetworkImage(imageUrl)),
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: const Color(0xFFF0E5D1),
+              backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+              child: imageUrl.isEmpty ? const Icon(Icons.person, color: Colors.white) : null,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -271,7 +328,14 @@ class _RequestsSectionState extends State<RequestsSection> {
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  final success = await CommitmentApiService().respondToProposal(id, false);
+                  if (success && mounted) {
+                    setState(() {
+                      _requests.removeWhere((req) => req['id'] == id);
+                    });
+                  }
+                },
                 child: Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -297,6 +361,7 @@ class _RequestsSectionState extends State<RequestsSection> {
                 onTap: () {
                   _showApproveBottomSheet(
                     context,
+                    id,
                     name,
                     intent,
                     imageUrl,
@@ -331,6 +396,7 @@ class _RequestsSectionState extends State<RequestsSection> {
 
   void _showApproveBottomSheet(
     BuildContext context,
+    String id,
     String name,
     String intent,
     String imageUrl,
@@ -387,19 +453,22 @@ class _RequestsSectionState extends State<RequestsSection> {
               ),
               const SizedBox(height: 32),
               GestureDetector(
-                onTap: () {
-                  Navigator.pop(ctx);
-                  context.read<CommitmentBloc>().add(ApproveRequestEvent(
-                    partnerName: name,
-                    intent: intent,
-                    imageUrl: imageUrl,
-                    intentColor: intentColor,
-                    intentTextColor: intentTextColor,
-                    intentIcon: intentIcon,
-                  ));
-                  setState(() {
-                    _requests.removeWhere((req) => req['name'] == name);
-                  });
+                onTap: () async {
+                  final success = await CommitmentApiService().respondToProposal(id, true);
+                  if (success && mounted) {
+                    Navigator.pop(ctx);
+                    context.read<CommitmentBloc>().add(ApproveRequestEvent(
+                      partnerName: name,
+                      intent: intent,
+                      imageUrl: imageUrl,
+                      intentColor: intentColor,
+                      intentTextColor: intentTextColor,
+                      intentIcon: intentIcon,
+                    ));
+                    setState(() {
+                      _requests.removeWhere((req) => req['id'] == id);
+                    });
+                  }
                 },
                 child: Container(
                   height: 54,

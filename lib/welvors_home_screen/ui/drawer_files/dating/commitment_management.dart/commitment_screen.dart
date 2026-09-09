@@ -123,7 +123,12 @@ class _CommitmentScreenView extends StatelessWidget {
                     SafeArea(
                       top: false,
                       child: Container(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 16), // Reduced top padding
+                        padding: const EdgeInsets.fromLTRB(
+                          20,
+                          8,
+                          20,
+                          16,
+                        ), // Reduced top padding
                         decoration: BoxDecoration(
                           color: const Color(0xFFFDFDFD),
                           boxShadow: [
@@ -234,9 +239,7 @@ class _CommitmentScreenView extends StatelessWidget {
                       ),
                     ],
                     image: DecorationImage(
-                      image: NetworkImage(
-                        state.selfImageUrl,
-                      ),
+                      image: NetworkImage(state.selfImageUrl),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -671,7 +674,44 @@ class _CommitmentScreenView extends StatelessWidget {
               const SizedBox(height: 24),
               // See what you'll win button
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: const [
+                          Icon(
+                            Icons.auto_awesome,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Coming Soon! Stay tuned for exciting rewards.',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: const Color.fromARGB(255, 225, 74, 111),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      margin: const EdgeInsets.only(
+                        bottom: 20,
+                        left: 20,
+                        right: 20,
+                      ),
+                      elevation: 8,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                },
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
