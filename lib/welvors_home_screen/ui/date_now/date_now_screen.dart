@@ -5,7 +5,25 @@ import 'date_now_2/requests_sent/requests_sent_screen.dart';
 import 'date_now_2/my_plans/my_plan_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 import 'date_now_2/post_a_plan/activity_1.dart';
+import 'package:intl/intl.dart';
 import 'profile/profile_detail.dart';
+
+String _formatEventTime(String? timeStr) {
+  if (timeStr == null || timeStr.isEmpty) return '';
+  try {
+    if (timeStr.startsWith('T')) {
+      final utcTime = DateTime.parse('1970-01-01$timeStr');
+      final localTime = utcTime.toLocal();
+      return '🕔 ${DateFormat('hh:mm a').format(localTime)}';
+    } else {
+      final utcTime = DateTime.parse(timeStr);
+      final localTime = utcTime.toLocal();
+      return '🕔 ${DateFormat('hh:mm a').format(localTime)}';
+    }
+  } catch (e) {
+    return '🕔 $timeStr';
+  }
+}
 
 class DateNowScreen extends StatefulWidget {
   const DateNowScreen({super.key});
@@ -108,7 +126,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                   ? '${p['matchScore']['score']}% match'
                   : '0% match',
               'date': p['eventDate'] != null ? '📅 ${p['eventDate']}' : '',
-              'time': p['eventTime'] != null ? '🕔 ${p['eventTime']}' : '',
+              'time': _formatEventTime(p['eventTime']),
               'type': activity,
               'title': p['title'] ?? p['quickTitle'] ?? 'Date Plan',
               'subtitle': p['note'] ?? '',
