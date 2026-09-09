@@ -29,7 +29,9 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
 
   Future<void> _fetchWalletData() async {
     setState(() => _isLoading = true);
-    final data = await WalletApiService().getWalletData();
+    final data = await WalletApiService().getWalletData(
+      filter: _selectedFilter.toUpperCase(),
+    );
     setState(() {
       _walletData = data;
       _isLoading = false;
@@ -41,28 +43,24 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: _buildAppBar(context),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.pinkDeep),
-            )
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildWalletCard(),
-                    const SizedBox(height: 16),
-                    _buildTopUpCard(),
-                    const SizedBox(height: 32),
-                    _buildTransactionsHeader(),
-                    const SizedBox(height: 16),
-                    _buildTransactionsList(),
-                    const SizedBox(height: 40), // Added bottom space
-                  ],
-                ),
-              ),
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildWalletCard(),
+              const SizedBox(height: 16),
+              _buildTopUpCard(),
+              const SizedBox(height: 32),
+              _buildTransactionsHeader(),
+              const SizedBox(height: 16),
+              _buildTransactionsList(),
+              const SizedBox(height: 40), // Added bottom space
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -433,9 +431,12 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   Widget _buildFilterChip(String label, bool isSelected) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedFilter = label;
-        });
+        if (_selectedFilter != label) {
+          setState(() {
+            _selectedFilter = label;
+          });
+          _fetchWalletData();
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -479,6 +480,15 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   }
 
   Widget _buildTransactionsList() {
+    if (_isLoading) {
+      return const Padding(
+        padding: EdgeInsets.all(48.0),
+        child: Center(
+          child: CircularProgressIndicator(color: AppColors.pinkDeep),
+        ),
+      );
+    }
+
     final List<dynamic> apiTransactions = _walletData?['transactions'] ?? [];
     
     final List<Map<String, dynamic>> allTransactions = apiTransactions.map((apiTx) {
@@ -532,13 +542,6 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
       };
     }).toList();
 
-    final filteredTransactions = allTransactions.where((tx) {
-      if (_selectedFilter == 'All') return true;
-      if (_selectedFilter == 'In') return tx['isPositive'] == true;
-      if (_selectedFilter == 'Out') return tx['isPositive'] == false;
-      return true;
-    }).toList();
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -556,7 +559,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
           ),
         ],
       ),
-      child: filteredTransactions.isEmpty
+      child: allTransactions.isEmpty
           ? const Padding(
               padding: EdgeInsets.all(32.0),
               child: Center(
@@ -567,10 +570,10 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
               ),
             )
           : Column(
-              children: filteredTransactions.asMap().entries.map((entry) {
+              children: allTransactions.asMap().entries.map((entry) {
                 final int index = entry.key;
                 final Map<String, dynamic> tx = entry.value;
-                final bool isLast = index == filteredTransactions.length - 1;
+                final bool isLast = index == allTransactions.length - 1;
 
                 return Column(
                   children: [

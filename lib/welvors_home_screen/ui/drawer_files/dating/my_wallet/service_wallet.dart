@@ -5,11 +5,17 @@ import '../../../../services/token_helper.dart';
 class WalletApiService {
   static const String _baseUrl = 'https://api.welvors.com/api/user/my-wallet';
 
-  Future<Map<String, dynamic>?> getWalletData() async {
+  Future<Map<String, dynamic>?> getWalletData({
+    String filter = 'ALL',
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
       final token = await TokenHelper.getToken() ?? "";
+      final uri = Uri.parse('$_baseUrl?filter=$filter&page=$page&limit=$limit');
+      
       final response = await http.get(
-        Uri.parse(_baseUrl),
+        uri,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

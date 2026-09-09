@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TransactionDetailsBottomSheet extends StatelessWidget {
   final Map<String, dynamic> transaction;
@@ -24,8 +25,17 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
               .black87; // Usually negative is black or red, let's keep black like UI standard or red if deduction.
     // Actually, in screenshot, positive is green.
     final String amountText = transaction['amount'] ?? '';
-    final String txnId = 'TXN-982${(transaction['title']?.hashCode ?? 0).abs() % 1000 + 100}';
-
+    
+    final Map<String, dynamic>? rawTx = transaction['rawTx'];
+    final String txnId = rawTx?['referenceId']?.toString() ?? 'TXN-982${(transaction['title']?.hashCode ?? 0).abs() % 1000 + 100}';
+    
+    String dateTimeStr = transaction['time'] ?? '';
+    if (rawTx != null && rawTx['createdAt'] != null) {
+      try {
+        final DateTime dt = DateTime.parse(rawTx['createdAt'].toString()).toLocal();
+        dateTimeStr = DateFormat('d MMM yyyy, h:mm a').format(dt);
+      } catch (_) {}
+    }
     String? toastMessage;
 
     return StatefulBuilder(
@@ -119,16 +129,16 @@ class TransactionDetailsBottomSheet extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        _buildDetailRow('Type', _getType(transaction['title'])),
+                        _buildDetailRow('Type', rawTx?['type']?.toString() ?? _getType(transaction['title'])),
                         const SizedBox(height: 8),
                         _buildDetailRow(
-                          isPositive ? 'From' : 'To',
-                          _getFrom(transaction['title']),
+                          'Source',
+                          rawTx?['source']?.toString() ?? _getFrom(transaction['title']),
                         ),
                         const SizedBox(height: 8),
                         _buildDetailRow(
                           'Date & time',
-                          transaction['time'] ?? '',
+                          dateTimeStr,
                         ),
                         const SizedBox(height: 8),
                         _buildDetailRow(
