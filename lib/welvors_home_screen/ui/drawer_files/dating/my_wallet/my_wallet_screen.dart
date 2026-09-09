@@ -6,6 +6,8 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/withdraw_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/transactions_drawer.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/service_wallet.dart';
+import 'package:intl/intl.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({super.key});
@@ -16,30 +18,51 @@ class MyWalletScreen extends StatefulWidget {
 
 class _MyWalletScreenState extends State<MyWalletScreen> {
   String _selectedFilter = 'All';
+  bool _isLoading = true;
+  Map<String, dynamic>? _walletData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWalletData();
+  }
+
+  Future<void> _fetchWalletData() async {
+    setState(() => _isLoading = true);
+    final data = await WalletApiService().getWalletData();
+    setState(() {
+      _walletData = data;
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: _buildAppBar(context),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildWalletCard(),
-              const SizedBox(height: 16),
-              _buildTopUpCard(),
-              const SizedBox(height: 32),
-              _buildTransactionsHeader(),
-              const SizedBox(height: 16),
-              _buildTransactionsList(),
-              const SizedBox(height: 40), // Added bottom space
-            ],
-          ),
-        ),
-      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.pinkDeep),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildWalletCard(),
+                    const SizedBox(height: 16),
+                    _buildTopUpCard(),
+                    const SizedBox(height: 32),
+                    _buildTransactionsHeader(),
+                    const SizedBox(height: 16),
+                    _buildTransactionsList(),
+                    const SizedBox(height: 40), // Added bottom space
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -185,9 +208,9 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  const Text(
-                    '₹3,240',
-                    style: TextStyle(
+                  Text(
+                    _walletData?['wallet']?['formattedBalance'] ?? '₹0',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
@@ -456,88 +479,58 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   }
 
   Widget _buildTransactionsList() {
-    final List<Map<String, dynamic>> allTransactions = [
-      {
-        'icon': '🎁',
-        'iconBg': const Color(0xFFFBE4E7),
-        'title': 'Gift received from Aanya',
-        'time': 'Today · 2:14 PM',
-        'amount': '+₹500',
-        'isPositive': true,
-      },
-      {
-        'icon': '📋',
-        'iconBg': const Color(0xFFFFF3E0),
-        'title': 'Date Plans topped up · 3 plans',
-        'time': 'Today · 3:20 PM',
-        'amount': '-₹270',
-        'isPositive': false,
-      },
-      {
-        'icon': '⭐',
-        'iconBg': const Color(0xFFFFF9C4),
-        'title': 'Rose sent',
-        'time': 'Today · 11:02 AM',
-        'amount': '-₹50',
-        'isPositive': false,
-      },
-      {
-        'icon': '🎁',
-        'iconBg': const Color(0xFFE8F5E9),
-        'title': 'Refer & Earn — Rahul joined',
-        'time': 'Yesterday · 6:40 PM',
-        'amount': '+₹100',
-        'isPositive': true,
-      },
-      {
-        'icon': '🌹',
-        'iconBg': const Color(0xFFFBE4E7),
-        'title': 'Premium Rose sent to Aanya',
-        'time': 'Yesterday · 9:18 PM',
-        'amount': '-₹500',
-        'isPositive': false,
-      },
-      {
-        'icon': '➕',
-        'iconBg': const Color(0xFFE3F2FD),
-        'title': 'Money added · UPI',
-        'time': '2 days ago · 1:05 PM',
-        'amount': '+₹2,000',
-        'isPositive': true,
-      },
-      {
-        'icon': '🚀',
-        'iconBg': const Color(0xFFF3E5F5),
-        'title': 'Boost activated',
-        'time': '3 days ago',
-        'amount': '-₹300',
-        'isPositive': false,
-      },
-      {
-        'icon': '🎁',
-        'iconBg': const Color(0xFFE8F5E9),
-        'title': 'Refer & Earn — Sneha bought VIP',
-        'time': '4 days ago',
-        'amount': '+₹500',
-        'isPositive': true,
-      },
-      {
-        'icon': '💌',
-        'iconBg': const Color(0xFFFBE4E7),
-        'title': 'Compliment sent',
-        'time': '5 days ago',
-        'amount': '-₹80',
-        'isPositive': false,
-      },
-      {
-        'icon': '⬇️',
-        'iconBg': const Color(0xFFECEFF1),
-        'title': 'Withdrawal to bank',
-        'time': '1 week ago',
-        'amount': '-₹1,500',
-        'isPositive': false,
-      },
-    ];
+    final List<dynamic> apiTransactions = _walletData?['transactions'] ?? [];
+    
+    final List<Map<String, dynamic>> allTransactions = apiTransactions.map((apiTx) {
+      final isPositive = apiTx['direction'] == 'IN';
+      
+      String iconStr = '📋';
+      Color bgCol = const Color(0xFFFFF3E0);
+      
+      final type = apiTx['type'] ?? '';
+      final source = apiTx['source'] ?? '';
+      
+      if (source == 'BOOST_PURCHASE') {
+        iconStr = '🚀';
+        bgCol = const Color(0xFFF3E5F5);
+      } else if (source == 'DATE_PLAN_PURCHASE') {
+        iconStr = '📋';
+        bgCol = const Color(0xFFFFF3E0);
+      } else if (type == 'GIFT' || source.contains('GIFT')) {
+        iconStr = '🎁';
+        bgCol = const Color(0xFFFBE4E7);
+      } else if (type == 'ROSE' || source.contains('ROSE')) {
+        iconStr = '🌹';
+        bgCol = const Color(0xFFFBE4E7);
+      } else if (type == 'COMPLIMENT' || source.contains('COMPLIMENT')) {
+        iconStr = '💌';
+        bgCol = const Color(0xFFFBE4E7);
+      } else if (source == 'ADD_MONEY' || type == 'DEPOSIT') {
+        iconStr = '➕';
+        bgCol = const Color(0xFFE3F2FD);
+      } else if (type == 'WITHDRAWAL') {
+        iconStr = '⬇️';
+        bgCol = const Color(0xFFECEFF1);
+      }
+
+      String timeStr = apiTx['createdAt'] ?? '';
+      if (timeStr.isNotEmpty) {
+        try {
+          final DateTime dt = DateTime.parse(timeStr).toLocal();
+          timeStr = DateFormat('MMM d · h:mm a').format(dt);
+        } catch (_) {}
+      }
+
+      return {
+        'icon': iconStr,
+        'iconBg': bgCol,
+        'title': apiTx['title'] ?? 'Transaction',
+        'time': timeStr,
+        'amount': apiTx['formattedAmount'] ?? '₹0',
+        'isPositive': isPositive,
+        'rawTx': apiTx, 
+      };
+    }).toList();
 
     final filteredTransactions = allTransactions.where((tx) {
       if (_selectedFilter == 'All') return true;
