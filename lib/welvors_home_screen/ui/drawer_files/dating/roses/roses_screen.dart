@@ -32,27 +32,21 @@ class _RosesScreenState extends State<RosesScreen> {
 
         final packs = data['packs'] as List<dynamic>? ?? [];
         _packages = packs.map((p) {
-          final title = p['title'].toString();
-          // Extract just the number for the large text
-          final numberMatch = RegExp(r'\d+').firstMatch(title);
-          final numberStr = numberMatch != null ? numberMatch.group(0) : '0';
+          final quantity = p['quantity']?.toString() ?? '0';
 
           String? tagStr;
           final badge = p['badge']?.toString();
-          if (badge == 'MOST_POPULAR') {
-            tagStr = 'Save 22%';
-          } else if (badge == 'BEST_VALUE') {
-            tagStr = 'Save 38%';
+          if (badge != null && badge.isNotEmpty) {
+            tagStr = badge.replaceAll('_', ' ').toLowerCase();
+            tagStr = tagStr.split(' ').map((word) => word.isNotEmpty ? '${word[0].toUpperCase()}${word.substring(1)}' : '').join(' ');
           }
 
           return {
             'id': p['id'],
-            'title': numberStr!.padLeft(2, '0'),
+            'title': quantity,
             'subtitle': 'Roses',
             'pricePerItem': '₹${p['pricePerUnit']} each',
             'totalPrice': '₹${p['totalPrice']}',
-            'extra':
-                '+ 1 free daily', // Mocked extra info since API doesn't provide it
             'tag': tagStr,
           };
         }).toList();
@@ -149,15 +143,8 @@ class _RosesScreenState extends State<RosesScreen> {
                       }),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Center(
-                    child: Text(
-                      'Most popular · best value picks save you up to 38% per rose',
-                      style: TextStyle(color: Colors.black45, fontSize: 11),
-                    ),
-                  ),
                   if (_infoList.isNotEmpty) ...[
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
@@ -422,6 +409,16 @@ class _RosesScreenState extends State<RosesScreen> {
   }
 
   Widget _buildWhyRosesWorkSection() {
+    if (_infoList.isEmpty) return const SizedBox.shrink();
+
+    final iconsData = [
+      {'icon': Icons.star, 'iconColor': const Color(0xFFE0182C), 'iconBgColor': const Color(0xFFFFEBEE)},
+      {'icon': Icons.star, 'iconColor': const Color(0xFFE0182C), 'iconBgColor': const Color(0xFFFFEBEE)},
+      {'icon': Icons.trending_up, 'iconColor': const Color(0xFF34A853), 'iconBgColor': const Color(0xFFE6F4EA)},
+      {'icon': Icons.chat_bubble_outline, 'iconColor': const Color(0xFFF6B042), 'iconBgColor': const Color(0xFFFFF3E0)},
+      {'icon': Icons.favorite, 'iconColor': const Color(0xFFE94086), 'iconBgColor': const Color(0xFFFCE4EC)},
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -435,52 +432,22 @@ class _RosesScreenState extends State<RosesScreen> {
         ],
       ),
       child: Column(
-        children: [
-          _buildWhyRosesWorkItem(
-            icon: Icons.star,
-            iconColor: const Color(0xFFE0182C),
-            iconBgColor: const Color(0xFFFFEBEE),
-            title: 'Stand out instantly',
-            subtitle: 'When you really like someone',
-            isFirst: true,
-          ),
-          _buildWhyRosesWorkItem(
-            icon: Icons.star,
-            iconColor: const Color(0xFFE0182C),
-            iconBgColor: const Color(0xFFFFEBEE),
-            title: 'They see you first',
-            subtitle:
-                'Your profile jumps to the top of their deck with a star.',
-            tag: 'PRIORITY',
-            tagColor: const Color(0xFFE0182C),
-            tagBgColor: const Color(0xFFFFEBEE),
-          ),
-          _buildWhyRosesWorkItem(
-            icon: Icons.trending_up,
-            iconColor: const Color(0xFF34A853),
-            iconBgColor: const Color(0xFFE6F4EA),
-            title: '3× more likely to match',
-            subtitle: 'Showing interest first triples your chances of a match.',
-          ),
-          _buildWhyRosesWorkItem(
-            icon: Icons.chat_bubble_outline,
-            iconColor: const Color(0xFFF6B042),
-            iconBgColor: const Color(0xFFFFF3E0),
-            title: 'Add a note with your like',
-            subtitle: 'Up to 140 characters to break the ice and stand out.',
-            tag: 'NEW',
-            tagColor: const Color(0xFFF6B042),
-            tagBgColor: const Color(0xFFFFF3E0),
-          ),
-          _buildWhyRosesWorkItem(
-            icon: Icons.favorite,
-            iconColor: const Color(0xFFE94086),
-            iconBgColor: const Color(0xFFFCE4EC),
-            title: '3× faster replies',
-            subtitle: 'Rosed matches reply much faster than regular ones.',
-            isLast: true,
-          ),
-        ],
+        children: List.generate(_infoList.length, (index) {
+          final info = _infoList[index];
+          final iconMap = iconsData[index % iconsData.length];
+          return _buildWhyRosesWorkItem(
+            icon: iconMap['icon'] as IconData,
+            iconColor: iconMap['iconColor'] as Color,
+            iconBgColor: iconMap['iconBgColor'] as Color,
+            title: info['title'] ?? '',
+            subtitle: info['description'] ?? '',
+            tag: info['tag'],
+            tagColor: iconMap['iconColor'] as Color,
+            tagBgColor: iconMap['iconBgColor'] as Color,
+            isFirst: index == 0,
+            isLast: index == _infoList.length - 1,
+          );
+        }),
       ),
     );
   }
