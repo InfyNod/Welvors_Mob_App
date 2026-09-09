@@ -549,12 +549,14 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
 
   Widget _buildHistoryTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Total Added Banner (Premium Design)
-          Container(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -644,11 +646,13 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
               ],
             ),
           ),
+          ),
           const SizedBox(height: 16),
 
           // Filters
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               children: [
                 _buildFilterChip('All', 6),
@@ -676,11 +680,13 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
             
             if (filteredItems.isEmpty) return const SizedBox.shrink();
             
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  month,
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    month,
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -711,6 +717,7 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
                 }).toList(),
                 const SizedBox(height: 12),
               ],
+            ),
             );
           }).toList(),
           

@@ -16,10 +16,104 @@ class _WithdrawScreenState extends State<WithdrawScreen>
   final int _walletBalance = 3240;
   String _selectedAccount = 'HDFC';
 
+  String _selectedHistoryFilter = 'All';
+
+  final List<Map<String, dynamic>> _mockHistory = [
+    {
+      'month': 'THIS MONTH',
+      'items': [
+        {
+          'title': 'Withdrawn to bank',
+          'subtitle': '14 Aug · HDFC •••• 1234',
+          'amount': '−₹2,000',
+          'status': 'PROCESSING',
+          'icon': Icons.account_balance,
+          'iconColor': Colors.orange.shade700,
+          'iconBg': const Color(0xFFFFF3E0),
+          'txnId': 'WDR-1204471',
+          'hasDetails': true,
+          'withdrawalAmount': '₹2,000',
+          'serviceCharge': '−₹500',
+          'receivedLabel': 'You will receive',
+          'receivedAmount': '₹1,500',
+        },
+        {
+          'title': 'Withdrawn to UPI',
+          'subtitle': '5 Aug · tanishka@oksbi',
+          'amount': '−₹1,500',
+          'status': 'PROCESSED',
+          'icon': Icons.phone_android,
+          'iconColor': const Color(0xFF2CAF6B),
+          'iconBg': const Color(0xFFE9F6ED),
+          'txnId': 'WDR-1180093',
+          'hasDetails': true,
+          'withdrawalAmount': '₹1,500',
+          'serviceCharge': '−₹375',
+          'receivedLabel': 'Received in bank',
+          'receivedAmount': '₹1,125',
+        },
+      ],
+    },
+    {
+      'month': 'JULY 2026',
+      'items': [
+        {
+          'title': 'Withdrawn to bank',
+          'subtitle': '22 Jul · HDFC •••• 1234',
+          'amount': '−₹1,000',
+          'status': 'PROCESSED',
+          'icon': Icons.account_balance,
+          'iconColor': const Color(0xFF2CAF6B),
+          'iconBg': const Color(0xFFE9F6ED),
+          'txnId': 'WDR-1098742',
+          'hasDetails': true,
+          'withdrawalAmount': '₹1,000',
+          'serviceCharge': '−₹250',
+          'receivedLabel': 'Received in bank',
+          'receivedAmount': '₹750',
+        },
+        {
+          'title': 'Withdrawal reversed',
+          'subtitle': '9 Jul · bank rejected · refunded to wallet',
+          'amount': '−₹800',
+          'status': 'REVERSED',
+          'icon': Icons.account_balance,
+          'iconColor': Colors.grey.shade600,
+          'iconBg': Colors.grey.shade100,
+          'txnId': 'WDR-1041338',
+          'hasDetails': false,
+        },
+      ],
+    },
+    {
+      'month': 'JUNE 2026',
+      'items': [
+        {
+          'title': 'Withdrawn to UPI',
+          'subtitle': '18 Jun · tanishka@oksbi',
+          'amount': '−₹1,200',
+          'status': 'PROCESSED',
+          'icon': Icons.phone_android,
+          'iconColor': const Color(0xFF2CAF6B),
+          'iconBg': const Color(0xFFE9F6ED),
+          'txnId': 'WDR-0977215',
+          'hasDetails': true,
+          'withdrawalAmount': '₹1,200',
+          'serviceCharge': '−₹300',
+          'receivedLabel': 'Received in bank',
+          'receivedAmount': '₹900',
+        },
+      ],
+    }
+  ];
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     _amountController.addListener(() {
       setState(() {});
     });
@@ -116,14 +210,14 @@ class _WithdrawScreenState extends State<WithdrawScreen>
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
+                          color: _tabController.index == 1 ? const Color(0xFFFBE4E7) : Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
-                          '3',
+                        child: Text(
+                          '5',
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.black54,
+                            color: _tabController.index == 1 ? const Color(0xFFE85A7A) : Colors.black54,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -553,23 +647,387 @@ class _WithdrawScreenState extends State<WithdrawScreen>
   }
 
   Widget _buildHistoryTab() {
-    // Placeholder for history tab, matching the UI style
-    return Center(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 24),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.history, size: 48, color: Colors.grey.shade300),
+          // Total Received Banner (Premium Design)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0xFFFBE4E7), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFE85A7A).withOpacity(0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: -10,
+                  top: -10,
+                  child: Icon(
+                    Icons.account_balance,
+                    size: 90,
+                    color: const Color(0xFFE85A7A).withOpacity(0.05),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFBE4E7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_upward_rounded,
+                            color: Color(0xFFE85A7A),
+                            size: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'TOTAL RECEIVED IN BANK',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFFE85A7A),
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      '₹2,775',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFFD84B6D),
+                        letterSpacing: -1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Lifetime successfully processed',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: const Color(0xFFD84B6D).withOpacity(0.7),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          ),
           const SizedBox(height: 16),
+
+          // Filters
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                _buildFilterChip('All', 5),
+                const SizedBox(width: 8),
+                _buildFilterChip('Processed', 3),
+                const SizedBox(width: 8),
+                _buildFilterChip('Processing', 1),
+                const SizedBox(width: 8),
+                _buildFilterChip('Reversed', 1),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // History List
+          ..._mockHistory.map((monthData) {
+            final month = monthData['month'] as String;
+            final items = monthData['items'] as List<Map<String, dynamic>>;
+            
+            // Filter items
+            final filteredItems = items.where((item) {
+              if (_selectedHistoryFilter == 'All') return true;
+              if (_selectedHistoryFilter == 'Processed') return item['status'] == 'PROCESSED';
+              if (_selectedHistoryFilter == 'Processing') return item['status'] == 'PROCESSING';
+              if (_selectedHistoryFilter == 'Reversed') return item['status'] == 'REVERSED';
+              return false;
+            }).toList();
+            
+            if (filteredItems.isEmpty) return const SizedBox.shrink();
+            
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    month,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...filteredItems.map((item) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: _buildHistoryCard(
+                      title: item['title'],
+                      subtitle: item['subtitle'],
+                      amount: item['amount'],
+                      status: item['status'],
+                      icon: item['icon'],
+                      iconColor: item['iconColor'],
+                      iconBg: item['iconBg'],
+                      txnId: item['txnId'],
+                      hasDetails: item['hasDetails'] ?? false,
+                      withdrawalAmount: item['withdrawalAmount'],
+                      serviceCharge: item['serviceCharge'],
+                      receivedLabel: item['receivedLabel'],
+                      receivedAmount: item['receivedAmount'],
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 12),
+              ],
+            ),
+            );
+          }).toList(),
+          
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String filterType, int count) {
+    final bool isSelected = _selectedHistoryFilter == filterType;
+    final String label = '$filterType $count';
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedHistoryFilter = filterType;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFBE4E7) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade300,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? const Color(0xFFE85A7A) : Colors.black87,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryCard({
+    required String title,
+    required String subtitle,
+    required String amount,
+    required String status,
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBg,
+    required String txnId,
+    bool hasDetails = false,
+    String? withdrawalAmount,
+    String? serviceCharge,
+    String? receivedLabel,
+    String? receivedAmount,
+  }) {
+    Color statusColor;
+    if (status == 'PROCESSED') {
+      statusColor = const Color(0xFF1EA85A);
+    } else if (status == 'PROCESSING') {
+      statusColor = Colors.amber.shade800;
+    } else {
+      statusColor = Colors.grey.shade600;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.015),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 0.0),
+                  child: Icon(icon, size: 20, color: iconColor),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    amount,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.red.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    status,
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: statusColor,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          
+          if (hasDetails) ...[
+            const SizedBox(height: 12),
+            // Custom dashed line
+            Row(
+              children: List.generate(
+                35,
+                (index) => Expanded(
+                  child: Container(
+                    height: 1.5,
+                    color: index.isEven ? Colors.grey.shade200 : Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            _buildDetailRow('Withdrawal amount', withdrawalAmount ?? ''),
+            const SizedBox(height: 4),
+            _buildDetailRow('Service charge (25%)', serviceCharge ?? '', isRed: true),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  receivedLabel ?? '',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  receivedAmount ?? '',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1EA85A),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          
+          const SizedBox(height: 10),
           Text(
-            'No withdrawals yet',
+            txnId,
             style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade600,
+              fontSize: 9,
               fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
+              letterSpacing: 0.8,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, {bool isRed = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: isRed ? Colors.red.shade600 : Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 }
