@@ -25,6 +25,7 @@ class _Location3ViewState extends State<Location3View> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _manualController = TextEditingController();
   String _selectedWhen = 'Today';
+  DateTime? _customDate;
   TimeOfDay? _selectedTime;
   String? _selectedHowLong;
   String? _selectedWhoPays;
@@ -100,16 +101,20 @@ class _Location3ViewState extends State<Location3View> {
       DateTime eventDate = now;
       if (_selectedWhen == 'Tomorrow') {
         eventDate = now.add(const Duration(days: 1));
-      } else if (_selectedWhen == 'This weekend') {
-        int daysUntilSaturday = DateTime.saturday - now.weekday;
-        if (daysUntilSaturday <= 0) daysUntilSaturday += 7;
-        eventDate = now.add(Duration(days: daysUntilSaturday));
+      } else if (_selectedWhen == 'Choose date' && _customDate != null) {
+        eventDate = _customDate!;
       }
 
       String? eventDateTimeIso;
       String? expiresAtIso;
       if (_selectedTime != null) {
-        final dt = DateTime(eventDate.year, eventDate.month, eventDate.day, _selectedTime!.hour, _selectedTime!.minute);
+        DateTime dt = DateTime(eventDate.year, eventDate.month, eventDate.day, _selectedTime!.hour, _selectedTime!.minute);
+        
+        // If the selected time for "Today" has already passed, they likely mean tomorrow (e.g. posting at 11 PM for 2 AM).
+        if (_selectedWhen == 'Today' && dt.isBefore(now)) {
+          dt = dt.add(const Duration(days: 1));
+        }
+        
         eventDateTimeIso = dt.toUtc().toIso8601String();
         expiresAtIso = dt.subtract(const Duration(hours: 1)).toUtc().toIso8601String();
       }
@@ -137,7 +142,11 @@ class _Location3ViewState extends State<Location3View> {
               locationName: _searchController.text,
               locationSubtitle: _selectedPlaceSubtext,
               landmark: '',
-              whenDate: _selectedWhen == 'This weekend' ? 'Weekend' : _selectedWhen,
+              whenDate: _selectedWhen == 'Choose date' && _customDate != null 
+                  ? (_customDate!.weekday == DateTime.saturday || _customDate!.weekday == DateTime.sunday)
+                      ? "Weekend"
+                      : "${_customDate!.day}/${_customDate!.month}/${_customDate!.year}"
+                  : _selectedWhen,
               time: _selectedTime,
               howLong: _selectedHowLong,
               whoPays: _selectedWhoPays,
@@ -587,7 +596,7 @@ class _Location3ViewState extends State<Location3View> {
                         const SizedBox(width: 8),
                         _buildWhenChip('Tomorrow'),
                         const SizedBox(width: 8),
-                        _buildWhenChip('This weekend'),
+                        _buildWhenChip('Choose date'),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -921,11 +930,47 @@ class _Location3ViewState extends State<Location3View> {
 
   Widget _buildWhenChip(String label) {
     bool isSelected = _selectedWhen == label;
+    String displayLabel = label;
+    if (label == 'Choose date' && _customDate != null) {
+      if (_customDate!.weekday == DateTime.saturday || _customDate!.weekday == DateTime.sunday) {
+        displayLabel = "Weekend";
+      } else {
+        displayLabel = "${_customDate!.day}/${_customDate!.month}/${_customDate!.year}";
+      }
+    }
+    
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedWhen = label;
-        });
+      onTap: () async {
+        if (label == 'Choose date') {
+          DateTime? picked = await showDatePicker(
+            context: context,
+            initialDate: _customDate ?? DateTime.now(),
+            firstDate: DateTime.now(),
+            lastDate: DateTime.now().add(const Duration(days: 7)),
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: const ColorScheme.light(
+                    primary: Color(0xFFE43A6A),
+                    onPrimary: Colors.white,
+                    onSurface: Colors.black87,
+                  ),
+                ),
+                child: child!,
+              );
+            },
+          );
+          if (picked != null) {
+            setState(() {
+              _customDate = picked;
+              _selectedWhen = label;
+            });
+          }
+        } else {
+          setState(() {
+            _selectedWhen = label;
+          });
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -940,7 +985,7 @@ class _Location3ViewState extends State<Location3View> {
           ),
         ),
         child: Text(
-          label,
+          displayLabel,
           style: TextStyle(
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
