@@ -24,6 +24,95 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
     {'amount': 10000, 'bonus': 500},
   ];
 
+  String _selectedHistoryFilter = 'All';
+
+  final List<Map<String, dynamic>> _mockHistory = [
+    {
+      'month': 'THIS MONTH',
+      'items': [
+        {
+          'title': 'Added via UPI',
+          'subtitle': '12 Aug · tanishka@oksbi',
+          'amount': '+₹2,000',
+          'status': 'SUCCESS',
+          'isSuccess': true,
+          'icon': Icons.phone_android,
+          'iconColor': const Color(0xFF2CAF6B),
+          'iconBg': const Color(0xFFE9F6ED),
+          'txnId': 'TOP-4471209',
+          'hasDetails': true,
+          'amountPaid': '₹2,000',
+          'bonusCoins': '+₹100',
+          'credited': '2,100',
+        },
+        {
+          'title': 'Added via Card',
+          'subtitle': '6 Aug · HDFC •••• 4821',
+          'amount': '+₹1,000',
+          'status': 'SUCCESS',
+          'isSuccess': true,
+          'icon': Icons.credit_card,
+          'iconColor': Colors.orange,
+          'iconBg': const Color(0xFFFFF4E0),
+          'txnId': 'TOP-4409866',
+        },
+        {
+          'title': 'Add money failed',
+          'subtitle': '3 Aug · UPI timed out · not charged',
+          'amount': '+₹500',
+          'status': 'FAILED',
+          'isSuccess': false,
+          'icon': Icons.phone_android,
+          'iconColor': Colors.red.shade600,
+          'iconBg': const Color(0xFFFBE4E7),
+          'txnId': 'TOP-4388120',
+        },
+      ],
+    },
+    {
+      'month': 'JULY 2026',
+      'items': [
+        {
+          'title': 'Added via UPI',
+          'subtitle': '24 Jul · tanishka@oksbi',
+          'amount': '+₹5,000',
+          'status': 'SUCCESS',
+          'isSuccess': true,
+          'icon': Icons.phone_android,
+          'iconColor': const Color(0xFF2CAF6B),
+          'iconBg': const Color(0xFFE9F6ED),
+          'txnId': 'TOP-4188735',
+          'hasDetails': true,
+          'amountPaid': '₹5,000',
+          'bonusCoins': '+₹250',
+          'credited': '5,250',
+        },
+        {
+          'title': 'Added via Net banking',
+          'subtitle': '11 Jul · HDFC Bank',
+          'amount': '+₹1,500',
+          'status': 'SUCCESS',
+          'isSuccess': true,
+          'icon': Icons.account_balance,
+          'iconColor': Colors.blue.shade700,
+          'iconBg': const Color(0xFFE8F1FA),
+          'txnId': 'TOP-4092214',
+        },
+        {
+          'title': 'Added via UPI',
+          'subtitle': '2 Jul · tanishka@oksbi',
+          'amount': '+₹500',
+          'status': 'SUCCESS',
+          'isSuccess': true,
+          'icon': Icons.phone_android,
+          'iconColor': const Color(0xFF2CAF6B),
+          'iconBg': const Color(0xFFE9F6ED),
+          'txnId': 'TOP-4001558',
+        },
+      ],
+    }
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -461,33 +550,93 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Total Added Banner
+          // Total Added Banner (Premium Design)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)], // Light mint greens
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0xFFBBF7D0), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF2CAF6B).withOpacity(0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Stack(
               children: [
-                const Text(
-                  'TOTAL ADDED',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    letterSpacing: 1.2,
+                Positioned(
+                  right: -10,
+                  top: -10,
+                  child: Icon(
+                    Icons.account_balance_wallet,
+                    size: 90,
+                    color: const Color(0xFF2CAF6B).withOpacity(0.1),
                   ),
                 ),
-                const Text(
-                  '₹10,350',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF2CAF6B),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.arrow_downward_rounded,
+                            color: Color(0xFF2CAF6B),
+                            size: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'TOTAL ADDED',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF166534), // Darker green
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      '₹10,350',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF14532D), // Very dark green
+                        letterSpacing: -1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Lifetime wallet top-ups',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: const Color(0xFF166534).withOpacity(0.7),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -499,119 +648,68 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterChip('All 6', true),
+                _buildFilterChip('All', 6),
                 const SizedBox(width: 8),
-                _buildFilterChip('Success 5', false),
+                _buildFilterChip('Success', 5),
                 const SizedBox(width: 8),
-                _buildFilterChip('Failed 1', false),
+                _buildFilterChip('Failed', 1),
               ],
             ),
           ),
           const SizedBox(height: 24),
 
-          // This Month Section
-          const Text(
-            'THIS MONTH',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          _buildHistoryCard(
-            title: 'Added via UPI',
-            subtitle: '12 Aug · tanishka@oksbi',
-            amount: '+₹2,000',
-            status: 'SUCCESS',
-            isSuccess: true,
-            icon: '📱',
-            iconBg: const Color(0xFFE9F6ED),
-            txnId: 'TOP-4471209',
-            hasDetails: true,
-            amountPaid: '₹2,000',
-            bonusCoins: '+₹100',
-            credited: '2,100',
-          ),
-          const SizedBox(height: 12),
-
-          _buildHistoryCard(
-            title: 'Added via Card',
-            subtitle: '6 Aug · HDFC •••• 4821',
-            amount: '+₹1,000',
-            status: 'SUCCESS',
-            isSuccess: true,
-            icon: '💳',
-            iconBg: const Color(0xFFFFF4E0),
-            txnId: 'TOP-4409866',
-          ),
-          const SizedBox(height: 12),
-
-          _buildHistoryCard(
-            title: 'Add money failed',
-            subtitle: '3 Aug · UPI timed out · not charged',
-            amount: '+₹500',
-            status: 'FAILED',
-            isSuccess: false,
-            icon: '📱',
-            iconBg: const Color(0xFFFBE4E7),
-            txnId: 'TOP-4388120',
-          ),
-
-          const SizedBox(height: 24),
-
-          // July Section
-          const Text(
-            'JULY 2026',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          _buildHistoryCard(
-            title: 'Added via UPI',
-            subtitle: '24 Jul · tanishka@oksbi',
-            amount: '+₹5,000',
-            status: 'SUCCESS',
-            isSuccess: true,
-            icon: '📱',
-            iconBg: const Color(0xFFE9F6ED),
-            txnId: 'TOP-4188735',
-            hasDetails: true,
-            amountPaid: '₹5,000',
-            bonusCoins: '+₹250',
-            credited: '5,250',
-          ),
-          const SizedBox(height: 12),
-
-          _buildHistoryCard(
-            title: 'Added via Net banking',
-            subtitle: '11 Jul · HDFC Bank',
-            amount: '+₹1,500',
-            status: 'SUCCESS',
-            isSuccess: true,
-            icon: '🏦',
-            iconBg: const Color(0xFFE8F1FA),
-            txnId: 'TOP-4092214',
-          ),
-          const SizedBox(height: 12),
-
-          _buildHistoryCard(
-            title: 'Added via UPI',
-            subtitle: '2 Jul · tanishka@oksbi',
-            amount: '+₹500',
-            status: 'SUCCESS',
-            isSuccess: true,
-            icon: '📱',
-            iconBg: const Color(0xFFE9F6ED),
-            txnId: 'TOP-4001558',
-          ),
+          // History List
+          ..._mockHistory.map((monthData) {
+            final month = monthData['month'] as String;
+            final items = monthData['items'] as List<Map<String, dynamic>>;
+            
+            // Filter items
+            final filteredItems = items.where((item) {
+              if (_selectedHistoryFilter == 'All') return true;
+              if (_selectedHistoryFilter == 'Success') return item['isSuccess'] == true;
+              if (_selectedHistoryFilter == 'Failed') return item['isSuccess'] == false;
+              return false;
+            }).toList();
+            
+            if (filteredItems.isEmpty) return const SizedBox.shrink();
+            
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  month,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...filteredItems.map((item) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: _buildHistoryCard(
+                      title: item['title'],
+                      subtitle: item['subtitle'],
+                      amount: item['amount'],
+                      status: item['status'],
+                      isSuccess: item['isSuccess'],
+                      icon: item['icon'],
+                      iconColor: item['iconColor'],
+                      iconBg: item['iconBg'],
+                      txnId: item['txnId'],
+                      hasDetails: item['hasDetails'] ?? false,
+                      amountPaid: item['amountPaid'],
+                      bonusCoins: item['bonusCoins'],
+                      credited: item['credited'],
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 12),
+              ],
+            );
+          }).toList(),
           
           const SizedBox(height: 40),
         ],
@@ -619,22 +717,32 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
     );
   }
 
-  Widget _buildFilterChip(String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFFBE4E7) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade300,
+  Widget _buildFilterChip(String filterType, int count) {
+    final bool isSelected = _selectedHistoryFilter == filterType;
+    final String label = '$filterType $count';
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedHistoryFilter = filterType;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFBE4E7) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade300,
+          ),
         ),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? const Color(0xFFE85A7A) : Colors.black87,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? const Color(0xFFE85A7A) : Colors.black87,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -646,7 +754,8 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
     required String amount,
     required String status,
     required bool isSuccess,
-    required String icon,
+    required IconData icon,
+    required Color iconColor,
     required Color iconBg,
     required String txnId,
     bool hasDetails = false,
@@ -655,16 +764,16 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
     String? credited,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Colors.grey.shade100, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.015),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -672,40 +781,41 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   color: iconBg,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10), // Rounded square
                 ),
                 alignment: Alignment.center,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 2.0),
-                  child: Text(icon, style: const TextStyle(fontSize: 18)),
+                  padding: const EdgeInsets.only(bottom: 0.0),
+                  child: Icon(icon, size: 20, color: iconColor),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
                       ),
                     ),
                   ],
@@ -713,23 +823,24 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     amount,
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: isSuccess ? const Color(0xFF2CAF6B) : const Color(0xFFE85A7A),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: isSuccess ? const Color(0xFF1EA85A) : Colors.red.shade600, // Strong red
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 1),
                   Text(
                     status,
                     style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: isSuccess ? const Color(0xFF2CAF6B) : const Color(0xFFE85A7A),
-                      letterSpacing: 0.5,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: isSuccess ? const Color(0xFF1EA85A) : Colors.red.shade600, // Strong red
+                      letterSpacing: 0.8,
                     ),
                   ),
                 ],
@@ -739,37 +850,39 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
           
           if (hasDetails) ...[
             const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.grey.shade200,
-                    style: BorderStyle.solid, // Flutter doesn't support dotted directly without custom painter, using solid light line for now
+            // Custom dashed line
+            Row(
+              children: List.generate(
+                35,
+                (index) => Expanded(
+                  child: Container(
+                    height: 1.5,
+                    color: index.isEven ? Colors.grey.shade200 : Colors.transparent,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             _buildDetailRow('Amount paid', amountPaid ?? ''),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             _buildDetailRow('Bonus coins', bonusCoins ?? '', isGreen: true),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Credited to wallet',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
                 ),
                 Row(
                   children: [
-                    const Text('🪙', style: TextStyle(fontSize: 12)),
+                    Icon(Icons.monetization_on, size: 14, color: Colors.amber.shade700),
                     const SizedBox(width: 4),
                     Text(
                       credited ?? '',
                       style: const TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         color: Colors.black87,
                       ),
                     ),
@@ -779,14 +892,14 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
             ),
           ],
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Text(
             txnId,
             style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
               color: Colors.grey.shade400,
-              letterSpacing: 1.0,
+              letterSpacing: 0.8,
             ),
           ),
         ],
@@ -800,14 +913,14 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
         ),
         Text(
           value,
           style: TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: isGreen ? const Color(0xFF2CAF6B) : Colors.black87,
+            fontWeight: FontWeight.w700,
+            color: isGreen ? const Color(0xFF1EA85A) : Colors.black87,
           ),
         ),
       ],
