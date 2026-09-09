@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'get_compliments_drawer.dart';
+import 'service_compliment.dart';
 
 class ComplimentsScreen extends StatefulWidget {
   static int availableCompliments = 3;
@@ -23,70 +24,43 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
   }
 
   Future<void> _fetchData() async {
-    if (!mounted) return;
-    setState(() {
-      ComplimentsScreen.availableCompliments = 5;
+    final service = ComplimentApiService();
+    final data = await service.getComplimentsData();
+    if (data != null && mounted) {
+      setState(() {
+        ComplimentsScreen.availableCompliments = data['availableCompliments'] ?? 0;
 
-      _packages = [
-        {
-          'title': '05',
-          'subtitle': 'Compliments',
-          'pricePerItem': '₹49 /each',
-          'totalPrice': '₹245',
-          'tag': 'Save 20%',
-        },
-        {
-          'title': '15',
-          'subtitle': 'Compliments',
-          'pricePerItem': '₹37 /each',
-          'totalPrice': '₹549',
-          'tag': 'Save 35%',
-        },
-        {
-          'title': '30',
-          'subtitle': 'Compliments',
-          'pricePerItem': '₹32 /each',
-          'totalPrice': '₹959',
-          'tag': 'BEST VALUE',
-        },
-      ];
+        final packs = data['packs'] as List<dynamic>? ?? [];
+        _packages = packs.map((p) {
+          final quantity = p['quantity']?.toString() ?? '0';
 
-      _infoList = [
-        {
-          'title': 'Words that work',
-          'subtitle':
-              'Likes with a compliment get replies 4× more often than plain likes.',
-          'tag': 'PROVEN',
-        },
-        {
-          'title': 'Up to 140 chars',
-          'subtitle':
-              'Just enough to be witty, not enough to overshare. Sweet spot for first impressions.',
-          'tag': 'NEW',
-        },
-        {
-          'title': 'Attached to a specific photo or prompt',
-          'subtitle':
-              'Anchor your note to what caught your eye — much more personal.',
-        },
-        {
-          'title': 'Goes to their top notifications',
-          'subtitle':
-              'Compliments skip the regular queue — your message lands at the top.',
-        },
-        {
-          'title': 'Compliments never expire',
-          'subtitle':
-              'Buy now, use anytime. Save them for the right person — no rush.',
-        },
-        {
-          'title': 'Pro tip: Reference a specific detail',
-          'subtitle':
-              '"Your Ladakh photo" beats "you look great" every time. Specificity = 2× reply rate.',
-        },
-      ];
-      _isLoading = false;
-    });
+          String? tagStr;
+          final badge = p['badge']?.toString();
+          if (badge != null && badge.isNotEmpty && badge != 'NONE') {
+            tagStr = badge.replaceAll('_', ' ').toLowerCase();
+            tagStr = tagStr.split(' ').map((word) => word.isNotEmpty ? '${word[0].toUpperCase()}${word.substring(1)}' : '').join(' ');
+          }
+
+          return {
+            'id': p['id'],
+            'title': quantity,
+            'subtitle': 'Compliments',
+            'pricePerItem': '₹${p['pricePerUnit']} each',
+            'totalPrice': '₹${p['totalPrice']}',
+            'tag': tagStr,
+          };
+        }).toList();
+
+        _infoList = List<Map<String, dynamic>>.from(data['info'] ?? []);
+        _isLoading = false;
+      });
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -170,15 +144,8 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                       }),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Center(
-                    child: Text(
-                      'Most popular · best value picks save you up to 38% per compliment',
-                      style: TextStyle(color: Colors.black45, fontSize: 11),
-                    ),
-                  ),
                   if (_infoList.isNotEmpty) ...[
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
@@ -396,6 +363,17 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
   }
 
   Widget _buildWhyComplimentsWorkSection() {
+    if (_infoList.isEmpty) return const SizedBox.shrink();
+
+    final iconsData = [
+      {'icon': Icons.favorite, 'iconColor': const Color(0xFF632EB7), 'iconBgColor': const Color(0xFFF3E5F5)},
+      {'icon': Icons.chat_bubble_outline, 'iconColor': const Color(0xFF632EB7), 'iconBgColor': const Color(0xFFF3E5F5)},
+      {'icon': Icons.star, 'iconColor': const Color(0xFFF09B59), 'iconBgColor': const Color(0xFFFFF2E8)},
+      {'icon': Icons.remove_red_eye_outlined, 'iconColor': const Color(0xFF63A4FF), 'iconBgColor': const Color(0xFFEAF2FF)},
+      {'icon': Icons.check, 'iconColor': const Color(0xFF6FCF97), 'iconBgColor': const Color(0xFFEAFAF1)},
+      {'icon': Icons.access_time, 'iconColor': const Color(0xFF632EB7), 'iconBgColor': const Color(0xFFF3E5F5)},
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -409,63 +387,22 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
         ],
       ),
       child: Column(
-        children: [
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.favorite,
-            iconColor: const Color(0xFF632EB7),
-            iconBgColor: const Color(0xFFF3E5F5),
-            title: 'Words that work',
-            subtitle: 'More than a swipe',
-            isFirst: true,
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.chat_bubble_outline,
-            iconColor: const Color(0xFF632EB7),
-            iconBgColor: const Color(0xFFF3E5F5),
-            title: '4× higher reply rate',
-            subtitle:
-                'Likes with a compliment get replies 4× more often than plain likes.',
-            tag: 'PROVEN',
-            tagColor: const Color(0xFF632EB7),
-            tagBgColor: const Color(0xFFF3E5F5),
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.star,
-            iconColor: const Color(0xFFF09B59),
-            iconBgColor: const Color(0xFFFFF2E8),
-            title: 'Up to 140 chars',
-            subtitle:
-                'Just enough to be witty, not enough to overshare. Sweet spot for first impressions.',
-            tag: 'NEW',
-            tagColor: const Color(0xFFF09B59),
-            tagBgColor: const Color(0xFFFFF2E8),
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.remove_red_eye_outlined,
-            iconColor: const Color(0xFF63A4FF),
-            iconBgColor: const Color(0xFFEAF2FF),
-            title: 'Attached to a specific photo or prompt',
-            subtitle:
-                'Anchor your note to what caught your eye — much more personal.',
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.check,
-            iconColor: const Color(0xFF6FCF97),
-            iconBgColor: const Color(0xFFEAFAF1),
-            title: 'Goes to their top notifications',
-            subtitle:
-                'Compliments skip the regular queue — your message lands at the top.',
-          ),
-          _buildWhyComplimentsWorkItem(
-            icon: Icons.access_time,
-            iconColor: const Color(0xFF632EB7),
-            iconBgColor: const Color(0xFFF3E5F5),
-            title: 'Compliments never expire',
-            subtitle:
-                'Buy now, use anytime. Save them for the right person — no rush.',
-            isLast: true,
-          ),
-        ],
+        children: List.generate(_infoList.length, (index) {
+          final info = _infoList[index];
+          final iconMap = iconsData[index % iconsData.length];
+          return _buildWhyComplimentsWorkItem(
+            icon: iconMap['icon'] as IconData,
+            iconColor: iconMap['iconColor'] as Color,
+            iconBgColor: iconMap['iconBgColor'] as Color,
+            title: info['title'] ?? '',
+            subtitle: info['description'] ?? '',
+            tag: info['tag'],
+            tagColor: iconMap['iconColor'] as Color,
+            tagBgColor: iconMap['iconBgColor'] as Color,
+            isFirst: index == 0,
+            isLast: index == _infoList.length - 1,
+          );
+        }),
       ),
     );
   }
@@ -897,7 +834,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${int.parse(selectedPkg['title'])} ROSES · ${selectedPkg['tag'] ?? 'TRY IT OUT'}',
+                '${int.parse(selectedPkg['title'])} COMPLIMENTS · ${selectedPkg['tag'] ?? 'TRY IT OUT'}',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 11,
