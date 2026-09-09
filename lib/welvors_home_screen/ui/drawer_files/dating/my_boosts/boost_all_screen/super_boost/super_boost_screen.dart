@@ -128,7 +128,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildPremiumBanner(),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 20),
           ],
         ),
       ),

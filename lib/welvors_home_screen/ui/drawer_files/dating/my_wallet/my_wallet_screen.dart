@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 // import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/benefits_drawer.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add_money_and_withraw_drawer.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add_money_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/withdraw_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/transactions_drawer.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 
@@ -209,7 +210,12 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            AddMoneyBottomSheet.show(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddMoneyScreen(),
+                              ),
+                            );
                           },
                           icon: const Icon(
                             Icons.add,
@@ -239,7 +245,12 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            WithdrawBottomSheet.show(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const WithdrawScreen(),
+                              ),
+                            );
                           },
                           icon: const Icon(
                             Icons.arrow_downward,

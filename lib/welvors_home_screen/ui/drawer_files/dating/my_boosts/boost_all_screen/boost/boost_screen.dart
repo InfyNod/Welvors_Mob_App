@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 import 'get_boosts_drawer.dart';
 
 class BoostScreen extends StatefulWidget {
@@ -128,7 +129,7 @@ class _BoostScreenState extends State<BoostScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildPremiumBanner(),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -183,7 +184,7 @@ class _BoostScreenState extends State<BoostScreen> {
                   Text('⚡', style: TextStyle(fontSize: 12)),
                   SizedBox(width: 4),
                   Text(
-                    '30 MINUTES • NEARBY',
+                    '1 HOUR • NEARBY',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -224,7 +225,7 @@ class _BoostScreenState extends State<BoostScreen> {
                 children: [
                   _buildStatItem('5×', 'MORE VIEWS'),
                   _buildStatItem('3×', 'MORE MATCHES'),
-                  _buildStatItem('30m', 'DURATION'),
+                  _buildStatItem('1hr', 'DURATION'),
                 ],
               ),
             ),
@@ -470,7 +471,7 @@ class _BoostScreenState extends State<BoostScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${selectedPkg['title']} BOOSTS · 30 MIN EACH',
+                '${selectedPkg['title']} BOOSTS · 1 HOUR EACH',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 11,
@@ -550,7 +551,7 @@ class _BoostScreenState extends State<BoostScreen> {
             icon: Icons.bolt,
             iconColor: const Color(0xFFE43A6A),
             iconBgColor: const Color(0xFFFDF0F3),
-            title: 'Boost · 30 min',
+            title: 'Boost · 1 Hr',
             subtitle: 'Quick visibility lift',
             tag: '⚡ INSTANT',
             tagColor: const Color(0xFFE43A6A),
@@ -790,7 +791,7 @@ class _BoostScreenState extends State<BoostScreen> {
               ],
             ),
           ),
-          _buildComparisonRow('Duration', '30 min', '3 hours'),
+          _buildComparisonRow('Duration', '1 hr', '3 hours'),
           _buildComparisonRow('Visibility lift', '5x', '10x'),
           _buildComparisonRow('Reach', 'Nearby', 'Citywide'),
           _buildComparisonRow('Top of search', '✓', '✓Priority'),
@@ -923,6 +924,7 @@ class _BoostScreenState extends State<BoostScreen> {
               ],
             ),
           ),
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
