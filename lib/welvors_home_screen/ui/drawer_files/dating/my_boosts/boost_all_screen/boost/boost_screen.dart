@@ -19,9 +19,10 @@ class _BoostScreenState extends State<BoostScreen> {
   List<dynamic> _whyBoostWorks = [];
   Map<String, dynamic>? _boostVsSuperBoost;
   String _title = 'Be a top profile\nin your area';
-  String _description =
-      'Get 5× more profile views and stand out to\nyour most compatible matches instantly.';
+  String _description = 'Get 5× more profile views and stand out to\nyour most compatible matches instantly.';
   int _timePerBoost = 30;
+  String _durationText = '30 MIN';
+  String _durationShortText = '30min';
 
   @override
   void initState() {
@@ -71,8 +72,15 @@ class _BoostScreenState extends State<BoostScreen> {
         _description = boostData['description'];
       }
       if (boostData['timePerBoost'] != null) {
-        _timePerBoost =
-            int.tryParse(boostData['timePerBoost'].toString()) ?? 30;
+        _timePerBoost = int.tryParse(boostData['timePerBoost'].toString()) ?? 30;
+        if (_timePerBoost >= 60 && _timePerBoost % 60 == 0) {
+          int hours = _timePerBoost ~/ 60;
+          _durationText = '$hours HOUR${hours > 1 ? 'S' : ''}';
+          _durationShortText = '${hours}hr';
+        } else {
+          _durationText = '$_timePerBoost MIN';
+          _durationShortText = '${_timePerBoost}min';
+        }
       }
 
       int selectedIdx = _packages.indexWhere((p) => p['tag'] == 'POPULAR');
@@ -235,7 +243,7 @@ class _BoostScreenState extends State<BoostScreen> {
                   const Text('⚡', style: TextStyle(fontSize: 12)),
                   const SizedBox(width: 4),
                   Text(
-                    '$_timePerBoost MIN • NEARBY',
+                    '$_durationText • NEARBY',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -276,7 +284,7 @@ class _BoostScreenState extends State<BoostScreen> {
                 children: [
                   _buildStatItem('5×', 'MORE VIEWS'),
                   _buildStatItem('3×', 'MORE MATCHES'),
-                  _buildStatItem('${_timePerBoost}min', 'DURATION'),
+                  _buildStatItem(_durationShortText, 'DURATION'),
                 ],
               ),
             ),
@@ -522,7 +530,7 @@ class _BoostScreenState extends State<BoostScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${selectedPkg['title']} BOOSTS · $_timePerBoost MIN EACH',
+                '${selectedPkg['title']} BOOSTS · $_durationText EACH',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 11,

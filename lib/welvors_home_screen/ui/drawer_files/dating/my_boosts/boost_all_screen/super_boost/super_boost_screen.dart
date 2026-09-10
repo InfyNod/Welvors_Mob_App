@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'get_super_boosts_drawer.dart';
+import 'service_super.dart';
 
 class SuperBoostScreen extends StatefulWidget {
   static int availableSuperBoosts = 0;
@@ -11,43 +12,82 @@ class SuperBoostScreen extends StatefulWidget {
 }
 
 class _SuperBoostScreenState extends State<SuperBoostScreen> {
-  int _selectedPackageIndex = 1; // 05 Super Boosts is selected by default
+  int _selectedPackageIndex = 0;
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _packages = [];
+  List<dynamic> _whyBoostWorks = [];
+  Map<String, dynamic>? _boostVsSuperBoost;
+  String _title = 'Be the top profile\nin your city';
+  String _description = 'Get 10× more views, advanced targeting and\nverified-only mode for 3 full hours.';
+  int _timePerBoost = 180; // Default 3 hours = 180 min
+  String _durationText = '3 HOURS';
+  String _durationShortText = '3hr';
 
-  final List<Map<String, dynamic>> _packages = [
-    {
-      'title': '01',
-      'subtitle': 'Super Boosts',
-      'pricePerItem': '₹766/each',
-      'discount': null,
-      'oldPrice': null,
-      'totalPrice': '₹766 total',
-      'tag': null,
-    },
-    {
-      'title': '05',
-      'subtitle': 'Super Boosts',
-      'pricePerItem': '₹499/each',
-      'discount': 'Save 35%',
-      'oldPrice': '₹766/each',
-      'totalPrice': '₹2,495 total',
-      'tag': 'POPULAR',
-    },
-    {
-      'title': '10',
-      'subtitle': 'Super Boosts',
-      'pricePerItem': '₹399/each',
-      'discount': 'Save 48%',
-      'oldPrice': '₹766/each',
-      'totalPrice': '₹3,990 total',
-      'tag': 'BEST VALUE',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchBoostsData();
+  }
+
+  Future<void> _fetchBoostsData() async {
+    setState(() => _isLoading = true);
+    final data = await SuperBoostApiService().getSuperBoostsData();
+    if (data != null && data['boosts'] != null && data['boosts'].isNotEmpty) {
+      final boostData = data['boosts'][0];
+      final options = boostData['options'] as List<dynamic>? ?? [];
+      
+      _packages = options.map((opt) {
+        return {
+          'title': opt['boostCount'].toString(),
+          'subtitle': 'Super Boosts',
+          'pricePerItem': '₹${opt['discounted_price']}/each',
+          'discount': opt['discount_percent'] != null && opt['discount_percent'] > 0 
+              ? 'Save ${opt['discount_percent']}%' 
+              : null,
+          'oldPrice': opt['discount_percent'] != null && opt['discount_percent'] > 0 
+              ? '₹${opt['pricePerBoost']}/each' 
+              : null,
+          'totalPrice': '₹${opt['totalPrice']} total',
+          'tag': opt['is_popular'] == true ? 'POPULAR' : (opt['is_best_value'] == true ? 'BEST VALUE' : null),
+          'raw': opt,
+        };
+      }).toList();
+      
+      _whyBoostWorks = boostData['whyBoostWorks'] as List<dynamic>? ?? [];
+      _boostVsSuperBoost = boostData['boostVsSuperBoost'] as Map<String, dynamic>?;
+      SuperBoostScreen.availableSuperBoosts = data['availableBoost'] ?? 0;
+      
+      if (boostData['title'] != null && boostData['title'].toString().isNotEmpty) {
+        _title = boostData['title'];
+      }
+      if (boostData['description'] != null && boostData['description'].toString().isNotEmpty) {
+        _description = boostData['description'];
+      }
+      if (boostData['timePerBoost'] != null) {
+        _timePerBoost = int.tryParse(boostData['timePerBoost'].toString()) ?? 180;
+        if (_timePerBoost >= 60 && _timePerBoost % 60 == 0) {
+          int hours = _timePerBoost ~/ 60;
+          _durationText = '$hours HOUR${hours > 1 ? 'S' : ''}';
+          _durationShortText = '${hours}hr';
+        } else {
+          _durationText = '$_timePerBoost MIN';
+          _durationShortText = '${_timePerBoost}min';
+        }
+      }
+
+      int selectedIdx = _packages.indexWhere((p) => p['tag'] == 'POPULAR');
+      _selectedPackageIndex = selectedIdx == -1 ? 0 : selectedIdx;
+    }
+    setState(() => _isLoading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))) 
+          : SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +172,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomNavigationBar: _isLoading || _packages.isEmpty ? null : _buildBottomBar(),
     );
   }
 
@@ -177,14 +217,14 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
                 color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('✦', style: TextStyle(fontSize: 12)),
-                  SizedBox(width: 4),
+                  const Text('✦', style: TextStyle(fontSize: 12)),
+                  const SizedBox(width: 4),
                   Text(
-                    '3 HOURS • CITYWIDE',
-                    style: TextStyle(
+                    '$_durationText • CITYWIDE',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
@@ -195,9 +235,9 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Be the top profile\nin your city',
-              style: TextStyle(
+            Text(
+              _title,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
@@ -205,9 +245,9 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Get 10× more views, advanced targeting and\nverified-only mode for 3 full hours.',
-              style: TextStyle(
+            Text(
+              _description,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -224,7 +264,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
                 children: [
                   _buildStatItem('10×', 'MORE VIEWS'),
                   _buildStatItem('5×', 'MORE MATCHES'),
-                  _buildStatItem('3hr', 'DURATION'),
+                  _buildStatItem(_durationShortText, 'DURATION'),
                 ],
               ),
             ),
@@ -463,94 +503,70 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
       ),
       child: Column(
         children: [
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.bolt,
-            iconColor: const Color(0xFFF6B042),
-            iconBgColor: const Color(0xFFFFF8E1),
-            title: 'Super Boost · 3 hours',
-            subtitle: 'Maximum citywide reach',
-            tag: '✦ PREMIUM',
-            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
-            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
-            isFirst: true,
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.star,
-            iconColor: const Color(0xFFF6B042),
-            iconBgColor: const Color(0xFFFFF8E1),
-            title: 'Citywide priority placement',
-            subtitle:
-                'Profile shown across the entire city, not just\nwithin 2 km — reach matches you would never\nsee.',
-            tag: 'TOP TIER',
-            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
-            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.trending_up,
-            iconColor: const Color(0xFFE43A6A),
-            iconBgColor: const Color(0xFFFDF0F3),
-            title: '10× visibility lift',
-            subtitle:
-                'On average, Super Boost users see 800% more\nviews than baseline. That\'s 2× the impact of a\nregular boost.',
-            tag: '+800%',
-            tagColor: const Color(0xFFE43A6A),
-            tagBgColor: const Color(0xFFFDF0F3),
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.favorite,
-            iconColor: const Color(0xFF34A853),
-            iconBgColor: const Color(0xFFE6F4EA),
-            title: '3 hours of premium exposure',
-            subtitle:
-                'Six times the duration of a regular boost —\nperfect for Friday and Saturday peak nights.',
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.verified,
-            iconColor: const Color(0xFFF6B042),
-            iconBgColor: const Color(0xFFFFF8E1),
-            title: 'Verified-only audience mode',
-            subtitle:
-                'Show only to verified profiles. Higher quality\nviews, fewer wasted impressions.',
-            tag: 'EXCLUSIVE',
-            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
-            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.settings,
-            iconColor: const Color(0xFF8E24AA),
-            iconBgColor: const Color(0xFFF3E5F5),
-            title: 'Advanced AI targeting',
-            subtitle:
-                'AI optimizes who sees your profile — prioritizes\nlifestyle, intent, and chemistry compatibility.',
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.monitor_heart_sharp,
-            iconColor: const Color(0xFF2383F6),
-            iconBgColor: const Color(0xFFE3F0FF),
-            title: 'Detailed live analytics',
-            subtitle:
-                'See real-time graph by hour, demographics,\nlocation breakdown — everything tracked.',
-            tag: 'PRO',
-            tagColor: const Color.fromRGBO(138, 96, 16, 1.0),
-            tagBgColor: const Color.fromRGBO(255, 244, 224, 1.0),
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.chat_bubble_outline,
-            iconColor: const Color(0xFFE43A6A),
-            iconBgColor: const Color(0xFFFDF0F3),
-            title: '5× faster replies',
-            subtitle:
-                'Super Boost signals premium activity — your\nconversations get replies almost instantly.',
-          ),
-          _buildWhySuperBoostWorkItem(
-            icon: Icons.access_time,
-            iconColor: const Color(0xFF34A853),
-            iconBgColor: const Color(0xFFE6F4EA),
-            title: 'Never expires + carry over',
-            subtitle:
-                'Save unused minutes — paused if you go offline,\nresume anytime.',
-            isLast: true,
-          ),
+          if (_whyBoostWorks.isNotEmpty)
+            ..._whyBoostWorks.asMap().entries.map((entry) {
+              final int index = entry.key;
+              final dynamic item = entry.value;
+              final bool isLast = index == _whyBoostWorks.length - 1;
+              
+              IconData iconData = Icons.star;
+              if (item['icon'] == 'zap') iconData = Icons.bolt;
+              if (item['icon'] == 'trending-up') iconData = Icons.trending_up;
+              if (item['icon'] == 'heart') iconData = Icons.favorite;
+              if (item['icon'] == 'verified') iconData = Icons.verified;
+              if (item['icon'] == 'settings') iconData = Icons.settings;
+              if (item['icon'] == 'activity') iconData = Icons.monitor_heart_sharp;
+              if (item['icon'] == 'message-circle') iconData = Icons.chat_bubble_outline;
+              if (item['icon'] == 'clock') iconData = Icons.access_time;
+
+              Color iconColor = const Color(0xFFF6B042);
+              Color iconBgColor = const Color(0xFFFFF8E1);
+              
+              if (item['icon'] == 'trending-up') {
+                iconColor = const Color(0xFFE43A6A);
+                iconBgColor = const Color(0xFFFDF0F3);
+              } else if (item['icon'] == 'heart' || item['icon'] == 'clock') {
+                iconColor = const Color(0xFF34A853);
+                iconBgColor = const Color(0xFFE6F4EA);
+              } else if (item['icon'] == 'settings') {
+                iconColor = const Color(0xFF8E24AA);
+                iconBgColor = const Color(0xFFF3E5F5);
+              } else if (item['icon'] == 'activity') {
+                iconColor = const Color(0xFF2383F6);
+                iconBgColor = const Color(0xFFE3F0FF);
+              } else if (item['icon'] == 'message-circle') {
+                iconColor = const Color(0xFFE43A6A);
+                iconBgColor = const Color(0xFFFDF0F3);
+              }
+
+              Color tagColor = const Color.fromRGBO(138, 96, 16, 1.0);
+              Color tagBgColor = const Color.fromRGBO(255, 244, 224, 1.0);
+              
+              if (item['tagColor'] != null) {
+                tagColor = Color(int.parse(item['tagColor'].toString().replaceFirst('#', '0xFF')));
+              } else if (item['icon'] == 'trending-up' || item['icon'] == 'message-circle') {
+                tagColor = const Color(0xFFE43A6A);
+              }
+
+              if (item['tagBgColor'] != null) {
+                tagBgColor = Color(int.parse(item['tagBgColor'].toString().replaceFirst('#', '0xFF')));
+              } else if (item['icon'] == 'trending-up' || item['icon'] == 'message-circle') {
+                tagBgColor = const Color(0xFFFDF0F3);
+              }
+
+              return _buildWhySuperBoostWorkItem(
+                icon: iconData,
+                iconColor: iconColor,
+                iconBgColor: iconBgColor,
+                title: item['title'] ?? '',
+                subtitle: item['description'] ?? item['subtitle'] ?? '',
+                tag: item['tag'],
+                tagColor: tagColor,
+                tagBgColor: tagBgColor,
+                isFirst: index == 0,
+                isLast: isLast,
+              );
+            }),
         ],
       ),
     );
@@ -718,19 +734,18 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
               ],
             ),
           ),
-          _buildComparisonRow('Duration', '30 min', '3 hours'),
-          _buildComparisonRow('Visibility lift', '5×', '10×'),
-          _buildComparisonRow('Reach', 'Nearby', 'Citywide'),
-          _buildComparisonRow('Top of search', '✓', '✓ Priority'),
-          _buildComparisonRow('Smart targeting', 'Basic', 'Advanced AI'),
-          _buildComparisonRow('Verified-only mode', '—', '✓'),
-          _buildComparisonRow('Reply rate boost', '3×', '5×'),
-          _buildComparisonRow(
-            'Live analytics',
-            '✓',
-            '✓ Detailed',
-            isLast: true,
-          ),
+          if (_boostVsSuperBoost != null && _boostVsSuperBoost!['features'] != null)
+            ...(_boostVsSuperBoost!['features'] as List<dynamic>).asMap().entries.map((entry) {
+              final int index = entry.key;
+              final dynamic featureObj = entry.value;
+              final bool isLast = index == (_boostVsSuperBoost!['features'] as List<dynamic>).length - 1;
+              return _buildComparisonRow(
+                featureObj['feature'] ?? '',
+                featureObj['boost'] ?? '',
+                featureObj['super'] ?? '',
+                isLast: isLast,
+              );
+            }),
         ],
       ),
     );
@@ -901,7 +916,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${int.parse(selectedPkg['title'])} SUPER BOOSTS · 3 HOURS EACH',
+                '${int.parse(selectedPkg['title'])} SUPER BOOSTS · $_durationText EACH',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 11,
