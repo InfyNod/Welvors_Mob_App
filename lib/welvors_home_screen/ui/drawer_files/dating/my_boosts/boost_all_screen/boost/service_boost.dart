@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import '../../../../../../services/token_helper.dart';
 
 class BoostApiService {
-  static const String _baseUrl = 'https://api.welvors.com/api/admin/boost/get-all';
+  static const String _baseUrl =
+      'https://api.welvors.com/api/admin/boost/get-all?type=BOOST';
 
   Future<Map<String, dynamic>?> getBoostsData() async {
     try {

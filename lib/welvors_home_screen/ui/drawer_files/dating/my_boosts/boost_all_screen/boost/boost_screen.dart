@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 import 'get_boosts_drawer.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_all_screen/boost/service_boost.dart';
+
 class BoostScreen extends StatefulWidget {
   static int availableBoosts = 0;
 
@@ -17,6 +18,10 @@ class _BoostScreenState extends State<BoostScreen> {
   List<Map<String, dynamic>> _packages = [];
   List<dynamic> _whyBoostWorks = [];
   Map<String, dynamic>? _boostVsSuperBoost;
+  String _title = 'Be a top profile\nin your area';
+  String _description =
+      'Get 5× more profile views and stand out to\nyour most compatible matches instantly.';
+  int _timePerBoost = 30;
 
   @override
   void initState() {
@@ -30,27 +35,45 @@ class _BoostScreenState extends State<BoostScreen> {
     if (data != null && data['boosts'] != null && data['boosts'].isNotEmpty) {
       final boostData = data['boosts'][0];
       final options = boostData['options'] as List<dynamic>? ?? [];
-      
+
       _packages = options.map((opt) {
         return {
           'title': opt['boostCount'].toString(),
           'subtitle': 'Boosts',
           'pricePerItem': '₹${opt['discounted_price']}/each',
-          'discount': opt['discount_percent'] != null && opt['discount_percent'] > 0 
-              ? 'Save ${opt['discount_percent']}%' 
+          'discount':
+              opt['discount_percent'] != null && opt['discount_percent'] > 0
+              ? 'Save ${opt['discount_percent']}%'
               : null,
-          'oldPrice': opt['discount_percent'] != null && opt['discount_percent'] > 0 
-              ? '₹${opt['pricePerBoost']}/each' 
+          'oldPrice':
+              opt['discount_percent'] != null && opt['discount_percent'] > 0
+              ? '₹${opt['pricePerBoost']}/each'
               : null,
           'totalPrice': '₹${opt['totalPrice']} total',
-          'tag': opt['is_popular'] == true ? 'POPULAR' : (opt['is_best_value'] == true ? 'BEST VALUE' : null),
+          'tag': opt['is_popular'] == true
+              ? 'POPULAR'
+              : (opt['is_best_value'] == true ? 'BEST VALUE' : null),
           'raw': opt,
         };
       }).toList();
-      
+
       _whyBoostWorks = boostData['whyBoostWorks'] as List<dynamic>? ?? [];
-      _boostVsSuperBoost = boostData['boostVsSuperBoost'] as Map<String, dynamic>?;
+      _boostVsSuperBoost =
+          boostData['boostVsSuperBoost'] as Map<String, dynamic>?;
       BoostScreen.availableBoosts = data['availableBoost'] ?? 0;
+
+      if (boostData['title'] != null &&
+          boostData['title'].toString().isNotEmpty) {
+        _title = boostData['title'];
+      }
+      if (boostData['description'] != null &&
+          boostData['description'].toString().isNotEmpty) {
+        _description = boostData['description'];
+      }
+      if (boostData['timePerBoost'] != null) {
+        _timePerBoost =
+            int.tryParse(boostData['timePerBoost'].toString()) ?? 30;
+      }
 
       int selectedIdx = _packages.indexWhere((p) => p['tag'] == 'POPULAR');
       _selectedPackageIndex = selectedIdx == -1 ? 0 : selectedIdx;
@@ -62,101 +85,106 @@ class _BoostScreenState extends State<BoostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: _isLoading 
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))) 
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+            )
           : SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTopBanner(),
-            const SizedBox(height: 14),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'CHOOSE YOUR PACK',
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildPackageSelection(),
-            const SizedBox(height: 24),
-            
-            if (_whyBoostWorks.isNotEmpty) ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'WHY BOOST WORKS',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildWhyBoostWorksSection(),
-              ),
-              const SizedBox(height: 24),
-            ],
-
-            if (_boostVsSuperBoost != null && _boostVsSuperBoost!['features'] != null) ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'BOOST VS SUPER BOOST',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildComparisonSection(),
-              ),
-              const SizedBox(height: 24),
-            ],
-
-            Row(
-              children: [
-                Expanded(child: Divider(color: Colors.grey.shade300)),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text(
-                    'OR GET PREMIUM',
-                    style: TextStyle(
-                      color: Colors.black45,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.0,
+              padding: const EdgeInsets.symmetric(vertical: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTopBanner(),
+                  const SizedBox(height: 14),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'CHOOSE YOUR PACK',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(child: Divider(color: Colors.grey.shade300)),
-              ],
+                  const SizedBox(height: 16),
+                  _buildPackageSelection(),
+                  const SizedBox(height: 24),
+
+                  if (_whyBoostWorks.isNotEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'WHY BOOST WORKS',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildWhyBoostWorksSection(),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
+                  if (_boostVsSuperBoost != null &&
+                      _boostVsSuperBoost!['features'] != null) ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'BOOST VS SUPER BOOST',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildComparisonSection(),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'OR GET PREMIUM',
+                          style: TextStyle(
+                            color: Colors.black45,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: _buildPremiumBanner(),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildPremiumBanner(),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _isLoading || _packages.isEmpty ? null : _buildBottomBar(),
+      bottomNavigationBar: _isLoading || _packages.isEmpty
+          ? null
+          : _buildBottomBar(),
     );
   }
 
@@ -201,14 +229,14 @@ class _BoostScreenState extends State<BoostScreen> {
                 color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('⚡', style: TextStyle(fontSize: 12)),
-                  SizedBox(width: 4),
+                  const Text('⚡', style: TextStyle(fontSize: 12)),
+                  const SizedBox(width: 4),
                   Text(
-                    '1 HOUR • NEARBY',
-                    style: TextStyle(
+                    '$_timePerBoost MIN • NEARBY',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
@@ -219,9 +247,9 @@ class _BoostScreenState extends State<BoostScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Be a top profile\nin your area',
-              style: TextStyle(
+            Text(
+              _title,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
@@ -229,9 +257,9 @@ class _BoostScreenState extends State<BoostScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Get 5× more profile views and stand out to\nyour most compatible matches instantly.',
-              style: TextStyle(
+            Text(
+              _description,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -248,7 +276,7 @@ class _BoostScreenState extends State<BoostScreen> {
                 children: [
                   _buildStatItem('5×', 'MORE VIEWS'),
                   _buildStatItem('3×', 'MORE MATCHES'),
-                  _buildStatItem('1hr', 'DURATION'),
+                  _buildStatItem('${_timePerBoost}min', 'DURATION'),
                 ],
               ),
             ),
@@ -494,7 +522,7 @@ class _BoostScreenState extends State<BoostScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${selectedPkg['title']} BOOSTS · 1 HOUR EACH',
+                '${selectedPkg['title']} BOOSTS · $_timePerBoost MIN EACH',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 11,
@@ -573,7 +601,7 @@ class _BoostScreenState extends State<BoostScreen> {
           final int index = entry.key;
           final dynamic item = entry.value;
           final bool isLast = index == _whyBoostWorks.length - 1;
-          
+
           IconData iconData = Icons.star;
           if (item['icon'] == 'zap') iconData = Icons.bolt;
           if (item['icon'] == 'trending-up') iconData = Icons.trending_up;
@@ -581,7 +609,7 @@ class _BoostScreenState extends State<BoostScreen> {
 
           Color iconColor = const Color(0xFFE43A6A);
           Color iconBgColor = const Color(0xFFFDF0F3);
-          
+
           if (item['icon'] == 'trending-up') {
             iconColor = const Color(0xFF34A853);
             iconBgColor = const Color(0xFFE6F4EA);
@@ -769,18 +797,26 @@ class _BoostScreenState extends State<BoostScreen> {
               ],
             ),
           ),
-          if (_boostVsSuperBoost != null && _boostVsSuperBoost!['features'] != null)
-            ...(_boostVsSuperBoost!['features'] as List<dynamic>).asMap().entries.map((entry) {
-              final int index = entry.key;
-              final dynamic featureObj = entry.value;
-              final bool isLast = index == (_boostVsSuperBoost!['features'] as List<dynamic>).length - 1;
-              return _buildComparisonRow(
-                featureObj['feature'] ?? '',
-                featureObj['boost'] ?? '',
-                featureObj['super'] ?? '',
-                isLast: isLast,
-              );
-            }),
+          if (_boostVsSuperBoost != null &&
+              _boostVsSuperBoost!['features'] != null)
+            ...(_boostVsSuperBoost!['features'] as List<dynamic>)
+                .asMap()
+                .entries
+                .map((entry) {
+                  final int index = entry.key;
+                  final dynamic featureObj = entry.value;
+                  final bool isLast =
+                      index ==
+                      (_boostVsSuperBoost!['features'] as List<dynamic>)
+                              .length -
+                          1;
+                  return _buildComparisonRow(
+                    featureObj['feature'] ?? '',
+                    featureObj['boost'] ?? '',
+                    featureObj['super'] ?? '',
+                    isLast: isLast,
+                  );
+                }),
         ],
       ),
     );
