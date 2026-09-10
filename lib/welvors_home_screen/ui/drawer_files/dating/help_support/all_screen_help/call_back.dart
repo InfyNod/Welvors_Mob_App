@@ -443,6 +443,14 @@ class _CallBackScreenState extends State<CallBackScreen>
   }
 
   Widget _buildBottomSheet() {
+    bool isTab0 = _tabController.index == 0;
+    bool allSelected =
+        _selectedDay != null && _selectedTime != null && _selectedTopic != null;
+
+    if (isTab0 && !allSelected) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 38),
       decoration: BoxDecoration(
@@ -462,14 +470,8 @@ class _CallBackScreenState extends State<CallBackScreen>
         ),
         child: ElevatedButton(
           onPressed: () {
-            if (_tabController.index == 0) {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Callback requested successfully!'),
-                  backgroundColor: Colors.black87,
-                ),
-              );
+            if (isTab0) {
+              _showSuccessDialog();
             } else {
               _tabController.animateTo(0);
             }
@@ -483,15 +485,7 @@ class _CallBackScreenState extends State<CallBackScreen>
             ),
           ),
           child: Text(
-            _tabController.index == 0
-                ? (_selectedDay != null && _selectedTime != null
-                    ? 'Confirm · $_selectedDay, $_selectedTime'
-                    : (_selectedDay != null
-                        ? 'Confirm · $_selectedDay'
-                        : (_selectedTime != null
-                            ? 'Confirm · $_selectedTime'
-                            : 'Confirm')))
-                : 'Request a new call',
+            isTab0 ? 'Confirm' : 'Request a new call',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 15,
@@ -500,6 +494,195 @@ class _CallBackScreenState extends State<CallBackScreen>
           ),
         ),
       ),
+    );
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFFFF0F5), Colors.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.0, 0.7],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: const Color.fromARGB(255, 132, 126, 127),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFFD1DC).withOpacity(0.4),
+                  blurRadius: 30,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Minimal header similar to match_dialog
+                const Text(
+                  'WELVORS',
+                  style: TextStyle(
+                    color: Color(0xFFC73A5E),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2.0,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Call booked',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFFC73A5E),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'We’ll ring you on +91 98765 43210.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Details Container
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 230, 230, 230).withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 250, 218, 218),
+                      width: 2,
+                    ),
+                  ),
+                  child: Wrap(
+                    spacing: 32, // Horizontal spacing between items
+                    runSpacing: 16, // Vertical spacing when items wrap to next line
+                    children: [
+                      _buildDialogRow('Day', _selectedDay ?? ''),
+                      _buildDialogRow('Time window', _selectedTime ?? ''),
+                      _buildDialogRow('Topic', _selectedTopic ?? ''),
+                      _buildDialogRow('Reference', 'CB-646453'),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _tabController.animateTo(1);
+                          setState(() {
+                            _selectedDay = null;
+                            _selectedTime = null;
+                            _selectedTopic = null;
+                          });
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFFE85A7A),
+                          side: const BorderSide(color: Color(0xFFE85A7A)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          'History',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE85A7A),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          'Help',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDialogRow(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 
