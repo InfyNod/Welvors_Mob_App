@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import '../service_help.dart';
 
 class CallBackScreen extends StatefulWidget {
   const CallBackScreen({super.key});
@@ -13,6 +15,27 @@ class _CallBackScreenState extends State<CallBackScreen>
   String? _selectedDay;
   String? _selectedTime;
   String? _selectedTopic;
+  bool _isSubmitting = false;
+
+  List<Map<String, dynamic>> _historyData = [];
+  bool _isLoadingHistory = false;
+
+  String get _todayDate => DateTime.now().toIso8601String().split('T')[0];
+  String get _tomorrowDate => DateTime.now()
+      .add(const Duration(days: 1))
+      .toIso8601String()
+      .split('T')[0];
+
+  bool _isToday() => _selectedDay == _todayDate;
+  bool _isTomorrow() => _selectedDay == _tomorrowDate;
+  bool _isPicked() => _selectedDay != null && !_isToday() && !_isTomorrow();
+
+  String _getDisplayDay() {
+    if (_selectedDay == null) return '';
+    if (_isToday()) return 'Today';
+    if (_isTomorrow()) return 'Tomorrow';
+    return _selectedDay!;
+  }
 
   @override
   void initState() {
@@ -21,6 +44,18 @@ class _CallBackScreenState extends State<CallBackScreen>
     _tabController.addListener(() {
       setState(() {});
     });
+    _fetchHistory();
+  }
+
+  Future<void> _fetchHistory() async {
+    setState(() => _isLoadingHistory = true);
+    final history = await ServiceHelp.fetchCallbackHistory();
+    if (mounted) {
+      setState(() {
+        _historyData = history;
+        _isLoadingHistory = false;
+      });
+    }
   }
 
   @override
@@ -29,7 +64,7 @@ class _CallBackScreenState extends State<CallBackScreen>
     super.dispose();
   }
 
-  final List<String> _days = ['Today', 'Tomorrow', '📅 Pick a date'];
+  // Removed _days list, it will be dynamic
   final List<String> _times = [
     '10-12 PM',
     '12-2 PM',
@@ -137,7 +172,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          '4',
+                          '${_historyData.length}',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -208,17 +243,66 @@ class _CallBackScreenState extends State<CallBackScreen>
           Wrap(
             spacing: 12,
             runSpacing: 12,
-            children: _days.map((day) {
-              return _buildChip(
-                label: day,
-                isSelected: _selectedDay == day,
+            children: [
+              _buildChip(
+                label: 'Today',
+                isSelected: _isToday(),
                 onTap: () {
-                  setState(() {
-                    _selectedDay = _selectedDay == day ? null : day;
-                  });
+                  setState(() => _selectedDay = _isToday() ? null : _todayDate);
                 },
-              );
-            }).toList(),
+              ),
+              _buildChip(
+                label: 'Tomorrow',
+                isSelected: _isTomorrow(),
+                onTap: () {
+                  setState(
+                    () => _selectedDay = _isTomorrow() ? null : _tomorrowDate,
+                  );
+                },
+              ),
+              _buildChip(
+                label: _isPicked() ? '📅 $_selectedDay' : '📅 Pick a date',
+                isSelected: _isPicked(),
+                onTap: () async {
+                  if (_isPicked()) {
+                    setState(() => _selectedDay = null);
+                    return;
+                  }
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now().add(const Duration(days: 2)),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 30)),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Color(
+                              0xFFE85A7A,
+                            ), // header background color
+                            onPrimary: Colors.white, // header text color
+                            onSurface: Colors.black87, // body text color
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(
+                                0xFFE85A7A,
+                              ), // button text color
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _selectedDay = picked.toIso8601String().split('T')[0];
+                    });
+                  }
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 24),
 
@@ -307,45 +391,53 @@ class _CallBackScreenState extends State<CallBackScreen>
           ),
           const SizedBox(height: 24),
 
-          _buildHistoryCard(
-            title: 'Payment or refund',
-            statusText: 'RESOLVED',
-            isResolved: true,
-            subtitle: 'Yesterday · 4-6 PM · Priya S. · 6 min',
-            description:
-                'Refund of ₹499 approved — credited in 3–5 working days.',
-            referenceId: 'CB-884120',
-          ),
-          const SizedBox(height: 16),
-          _buildHistoryCard(
-            title: 'Verification',
-            statusText: 'RESOLVED',
-            isResolved: true,
-            subtitle: 'Thu, 28 Aug · 12-2 PM · Rohan M. · 11 min',
-            description:
-                'Re-uploaded ID accepted. Trust level moved to Identity Verified.',
-            referenceId: 'CB-871905',
-          ),
-          const SizedBox(height: 16),
-          _buildHistoryCard(
-            title: 'Safety concern',
-            statusText: 'MISSED',
-            isResolved: false,
-            subtitle: 'Mon, 25 Aug · 10-12 PM',
-            description:
-                'We called twice, no answer — details emailed to you instead.',
-            referenceId: 'CB-863477',
-          ),
-          const SizedBox(height: 16),
-          _buildHistoryCard(
-            title: 'Account or login',
-            statusText: 'RESOLVED',
-            isResolved: true,
-            subtitle: 'Fri, 22 Aug · 6-7 PM · Sana P. · 4 min',
-            description:
-                'Login issue was a stale session. Resolved on the call.',
-            referenceId: 'CB-857001',
-          ),
+          _isLoadingHistory
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : _historyData.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Text(
+                    'No past callbacks found.',
+                    style: TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
+                )
+              : Column(
+                  children: _historyData.map((item) {
+                    final dateString = item['callbackDate'] ?? '';
+                    String formattedDate = '';
+                    if (dateString.isNotEmpty) {
+                      formattedDate = dateString.split('T').first;
+                    }
+
+                    String timeWindow = item['timeWindow'] ?? '';
+                    String? agentName = item['agentName'];
+                    String? callDuration = item['callDuration'];
+
+                    List<String> subtitleParts = [];
+                    if (formattedDate.isNotEmpty)
+                      subtitleParts.add(formattedDate);
+                    if (timeWindow.isNotEmpty) subtitleParts.add(timeWindow);
+                    if (agentName != null && agentName.isNotEmpty)
+                      subtitleParts.add(agentName);
+                    if (callDuration != null && callDuration.isNotEmpty)
+                      subtitleParts.add(callDuration);
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _buildHistoryCard(
+                        title: item['topic'] ?? 'Unknown',
+                        statusText: item['status'] ?? 'REQUESTED',
+                        subtitle: subtitleParts.join(' · '),
+                        description:
+                            item['resolutionNote'] ?? 'We will call you soon.',
+                        referenceId: item['callbackNumber'] ?? '',
+                      ),
+                    );
+                  }).toList(),
+                ),
 
           const SizedBox(height: 100), // padding for bottom button
         ],
@@ -356,7 +448,6 @@ class _CallBackScreenState extends State<CallBackScreen>
   Widget _buildHistoryCard({
     required String title,
     required String statusText,
-    required bool isResolved,
     required String subtitle,
     required String description,
     required String referenceId,
@@ -395,22 +486,41 @@ class _CallBackScreenState extends State<CallBackScreen>
                   color: Colors.black,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isResolved ? Colors.green.shade50 : Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  statusText,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: isResolved
-                        ? Colors.green.shade600
-                        : Colors.red.shade400,
-                  ),
-                ),
+              Builder(
+                builder: (context) {
+                  Color bgColor;
+                  Color textColor;
+                  final status = statusText.toUpperCase();
+                  if (status == 'RESOLVED') {
+                    bgColor = Colors.green.shade50;
+                    textColor = Colors.green.shade600;
+                  } else if (status == 'REQUESTED' || status == 'PENDING') {
+                    bgColor = Colors.blue.shade50;
+                    textColor = Colors.blue.shade600;
+                  } else {
+                    bgColor = Colors.red.shade50;
+                    textColor = Colors.red.shade600;
+                  }
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      statusText,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -419,7 +529,29 @@ class _CallBackScreenState extends State<CallBackScreen>
             subtitle,
             style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 5),
+          LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final boxWidth = constraints.constrainWidth();
+              const dashWidth = 4.0;
+              const dashHeight = 1.0;
+              final dashCount = (boxWidth / (2 * dashWidth)).floor();
+              return Flex(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                direction: Axis.horizontal,
+                children: List.generate(dashCount, (_) {
+                  return SizedBox(
+                    width: dashWidth,
+                    height: dashHeight,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.grey.shade300),
+                    ),
+                  );
+                }),
+              );
+            },
+          ),
+          const SizedBox(height: 5),
           Text(
             description,
             style: TextStyle(
@@ -472,10 +604,30 @@ class _CallBackScreenState extends State<CallBackScreen>
               : const Color.fromRGBO(242, 239, 234, 1),
         ),
         child: ElevatedButton(
-          onPressed: isButtonEnabled
-              ? () {
+          onPressed: isButtonEnabled && !_isSubmitting
+              ? () async {
                   if (isTab0) {
-                    _showSuccessDialog();
+                    setState(() => _isSubmitting = true);
+                    final result = await ServiceHelp.requestCallback(
+                      callbackDate: _selectedDay!,
+                      timeWindow: _selectedTime!,
+                      topic: _selectedTopic!,
+                    );
+                    if (mounted) {
+                      setState(() => _isSubmitting = false);
+                      if (result['success']) {
+                        _showSuccessDialog();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              result['error'] ?? 'Failed to request callback.',
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
                   } else {
                     _tabController.animateTo(0);
                   }
@@ -491,14 +643,23 @@ class _CallBackScreenState extends State<CallBackScreen>
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: Text(
-            isTab0 ? 'Confirm' : 'Request a new call',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          child: _isSubmitting
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  isTab0 ? 'Confirm' : 'Request a new call',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
         ),
       ),
     );
@@ -554,17 +715,11 @@ class _CallBackScreenState extends State<CallBackScreen>
 
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 28,
-                      ),
+                    Lottie.asset(
+                      'assets/check_help.json',
+                      width: 44,
+                      height: 44,
+                      repeat: false,
                     ),
                     const SizedBox(width: 12),
                     const Text(
@@ -610,7 +765,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                     runSpacing:
                         16, // Vertical spacing when items wrap to next line
                     children: [
-                      _buildDialogRow('Day', _selectedDay ?? ''),
+                      _buildDialogRow('Day', _getDisplayDay()),
                       _buildDialogRow('Time window', _selectedTime ?? ''),
                       _buildDialogRow('Topic', _selectedTopic ?? ''),
                       _buildDialogRow('Reference', 'CB-646453'),
@@ -626,6 +781,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                         onPressed: () {
                           Navigator.pop(context);
                           _tabController.animateTo(1);
+                          _fetchHistory();
                           setState(() {
                             _selectedDay = null;
                             _selectedTime = null;
@@ -721,17 +877,27 @@ class _CallBackScreenState extends State<CallBackScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFBE4E7) : Colors.white,
-          border: Border.all(
-            color: isSelected ? const Color(0xFFE85A7A) : Colors.grey.shade400,
-            width: 1,
-          ),
+          color: isSelected ? null : Colors.white,
+          gradient: isSelected
+              ? const LinearGradient(
+                  colors: [
+                    Color.fromRGBO(248, 102, 130, 1),
+                    Color.fromRGBO(224, 45, 90, 1),
+                  ],
+                )
+              : null,
+          border: isSelected
+              ? null
+              : Border.all(
+                  color: Colors.grey.shade400,
+                  width: 1,
+                ),
           borderRadius: BorderRadius.circular(24),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? const Color(0xFFE85A7A) : Colors.black87,
+            color: isSelected ? Colors.white : Colors.black87,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             fontSize: 13,
           ),
