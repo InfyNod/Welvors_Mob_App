@@ -109,12 +109,7 @@ class _Location3ViewState extends State<Location3View> {
       String? expiresAtIso;
       if (_selectedTime != null) {
         DateTime dt = DateTime(eventDate.year, eventDate.month, eventDate.day, _selectedTime!.hour, _selectedTime!.minute);
-        
-        // If the selected time for "Today" has already passed, they likely mean tomorrow (e.g. posting at 11 PM for 2 AM).
-        if (_selectedWhen == 'Today' && dt.isBefore(now)) {
-          dt = dt.add(const Duration(days: 1));
-        }
-        
+
         eventDateTimeIso = dt.toUtc().toIso8601String();
         expiresAtIso = dt.subtract(const Duration(hours: 1)).toUtc().toIso8601String();
       }
@@ -636,6 +631,27 @@ class _Location3ViewState extends State<Location3View> {
                           },
                         );
                         if (picked != null) {
+                          DateTime now = DateTime.now();
+                          DateTime eventDate = now;
+                          if (_selectedWhen == 'Tomorrow') {
+                            eventDate = now.add(const Duration(days: 1));
+                          } else if (_selectedWhen == 'Choose date' && _customDate != null) {
+                            eventDate = _customDate!;
+                          }
+
+                          if (eventDate.year == now.year && eventDate.month == now.month && eventDate.day == now.day) {
+                            final nowTime = TimeOfDay.now();
+                            if (picked.hour < nowTime.hour || (picked.hour == nowTime.hour && picked.minute < nowTime.minute)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Please select a future time for today.'),
+                                  backgroundColor: Colors.redAccent,
+                                ),
+                              );
+                              return;
+                            }
+                          }
+
                           setState(() {
                             _selectedTime = picked;
                           });
