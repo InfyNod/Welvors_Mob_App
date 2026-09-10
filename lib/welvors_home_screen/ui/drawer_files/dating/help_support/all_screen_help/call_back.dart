@@ -447,13 +447,11 @@ class _CallBackScreenState extends State<CallBackScreen>
     bool allSelected =
         _selectedDay != null && _selectedTime != null && _selectedTopic != null;
 
-    if (isTab0 && !allSelected) {
-      return const SizedBox.shrink();
-    }
+    bool isButtonEnabled = !isTab0 || allSelected;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 38),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white, // Match body background
       ),
       child: Container(
@@ -461,23 +459,32 @@ class _CallBackScreenState extends State<CallBackScreen>
         height: 52,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromRGBO(248, 104, 131, 1),
-              Color.fromRGBO(223, 43, 88, 1),
-            ],
-          ),
+          gradient: isButtonEnabled
+              ? const LinearGradient(
+                  colors: [
+                    Color.fromRGBO(248, 104, 131, 1),
+                    Color.fromRGBO(223, 43, 88, 1),
+                  ],
+                )
+              : null,
+          color: isButtonEnabled
+              ? null
+              : const Color.fromRGBO(242, 239, 234, 1),
         ),
         child: ElevatedButton(
-          onPressed: () {
-            if (isTab0) {
-              _showSuccessDialog();
-            } else {
-              _tabController.animateTo(0);
-            }
-          },
+          onPressed: isButtonEnabled
+              ? () {
+                  if (isTab0) {
+                    _showSuccessDialog();
+                  } else {
+                    _tabController.animateTo(0);
+                  }
+                }
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
+            disabledBackgroundColor: Colors.transparent,
+            disabledForegroundColor: Colors.white,
             shadowColor: Colors.transparent,
             elevation: 0,
             shape: RoundedRectangleBorder(
@@ -586,7 +593,12 @@ class _CallBackScreenState extends State<CallBackScreen>
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 230, 230, 230).withOpacity(0.6),
+                    color: const Color.fromARGB(
+                      255,
+                      230,
+                      230,
+                      230,
+                    ).withOpacity(0.6),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: const Color.fromARGB(255, 250, 218, 218),
@@ -595,7 +607,8 @@ class _CallBackScreenState extends State<CallBackScreen>
                   ),
                   child: Wrap(
                     spacing: 32, // Horizontal spacing between items
-                    runSpacing: 16, // Vertical spacing when items wrap to next line
+                    runSpacing:
+                        16, // Vertical spacing when items wrap to next line
                     children: [
                       _buildDialogRow('Day', _selectedDay ?? ''),
                       _buildDialogRow('Time window', _selectedTime ?? ''),
