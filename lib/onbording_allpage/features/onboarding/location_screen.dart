@@ -476,8 +476,18 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                               userData.location = '$_city, $_state';
                               userData.locationAuto = _useCurrentLocation ? 'Auto' : 'Manual';
 
-                              // Simulate API delay
-                              await Future.delayed(const Duration(seconds: 1));
+                              // Submit to API
+                              if (_lat != null && _lng != null) {
+                                await ApiService.submitLocation(_lat!, _lng!);
+                              }
+                              if (_country != null && _state != null && _city != null) {
+                                await ApiService.submitAddress(
+                                  _country!,
+                                  _state!,
+                                  _city!,
+                                  area: _area,
+                                );
+                              }
 
                               if (mounted) {
                                 setState(() => _isSubmitting = false);

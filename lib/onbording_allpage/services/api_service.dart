@@ -896,8 +896,9 @@ class ApiService {
   static Future<String?> submitAddress(
     String country,
     String state,
-    String city,
-  ) async {
+    String city, {
+    String? area,
+  }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -908,7 +909,12 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({"country": country, "state": state, "city": city}),
+        body: jsonEncode({
+          "country": country, 
+          "state": state, 
+          "city": city,
+          if (area != null) "area": area,
+        }),
       );
 
       debugPrint('Submit Address Status: ${response.statusCode}');
