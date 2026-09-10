@@ -458,6 +458,7 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                                       _city = p.locality ?? p.subAdministrativeArea ?? p.administrativeArea ?? _cityController.text;
                                       _state = p.administrativeArea ?? 'Unknown';
                                       _country = p.country ?? 'Unknown';
+                                      _area = p.subLocality ?? p.thoroughfare ?? '';
                                     }
                                   }
                                 } catch (e) {
