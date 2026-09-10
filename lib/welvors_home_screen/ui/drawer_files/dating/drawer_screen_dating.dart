@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'my_boosts/boost_bloc/boost_bloc.dart';
 import 'my_boosts/boost_bloc/boost_state.dart';
 import 'my_wallet/my_wallet_screen.dart';
+import 'my_wallet/service_wallet.dart';
 import 'roses/roses_screen.dart';
 import 'date_plans/date_plan_wallet.dart';
 import 'my_boosts/boost_all_screen/boost_top_nav.dart';
@@ -26,6 +27,28 @@ class DrawerScreen extends StatefulWidget {
 
 class _DrawerScreenState extends State<DrawerScreen> {
   int _selectedTabIndex = 1; // 0 = Marriage, 1 = Dating, 2 = Mature Dating
+  String _walletBalance = '₹0';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWalletBalance();
+  }
+
+  Future<void> _fetchWalletBalance() async {
+    try {
+      final data = await WalletApiService().getWalletData(filter: 'ALL');
+      if (data != null && data['wallet'] != null) {
+        if (mounted) {
+          setState(() {
+            _walletBalance = data['wallet']['formattedBalance'] ?? '₹0';
+          });
+        }
+      }
+    } catch (e) {
+      // Silently ignore errors
+    }
+  }
 
   int _calculateAge(String dobString) {
     try {
@@ -755,14 +778,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
           child: _buildBalanceCard(
             emoji: '👛',
             bgColor: const Color(0xFFFBE4E7),
-            value: '₹3,240',
+            value: _walletBalance,
             label: 'My Wallet',
             hasDot: false,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MyWalletScreen()),
-              );
+              ).then((_) => _fetchWalletBalance());
             },
           ),
         ),
