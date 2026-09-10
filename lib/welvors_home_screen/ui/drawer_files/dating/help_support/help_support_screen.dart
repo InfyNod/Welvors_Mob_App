@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'all_screen_help/live_chat.dart';
 import 'all_screen_help/call_back.dart';
 
@@ -31,6 +32,37 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  Future<void> _launchEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'support@welvors.com',
+      query: 'subject=Support%20Request',
+    );
+    if (!await launchUrl(emailUri)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open email app')),
+        );
+      }
+    }
+  }
+
+  Future<void> _launchWhatsApp() async {
+    final Uri whatsappUri = Uri.parse('whatsapp://send?phone=+919765303735');
+    if (await canLaunchUrl(whatsappUri)) {
+      await launchUrl(whatsappUri);
+    } else {
+      final Uri webUri = Uri.parse('https://wa.me/919765303735');
+      if (!await launchUrl(webUri, mode: LaunchMode.externalApplication)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not open WhatsApp')),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -113,7 +145,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     statusText: 'Replies in 24h',
                     statusColor: Colors.grey.shade600,
                     onTap: () {
-                      _showComingSoon();
+                      _launchEmail();
                     },
                   ),
                 ),
@@ -150,7 +182,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     statusText: 'Fastest reply',
                     statusColor: Colors.green,
                     onTap: () {
-                      _showComingSoon();
+                      _launchWhatsApp();
                     },
                   ),
                 ),

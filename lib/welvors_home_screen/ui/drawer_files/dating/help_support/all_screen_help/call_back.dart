@@ -10,9 +10,9 @@ class CallBackScreen extends StatefulWidget {
 class _CallBackScreenState extends State<CallBackScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _selectedDay = 'Today';
-  String _selectedTime = '12-2 PM';
-  String _selectedTopic = 'Payment or refund';
+  String? _selectedDay;
+  String? _selectedTime;
+  String? _selectedTopic;
 
   @override
   void initState() {
@@ -57,6 +57,8 @@ class _CallBackScreenState extends State<CallBackScreen>
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
             onTap: () => Navigator.pop(context),
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -97,6 +99,8 @@ class _CallBackScreenState extends State<CallBackScreen>
             child: TabBar(
               controller: _tabController,
               isScrollable: true,
+              splashFactory: NoSplash.splashFactory,
+              overlayColor: MaterialStateProperty.all(Colors.transparent),
               labelColor: const Color(0xFFE85A7A),
               unselectedLabelColor: Colors.grey.shade600,
               labelStyle: const TextStyle(
@@ -210,7 +214,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                 isSelected: _selectedDay == day,
                 onTap: () {
                   setState(() {
-                    _selectedDay = day;
+                    _selectedDay = _selectedDay == day ? null : day;
                   });
                 },
               );
@@ -229,7 +233,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                 isSelected: _selectedTime == time,
                 onTap: () {
                   setState(() {
-                    _selectedTime = time;
+                    _selectedTime = _selectedTime == time ? null : time;
                   });
                 },
               );
@@ -248,7 +252,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                 isSelected: _selectedTopic == topic,
                 onTap: () {
                   setState(() {
-                    _selectedTopic = topic;
+                    _selectedTopic = _selectedTopic == topic ? null : topic;
                   });
                 },
               );
@@ -440,13 +444,22 @@ class _CallBackScreenState extends State<CallBackScreen>
 
   Widget _buildBottomSheet() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 38),
       decoration: BoxDecoration(
         color: Colors.white, // Match body background
       ),
-      child: SizedBox(
+      child: Container(
         width: double.infinity,
         height: 52,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: const LinearGradient(
+            colors: [
+              Color.fromRGBO(248, 104, 131, 1),
+              Color.fromRGBO(223, 43, 88, 1),
+            ],
+          ),
+        ),
         child: ElevatedButton(
           onPressed: () {
             if (_tabController.index == 0) {
@@ -462,7 +475,8 @@ class _CallBackScreenState extends State<CallBackScreen>
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFE85A7A),
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -470,7 +484,13 @@ class _CallBackScreenState extends State<CallBackScreen>
           ),
           child: Text(
             _tabController.index == 0
-                ? 'Confirm · $_selectedDay, $_selectedTime'
+                ? (_selectedDay != null && _selectedTime != null
+                    ? 'Confirm · $_selectedDay, $_selectedTime'
+                    : (_selectedDay != null
+                        ? 'Confirm · $_selectedDay'
+                        : (_selectedTime != null
+                            ? 'Confirm · $_selectedTime'
+                            : 'Confirm')))
                 : 'Request a new call',
             style: const TextStyle(
               color: Colors.white,
