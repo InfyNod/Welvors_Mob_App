@@ -104,4 +104,34 @@ class EventApiService {
       return null;
     }
   }
+
+  static Future<Map<String, dynamic>?> cancelEventBooking({
+    required String bookingId,
+    required String reason,
+    required String comment,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/event-bookings/$bookingId/cancel');
+      final body = json.encode({
+        'reason': reason,
+        'comment': comment,
+      });
+
+      final response = await http.post(
+        url,
+        headers: await _headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to cancel event booking: ${response.statusCode} - ${response.body}');
+        return {'success': false, 'error': json.decode(response.body)['message'] ?? 'Failed to cancel booking'};
+      }
+    } catch (e) {
+      debugPrint('Error cancelling event booking: $e');
+      return {'success': false, 'error': e.toString()};
+    }
+  }
 }

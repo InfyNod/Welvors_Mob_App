@@ -412,6 +412,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                   padding: const EdgeInsets.only(bottom: 16),
                                   child: _buildTicketCard(
                                     eventId: event['id'] ?? 'dummy_id',
+                                    bookingId: ticket['id'] ?? 'dummy_booking_id',
                                     title: event['title'] ?? 'Unknown Event',
                                     date: '$dateStr · $timeStr',
                                     location: event['venueName'] ?? '',
@@ -595,6 +596,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
 
   Widget _buildTicketCard({
     required String eventId,
+    required String bookingId,
     required String title,
     required String date,
     required String location,
@@ -872,6 +874,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                           showCancelDrawer(
                             context,
                             isRefundEligible: _isRefundEligible(date),
+                            bookingId: bookingId,
                           );
                         },
                         child: const Text(

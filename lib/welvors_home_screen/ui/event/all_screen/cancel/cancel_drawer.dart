@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/cancel/cancel_confirm.dart';
+import '../service_event/event_api_service.dart';
 
-void showCancelDrawer(BuildContext context, {required bool isRefundEligible}) {
+void showCancelDrawer(BuildContext context, {required bool isRefundEligible, required String bookingId}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return CancelDrawerContent(isRefundEligible: isRefundEligible);
+      return CancelDrawerContent(isRefundEligible: isRefundEligible, bookingId: bookingId);
     },
   );
 }
 
 class CancelDrawerContent extends StatefulWidget {
   final bool isRefundEligible;
+  final String bookingId;
   
-  const CancelDrawerContent({super.key, required this.isRefundEligible});
+  const CancelDrawerContent({super.key, required this.isRefundEligible, required this.bookingId});
 
   @override
   State<CancelDrawerContent> createState() => _CancelDrawerContentState();
@@ -25,6 +27,7 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
     with SingleTickerProviderStateMixin {
   String? selectedReason;
   final TextEditingController _commentsController = TextEditingController();
+  bool _isCancelling = false;
 
   late AnimationController _blinkController;
   late Animation<double> _blinkAnimation;
@@ -248,16 +251,40 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: selectedReason != null ? () {
-                    // Navigate to the cancel confirm screen
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CancelConfirmScreen(
-                          isEligibleForRefund: widget.isRefundEligible,
-                        ),
-                      ),
+                  onPressed: (selectedReason != null && !_isCancelling) ? () async {
+                    setState(() {
+                      _isCancelling = true;
+                    });
+
+                    final result = await EventApiService.cancelEventBooking(
+                      bookingId: widget.bookingId,
+                      reason: selectedReason!,
+                      comment: _commentsController.text,
                     );
+
+                    if (mounted) {
+                      setState(() {
+                        _isCancelling = false;
+                      });
+
+                      if (result != null && result['success'] == true) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CancelConfirmScreen(
+                              isEligibleForRefund: widget.isRefundEligible,
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(result?['error'] ?? 'Failed to cancel booking'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
                   } : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
@@ -273,14 +300,23 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Confirm Cancellation',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                  child: _isCancelling
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'Confirm Cancellation',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 8),
