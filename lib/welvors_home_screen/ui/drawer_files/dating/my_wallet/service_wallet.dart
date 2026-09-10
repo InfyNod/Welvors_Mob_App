@@ -34,4 +34,30 @@ class WalletApiService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> getMyBalances() async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final uri = Uri.parse('https://api.welvors.com/api/user/my-balances');
+      
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching my balances: $e');
+      return null;
+    }
+  }
 }

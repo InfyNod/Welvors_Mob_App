@@ -3,7 +3,7 @@ import 'get_date_plans_drawer.dart';
 import 'service_date.dart';
 
 class DatePlanWallet extends StatefulWidget {
-  static int availablePlans = 3;
+  static int availablePlans = 0;
 
   const DatePlanWallet({super.key});
 

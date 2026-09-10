@@ -3,7 +3,7 @@ import 'get_compliments_drawer.dart';
 import 'service_compliment.dart';
 
 class ComplimentsScreen extends StatefulWidget {
-  static int availableCompliments = 3;
+  static int availableCompliments = 0;
 
   const ComplimentsScreen({super.key});
 

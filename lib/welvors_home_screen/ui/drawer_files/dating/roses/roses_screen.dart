@@ -3,7 +3,7 @@ import 'get_roses_drawer.dart';
 import 'service_rose.dart';
 
 class RosesScreen extends StatefulWidget {
-  static int availableRoses = 3;
+  static int availableRoses = 0;
 
   const RosesScreen({super.key});
 

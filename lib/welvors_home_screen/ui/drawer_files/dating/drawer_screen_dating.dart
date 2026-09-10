@@ -28,22 +28,35 @@ class DrawerScreen extends StatefulWidget {
 class _DrawerScreenState extends State<DrawerScreen> {
   int _selectedTabIndex = 1; // 0 = Marriage, 1 = Dating, 2 = Mature Dating
   String _walletBalance = '₹0';
+  double _walletVal = 0.0;
+  int _rosesBalance = 0;
+  int _complimentsBalance = 0;
+  int _boostsBalance = 0;
+  int _datePlansBalance = 0;
 
   @override
   void initState() {
     super.initState();
-    _fetchWalletBalance();
+    _fetchBalances();
   }
 
-  Future<void> _fetchWalletBalance() async {
+  Future<void> _fetchBalances() async {
     try {
-      final data = await WalletApiService().getWalletData(filter: 'ALL');
-      if (data != null && data['wallet'] != null) {
-        if (mounted) {
-          setState(() {
-            _walletBalance = data['wallet']['formattedBalance'] ?? '₹0';
-          });
-        }
+      final data = await WalletApiService().getMyBalances();
+      if (data != null && mounted) {
+        setState(() {
+          _rosesBalance = data['roses']?['balance'] ?? 0;
+          _complimentsBalance = data['compliments']?['balance'] ?? 0;
+          _boostsBalance = data['boosts']?['balance'] ?? 0;
+          _walletBalance = data['wallet']?['formattedBalance'] ?? '₹0';
+          _walletVal = double.tryParse((data['wallet']?['balance'] ?? 0).toString()) ?? 0.0;
+          _datePlansBalance = data['datePlans']?['balance'] ?? 0;
+
+          // Update static variables for child screens
+          RosesScreen.availableRoses = _rosesBalance;
+          ComplimentsScreen.availableCompliments = _complimentsBalance;
+          DatePlanWallet.availablePlans = _datePlansBalance;
+        });
       }
     } catch (e) {
       // Silently ignore errors
@@ -277,10 +290,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 24),
-                        _buildSectionTitle('MY BALANCES'),
-                        const SizedBox(height: 12),
                         _buildBalancesSection(),
-                        const SizedBox(height: 24),
                         _buildDatePlansCard(),
                         const SizedBox(height: 24),
                         const PrivacySafetyAndMembership(),
@@ -461,11 +471,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   },
                 ),
                 const SizedBox(width: 6),
-                const Icon(
-                  Icons.verified,
-                  color: Colors.pinkAccent,
-                  size: 20,
-                ),
+                const Icon(Icons.verified, color: Colors.pinkAccent, size: 20),
               ],
             ),
             BlocBuilder<ProfileEditCubit, ProfileEditState>(
@@ -712,84 +718,96 @@ class _DrawerScreenState extends State<DrawerScreen> {
   }
 
   Widget _buildBalancesSection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: _buildBalanceCard(
-            emoji: '⭐️',
-            bgColor: const Color(0xFFFFF4E0),
-            value: '${RosesScreen.availableRoses}',
-            label: 'Roses',
-            hasDot: true,
-            onTap: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RosesScreen()),
-              );
-              setState(() {});
-            },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildBalanceCard(
-            emoji: '💌',
-            bgColor: const Color(0xFFFBE4E7),
-            value: '${ComplimentsScreen.availableCompliments}',
-            label: 'Compliments',
-            hasDot: true,
-            onTap: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ComplimentsScreen(),
+    return BlocBuilder<BoostBloc, BoostState>(
+      builder: (context, state) {
+        final totalBoosts = state.boostBalance + state.superBoostBalance > 0 
+            ? state.boostBalance + state.superBoostBalance 
+            : _boostsBalance;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle('MY BALANCES'),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: _buildBalanceCard(
+                    emoji: '⭐️',
+                    bgColor: const Color(0xFFFFF4E0),
+                    value: '$_rosesBalance',
+                    label: 'Roses',
+                    hasDot: true,
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const RosesScreen()),
+                      );
+                      if (mounted) _fetchBalances();
+                    },
+                  ),
                 ),
-              );
-              setState(() {});
-            },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: BlocBuilder<BoostBloc, BoostState>(
-            builder: (context, state) {
-              final totalBoosts = state.boostBalance + state.superBoostBalance;
-              return _buildBalanceCard(
-                emoji: '🚀',
-                bgColor: const Color(0xFFE5F1FB),
-                value: '$totalBoosts',
-                label: 'My Boosts',
-                hasDot: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BoostTopNav(),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildBalanceCard(
-            emoji: '👛',
-            bgColor: const Color(0xFFFBE4E7),
-            value: _walletBalance,
-            label: 'My Wallet',
-            hasDot: false,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyWalletScreen()),
-              ).then((_) => _fetchWalletBalance());
-            },
-          ),
-        ),
-      ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildBalanceCard(
+                    emoji: '💌',
+                    bgColor: const Color(0xFFFBE4E7),
+                    value: '$_complimentsBalance',
+                    label: 'Compliments',
+                    hasDot: true,
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ComplimentsScreen(),
+                        ),
+                      );
+                      if (mounted) _fetchBalances();
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildBalanceCard(
+                    emoji: '🚀',
+                    bgColor: const Color(0xFFE5F1FB),
+                    value: '$totalBoosts',
+                    label: 'My Boosts',
+                    hasDot: true,
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BoostTopNav(),
+                        ),
+                      );
+                      if (mounted) _fetchBalances();
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildBalanceCard(
+                    emoji: '👛',
+                    bgColor: const Color(0xFFFBE4E7),
+                    value: _walletBalance,
+                    label: 'My Wallet',
+                    hasDot: false,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MyWalletScreen()),
+                      ).then((_) => _fetchBalances());
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+          ],
+        );
+      },
     );
   }
 
@@ -878,14 +896,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
   }
 
   Widget _buildDatePlansCard() {
-    return GestureDetector(
+    return Column(
+      children: [
+        GestureDetector(
       onTap: () async {
         await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const DatePlanWallet()),
         );
         // Refresh the drawer to show the updated plan count
-        if (mounted) setState(() {});
+        if (mounted) _fetchBalances();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -941,7 +961,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${DatePlanWallet.availablePlans}',
+                  '$_datePlansBalance',
                   style: const TextStyle(
                     fontSize: 22, // larger
                     fontWeight: FontWeight.w900,
@@ -970,6 +990,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
           ],
         ),
       ),
+    ),
+    const SizedBox(height: 24),
+    ],
     );
   }
 }
