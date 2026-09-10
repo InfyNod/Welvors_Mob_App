@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'all_screen_help/live_chat.dart';
 import 'all_screen_help/call_back.dart';
+import 'service_help.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -12,6 +13,24 @@ class HelpSupportScreen extends StatefulWidget {
 
 class _HelpSupportScreenState extends State<HelpSupportScreen> {
   final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _faqs = [];
+  bool _isLoadingFaqs = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFaqs();
+  }
+
+  Future<void> _fetchFaqs() async {
+    final faqs = await ServiceHelp.fetchFaqs();
+    if (mounted) {
+      setState(() {
+        _faqs = faqs;
+        _isLoadingFaqs = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -203,53 +222,51 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             const SizedBox(height: 16),
 
             // Questions List
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
-                    blurRadius: 16,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 8),
+            _isLoadingFaqs 
+              ? const Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Center(child: CircularProgressIndicator(color: Colors.black87)),
+                )
+              : _faqs.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Center(child: Text('No FAQs available.')),
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.10),
+                          blurRadius: 16,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 8),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: List.generate(_faqs.length, (index) {
+                        final faq = _faqs[index];
+                        final isLast = index == _faqs.length - 1;
+                        return Column(
+                          children: [
+                            _FaqItem(
+                              question: faq['question'] ?? '',
+                              answer: faq['answer'] ?? '',
+                            ),
+                            if (!isLast) _buildDivider(),
+                          ],
+                        );
+                      }),
+                    ),
                   ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  _FaqItem(
-                    question: 'How do I verify my profile?',
-                    answer:
-                        'Go to Profile → Trust Centre and complete the verification steps. Government ID gives instant verification via DigiLocker; manual review takes 24–48 hours.',
-                  ),
-                  _buildDivider(),
-                  _FaqItem(
-                    question: 'How does the Welvors Wallet work?',
-                    answer:
-                        'Coins from gifts, refunds and referrals land in your wallet. Use them for Roses, Boosts, Compliments and to activate plans. Withdrawals carry a 25% service charge.',
-                  ),
-                  _buildDivider(),
-                  _FaqItem(
-                    question: 'How do Date Now plans work?',
-                    answer:
-                        'Post a live plan (costs 1 Date Plan credit). Nearby users send join requests; you approve and chat opens automatically.',
-                  ),
-                  _buildDivider(),
-                  _FaqItem(
-                    question: 'How do I block or report someone?',
-                    answer:
-                        'Open their chat → tap the ⋮ menu → Block or Report. Reports are reviewed by our Trust & Safety team within hours.',
-                  ),
-                ],
-              ),
-            ),
 
             const SizedBox(height: 32),
 
