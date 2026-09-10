@@ -913,7 +913,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        '♀ Woman - ${_currencyFormat.format(_womanPrice)}',
+                        'Woman - ${_currencyFormat.format(_womanPrice)}',
                         style: TextStyle(
                           color: !partner.isMan
                               ? const Color(0xFFE43A6A)
@@ -951,7 +951,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        '♂ Man - ${_currencyFormat.format(_manPrice)}',
+                        'Man - ${_currencyFormat.format(_manPrice)}',
                         style: TextStyle(
                           color: partner.isMan
                               ? const Color(0xFFE43A6A)

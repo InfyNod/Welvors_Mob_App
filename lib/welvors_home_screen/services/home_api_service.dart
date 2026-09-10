@@ -21,7 +21,7 @@ class HomeApiService {
 
       final url = Uri.parse(urlStr);
       final request = http.Request('GET', url);
-      
+
       request.headers.addAll({
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -52,7 +52,9 @@ class HomeApiService {
           return decoded;
         }
       } else {
-        debugPrint('Feed API failed with status ${response.statusCode}: ${response.body}');
+        debugPrint(
+          'Feed API failed with status ${response.statusCode}: ${response.body}',
+        );
       }
       return null;
     } catch (e) {

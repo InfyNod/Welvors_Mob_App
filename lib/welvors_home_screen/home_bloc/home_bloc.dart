@@ -19,7 +19,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<FetchProfileDetailsEvent>(_onFetchProfileDetails);
   }
 
-  Future<void> _onLoadHomeData(LoadHomeDataEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onLoadHomeData(
+    LoadHomeDataEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     print('====== [HOME BLOC] RECEIVED LOAD DATA EVENT ======');
     print('Is Refresh: ${event.isRefresh}, Filters: ${event.filters}');
     if (event.isRefresh) {
@@ -35,79 +38,117 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     String? currentCursor;
     List<ProfileModel> currentProfiles = [];
-    
+
     if (state is HomeLoaded && !event.isRefresh) {
       currentProfiles = (state as HomeLoaded).profiles;
       currentCursor = (state as HomeLoaded).cursor;
     }
 
-    final response = await HomeApiService.fetchFeed(limit: 10, cursor: currentCursor, filters: _currentFilters);
-    
+    final response = await HomeApiService.fetchFeed(
+      limit: 10,
+      cursor: currentCursor,
+      filters: _currentFilters,
+    );
+
     if (response != null && response['users'] != null) {
       final List<dynamic> usersJson = response['users'];
       final String? nextCursor = response['nextCursor'];
-      
+
       print('====== [HOME BLOC] PARSING ${usersJson.length} PROFILES ======');
       try {
-        final List<ProfileModel> newProfiles = usersJson.map((json) => ProfileModel.fromFeedJson(json as Map<String, dynamic>)).toList();
+        final List<ProfileModel> newProfiles = usersJson
+            .map(
+              (json) => ProfileModel.fromFeedJson(json as Map<String, dynamic>),
+            )
+            .toList();
         print('====== [HOME BLOC] PARSED SUCCESSFULLY ======');
         final updatedProfiles = [...currentProfiles, ...newProfiles];
-        print('====== [HOME BLOC] UPDATED PROFILES COUNT: ${updatedProfiles.length} ======');
-      
+        print(
+          '====== [HOME BLOC] UPDATED PROFILES COUNT: ${updatedProfiles.length} ======',
+        );
+
         if (updatedProfiles.isEmpty) {
-        emit(HomeEmpty(remainingSwipes: state.remainingSwipes, cursor: nextCursor));
-      } else {
-        print('====== [HOME BLOC] EMITTING HOMELOADED ======');
-        emit(HomeLoaded(
-          profiles: updatedProfiles,
-          remainingSwipes: state.remainingSwipes,
-          cursor: nextCursor,
-        ));
-        print('====== [HOME BLOC] EMITTED HOMELOADED ======');
-        
-        // Auto-fetch details for the first few profiles if not loaded
-        for (int i = 0; i < updatedProfiles.length && i < 3; i++) {
-          if (!updatedProfiles[i].detailsLoaded) {
-            add(FetchProfileDetailsEvent(updatedProfiles[i].id));
+          emit(
+            HomeEmpty(
+              remainingSwipes: state.remainingSwipes,
+              cursor: nextCursor,
+            ),
+          );
+        } else {
+          print('====== [HOME BLOC] EMITTING HOMELOADED ======');
+          emit(
+            HomeLoaded(
+              profiles: updatedProfiles,
+              remainingSwipes: state.remainingSwipes,
+              cursor: nextCursor,
+            ),
+          );
+          print('====== [HOME BLOC] EMITTED HOMELOADED ======');
+
+          // Auto-fetch details for the first few profiles if not loaded
+          for (int i = 0; i < updatedProfiles.length && i < 3; i++) {
+            if (!updatedProfiles[i].detailsLoaded) {
+              add(FetchProfileDetailsEvent(updatedProfiles[i].id));
+            }
           }
         }
-        }
-      } catch(e, st) {
+      } catch (e, st) {
         print('====== [HOME BLOC] ERROR PARSING JSON: $e ======');
         print(st);
       }
     } else {
       if (currentProfiles.isEmpty) {
-        emit(HomeEmpty(remainingSwipes: state.remainingSwipes, cursor: currentCursor));
+        emit(
+          HomeEmpty(
+            remainingSwipes: state.remainingSwipes,
+            cursor: currentCursor,
+          ),
+        );
       } else {
-        emit(HomeLoaded(
-          profiles: currentProfiles,
-          remainingSwipes: state.remainingSwipes,
-          cursor: currentCursor,
-        ));
+        emit(
+          HomeLoaded(
+            profiles: currentProfiles,
+            remainingSwipes: state.remainingSwipes,
+            cursor: currentCursor,
+          ),
+        );
       }
     }
     _isLoadingMore = false;
   }
 
-  Future<void> _onSwipeProfile(SwipeProfileEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onSwipeProfile(
+    SwipeProfileEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     if (state is HomeLoaded) {
       final currentState = state as HomeLoaded;
       if (currentState.profiles.isNotEmpty) {
         _swipedProfiles.add(currentState.profiles.first);
-        
-        final updatedProfiles = List<ProfileModel>.from(currentState.profiles)..removeAt(0);
-        final newSwipes = currentState.remainingSwipes > 0 ? currentState.remainingSwipes - 1 : 0;
-        
+
+        final updatedProfiles = List<ProfileModel>.from(currentState.profiles)
+          ..removeAt(0);
+        final newSwipes = currentState.remainingSwipes > 0
+            ? currentState.remainingSwipes - 1
+            : 0;
+
         if (updatedProfiles.isEmpty) {
-          emit(HomeEmpty(remainingSwipes: newSwipes, cursor: currentState.cursor));
+          emit(
+            HomeEmpty(remainingSwipes: newSwipes, cursor: currentState.cursor),
+          );
           if (!_isLoadingMore && currentState.cursor != null) {
             _isLoadingMore = true;
             add(const LoadHomeDataEvent());
           }
         } else {
-          emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes, cursor: currentState.cursor));
-          
+          emit(
+            HomeLoaded(
+              profiles: updatedProfiles,
+              remainingSwipes: newSwipes,
+              cursor: currentState.cursor,
+            ),
+          );
+
           // Auto-fetch details for the new top profiles
           for (int i = 0; i < updatedProfiles.length && i < 3; i++) {
             if (!updatedProfiles[i].detailsLoaded) {
@@ -116,7 +157,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           }
 
           // Pre-fetch if running low (e.g. 4 profiles left)
-          if (updatedProfiles.length <= 4 && !_isLoadingMore && currentState.cursor != null) {
+          if (updatedProfiles.length <= 4 &&
+              !_isLoadingMore &&
+              currentState.cursor != null) {
             _isLoadingMore = true;
             add(const LoadHomeDataEvent());
           }
@@ -128,20 +171,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   void _onUndoSwipe(UndoSwipeEvent event, Emitter<HomeState> emit) {
     if (_swipedProfiles.isNotEmpty) {
       final lastSwiped = _swipedProfiles.removeLast();
-      final newSwipes = state.remainingSwipes < 25 ? state.remainingSwipes + 1 : 25;
-      
+      final newSwipes = state.remainingSwipes < 25
+          ? state.remainingSwipes + 1
+          : 25;
+
       if (state is HomeLoaded) {
         final currentState = state as HomeLoaded;
         final updatedProfiles = [lastSwiped, ...currentState.profiles];
-        emit(HomeLoaded(profiles: updatedProfiles, remainingSwipes: newSwipes, cursor: currentState.cursor));
-        
+        emit(
+          HomeLoaded(
+            profiles: updatedProfiles,
+            remainingSwipes: newSwipes,
+            cursor: currentState.cursor,
+          ),
+        );
+
         if (!lastSwiped.detailsLoaded) {
           add(FetchProfileDetailsEvent(lastSwiped.id));
         }
       } else if (state is HomeEmpty) {
         final currentState = state as HomeEmpty;
-        emit(HomeLoaded(profiles: [lastSwiped], remainingSwipes: newSwipes, cursor: currentState.cursor));
-        
+        emit(
+          HomeLoaded(
+            profiles: [lastSwiped],
+            remainingSwipes: newSwipes,
+            cursor: currentState.cursor,
+          ),
+        );
+
         if (!lastSwiped.detailsLoaded) {
           add(FetchProfileDetailsEvent(lastSwiped.id));
         }
@@ -149,36 +206,50 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onFetchProfileDetails(FetchProfileDetailsEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onFetchProfileDetails(
+    FetchProfileDetailsEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     if (state is HomeLoaded) {
       final currentState = state as HomeLoaded;
-      
-      final profileIndex = currentState.profiles.indexWhere((p) => p.id == event.userId);
+
+      final profileIndex = currentState.profiles.indexWhere(
+        (p) => p.id == event.userId,
+      );
       if (profileIndex != -1) {
         final profile = currentState.profiles[profileIndex];
-        
+
         // Don't fetch if already loaded
         if (profile.detailsLoaded) return;
-        
-        final detailsResponse = await HomeApiService.fetchUserDetails(event.userId);
-        
+
+        final detailsResponse = await HomeApiService.fetchUserDetails(
+          event.userId,
+        );
+
         if (detailsResponse != null) {
           // Refetch state after await to prevent race conditions from concurrent prefetching
           if (state is HomeLoaded) {
             final latestState = state as HomeLoaded;
-            final latestProfileIndex = latestState.profiles.indexWhere((p) => p.id == event.userId);
-            
+            final latestProfileIndex = latestState.profiles.indexWhere(
+              (p) => p.id == event.userId,
+            );
+
             if (latestProfileIndex != -1) {
-              final updatedProfile = latestState.profiles[latestProfileIndex].copyWithDetails(detailsResponse);
-              
-              final updatedProfiles = List<ProfileModel>.from(latestState.profiles);
+              final updatedProfile = latestState.profiles[latestProfileIndex]
+                  .copyWithDetails(detailsResponse);
+
+              final updatedProfiles = List<ProfileModel>.from(
+                latestState.profiles,
+              );
               updatedProfiles[latestProfileIndex] = updatedProfile;
-              
-              emit(HomeLoaded(
-                profiles: updatedProfiles,
-                remainingSwipes: latestState.remainingSwipes,
-                cursor: latestState.cursor,
-              ));
+
+              emit(
+                HomeLoaded(
+                  profiles: updatedProfiles,
+                  remainingSwipes: latestState.remainingSwipes,
+                  cursor: latestState.cursor,
+                ),
+              );
             }
           }
         }

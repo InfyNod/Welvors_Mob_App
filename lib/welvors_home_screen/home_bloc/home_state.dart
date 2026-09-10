@@ -12,7 +12,7 @@ class ProfileModel extends Equatable {
   final String matchPercentage;
   final String trustPercentage;
   final String replyTime;
-  
+
   // Details (nullable because they are fetched later)
   final bool detailsLoaded;
   final String about;
@@ -91,16 +91,22 @@ class ProfileModel extends Equatable {
     if (json['profile'] != null) {
       final p = json['profile'];
       List<String> locParts = [];
-      if (p['area'] != null && p['area'].toString().isNotEmpty) locParts.add(p['area'].toString());
-      if (p['city'] != null && p['city'].toString().isNotEmpty) locParts.add(p['city'].toString());
-      if (p['state'] != null && p['state'].toString().isNotEmpty) locParts.add(p['state'].toString());
+      if (p['area'] != null && p['area'].toString().isNotEmpty)
+        locParts.add(p['area'].toString());
+      if (p['city'] != null && p['city'].toString().isNotEmpty)
+        locParts.add(p['city'].toString());
+      if (p['state'] != null && p['state'].toString().isNotEmpty)
+        locParts.add(p['state'].toString());
       loc = locParts.join(', ');
     } else if (json['location'] != null) {
       final l = json['location'];
       List<String> locParts = [];
-      if (l['area'] != null && l['area'].toString().isNotEmpty) locParts.add(l['area'].toString());
-      if (l['city'] != null && l['city'].toString().isNotEmpty) locParts.add(l['city'].toString());
-      if (l['state'] != null && l['state'].toString().isNotEmpty) locParts.add(l['state'].toString());
+      if (l['area'] != null && l['area'].toString().isNotEmpty)
+        locParts.add(l['area'].toString());
+      if (l['city'] != null && l['city'].toString().isNotEmpty)
+        locParts.add(l['city'].toString());
+      if (l['state'] != null && l['state'].toString().isNotEmpty)
+        locParts.add(l['state'].toString());
       loc = locParts.join(', ');
     }
 
@@ -150,11 +156,16 @@ class ProfileModel extends Equatable {
     }
 
     String loc = this.location;
-    if (details['area'] != null || details['city'] != null || details['state'] != null) {
+    if (details['area'] != null ||
+        details['city'] != null ||
+        details['state'] != null) {
       List<String> locParts = [];
-      if (details['area'] != null && details['area'].toString().isNotEmpty) locParts.add(details['area'].toString());
-      if (details['city'] != null && details['city'].toString().isNotEmpty) locParts.add(details['city'].toString());
-      if (details['state'] != null && details['state'].toString().isNotEmpty) locParts.add(details['state'].toString());
+      if (details['area'] != null && details['area'].toString().isNotEmpty)
+        locParts.add(details['area'].toString());
+      if (details['city'] != null && details['city'].toString().isNotEmpty)
+        locParts.add(details['city'].toString());
+      if (details['state'] != null && details['state'].toString().isNotEmpty)
+        locParts.add(details['state'].toString());
       if (locParts.isNotEmpty) loc = locParts.join(', ');
     }
 
@@ -180,19 +191,31 @@ class ProfileModel extends Equatable {
       id: this.id,
       images: parsedImages,
       videoUrl: parsedVideo,
-      name: (this.name != 'Unknown' && this.name.isNotEmpty) ? this.name : (details['full_name'] ?? details['fullName'] ?? this.name),
+      name: (this.name != 'Unknown' && this.name.isNotEmpty)
+          ? this.name
+          : (details['full_name'] ?? details['fullName'] ?? this.name),
       age: details['age'] ?? this.age,
       location: loc,
       job: details['career']?['profession'] ?? this.job,
       intent: details['lookingFor'] ?? this.intent,
-      matchPercentage: details['matchScore'] != null ? '${details['matchScore']}% Match' : this.matchPercentage,
-      trustPercentage: details['trust'] != null ? '${details['trust']}% Trust' : this.trustPercentage,
+      matchPercentage: details['matchScore'] != null
+          ? '${details['matchScore']}% Match'
+          : this.matchPercentage,
+      trustPercentage: details['trust'] != null
+          ? '${details['trust']}% Trust'
+          : this.trustPercentage,
       replyTime: details['replyTime']?.toString() ?? this.replyTime,
       detailsLoaded: true,
       about: details['bio'] ?? '',
-      lookingFor: (details['lookingFor'] != null && details['lookingFor'].toString().isNotEmpty) ? details['lookingFor'] : this.intent,
+      lookingFor:
+          (details['lookingFor'] != null &&
+              details['lookingFor'].toString().isNotEmpty)
+          ? details['lookingFor']
+          : this.intent,
       lookingForSubtitle: details['lookingFor_subtitle'] ?? '',
-      height: details['height'] != null ? '${details['height']} cm' : this.height,
+      height: details['height'] != null
+          ? '${details['height']} cm'
+          : this.height,
       religion: details['religion'] ?? '',
       community: details['community'] ?? '',
       motherTongue: details['motherTongue'] ?? '',
@@ -205,7 +228,8 @@ class ProfileModel extends Equatable {
       lifestyle: details['lifestyle'],
       interests: details['interests'],
       family: details['family'],
-      networkingIntent: details['networkingAnswers'] ?? details['networkingIntent'],
+      networkingIntent:
+          details['networkingAnswers'] ?? details['networkingIntent'],
     );
   }
 
@@ -263,7 +287,11 @@ class HomeLoading extends HomeState {
 class HomeLoaded extends HomeState {
   final List<ProfileModel> profiles;
 
-  const HomeLoaded({required this.profiles, super.remainingSwipes, super.cursor});
+  const HomeLoaded({
+    required this.profiles,
+    super.remainingSwipes,
+    super.cursor,
+  });
 
   @override
   List<Object?> get props => [profiles, remainingSwipes, cursor];
