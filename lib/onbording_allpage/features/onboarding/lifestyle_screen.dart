@@ -14,7 +14,8 @@ class LifestyleScreen extends StatefulWidget {
   State<LifestyleScreen> createState() => _LifestyleScreenState();
 }
 
-class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAliveClientMixin  {
+class _LifestyleScreenState extends State<LifestyleScreen>
+    with AutomaticKeepAliveClientMixin {
   String? _expandedCard;
   List<Map<String, dynamic>> _questions = [];
   bool _isLoading = true;
@@ -333,7 +334,7 @@ class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAli
     );
   }
 
-    @override
+  @override
   bool get wantKeepAlive => true;
 
   @override
@@ -533,15 +534,61 @@ class _LifestyleScreenState extends State<LifestyleScreen> with AutomaticKeepAli
                     : () async {
                         setState(() => _isSubmitting = true);
 
-                        // Collect local user data
+                        // Collect local user data and API futures
                         List<String> selectedLabels = [];
-                        for (final values in _answers.values) {
-                          selectedLabels.addAll(values);
+                        List<Future> submitFutures = [];
+
+                        for (var entry in _answers.entries) {
+                          final questionId = entry.key;
+                          final labels = entry.value;
+                          if (labels.isEmpty) continue;
+
+                          selectedLabels.addAll(labels);
+
+                          final questionList = _questions
+                              .where((q) => q['id'].toString() == questionId)
+                              .toList();
+                          final question = questionList.isNotEmpty
+                              ? questionList.first
+                              : null;
+
+                          if (question != null) {
+                            final options =
+                                question['options'] as List<dynamic>? ?? [];
+                            List<String> optionIds = [];
+                            for (var label in labels) {
+                              final optList = options
+                                  .where((o) => o['label'].toString() == label)
+                                  .toList();
+                              final opt = optList.isNotEmpty
+                                  ? optList.first
+                                  : null;
+                              if (opt != null) {
+                                optionIds.add(opt['id'].toString());
+                              }
+                            }
+
+                            if (optionIds.isNotEmpty) {
+                              submitFutures.add(
+                                ApiService.submitAnswer(
+                                  questionId: questionId,
+                                  optionIds: optionIds,
+                                ),
+                              );
+                            }
+                          }
                         }
+
                         userData.lifestyle = selectedLabels;
 
-                        // Simulate API delay
-                        await Future.delayed(const Duration(seconds: 1));
+                        // Wait for all API calls to complete
+                        if (submitFutures.isNotEmpty) {
+                          await Future.wait(submitFutures);
+                        } else {
+                          await Future.delayed(
+                            const Duration(milliseconds: 500),
+                          );
+                        }
 
                         if (mounted) {
                           setState(() => _isSubmitting = false);

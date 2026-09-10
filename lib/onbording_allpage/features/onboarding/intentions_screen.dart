@@ -187,8 +187,13 @@ class _IntentionsScreenState extends State<IntentionsScreen> with AutomaticKeepA
 
                     userData.intentions = _selectedIntention ?? 'A long-term relationship';
                     
-                    // Simulate API delay
-                    await Future.delayed(const Duration(seconds: 1));
+                    if (_selectedIntention != null) {
+                      final optionList = _intentions.where((i) => i['title'] == _selectedIntention).toList();
+                      if (optionList.isNotEmpty && optionList.first['id'] != null) {
+                        final optionId = optionList.first['id'].toString();
+                        await ApiService.submitLookingFor(optionId);
+                      }
+                    }
 
                     if (mounted) {
                       setState(() => _isSaving = false);
