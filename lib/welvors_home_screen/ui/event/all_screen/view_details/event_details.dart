@@ -211,6 +211,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => CheckoutScreen(
+                                    eventId: widget.eventId,
                                     title: title,
                                     date: date,
                                     location: location,

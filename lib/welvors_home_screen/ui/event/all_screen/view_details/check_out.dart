@@ -3,9 +3,13 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 // import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/booking_confirm.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/splash_screen_book.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/service_event/event_api_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart';
 
 class CheckoutScreen extends StatefulWidget {
+  final String eventId;
   final String title;
   final String date;
   final String location;
@@ -14,6 +18,7 @@ class CheckoutScreen extends StatefulWidget {
 
   const CheckoutScreen({
     super.key,
+    required this.eventId,
     required this.title,
     required this.date,
     required this.location,
@@ -29,25 +34,74 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int _selectedPaymentMethod =
       0; // 0 = UPI, 1 = Card, 2 = Wallet, 3 = Netbanking
 
-  final double _platformFee = 49.0;
-  final double _discount = 100.0;
-  
+  String _eventTitle = '';
+  String _eventDate = '';
+  String _eventLocation = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _eventTitle = widget.title;
+    _eventDate = widget.date;
+    _eventLocation = widget.location;
+    _fetchEventDetails();
+  }
+
+  Future<void> _fetchEventDetails() async {
+    final response = await EventApiService.getEventDetails(widget.eventId);
+    if (response != null) {
+      final data = response['data'] ?? response;
+      if (mounted) {
+        setState(() {
+          _eventTitle = data['title'] ?? _eventTitle;
+          _eventLocation = data['fullAddress'] ?? _eventLocation;
+          
+          if (data['eventDate'] != null) {
+            try {
+              final DateTime parsedDate = DateTime.parse(data['eventDate']).toLocal();
+              String formattedDate = DateFormat('EEE, MMM d, yyyy').format(parsedDate);
+              if (data['startTime'] != null) {
+                formattedDate += ' · ${data['startTime']}';
+              }
+              _eventDate = formattedDate;
+            } catch (e) {
+              _eventDate = data['eventDate'];
+            }
+          } else if (data['startTime'] != null) {
+            _eventDate = data['startTime'];
+          }
+          if (data['menDiscountedPrice'] != null) {
+            _manPrice = double.tryParse(data['menDiscountedPrice'].toString()) ?? _manPrice;
+          }
+          if (data['womenDiscountedPrice'] != null) {
+            _womanPrice = double.tryParse(data['womenDiscountedPrice'].toString()) ?? _womanPrice;
+          }
+        });
+      }
+    }
+  }
+
+  final double _platformFee = 0.0;
+  final double _discount = 0.0;
+
   // Partner Tickets State
   List<PartnerTicket> _partners = [];
-  final double _womanPrice = 1250.0;
-  final double _manPrice = 1800.0;
+  double _womanPrice = 1250.0;
+  double _manPrice = 1800.0;
 
   double get _baseTotal {
-    double total = widget.basePrice;
+    final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
+    final bool isUserMan = userGender == 'man' || userGender == 'men';
+    double total = isUserMan ? _manPrice : _womanPrice;
+    
     for (var p in _partners) {
       total += p.isMan ? _manPrice : _womanPrice;
     }
     return total;
   }
 
-  double get _gst => _baseTotal * 0.18;
-  double get _totalPayable =>
-      _baseTotal + _platformFee + _gst - _discount;
+  double get _gst => 0.0;
+  double get _totalPayable => _baseTotal + _platformFee + _gst - _discount;
 
   final NumberFormat _currencyFormat = NumberFormat.currency(
     symbol: '₹',
@@ -161,34 +215,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       width: 48,
                                       height: 48,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) =>
-                                          Container(
-                                            width: 48,
-                                            height: 48,
-                                            color: Colors.grey.shade200,
-                                            child: const Icon(
-                                              Icons.image,
-                                              size: 24,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                                width: 48,
+                                                height: 48,
+                                                color: Colors.grey.shade200,
+                                                child: const Icon(
+                                                  Icons.image,
+                                                  size: 24,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
                                     )
                                   : Image.asset(
                                       widget.imageUrl,
                                       width: 48,
                                       height: 48,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) =>
-                                          Container(
-                                            width: 48,
-                                            height: 48,
-                                            color: Colors.grey.shade200,
-                                            child: const Icon(
-                                              Icons.image,
-                                              size: 24,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                                width: 48,
+                                                height: 48,
+                                                color: Colors.grey.shade200,
+                                                child: const Icon(
+                                                  Icons.image,
+                                                  size: 24,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
                                     ),
                             ),
                             const SizedBox(width: 12),
@@ -197,7 +253,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.title,
+                                    _eventTitle,
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -208,7 +264,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    '${widget.date} · ${widget.location}',
+                                    '$_eventDate · $_eventLocation',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade800,
@@ -227,10 +283,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
 
                         // Price Breakdown
-                        _buildPriceRow(
-                          'Ticket × 1',
-                          _currencyFormat.format(widget.basePrice),
-                          subtitle: "(Woman's entry)",
+                        Builder(
+                          builder: (context) {
+                            final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
+                            final bool isUserMan = userGender == 'man' || userGender == 'men';
+                            return _buildPriceRow(
+                              'Ticket × 1',
+                              _currencyFormat.format(isUserMan ? _manPrice : _womanPrice),
+                              subtitle: isUserMan ? "(Man)" : "(Woman)",
+                            );
+                          }
                         ),
                         const SizedBox(height: 10),
                         ..._partners.asMap().entries.map((entry) {
@@ -240,7 +302,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             padding: const EdgeInsets.only(bottom: 10),
                             child: _buildPriceRow(
                               'Partner ${idx + 1}',
-                              _currencyFormat.format(p.isMan ? _manPrice : _womanPrice),
+                              _currencyFormat.format(
+                                p.isMan ? _manPrice : _womanPrice,
+                              ),
                               subtitle: p.isMan ? "(Man)" : "(Woman)",
                             ),
                           );
@@ -349,7 +413,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
 
                   const SizedBox(height: 24),
-                  
+
                   // Bring a Partner Section
                   const Text(
                     'BRING A PARTNER',
@@ -716,7 +780,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Row(
                 children: [
                   Text(
-                    _currencyFormat.format(partner.isMan ? _manPrice : _womanPrice),
+                    _currencyFormat.format(
+                      partner.isMan ? _manPrice : _womanPrice,
+                    ),
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       color: Color(0xFFE43A6A),
@@ -760,7 +826,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: Colors.grey.shade200),
@@ -771,7 +840,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFFE43A6A), width: 1.5),
+                borderSide: const BorderSide(
+                  color: Color(0xFFE43A6A),
+                  width: 1.5,
+                ),
               ),
               fillColor: Colors.white,
               filled: true,
@@ -792,7 +864,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: Colors.grey.shade200),
@@ -803,7 +878,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFFE43A6A), width: 1.5),
+                borderSide: const BorderSide(
+                  color: Color(0xFFE43A6A),
+                  width: 1.5,
+                ),
               ),
               fillColor: Colors.white,
               filled: true,
@@ -835,10 +913,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        '♀ Woman - ₹1,250',
+                        '♀ Woman - ${_currencyFormat.format(_womanPrice)}',
                         style: TextStyle(
-                          color: !partner.isMan ? const Color(0xFFE43A6A) : Colors.black87,
-                          fontWeight: !partner.isMan ? FontWeight.bold : FontWeight.normal,
+                          color: !partner.isMan
+                              ? const Color(0xFFE43A6A)
+                              : Colors.black87,
+                          fontWeight: !partner.isMan
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                           fontSize: 13,
                         ),
                       ),
@@ -869,10 +951,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        '♂ Man - ₹1,800',
+                        '♂ Man - ${_currencyFormat.format(_manPrice)}',
                         style: TextStyle(
-                          color: partner.isMan ? const Color(0xFFE43A6A) : Colors.black87,
-                          fontWeight: partner.isMan ? FontWeight.bold : FontWeight.normal,
+                          color: partner.isMan
+                              ? const Color(0xFFE43A6A)
+                              : Colors.black87,
+                          fontWeight: partner.isMan
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                           fontSize: 13,
                         ),
                       ),
@@ -913,9 +999,12 @@ class DashedBorderPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     var path = Path()
-      ..addRRect(RRect.fromRectAndRadius(
+      ..addRRect(
+        RRect.fromRectAndRadius(
           Rect.fromLTWH(0, 0, size.width, size.height),
-          const Radius.circular(12)));
+          const Radius.circular(12),
+        ),
+      );
 
     Path dashPath = Path();
     double distance = 0.0;
