@@ -2570,12 +2570,15 @@ class _ProfileCardUI extends StatelessWidget {
                   // Name & Age
                   Row(
                     children: [
-                      Text(
-                        profile.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
+                      Flexible(
+                        child: Text(
+                          profile.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(width: 8),
