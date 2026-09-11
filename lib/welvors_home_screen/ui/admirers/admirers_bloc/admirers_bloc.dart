@@ -64,10 +64,6 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
           'imageUrl':
               user['profileImage'] ??
               'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
-          'badgeText':
-              '💬 Sent a note', // Backend team is not sending real badge data yet, so keeping it static
-          'badgeColor': 0xFFFFFFFF,
-          'badgeTextColor': 0xDD000000,
           'isBlurred': isLocked,
         };
       }).toList();
@@ -195,9 +191,6 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'distance': '8 km',
         'imageUrl':
             'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
-        'badgeText': '💬 Sent a note',
-        'badgeColor': 0xFFFFFFFF,
-        'badgeTextColor': 0xDD000000,
         'isBlurred': false,
       },
       {
@@ -209,9 +202,6 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'distance': '5 km',
         'imageUrl':
             'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80',
-        'badgeText': '✓ VERIFIED',
-        'badgeColor': 0xFF2CAF6B,
-        'badgeTextColor': 0xFFFFFFFF,
         'isBlurred': false,
       },
       {
@@ -223,9 +213,6 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'distance': '3 km',
         'imageUrl':
             'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
-        'badgeText': null,
-        'badgeColor': 0xFF2CAF6B,
-        'badgeTextColor': 0xFFFFFFFF,
         'isBlurred': true,
       },
       {
@@ -237,9 +224,6 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         'distance': '6 km',
         'imageUrl':
             'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80',
-        'badgeText': null,
-        'badgeColor': 0xFF2CAF6B,
-        'badgeTextColor': 0xFFFFFFFF,
         'isBlurred': true,
       },
     ];
