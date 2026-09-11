@@ -418,6 +418,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                     location: event['venueName'] ?? '',
                                     imageUrl: event['heroImage'] ?? '',
                                     status: ticket['status'] ?? 'Unknown',
+                                    price: ticket['totalAmount']?.toString() ?? event['price']?.toString() ?? 'Free',
                                   ),
                                 );
                               }),
@@ -602,30 +603,17 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
     required String location,
     required String imageUrl,
     required String status,
+    required String price,
   }) {
     final bool isCancelled = status.toUpperCase() == 'CANCELLED';
 
+    // Color Transformation Matrix used to convert UI elements to Black & White (Grayscale).
+    // It maps RGB colors to their standard luminance values (Red: 21.26%, Green: 71.52%, Blue: 7.22%)
     const ColorFilter greyscaleFilter = ColorFilter.matrix(<double>[
-      0.2126,
-      0.7152,
-      0.0722,
-      0,
-      0,
-      0.2126,
-      0.7152,
-      0.0722,
-      0,
-      0,
-      0.2126,
-      0.7152,
-      0.0722,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
+      0.2126, 0.7152, 0.0722, 0, 0, // Red channel
+      0.2126, 0.7152, 0.0722, 0, 0, // Green channel
+      0.2126, 0.7152, 0.0722, 0, 0, // Blue channel
+      0,      0,      0,      1, 0, // Alpha channel
     ]);
 
     return Container(
@@ -901,7 +889,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                     location: location,
                                     imageUrl: imageUrl,
                                     status: status,
-                                    price: '₹1,250',
+                                    price: price == 'Free' ? 'Free' : '₹$price',
                                     categories: null,
                                   ),
                                 ),

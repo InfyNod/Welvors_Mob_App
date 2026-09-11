@@ -6,7 +6,8 @@ class AboutHostAndFAQSection extends StatelessWidget {
   final String? termsConditions;
   final Map<String, dynamic>? eventPartner;
   final List<dynamic>? faqs;
-  const AboutHostAndFAQSection({super.key, this.termsConditions, this.eventPartner, this.faqs});
+  final String? eventId;
+  const AboutHostAndFAQSection({super.key, this.termsConditions, this.eventPartner, this.faqs, this.eventId});
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +224,7 @@ class AboutHostAndFAQSection extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const InviteMatchScreen(),
+                        builder: (context) => InviteMatchScreen(eventId: eventId),
                       ),
                     );
                   },

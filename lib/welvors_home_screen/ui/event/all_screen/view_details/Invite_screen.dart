@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui';
-import 'dart:convert';
+// import 'dart:convert';
 import '../service_event/event_api_service.dart';
 import '../../../date_now/date_api_service/date_now_api_service.dart';
 
 class InviteMatchScreen extends StatefulWidget {
   final String? datePlanId;
+  final String? eventId;
   final bool isDatePlan;
 
   const InviteMatchScreen({
     super.key,
     this.datePlanId,
+    this.eventId,
     this.isDatePlan = false,
   });
 
@@ -148,8 +150,21 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
           );
           return; // Don't show success state if API fails
         }
-      } else {
-        // Event invite simulation
+      } else if (widget.eventId != null) {
+        // Call Event Invite API
+        final result = await EventApiService.sendEventInvite(
+          eventId: widget.eventId!,
+          receiverId: matchId,
+        );
+        if (result == null || result['success'] != true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result?['error'] ?? 'Failed to send invite'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return; // Don't show success state if API fails
+        }
       }
 
       setState(() {

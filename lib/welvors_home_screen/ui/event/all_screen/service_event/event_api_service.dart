@@ -134,4 +134,33 @@ class EventApiService {
       return {'success': false, 'error': e.toString()};
     }
   }
+
+  static Future<Map<String, dynamic>?> sendEventInvite({
+    required String eventId,
+    required String receiverId,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/chat/event/$eventId/invite');
+      final body = json.encode({
+        'receiverId': receiverId,
+      });
+
+      final response = await http.post(
+        url,
+        headers: await _headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to send invite: ${response.statusCode} - ${response.body}');
+        final errorMsg = json.decode(response.body)['message'] ?? 'Failed to send invite';
+        return {'success': false, 'error': errorMsg};
+      }
+    } catch (e) {
+      debugPrint('Error sending invite: $e');
+      return {'success': false, 'error': e.toString()};
+    }
+  }
 }

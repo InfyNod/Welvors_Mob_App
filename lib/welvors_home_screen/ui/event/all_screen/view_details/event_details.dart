@@ -564,6 +564,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     eventPartner:
                         _eventData?['eventPartner'] as Map<String, dynamic>?,
                     faqs: _eventData?['faqs'] as List<dynamic>?,
+                    eventId: widget.eventId,
                   ),
                   const SizedBox(height: 20),
                 ],
