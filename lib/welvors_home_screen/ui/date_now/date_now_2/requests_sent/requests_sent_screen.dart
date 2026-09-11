@@ -103,7 +103,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
               'hostAvatar': host['profilePhoto'],
               'status': displayStatus,
               'message': item['message'] ?? 'I would love to join!',
-              'billSuggestionLabel': item['billSuggestion'] != null && item['billSuggestion'] is Map
+              'billSuggestionLabel':
+                  item['billSuggestion'] != null &&
+                      item['billSuggestion'] is Map
                   ? item['billSuggestion']['label']
                   : '🤝 Split the bill',
               'statusMessage': item['status'] == 'APPROVED'
@@ -674,7 +676,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 top: Radius.circular(20),
               ),
               image: DecorationImage(
-                image: plan['imageUrl'] != null && plan['imageUrl'].toString().isNotEmpty
+                image:
+                    plan['imageUrl'] != null &&
+                        plan['imageUrl'].toString().isNotEmpty
                     ? NetworkImage(plan['imageUrl']) as ImageProvider
                     : const AssetImage('assets/dummyphoto.jpeg'),
                 fit: BoxFit.cover,
@@ -831,7 +835,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
+                        backgroundImage:
+                            plan['hostAvatar'] != null &&
+                                plan['hostAvatar'].toString().isNotEmpty
                             ? NetworkImage(plan['hostAvatar']) as ImageProvider
                             : const AssetImage('assets/dummyphoto.jpeg'),
                       ),
@@ -1203,7 +1209,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
+                        backgroundImage:
+                            plan['hostAvatar'] != null &&
+                                plan['hostAvatar'].toString().isNotEmpty
                             ? NetworkImage(plan['hostAvatar']) as ImageProvider
                             : const AssetImage('assets/dummyphoto.jpeg'),
                       ),
@@ -1449,7 +1457,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     children: [
                       CircleAvatar(
                         radius: 24,
-                        backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
+                        backgroundImage:
+                            plan['hostAvatar'] != null &&
+                                plan['hostAvatar'].toString().isNotEmpty
                             ? NetworkImage(plan['hostAvatar']) as ImageProvider
                             : const AssetImage('assets/dummyphoto.jpeg'),
                       ),
@@ -1507,7 +1517,10 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       }
                     } else {
                       if (context.mounted) {
-                        _showActionPopup('Failed to withdraw request', isError: true);
+                        _showActionPopup(
+                          'Failed to withdraw request',
+                          isError: true,
+                        );
                       }
                     }
                   },
@@ -1589,7 +1602,9 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   width: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: plan['imageUrl'] != null && plan['imageUrl'].toString().isNotEmpty
+                      image:
+                          plan['imageUrl'] != null &&
+                              plan['imageUrl'].toString().isNotEmpty
                           ? NetworkImage(plan['imageUrl']) as ImageProvider
                           : const AssetImage('assets/dummyphoto.jpeg'),
                       fit: BoxFit.cover,
@@ -1706,8 +1721,11 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                           children: [
                             CircleAvatar(
                               radius: 20,
-                              backgroundImage: plan['hostAvatar'] != null && plan['hostAvatar'].toString().isNotEmpty
-                                  ? NetworkImage(plan['hostAvatar']) as ImageProvider
+                              backgroundImage:
+                                  plan['hostAvatar'] != null &&
+                                      plan['hostAvatar'].toString().isNotEmpty
+                                  ? NetworkImage(plan['hostAvatar'])
+                                        as ImageProvider
                                   : const AssetImage('assets/dummyphoto.jpeg'),
                             ),
                             const SizedBox(width: 12),
