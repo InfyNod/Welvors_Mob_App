@@ -73,7 +73,26 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
         item,
       ) {
         final user = item['user'] ?? {};
-        final bool isMatch = item['isMatch'] ?? false;
+        final likeStatus = item['likeStatus'] ?? {};
+        final bool isMatched = likeStatus['matched'] == true;
+        final bool isSeen = likeStatus['seen'] == true;
+        
+        int progressState = 0;
+        String statusText = 'Awaiting reply';
+        int statusTextColor = 0xFF8A6011;
+        int statusBgColor = 0xFFFFF6E6;
+
+        if (isMatched) {
+          progressState = 2;
+          statusText = 'Matched';
+          statusTextColor = 0xFF1B7F53;
+          statusBgColor = 0xFFE9F7F0;
+        } else if (isSeen) {
+          progressState = 1;
+          statusText = 'Seen';
+          statusTextColor = 0xFF3563C1;
+          statusBgColor = 0xFFE9F2FF;
+        }
 
         return {
           'id':
@@ -83,14 +102,21 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
           'userId': user['id'] ?? item['interactionId'] ?? DateTime.now().millisecondsSinceEpoch,
           'name': user['name'] ?? 'Unknown',
           'age': (user['age'] ?? '25').toString(),
-          'timeInfo':
-              '${item['timeAgo'] ?? 'Recently'} · ${user['matchScore'] ?? 0}% Match',
+          'timeElapsed': item['timeAgo'] ?? 'Recently',
+          'matchPercent': '${user['matchScore'] ?? 0}% Match',
           'imageUrl':
               user['profileImage'] ??
               'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80',
-          'statusText': isMatch ? '✓ Matched · Chat' : '○ Pending',
-          'statusTextColor': isMatch ? 0xFF2CAF6B : 0xFF757575, // Green or Grey
-          'statusBgColor': isMatch ? 0xFFE9F7EF : 0xFFEEEEEE,
+          'statusText': statusText,
+          'statusTextColor': statusTextColor,
+          'statusBgColor': statusBgColor,
+          'progressState': progressState,
+          'actionText': 'Send a rose',
+          'actionIconColor': 0xFFFFFFFF,
+          'actionBgColor': 0xFFE43A6A,
+          'actionTextColor': 0xFFFFFFFF,
+          'location': user['distanceKm'] != null ? '${user['distanceKm']} km' : 'Not specified',
+          'quote': '"Hi there! 👋"', // Fallback if no message in API
         };
       }).toList();
 
