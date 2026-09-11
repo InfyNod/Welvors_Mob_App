@@ -424,10 +424,16 @@ class DateNowApiService {
           'Failed to approve request: ${response.statusCode} - ${response.body}',
         );
         try {
-          final errorMsg = json.decode(response.body)['message'];
+          String errorMsg = json.decode(response.body)['message'] ?? 'Failed to approve request';
+          
+          // Clean up raw Prisma database errors from backend
+          if (errorMsg.contains('Unique constraint failed') && errorMsg.contains('planId')) {
+            errorMsg = 'Participant limit reached. You cannot approve more requests for this Date Plan.';
+          }
+          
           return {
             'success': false,
-            'message': errorMsg ?? 'Failed to approve request',
+            'message': errorMsg,
           };
         } catch (_) {
           return {'success': false, 'message': 'Failed to approve request'};
