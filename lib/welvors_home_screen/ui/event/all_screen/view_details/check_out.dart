@@ -38,51 +38,97 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String _eventDate = '';
   String _eventLocation = '';
 
+  Map<String, dynamic>? _bookingPreview;
+
   @override
   void initState() {
     super.initState();
     _eventTitle = widget.title;
     _eventDate = widget.date;
     _eventLocation = widget.location;
-    _fetchEventDetails();
+    _fetchCheckoutDetails();
   }
 
-  Future<void> _fetchEventDetails() async {
-    final response = await EventApiService.getEventDetails(widget.eventId);
-    if (response != null) {
-      final data = response['data'] ?? response;
+  Future<void> _fetchCheckoutDetails() async {
+    final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
+    final String ticketType = (userGender == 'man' || userGender == 'men') ? 'MEN' : 'WOMEN';
+
+    final response = await EventApiService.getCheckoutDetails(
+      eventId: widget.eventId,
+      ticketType: ticketType,
+      ticketCount: 1,
+    );
+    
+    if (response != null && response['data'] != null) {
+      final data = response['data'];
       if (mounted) {
         setState(() {
-          _eventTitle = data['title'] ?? _eventTitle;
-          _eventLocation = data['fullAddress'] ?? _eventLocation;
-          
-          if (data['eventDate'] != null) {
-            try {
-              final DateTime parsedDate = DateTime.parse(data['eventDate']).toLocal();
-              String formattedDate = DateFormat('EEE, MMM d, yyyy').format(parsedDate);
-              if (data['startTime'] != null) {
-                formattedDate += ' · ${data['startTime']}';
+          final event = data['event'];
+          if (event != null) {
+            _eventTitle = event['title'] ?? _eventTitle;
+            _eventLocation = event['fullAddress'] ?? _eventLocation;
+            
+            if (event['eventDate'] != null) {
+              try {
+                final DateTime parsedDate = DateTime.parse(event['eventDate']).toLocal();
+                String formattedDate = DateFormat('EEE, MMM d, yyyy').format(parsedDate);
+                if (event['startTime'] != null) {
+                  formattedDate += ' · ${event['startTime']}';
+                }
+                _eventDate = formattedDate;
+              } catch (e) {
+                _eventDate = event['eventDate'];
               }
-              _eventDate = formattedDate;
-            } catch (e) {
-              _eventDate = data['eventDate'];
+            } else if (event['startTime'] != null) {
+              _eventDate = event['startTime'];
             }
-          } else if (data['startTime'] != null) {
-            _eventDate = data['startTime'];
           }
-          if (data['menDiscountedPrice'] != null) {
-            _manPrice = double.tryParse(data['menDiscountedPrice'].toString()) ?? _manPrice;
+
+          if (data['ticketOptions'] != null) {
+            for (var option in data['ticketOptions']) {
+              if (option['ticketType'] == 'MEN') {
+                _manPrice = double.tryParse(option['discountedPrice'].toString()) ?? _manPrice;
+              } else if (option['ticketType'] == 'WOMEN') {
+                _womanPrice = double.tryParse(option['discountedPrice'].toString()) ?? _womanPrice;
+              }
+            }
           }
-          if (data['womenDiscountedPrice'] != null) {
-            _womanPrice = double.tryParse(data['womenDiscountedPrice'].toString()) ?? _womanPrice;
-          }
+          
+          _bookingPreview = data['bookingPreview'];
         });
       }
     }
   }
 
-  final double _platformFee = 0.0;
-  final double _discount = 0.0;
+  Future<void> _updateCheckoutCalculation() async {
+    final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
+    final bool isUserMan = userGender == 'man' || userGender == 'men';
+    
+    int menCount = isUserMan ? 1 : 0;
+    int womenCount = !isUserMan ? 1 : 0;
+    
+    for (var p in _partners) {
+      if (p.isMan) menCount++;
+      else womenCount++;
+    }
+    
+    List<Map<String, dynamic>> tickets = [];
+    if (womenCount > 0) tickets.add({'ticketType': 'WOMEN', 'quantity': womenCount});
+    if (menCount > 0) tickets.add({'ticketType': 'MEN', 'quantity': menCount});
+    
+    final response = await EventApiService.calculateCheckout(
+      eventId: widget.eventId,
+      tickets: tickets,
+    );
+    
+    if (response != null && response['success'] == true) {
+      if (mounted) {
+        setState(() {
+          _bookingPreview = response['data']?['bookingPreview'] ?? response['data'];
+        });
+      }
+    }
+  }
 
   // Partner Tickets State
   List<PartnerTicket> _partners = [];
@@ -90,18 +136,39 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   double _manPrice = 1800.0;
 
   double get _baseTotal {
-    final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
-    final bool isUserMan = userGender == 'man' || userGender == 'men';
-    double total = isUserMan ? _manPrice : _womanPrice;
-    
-    for (var p in _partners) {
-      total += p.isMan ? _manPrice : _womanPrice;
+    if (_bookingPreview != null && _bookingPreview!['ticketAmount'] != null) {
+      return double.tryParse(_bookingPreview!['ticketAmount'].toString()) ?? 0.0;
     }
-    return total;
+    return 0.0;
   }
 
-  double get _gst => 0.0;
-  double get _totalPayable => _baseTotal + _platformFee + _gst - _discount;
+  double get _gst {
+    if (_bookingPreview != null && _bookingPreview!['gstAmount'] != null) {
+      return double.tryParse(_bookingPreview!['gstAmount'].toString()) ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  double get _platformFee {
+    if (_bookingPreview != null && _bookingPreview!['platformFee'] != null) {
+      return double.tryParse(_bookingPreview!['platformFee'].toString()) ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  double get _discount {
+    if (_bookingPreview != null && _bookingPreview!['discountAmount'] != null) {
+      return double.tryParse(_bookingPreview!['discountAmount'].toString()) ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  double get _totalPayable {
+    if (_bookingPreview != null && _bookingPreview!['totalAmount'] != null) {
+      return double.tryParse(_bookingPreview!['totalAmount'].toString()) ?? 0.0;
+    }
+    return 0.0;
+  }
 
   final NumberFormat _currencyFormat = NumberFormat.currency(
     symbol: '₹',
@@ -714,6 +781,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     setState(() {
                       _partners.add(PartnerTicket());
                     });
+                    _updateCheckoutCalculation();
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: CustomPaint(
@@ -796,6 +864,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         setState(() {
                           _partners.removeAt(index);
                         });
+                        _updateCheckoutCalculation();
                       },
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
@@ -897,6 +966,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     setState(() {
                       partner.isMan = false;
                     });
+                    _updateCheckoutCalculation();
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -935,6 +1005,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     setState(() {
                       partner.isMan = true;
                     });
+                    _updateCheckoutCalculation();
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),

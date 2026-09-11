@@ -67,6 +67,51 @@ class EventApiService {
       return null;
     }
   }
+
+  static Future<Map<String, dynamic>?> getCheckoutDetails({
+    required String eventId,
+    required String ticketType,
+    required int ticketCount,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/admin/events/$eventId/checkout?ticketType=$ticketType&ticketCount=$ticketCount');
+      final response = await http.get(url, headers: await _headers);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to get checkout details: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error getting checkout details: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> calculateCheckout({
+    required String eventId,
+    required List<Map<String, dynamic>> tickets,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/admin/events/$eventId/checkout/calculate');
+      final response = await http.post(
+        url,
+        headers: await _headers,
+        body: jsonEncode({'tickets': tickets}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to calculate checkout: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error calculating checkout: $e');
+      return null;
+    }
+  }
   static Future<Map<String, dynamic>?> getChatConversations() async {
     try {
       final url = Uri.parse('$baseUrl/user/chat/conversations');
