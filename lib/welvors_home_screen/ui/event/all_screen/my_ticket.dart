@@ -46,7 +46,11 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
     String selectedFilter = _filters[_selectedFilterIndex];
     String? apiStatus;
     if (selectedFilter != 'All') {
-      apiStatus = selectedFilter.toUpperCase().replaceAll(' ', '_');
+      if (selectedFilter == 'Pending') {
+        apiStatus = 'PAYMENT_PENDING';
+      } else {
+        apiStatus = selectedFilter.toUpperCase().replaceAll(' ', '_');
+      }
     }
 
     final cacheKey = apiStatus ?? 'ALL';
@@ -712,6 +716,99 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                         SizedBox(width: 4),
                         Text(
                           'CANCELLED',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (status.toUpperCase() == 'PAYMENT_PENDING')
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.pending, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'PENDING',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (status.toUpperCase() == 'ATTENDED')
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.event_available, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'ATTENDED',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (status.toUpperCase() == 'EXPIRED')
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade800,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.timer_off, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'EXPIRED',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,

@@ -112,6 +112,39 @@ class EventApiService {
       return null;
     }
   }
+  static Future<Map<String, dynamic>?> createEventOrder({
+    required String eventId,
+    required int menTicketCount,
+    required int womenTicketCount,
+    int otherTicketCount = 0,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/payments/order-create');
+      final response = await http.post(
+        url,
+        headers: await _headers,
+        body: jsonEncode({
+          "purpose": "EVENT_BOOKING",
+          "eventId": eventId,
+          "menTicketCount": menTicketCount,
+          "womenTicketCount": womenTicketCount,
+          "otherTicketCount": otherTicketCount,
+          "currency": "INR"
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to create event order: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error creating event order: $e');
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>?> getChatConversations() async {
     try {
       final url = Uri.parse('$baseUrl/user/chat/conversations');

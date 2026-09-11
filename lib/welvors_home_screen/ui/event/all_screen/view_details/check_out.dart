@@ -7,6 +7,7 @@ import 'package:velvors/welvors_home_screen/ui/event/all_screen/service_event/ev
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String eventId;
@@ -31,34 +32,94 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  int _selectedPaymentMethod =
-      0; // 0 = UPI, 1 = Card, 2 = Wallet, 3 = Netbanking
-
   String _eventTitle = '';
   String _eventDate = '';
   String _eventLocation = '';
 
   Map<String, dynamic>? _bookingPreview;
+  bool _isProcessingPayment = false;
+  late Razorpay _razorpay;
 
   @override
   void initState() {
     super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+
     _eventTitle = widget.title;
     _eventDate = widget.date;
     _eventLocation = widget.location;
     _fetchCheckoutDetails();
   }
 
+  @override
+  void dispose() {
+    _razorpay.clear();
+    super.dispose();
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    debugPrint(
+      'Razorpay Success: Payment ID: ${response.paymentId}, Order ID: ${response.orderId}, Signature: ${response.signature}',
+    );
+    if (mounted) {
+      setState(() {
+        _isProcessingPayment = false;
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SplashScreenBook(
+            totalPayable: _totalPayable,
+            title: widget.title,
+            date: widget.date,
+            location: widget.location,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    debugPrint(
+      'Razorpay Error: Code: ${response.code}, Message: ${response.message}',
+    );
+    if (mounted) {
+      setState(() {
+        _isProcessingPayment = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Payment Failed: ${response.message ?? "Cancelled"}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    debugPrint('Razorpay External Wallet: ${response.walletName}');
+    // Optional
+  }
+
   Future<void> _fetchCheckoutDetails() async {
-    final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
-    final String ticketType = (userGender == 'man' || userGender == 'men') ? 'MEN' : 'WOMEN';
+    final userGender = context
+        .read<ProfileEditCubit>()
+        .state
+        .gender
+        .toLowerCase();
+    final String ticketType = (userGender == 'man' || userGender == 'men')
+        ? 'MEN'
+        : 'WOMEN';
 
     final response = await EventApiService.getCheckoutDetails(
       eventId: widget.eventId,
       ticketType: ticketType,
       ticketCount: 1,
     );
-    
+
     if (response != null && response['data'] != null) {
       final data = response['data'];
       if (mounted) {
@@ -67,11 +128,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           if (event != null) {
             _eventTitle = event['title'] ?? _eventTitle;
             _eventLocation = event['fullAddress'] ?? _eventLocation;
-            
+
             if (event['eventDate'] != null) {
               try {
-                final DateTime parsedDate = DateTime.parse(event['eventDate']).toLocal();
-                String formattedDate = DateFormat('EEE, MMM d, yyyy').format(parsedDate);
+                final DateTime parsedDate = DateTime.parse(
+                  event['eventDate'],
+                ).toLocal();
+                String formattedDate = DateFormat(
+                  'EEE, MMM d, yyyy',
+                ).format(parsedDate);
                 if (event['startTime'] != null) {
                   formattedDate += ' · ${event['startTime']}';
                 }
@@ -87,13 +152,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           if (data['ticketOptions'] != null) {
             for (var option in data['ticketOptions']) {
               if (option['ticketType'] == 'MEN') {
-                _manPrice = double.tryParse(option['discountedPrice'].toString()) ?? _manPrice;
+                _manPrice =
+                    double.tryParse(option['discountedPrice'].toString()) ??
+                    _manPrice;
               } else if (option['ticketType'] == 'WOMEN') {
-                _womanPrice = double.tryParse(option['discountedPrice'].toString()) ?? _womanPrice;
+                _womanPrice =
+                    double.tryParse(option['discountedPrice'].toString()) ??
+                    _womanPrice;
               }
             }
           }
-          
+
           _bookingPreview = data['bookingPreview'];
         });
       }
@@ -101,30 +170,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _updateCheckoutCalculation() async {
-    final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
+    final userGender = context
+        .read<ProfileEditCubit>()
+        .state
+        .gender
+        .toLowerCase();
     final bool isUserMan = userGender == 'man' || userGender == 'men';
-    
+
     int menCount = isUserMan ? 1 : 0;
     int womenCount = !isUserMan ? 1 : 0;
-    
+
     for (var p in _partners) {
-      if (p.isMan) menCount++;
-      else womenCount++;
+      if (p.isMan == true)
+        menCount++;
+      else if (p.isMan == false)
+        womenCount++;
     }
-    
+
     List<Map<String, dynamic>> tickets = [];
-    if (womenCount > 0) tickets.add({'ticketType': 'WOMEN', 'quantity': womenCount});
+    if (womenCount > 0)
+      tickets.add({'ticketType': 'WOMEN', 'quantity': womenCount});
     if (menCount > 0) tickets.add({'ticketType': 'MEN', 'quantity': menCount});
-    
+
     final response = await EventApiService.calculateCheckout(
       eventId: widget.eventId,
       tickets: tickets,
     );
-    
+
     if (response != null && response['success'] == true) {
       if (mounted) {
         setState(() {
-          _bookingPreview = response['data']?['bookingPreview'] ?? response['data'];
+          _bookingPreview =
+              response['data']?['bookingPreview'] ?? response['data'];
         });
       }
     }
@@ -137,7 +214,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   double get _baseTotal {
     if (_bookingPreview != null && _bookingPreview!['ticketAmount'] != null) {
-      return double.tryParse(_bookingPreview!['ticketAmount'].toString()) ?? 0.0;
+      return double.tryParse(_bookingPreview!['ticketAmount'].toString()) ??
+          0.0;
     }
     return 0.0;
   }
@@ -156,11 +234,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return 0.0;
   }
 
-  double get _discount {
+  double get _discountAmount {
     if (_bookingPreview != null && _bookingPreview!['discountAmount'] != null) {
-      return double.tryParse(_bookingPreview!['discountAmount'].toString()) ?? 0.0;
+      return double.tryParse(_bookingPreview!['discountAmount'].toString()) ??
+          0.0;
     }
     return 0.0;
+  }
+
+  double get _couponDiscount {
+    if (_bookingPreview != null && _bookingPreview!['couponDiscount'] != null) {
+      return double.tryParse(_bookingPreview!['couponDiscount'].toString()) ??
+          0.0;
+    }
+    return 0.0;
+  }
+
+  String get _couponCode {
+    if (_bookingPreview != null && _bookingPreview!['couponCode'] != null) {
+      return _bookingPreview!['couponCode'].toString();
+    }
+    return '';
   }
 
   double get _totalPayable {
@@ -352,27 +446,35 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         // Price Breakdown
                         Builder(
                           builder: (context) {
-                            final userGender = context.read<ProfileEditCubit>().state.gender.toLowerCase();
-                            final bool isUserMan = userGender == 'man' || userGender == 'men';
+                            final userGender = context
+                                .read<ProfileEditCubit>()
+                                .state
+                                .gender
+                                .toLowerCase();
+                            final bool isUserMan =
+                                userGender == 'man' || userGender == 'men';
                             return _buildPriceRow(
                               'Ticket × 1',
-                              _currencyFormat.format(isUserMan ? _manPrice : _womanPrice),
+                              _currencyFormat.format(
+                                isUserMan ? _manPrice : _womanPrice,
+                              ),
                               subtitle: isUserMan ? "(Man)" : "(Woman)",
                             );
-                          }
+                          },
                         ),
                         const SizedBox(height: 10),
                         ..._partners.asMap().entries.map((entry) {
                           int idx = entry.key;
                           PartnerTicket p = entry.value;
+                          if (p.isMan == null) return const SizedBox.shrink();
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: _buildPriceRow(
                               'Partner ${idx + 1}',
                               _currencyFormat.format(
-                                p.isMan ? _manPrice : _womanPrice,
+                                p.isMan == true ? _manPrice : _womanPrice,
                               ),
-                              subtitle: p.isMan ? "(Man)" : "(Woman)",
+                              subtitle: p.isMan == true ? "(Man)" : "(Woman)",
                             ),
                           );
                         }).toList(),
@@ -385,53 +487,108 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           'GST (18%)',
                           _currencyFormat.format(_gst),
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(
-                                      233,
-                                      247,
-                                      240,
-                                      1,
+                        if (_couponDiscount > 0 ||
+                            _couponCode.isNotEmpty ||
+                            true) ...[
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 2,
                                     ),
-                                    borderRadius: BorderRadius.circular(4),
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromRGBO(
+                                        233,
+                                        247,
+                                        240,
+                                        1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Icon(
+                                      Icons.local_activity,
+                                      size: 10,
+                                      color: Color.fromRGBO(44, 175, 107, 1),
+                                    ),
                                   ),
-                                  child: const Icon(
-                                    Icons.local_activity,
-                                    size: 10,
-                                    color: Color.fromRGBO(44, 175, 107, 1),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    _couponCode.isNotEmpty
+                                        ? '$_couponCode applied'
+                                        : 'WELVORS100 applied',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Color.fromRGBO(44, 175, 107, 1),
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Text(
-                                  'WELVORS100 applied',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Color.fromRGBO(44, 175, 107, 1),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              '-${_currencyFormat.format(_discount)}',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Color.fromRGBO(44, 175, 107, 1),
-                                fontWeight: FontWeight.bold,
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
+                              Text(
+                                '-${_currencyFormat.format(_couponDiscount)}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Color.fromRGBO(44, 175, 107, 1),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        if (_couponDiscount > 0) ...[
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromRGBO(
+                                        233,
+                                        247,
+                                        240,
+                                        1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Icon(
+                                      Icons.local_activity,
+                                      size: 10,
+                                      color: Color.fromRGBO(44, 175, 107, 1),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${_couponCode} applied',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Color.fromRGBO(44, 175, 107, 1),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                '-${_currencyFormat.format(_couponDiscount)}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Color.fromRGBO(44, 175, 107, 1),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
 
                         // Dashed Divider Alternative
                         Padding(
@@ -494,51 +651,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const SizedBox(height: 12),
                   _buildBringAPartnerSection(),
                   const SizedBox(height: 24),
-
-                  // Payment Method Section
-                  const Text(
-                    'PAYMENT METHOD',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black87,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const SizedBox(height: 12),
-                  _buildPaymentMethodTile(
-                    index: 0,
-                    icon: '₹',
-                    iconBgColor: const Color(0xFFFFF0F3),
-                    title: 'UPI',
-                    subtitle: 'GPay · PhonePe · Paytm',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildPaymentMethodTile(
-                    index: 1,
-                    icon: '💳',
-                    iconBgColor: const Color(0xFFE8F4FD),
-                    title: 'Card',
-                    subtitle: 'Visa, Mastercard, RuPay',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildPaymentMethodTile(
-                    index: 2,
-                    icon: '🪙',
-                    iconBgColor: const Color(0xFFF3E8FF),
-                    title: 'Welvors Wallet',
-                    subtitle: 'Balance ₹420 · partial',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildPaymentMethodTile(
-                    index: 3,
-                    icon: '🏦',
-                    iconBgColor: const Color(0xFFE8F5E9),
-                    title: 'Net banking',
-                    subtitle: 'All major banks',
-                  ),
-                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -571,20 +683,82 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       width: double.infinity,
                       height: 54,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Navigate to splash screen first
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SplashScreenBook(
-                                totalPayable: _totalPayable,
-                                title: widget.title,
-                                date: widget.date,
-                                location: widget.location,
-                              ),
-                            ),
-                          );
-                        },
+                        onPressed: _isProcessingPayment
+                            ? null
+                            : () async {
+                                setState(() {
+                                  _isProcessingPayment = true;
+                                });
+
+                                int menTicketCount = 0;
+                                int womenTicketCount = 0;
+
+                                final userGender = context
+                                    .read<ProfileEditCubit>()
+                                    .state
+                                    .gender
+                                    .toLowerCase();
+                                final isUserMan =
+                                    (userGender == 'man' ||
+                                    userGender == 'men');
+                                if (isUserMan)
+                                  menTicketCount++;
+                                else
+                                  womenTicketCount++;
+
+                                for (var p in _partners) {
+                                  if (p.isMan == true)
+                                    menTicketCount++;
+                                  else if (p.isMan == false)
+                                    womenTicketCount++;
+                                }
+
+                                final response =
+                                    await EventApiService.createEventOrder(
+                                      eventId: widget.eventId,
+                                      menTicketCount: menTicketCount,
+                                      womenTicketCount: womenTicketCount,
+                                    );
+
+                                if (mounted) {
+                                  if (response != null &&
+                                      response['success'] == true) {
+                                    final data = response['data'];
+                                    var options = {
+                                      'key':
+                                          data['razorpayKeyId'] ??
+                                          'rzp_test_TX7SxmIJ0n6rJW',
+                                      'amount': (data['amount'] as num).toInt(),
+                                      'name': 'Welvors',
+                                      'description': 'Event Booking',
+                                      'order_id': data['razorpayOrderId'],
+                                      'theme': {'color': '#E43A6A'},
+                                    };
+
+                                    try {
+                                      _razorpay.open(options);
+                                    } catch (e) {
+                                      debugPrint('Error opening Razorpay: $e');
+                                      setState(() {
+                                        _isProcessingPayment = false;
+                                      });
+                                    }
+                                  } else {
+                                    setState(() {
+                                      _isProcessingPayment = false;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          response?['message'] ??
+                                              'Failed to create order',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE43A6A),
                           foregroundColor: Colors.white,
@@ -593,20 +767,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.lock, size: 16),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Pay ${_currencyFormat.format(_totalPayable)} securely',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                        child: _isProcessingPayment
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.lock, size: 16),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Pay ${_currencyFormat.format(_totalPayable)} securely',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                   ],
@@ -619,7 +802,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildPriceRow(String title, String amount, {String? subtitle}) {
+  Widget _buildPriceRow(
+    String title,
+    String amount, {
+    String? subtitle,
+    bool isDiscount = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -644,96 +832,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ),
         Text(
           amount,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: isDiscount
+                ? const Color.fromRGBO(44, 175, 107, 1)
+                : Colors.black87,
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildPaymentMethodTile({
-    required int index,
-    required String icon,
-    required Color iconBgColor,
-    required String title,
-    required String subtitle,
-  }) {
-    final isSelected = _selectedPaymentMethod == index;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedPaymentMethod = index;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(icon, style: const TextStyle(fontSize: 20)),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected ? const Color(0xFFE43A6A) : Colors.white,
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFFE43A6A)
-                      : Colors.grey.shade300,
-                  width: 1,
-                ),
-              ),
-              child: isSelected
-                  ? const Icon(Icons.check, size: 16, color: Colors.white)
-                  : null,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -849,7 +956,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 children: [
                   Text(
                     _currencyFormat.format(
-                      partner.isMan ? _manPrice : _womanPrice,
+                      partner.isMan == null
+                          ? 0.0
+                          : (partner.isMan == true ? _manPrice : _womanPrice),
                     ),
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
@@ -971,11 +1080,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: !partner.isMan
+                      color: partner.isMan == false
                           ? const Color(0xFFE43A6A).withOpacity(0.08)
                           : Colors.white,
                       border: Border.all(
-                        color: !partner.isMan
+                        color: partner.isMan == false
                             ? const Color(0xFFE43A6A)
                             : Colors.grey.shade300,
                       ),
@@ -985,10 +1094,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       child: Text(
                         'Woman - ${_currencyFormat.format(_womanPrice)}',
                         style: TextStyle(
-                          color: !partner.isMan
+                          color: partner.isMan == false
                               ? const Color(0xFFE43A6A)
                               : Colors.black87,
-                          fontWeight: !partner.isMan
+                          fontWeight: partner.isMan == false
                               ? FontWeight.bold
                               : FontWeight.normal,
                           fontSize: 13,
@@ -1010,11 +1119,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: partner.isMan
+                      color: partner.isMan == true
                           ? const Color(0xFFE43A6A).withOpacity(0.08)
                           : Colors.white,
                       border: Border.all(
-                        color: partner.isMan
+                        color: partner.isMan == true
                             ? const Color(0xFFE43A6A)
                             : Colors.grey.shade300,
                       ),
@@ -1024,10 +1133,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       child: Text(
                         'Man - ${_currencyFormat.format(_manPrice)}',
                         style: TextStyle(
-                          color: partner.isMan
+                          color: partner.isMan == true
                               ? const Color(0xFFE43A6A)
                               : Colors.black87,
-                          fontWeight: partner.isMan
+                          fontWeight: partner.isMan == true
                               ? FontWeight.bold
                               : FontWeight.normal,
                           fontSize: 13,
@@ -1048,7 +1157,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 class PartnerTicket {
   String fullName = '';
   String mobile = '';
-  bool isMan = true;
+  bool? isMan;
 }
 
 class DashedBorderPainter extends CustomPainter {
