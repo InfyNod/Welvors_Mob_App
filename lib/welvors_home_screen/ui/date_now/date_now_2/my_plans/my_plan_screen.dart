@@ -1074,11 +1074,14 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                     children: [
                       Row(
                         children: [
-                          Text(
-                            '${request['name']}, ${request['age']}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          Flexible(
+                            child: Text(
+                              '${request['name']}, ${request['age']}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           if (request['area'] != null && request['area'].toString().isNotEmpty)
