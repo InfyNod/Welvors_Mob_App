@@ -40,6 +40,9 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
   @override
   void initState() {
     super.initState();
+    _cityController.addListener(() {
+      if (mounted) setState(() {});
+    });
     _loadData();
   }
 
@@ -455,7 +458,7 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                                     List<Placemark> placemarks = await placemarkFromCoordinates(_lat!, _lng!);
                                     if (placemarks.isNotEmpty) {
                                       Placemark p = placemarks[0];
-                                      _city = p.locality ?? p.subAdministrativeArea ?? p.administrativeArea ?? _cityController.text;
+                                      _city = p.locality ?? p.subAdministrativeArea ?? p.administrativeArea ?? 'Unknown';
                                       _state = p.administrativeArea ?? 'Unknown';
                                       _country = p.country ?? 'Unknown';
                                       _area = p.subLocality ?? p.thoroughfare ?? '';
@@ -464,15 +467,25 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                                 } catch (e) {
                                   debugPrint('Manual geocode failed: $e');
                                 }
+
+                                // Override with custom parsing based on commas
+                                List<String> parts = _cityController.text.split(',').map((e) => e.trim()).toList();
+                                if (parts.isNotEmpty) {
+                                  _area = parts[0];
+                                  _city = parts.length > 1 ? parts[1] : parts[0];
+                                  if (parts.length > 2) _state = parts[2];
+                                  if (parts.length > 3) _country = parts[3];
+                                }
+                                
+                                // If geocoding failed completely, we can still proceed with these dummy coords 
+                                // to not block the user, or let it fail. We will provide a fallback if needed.
+                                if (_lat == null || _lng == null) {
+                                  _lat = 0.0; // Fallback
+                                  _lng = 0.0;
+                                }
                               }
                               
-                              if (_lat == null || _lng == null) {
-                                setState(() => _isSubmitting = false);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Please select a valid location.')),
-                                );
-                                return;
-                              }
+                              // Null check is handled by fallback now.
 
                               userData.location = '$_city, $_state';
                               userData.locationAuto = _useCurrentLocation ? 'Auto' : 'Manual';
@@ -481,9 +494,9 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                               if (_lat != null && _lng != null) {
                                 await ApiService.submitLocation(_lat!, _lng!);
                               }
-                              if (_country != null && _state != null && _city != null) {
+                              if (_state != null && _city != null) {
                                 await ApiService.submitAddress(
-                                  _country!,
+                                  _country,
                                   _state!,
                                   _city!,
                                   area: _area,

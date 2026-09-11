@@ -894,7 +894,7 @@ class ApiService {
 
   /// Submits the user's address.
   static Future<String?> submitAddress(
-    String country,
+    String? country,
     String state,
     String city, {
     String? area,
@@ -903,18 +903,20 @@ class ApiService {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
+      final body = {
+        "state": state, 
+        "city": city,
+      };
+      if (country != null && country.isNotEmpty) body["country"] = country;
+      if (area != null && area.isNotEmpty) body["area"] = area;
+
       final response = await http.patch(
         Uri.parse('$baseUrl/user/profile/address'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({
-          "country": country, 
-          "state": state, 
-          "city": city,
-          if (area != null) "area": area,
-        }),
+        body: jsonEncode(body),
       );
 
       debugPrint('Submit Address Status: ${response.statusCode}');

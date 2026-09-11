@@ -28,16 +28,18 @@ class _MyPlanRequesterProfileScreenState
           children: [
             Icon(icon, color: Colors.white),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(subtitle),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(subtitle),
+                ],
+              ),
             ),
           ],
         ),
@@ -146,19 +148,26 @@ class _MyPlanRequesterProfileScreenState
                             setState(() => _isLoading = true);
                             final requestId =
                                 widget.request['id'] ?? 'DUMMY_ID';
-                            final success =
+                            final result =
                                 await DateNowApiService.declineRequest(
                                   requestId,
                                 );
                             if (mounted) {
                               setState(() => _isLoading = false);
-                              if (success) {
+                              if (result['success'] == true) {
                                 Navigator.pop(context, 'decline');
                                 _showSnackBar(
                                   'Declined',
                                   'You have declined this request.',
                                   Colors.red,
                                   Icons.close,
+                                );
+                              } else {
+                                _showSnackBar(
+                                  'Error',
+                                  result['message'] ?? 'Failed to decline request',
+                                  Colors.red,
+                                  Icons.error_outline,
                                 );
                               }
                             }
@@ -190,19 +199,26 @@ class _MyPlanRequesterProfileScreenState
                             setState(() => _isLoading = true);
                             final requestId =
                                 widget.request['id'] ?? 'DUMMY_ID';
-                            final success =
+                            final result =
                                 await DateNowApiService.approveRequest(
                                   requestId,
                                 );
                             if (mounted) {
                               setState(() => _isLoading = false);
-                              if (success) {
+                              if (result['success'] == true) {
                                 Navigator.pop(context, 'approve');
                                 _showSnackBar(
                                   'Approved!',
                                   'You can now message ${widget.request['name']}.',
                                   Colors.green,
                                   Icons.check_circle_outline,
+                                );
+                              } else {
+                                _showSnackBar(
+                                  'Error',
+                                  result['message'] ?? 'Failed to approve request',
+                                  Colors.red,
+                                  Icons.error_outline,
                                 );
                               }
                             }

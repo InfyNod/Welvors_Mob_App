@@ -460,7 +460,10 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   Widget _buildContent(Map<String, dynamic> plan) {
     List<Map<String, dynamic>> requests = List<Map<String, dynamic>>.from(
       plan['requests'] ?? [],
-    );
+    ).where((r) {
+      final status = r['status']?.toString().toUpperCase();
+      return status != 'REJECTED' && status != 'DECLINED';
+    }).toList();
 
     return Container(
       margin: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
@@ -515,7 +518,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 ),
                 const SizedBox(height: 16),
                 ...List.generate(requests.length, (index) {
-                  return _buildRequestCard(requests[index], requests);
+                  return _buildRequestCard(plan, requests[index]);
                 }),
               ],
             ),
@@ -1032,8 +1035,8 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   }
 
   Widget _buildRequestCard(
+    Map<String, dynamic> plan,
     Map<String, dynamic> request,
-    List<Map<String, dynamic>> planRequests,
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -1054,7 +1057,11 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 ),
               );
               if (result == 'decline') {
-                setState(() => planRequests.remove(request));
+                setState(() {
+                  if (plan['requests'] is List) {
+                    (plan['requests'] as List).remove(request);
+                  }
+                });
               } else {
                 setState(() {});
               }
@@ -1245,16 +1252,28 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                   child: GestureDetector(
                     onTap: () async {
                       final requestId = request['id'] ?? 'DUMMY_ID';
-                      final success = await DateNowApiService.declineRequest(
+                      final result = await DateNowApiService.declineRequest(
                         requestId,
                       );
-                      if (success) {
+                      if (result['success'] == true) {
                         if (!mounted) return;
                         setState(() {
-                          planRequests.remove(request);
+                          if (plan['requests'] is List) {
+                            (plan['requests'] as List).remove(request);
+                          }
                         });
                         if (context.mounted) {
                           _showActionPopup('Request declined');
+                        }
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(result['message'] ?? 'Failed to decline request'),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
                         }
                       }
                     },
@@ -1284,16 +1303,26 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                   child: GestureDetector(
                     onTap: () async {
                       final requestId = request['id'] ?? 'DUMMY_ID';
-                      final success = await DateNowApiService.approveRequest(
+                      final result = await DateNowApiService.approveRequest(
                         requestId,
                       );
-                      if (success) {
+                      if (result['success'] == true) {
                         if (!mounted) return;
                         setState(() {
                           request['status'] = 'approved';
                         });
                         if (context.mounted) {
                           _showActionPopup('Request approved');
+                        }
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(result['message'] ?? 'Failed to approve request'),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
                         }
                       }
                     },

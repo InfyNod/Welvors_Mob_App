@@ -7,7 +7,10 @@ class DateNowApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
 
   // Hardcoded token for now as per home_api_service.dart pattern
-  static Future<Map<String, dynamic>?> inviteToDatePlan(String datePlanId, String receiverId) async {
+  static Future<Map<String, dynamic>?> inviteToDatePlan(
+    String datePlanId,
+    String receiverId,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/user/date-plan/$datePlanId/invite'),
@@ -15,13 +18,16 @@ class DateNowApiService {
         body: jsonEncode({'receiverId': receiverId}),
       );
 
-      debugPrint('Date Plan Invite Status: ${response.statusCode} - ${response.body}');
+      debugPrint(
+        'Date Plan Invite Status: ${response.statusCode} - ${response.body}',
+      );
       return jsonDecode(response.body);
     } catch (e) {
       debugPrint('Error inviting to date plan: $e');
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
+
   static Future<Map<String, String>> get _headers async {
     final token = await TokenHelper.getToken();
     return {
@@ -42,7 +48,9 @@ class DateNowApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint('Error getting boosts: ${response.statusCode} - ${response.body}');
+        debugPrint(
+          'Error getting boosts: ${response.statusCode} - ${response.body}',
+        );
         return null;
       }
     } catch (e) {
@@ -51,7 +59,10 @@ class DateNowApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> activateDatePlanBoost(String planId, String boostOptionId) async {
+  static Future<Map<String, dynamic>?> activateDatePlanBoost(
+    String planId,
+    String boostOptionId,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/user/date-plan-boost/$planId/activate'),
@@ -59,7 +70,9 @@ class DateNowApiService {
         body: jsonEncode({"boostOptionId": boostOptionId}),
       );
 
-      debugPrint('Activate Boost Status: ${response.statusCode} - ${response.body}');
+      debugPrint(
+        'Activate Boost Status: ${response.statusCode} - ${response.body}',
+      );
       return json.decode(response.body);
     } catch (e) {
       debugPrint('Exception activating boost: $e');
@@ -67,14 +80,18 @@ class DateNowApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> getActiveDatePlanBoost(String planId) async {
+  static Future<Map<String, dynamic>?> getActiveDatePlanBoost(
+    String planId,
+  ) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/user/date-plan-boost/$planId/active'),
         headers: await _headers,
       );
 
-      debugPrint('Get Active Boost Status: ${response.statusCode} - ${response.body}');
+      debugPrint(
+        'Get Active Boost Status: ${response.statusCode} - ${response.body}',
+      );
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -393,7 +410,7 @@ class DateNowApiService {
   }
 
   // PATCH Request to approve date request
-  static Future<bool> approveRequest(String requestId) async {
+  static Future<Map<String, dynamic>> approveRequest(String requestId) async {
     try {
       final url = Uri.parse(
         '$baseUrl/user/date-plan-requests/$requestId/approve',
@@ -401,21 +418,29 @@ class DateNowApiService {
       final response = await http.patch(url, headers: await _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
+        return {'success': true};
       } else {
         debugPrint(
           'Failed to approve request: ${response.statusCode} - ${response.body}',
         );
-        return false;
+        try {
+          final errorMsg = json.decode(response.body)['message'];
+          return {
+            'success': false,
+            'message': errorMsg ?? 'Failed to approve request',
+          };
+        } catch (_) {
+          return {'success': false, 'message': 'Failed to approve request'};
+        }
       }
     } catch (e) {
       debugPrint('Error approving request: $e');
-      return false;
+      return {'success': false, 'message': 'Network error occurred'};
     }
   }
 
   // PATCH Request to decline date request
-  static Future<bool> declineRequest(String requestId) async {
+  static Future<Map<String, dynamic>> declineRequest(String requestId) async {
     try {
       final url = Uri.parse(
         '$baseUrl/user/date-plan-requests/$requestId/decline',
@@ -423,16 +448,24 @@ class DateNowApiService {
       final response = await http.patch(url, headers: await _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
+        return {'success': true};
       } else {
         debugPrint(
           'Failed to decline request: ${response.statusCode} - ${response.body}',
         );
-        return false;
+        try {
+          final errorMsg = json.decode(response.body)['message'];
+          return {
+            'success': false,
+            'message': errorMsg ?? 'Failed to decline request',
+          };
+        } catch (_) {
+          return {'success': false, 'message': 'Failed to decline request'};
+        }
       }
     } catch (e) {
       debugPrint('Error declining request: $e');
-      return false;
+      return {'success': false, 'message': 'Network error occurred'};
     }
   }
 
