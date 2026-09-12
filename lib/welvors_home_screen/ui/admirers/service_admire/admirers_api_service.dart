@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import '../../../services/token_helper.dart';
 import 'package:http/http.dart' as http;
 
@@ -121,6 +122,33 @@ class AdmirersApiService {
       }
     } catch (e) {
       throw Exception('Error swiping: $e');
+    }
+  }
+
+  /// Sends a Rose to a user
+  Future<Map<String, dynamic>> sendRose({required String receiverId}) async {
+    final url = Uri.parse('https://api.welvors.com/api/user/rose/send');
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
+        },
+        body: json.encode({
+          'receiverId': receiverId,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to send rose. Status: ${response.statusCode}, Body: ${response.body}');
+        throw Exception('Failed to send rose. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error sending rose: $e');
     }
   }
 }
