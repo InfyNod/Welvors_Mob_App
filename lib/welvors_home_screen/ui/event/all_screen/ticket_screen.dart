@@ -891,21 +891,20 @@ class _ShareModalContentState extends State<_ShareModalContent> {
             ],
           ),
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                widget.tickets.length > 1
-                    ? 'Swipe to select a ticket'
-                    : 'Share this pass with friends',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
-                  fontSize: 14,
+          if (widget.tickets.length > 1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Swipe to select a ticket',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 14,
+                  ),
                 ),
-              ),
-              if (widget.tickets.length > 1) _BlinkingArrow(),
-            ],
-          ),
+                _BlinkingArrow(),
+              ],
+            ),
           const SizedBox(height: 16),
           Expanded(
             child: PageView.builder(
