@@ -1,21 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lottie/lottie.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../my_ticket.dart';
 
-class BookingConfirmationScreen extends StatelessWidget {
+import 'dart:convert';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/service_event/event_api_service.dart';
+
+class BookingConfirmationScreen extends StatefulWidget {
   final String title;
   final String date;
   final String location;
   final double totalPayable;
+  final String bookingId;
 
   const BookingConfirmationScreen({
     super.key,
     required this.title,
     required this.date,
     required this.location,
+    required this.bookingId,
     this.totalPayable = 1424,
   });
+
+  @override
+  State<BookingConfirmationScreen> createState() => _BookingConfirmationScreenState();
+}
+
+class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
+  Map<String, dynamic>? _bookingDetails;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBookingDetails();
+  }
+
+  Future<void> _fetchBookingDetails() async {
+    if (widget.bookingId.isEmpty) {
+      setState(() => _isLoading = false);
+      return;
+    }
+    
+    final response = await EventApiService.getBookingPaymentSuccess(widget.bookingId);
+    if (mounted) {
+      setState(() {
+        if (response != null && response['success'] == true) {
+          _bookingDetails = response['data'];
+        }
+        _isLoading = false;
+      });
+    }
+  }
 
   Widget _buildReceiptRow(String label, String value, {Color? valueColor}) {
     return Padding(
@@ -133,7 +170,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                       children: [
                         const TextSpan(text: 'Your spot is confirmed for the '),
                         TextSpan(
-                          text: '$title.',
+                          text: '${widget.title}.',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -155,7 +192,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '₹${totalPayable.toStringAsFixed(0)} paid - Net banking',
+                      '₹${_bookingDetails != null ? (_bookingDetails!['payment']?['amount']?.toString() ?? widget.totalPayable.toStringAsFixed(0)) : widget.totalPayable.toStringAsFixed(0)} paid - ${_bookingDetails?['payment']?['paidVia'] ?? 'Razorpay'}',
                       style: const TextStyle(
                         color: Color.fromRGBO(44, 175, 107, 1),
                         fontSize: 12,
@@ -165,65 +202,86 @@ class BookingConfirmationScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 22),
 
-                  // QR Code Card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                  // QR Code Cards
+                  if (_isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else if (_bookingDetails?['booking']?['tickets'] != null)
+                    ...(_bookingDetails!['booking']['tickets'] as List).map((ticket) {
+                      final qrDataUrl = ticket['qrCodeUrl'] as String?;
+                      final base64String = qrDataUrl?.split(',').last;
+                      
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 22),
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
-                      ],
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 150,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: QrImageView(
+                                data: '${ticket['ticketId'] ?? ticket['id'] ?? 'Unknown'}',
+                                version: QrVersions.auto,
+                                size: 150.0,
+                                errorStateBuilder: (cxt, err) {
+                                  return const Icon(
+                                    Icons.qr_code_2,
+                                    size: 120,
+                                    color: Colors.black87,
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            Text(
+                              'TICKET ID: ${ticket['ticketId'] ?? 'N/A'}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade600,
+                                letterSpacing: 2.0,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Show this QR at the entrance',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList()
+                  else
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Failed to load QR code. Booking ID: "${widget.bookingId}" is empty or API failed.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Image.network(
-                            'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SPK-1085-V8',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.qr_code_2,
-                                size: 120,
-                                color: Colors.black87,
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        Text(
-                          'TICKET ID: SPK-1085-V8',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade600,
-                            letterSpacing: 2.0,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Show this QR at the entrance',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 10),
 
                   // Payment Receipt Header
                   Align(
@@ -256,29 +314,29 @@ class BookingConfirmationScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        _buildReceiptRow('Transaction ID', 'pay_5S4FNXA5QT5P'),
+                        _buildReceiptRow('Transaction ID', _bookingDetails?['payment']?['transactionId'] ?? 'N/A'),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Divider(color: Color(0xFFF5F5F5), height: 1),
                         ),
-                        _buildReceiptRow('Order ID', 'ORD-2026-01808'),
+                        _buildReceiptRow('Order ID', _bookingDetails?['payment']?['orderId'] ?? 'N/A'),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Divider(color: Color(0xFFF5F5F5), height: 1),
                         ),
-                        _buildReceiptRow('Paid via', 'Net banking · HDFC Bank'),
+                        _buildReceiptRow('Paid via', _bookingDetails?['payment']?['paidVia'] ?? 'Razorpay'),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Divider(color: Color(0xFFF5F5F5), height: 1),
                         ),
-                        _buildReceiptRow('Paid on', '30 Aug 2026, 5:27 PM'),
+                        _buildReceiptRow('Paid on', _bookingDetails != null ? (_bookingDetails!['payment']?['paidAt']?.toString().split('T').first ?? 'Just now') : 'Just now'),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Divider(color: Color(0xFFF5F5F5), height: 1),
                         ),
                         _buildReceiptRow(
                           'Amount',
-                          '₹${totalPayable.toStringAsFixed(0)}',
+                          '₹${_bookingDetails != null ? (_bookingDetails!['payment']?['amount']?.toString() ?? widget.totalPayable.toStringAsFixed(0)) : widget.totalPayable.toStringAsFixed(0)}',
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
@@ -286,7 +344,9 @@ class BookingConfirmationScreen extends StatelessWidget {
                         ),
                         _buildReceiptRow(
                           'Status',
-                          '✓ Captured',
+                          _bookingDetails != null 
+                              ? (_bookingDetails!['payment']?['status'] == 'COMPLETED' ? '✓ Captured' : _bookingDetails!['payment']?['status'] ?? '✓ Captured') 
+                              : '✓ Captured',
                           valueColor: const Color.fromRGBO(44, 175, 107, 1),
                         ),
                       ],
@@ -348,7 +408,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    title,
+                                    widget.title,
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -357,7 +417,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    date,
+                                    widget.date,
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade500,
@@ -396,7 +456,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    location.split(',').first,
+                                    widget.location.split(',').first,
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -405,14 +465,14 @@ class BookingConfirmationScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    location
+                                    widget.location
                                             .split(',')
                                             .skip(1)
                                             .join(',')
                                             .trim()
                                             .isEmpty
-                                        ? location
-                                        : location
+                                        ? widget.location
+                                        : widget.location
                                               .split(',')
                                               .skip(1)
                                               .join(',')

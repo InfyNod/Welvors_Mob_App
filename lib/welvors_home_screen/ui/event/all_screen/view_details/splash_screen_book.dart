@@ -9,6 +9,7 @@ class SplashScreenBook extends StatefulWidget {
   final String title;
   final String date;
   final String location;
+  final String bookingId;
 
   const SplashScreenBook({
     Key? key,
@@ -16,6 +17,7 @@ class SplashScreenBook extends StatefulWidget {
     this.title = '',
     this.date = '',
     this.location = '',
+    this.bookingId = '',
   }) : super(key: key);
 
   @override
@@ -56,6 +58,7 @@ class _SplashScreenBookState extends State<SplashScreenBook> {
                     date: widget.date,
                     location: widget.location,
                     totalPayable: widget.totalPayable,
+                    bookingId: widget.bookingId,
                   ),
                 ),
               );

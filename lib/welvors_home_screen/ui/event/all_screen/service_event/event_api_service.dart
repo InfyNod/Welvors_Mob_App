@@ -145,6 +145,54 @@ class EventApiService {
     }
   }
 
+  static Future<Map<String, dynamic>?> verifyPayment({
+    required String paymentId,
+    required String orderId,
+    required String signature,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/payments/verify');
+      final body = json.encode({
+        'razorpay_payment_id': paymentId,
+        'razorpay_order_id': orderId,
+        'razorpay_signature': signature,
+      });
+
+      final response = await http.post(
+        url,
+        headers: await _headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to verify payment: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error verifying payment: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getBookingPaymentSuccess(String bookingId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/event-bookings/$bookingId/payment-success');
+      final response = await http.get(url, headers: await _headers);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        debugPrint('Failed to get booking payment success: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error getting booking payment success: $e');
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>?> getChatConversations() async {
     try {
       final url = Uri.parse('$baseUrl/user/chat/conversations');

@@ -1026,12 +1026,13 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TicketScreen(
-                                      title: title,
-                                      date: date,
-                                      location: location,
-                                      status: status,
-                                    ),
+                                      builder: (context) => TicketScreen(
+                                        title: title,
+                                        date: date,
+                                        location: location,
+                                        status: status,
+                                        bookingId: bookingId,
+                                      ),
                                   ),
                                 );
                               }

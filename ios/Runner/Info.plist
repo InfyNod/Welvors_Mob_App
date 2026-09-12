@@ -76,5 +76,39 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Razorpay (Live Mode) + Other URL Schemes -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <!-- App Custom Scheme -->
+     
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>stayezy.co</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>app</string>
+            </array>
+        </dict>
+
+      
+
+        <!--  Razorpay Live -->
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>razorpay</string>
+            </array>
+        </dict>
+    </array>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>app-settings</string>
+        <string>paytm</string>
+        <string>phonepe</string>
+        <string>tez</string>
+        <string>gpay</string>
+        <string>upi</string>
+        <string>razorpay</string>
+    </array>
 </dict>
 </plist>

@@ -38,6 +38,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Map<String, dynamic>? _bookingPreview;
   bool _isProcessingPayment = false;
+  String? _currentBookingId;
   late Razorpay _razorpay;
 
   @override
@@ -60,25 +61,65 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     debugPrint(
       'Razorpay Success: Payment ID: ${response.paymentId}, Order ID: ${response.orderId}, Signature: ${response.signature}',
     );
+    
     if (mounted) {
       setState(() {
-        _isProcessingPayment = false;
+        _isProcessingPayment = true; // Keep loading spinner while verifying
       });
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SplashScreenBook(
-            totalPayable: _totalPayable,
-            title: widget.title,
-            date: widget.date,
-            location: widget.location,
-          ),
-        ),
+      
+      final verifyResponse = await EventApiService.verifyPayment(
+        paymentId: response.paymentId ?? '',
+        orderId: response.orderId ?? '',
+        signature: response.signature ?? '',
       );
+
+      if (mounted) {
+        if (verifyResponse != null && verifyResponse['success'] == true) {
+          setState(() {
+            _isProcessingPayment = false;
+          });
+          
+          final vEventBooking = verifyResponse['eventBooking'];
+          final vData = verifyResponse['data'];
+          
+          if (vEventBooking != null && vEventBooking['id'] != null) {
+            _currentBookingId = vEventBooking['id'];
+          } else if (vData != null) {
+            _currentBookingId = vData['id'] ?? vData['bookingId'] ?? vData['booking']?['id'] ?? vData['eventBooking']?['id'] ?? _currentBookingId;
+          }
+          
+          if (_currentBookingId == null || _currentBookingId!.isEmpty) {
+            _currentBookingId = verifyResponse.toString(); // Just pass it directly so it might show up in UI, but we'll see it in console now
+          }
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SplashScreenBook(
+                totalPayable: _totalPayable,
+                title: widget.title,
+                date: widget.date,
+                location: widget.location,
+                bookingId: _currentBookingId ?? '',
+              ),
+            ),
+          );
+        } else {
+          setState(() {
+            _isProcessingPayment = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Payment Verification Failed! Please contact support.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -721,16 +762,43 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     );
 
                                 if (mounted) {
-                                  if (response != null &&
-                                      response['success'] == true) {
-                                    final data = response['data'];
-                                    var options = {
-                                      'key': data['razorpayKeyId'] ?? 'rzp_test_TX7SxmIJ0n6rJW',
-                                      'amount': (data['amount'] as num).toInt(),
+                                      if (response != null &&
+                                          response['success'] == true) {
+                                        final data = response['data'];
+                                        
+                                        // Save booking ID to pass to success screen
+                                        _currentBookingId = data['eventBooking']?['id'] ?? data['id'] ?? data['bookingId'] ?? data['booking']?['id'];
+
+                                      var options = {
+                                        'key':
+                                            data['razorpayKeyId'] ??
+                                            'rzp_test_TX7SxmIJ0n6rJW',
+                                        'amount': (data['amount'] as num).toInt(),
                                       'name': 'Welvors',
                                       'description': 'Event Booking',
                                       'order_id': data['razorpayOrderId'],
+                                      'prefill': {
+                                        'contact': '9999999999', // Kept dummy because ProfileEditCubit doesn't have mobile
+                                        'email': context.read<ProfileEditCubit>().state.email.isNotEmpty 
+                                            ? context.read<ProfileEditCubit>().state.email 
+                                            : 'user@welvors.com',
+                                      },
+                                      'retry': {
+                                        'enabled': true,
+                                        'max_count': 1,
+                                      },
+                                      'send_sms_hash': true,
                                       'theme': {'color': '#E43A6A'},
+                                      'external': {
+                                        // TODO: Remove 'external' block before going LIVE, otherwise native UPI will get stuck on loading!
+                                        'wallets': [
+                                          'upi',
+                                          'paytm',
+                                          'phonepe',
+                                          'gpay',
+                                        ],
+                                        'upi': true,
+                                      },
                                     };
 
                                     try {
