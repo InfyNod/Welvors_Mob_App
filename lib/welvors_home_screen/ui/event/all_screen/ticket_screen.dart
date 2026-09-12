@@ -68,7 +68,7 @@ class _TicketScreenState extends State<TicketScreen> {
 
   Future<void> _openMap() async {
     if (_eventDetails == null) return;
-    
+
     double? lat;
     double? lng;
 
@@ -95,14 +95,16 @@ class _TicketScreenState extends State<TicketScreen> {
       return;
     }
 
-    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    final url = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open map app')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open map app')));
       }
     }
   }
@@ -701,52 +703,116 @@ class _ShareModalContentState extends State<_ShareModalContent> {
   final ScreenshotController _screenshotController = ScreenshotController();
   int _currentIndex = 0;
   bool _isSharing = false;
+  bool _selectAll = false;
 
   Future<void> _shareTicket() async {
     if (widget.tickets.isEmpty) return;
     setState(() => _isSharing = true);
-    
+
     try {
-      final Uint8List imageBytes = await _screenshotController.captureFromWidget(
-        InheritedTheme.captureAll(
-          context,
-          Material(
-            color: Colors.transparent,
-            child: Center(
-              child: ShareTicketCard(
-                ticket: widget.tickets[_currentIndex],
-                title: widget.title,
-                date: widget.date,
-                location: widget.location,
-                status: widget.status,
+      final Uint8List imageBytes = await _screenshotController
+          .captureFromWidget(
+            InheritedTheme.captureAll(
+              context,
+              Material(
+                color: Colors.transparent,
+                child: Center(
+                  child: ShareTicketCard(
+                    ticket: widget.tickets[_currentIndex],
+                    title: widget.title,
+                    date: widget.date,
+                    location: widget.location,
+                    status: widget.status,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        delay: const Duration(milliseconds: 100),
-      );
-      
+            delay: const Duration(milliseconds: 100),
+          );
+
       final directory = await getTemporaryDirectory();
-      final imagePath = await File('${directory.path}/ticket_${DateTime.now().millisecondsSinceEpoch}.png').create();
+      final imagePath = await File(
+        '${directory.path}/ticket_${DateTime.now().millisecondsSinceEpoch}.png',
+      ).create();
       await imagePath.writeAsBytes(imageBytes);
-      
+
       final box = context.findRenderObject() as RenderBox?;
-      final sharePositionOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+      final sharePositionOrigin = box != null
+          ? box.localToGlobal(Offset.zero) & box.size
+          : null;
 
       await Share.shareXFiles(
-        [XFile(imagePath.path)], 
+        [XFile(imagePath.path)],
         text: 'Here is my ticket for ${widget.title}!',
         sharePositionOrigin: sharePositionOrigin,
       );
     } catch (e) {
       debugPrint('Error sharing: $e');
       if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to share ticket: $e')));
+      }
+    }
+
+    if (mounted) setState(() => _isSharing = false);
+  }
+
+  Future<void> _shareAllTickets() async {
+    if (widget.tickets.isEmpty) return;
+    setState(() => _isSharing = true);
+
+    try {
+      List<XFile> imageFiles = [];
+      final directory = await getTemporaryDirectory();
+
+      for (int i = 0; i < widget.tickets.length; i++) {
+        final Uint8List imageBytes = await _screenshotController
+            .captureFromWidget(
+              InheritedTheme.captureAll(
+                context,
+                Material(
+                  color: Colors.transparent,
+                  child: Center(
+                    child: ShareTicketCard(
+                      ticket: widget.tickets[i],
+                      title: widget.title,
+                      date: widget.date,
+                      location: widget.location,
+                      status: widget.status,
+                    ),
+                  ),
+                ),
+              ),
+              delay: const Duration(milliseconds: 100),
+            );
+
+        final imagePath = await File(
+          '${directory.path}/ticket_${DateTime.now().millisecondsSinceEpoch}_$i.png',
+        ).create();
+        await imagePath.writeAsBytes(imageBytes);
+        imageFiles.add(XFile(imagePath.path));
+      }
+
+      final box = context.findRenderObject() as RenderBox?;
+      final sharePositionOrigin = box != null
+          ? box.localToGlobal(Offset.zero) & box.size
+          : null;
+
+      await Share.shareXFiles(
+        imageFiles,
+        text: 'Here are my tickets for ${widget.title}!',
+        sharePositionOrigin: sharePositionOrigin,
+      );
+    } catch (e) {
+      debugPrint('Error sharing all: $e');
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to share ticket: $e')),
+          SnackBar(content: Text('Failed to share all tickets: $e')),
         );
       }
     }
-    
+
     if (mounted) setState(() => _isSharing = false);
   }
 
@@ -770,23 +836,77 @@ class _ShareModalContentState extends State<_ShareModalContent> {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Share Ticket',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Share Ticket',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              if (widget.tickets.length > 1)
+                Positioned(
+                  right: 24,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _selectAll = !_selectAll;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _selectAll
+                            ? const Color(0xFFE43A6A)
+                            : Colors.transparent,
+                        border: Border.all(
+                          color: _selectAll
+                              ? const Color(0xFFE43A6A)
+                              : Colors.white54,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Select All',
+                        style: TextStyle(
+                          color: _selectAll ? Colors.white : Colors.white70,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 8),
-          Text(
-            widget.tickets.length > 1 ? 'Swipe to select a ticket' : 'Share this pass with friends',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 14,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                widget.tickets.length > 1
+                    ? 'Swipe to select a ticket'
+                    : 'Share this pass with friends',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.6),
+                  fontSize: 14,
+                ),
+              ),
+              if (widget.tickets.length > 1) _BlinkingArrow(),
+            ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
           Expanded(
             child: PageView.builder(
               controller: PageController(viewportFraction: 0.9),
@@ -811,17 +931,42 @@ class _ShareModalContentState extends State<_ShareModalContent> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Share Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: SizedBox(
+            child: Container(
               width: double.infinity,
               height: 56,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.6),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFFE43A6A).withOpacity(0.2),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
               child: ElevatedButton(
-                onPressed: _isSharing ? null : _shareTicket,
+                onPressed: _isSharing
+                    ? null
+                    : () {
+                        if (_selectAll && widget.tickets.length > 1) {
+                          _shareAllTickets();
+                        } else {
+                          _shareTicket();
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE43A6A),
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -830,11 +975,16 @@ class _ShareModalContentState extends State<_ShareModalContent> {
                     ? const SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
-                    : const Text(
-                        'Share This Ticket',
-                        style: TextStyle(
+                    : Text(
+                        _selectAll && widget.tickets.length > 1
+                            ? 'Share All Tickets'
+                            : 'Share This Ticket',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -844,7 +994,7 @@ class _ShareModalContentState extends State<_ShareModalContent> {
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // Close Button
           Padding(
             padding: const EdgeInsets.only(left: 32, right: 32, bottom: 24),
@@ -871,6 +1021,47 @@ class _ShareModalContentState extends State<_ShareModalContent> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _BlinkingArrow extends StatefulWidget {
+  @override
+  _BlinkingArrowState createState() => _BlinkingArrowState();
+}
+
+class _BlinkingArrowState extends State<_BlinkingArrow>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _controller,
+      child: const Text(
+        ' >>>>>',
+        style: TextStyle(
+          color: Color(0xFFFA6A85),
+          fontWeight: FontWeight.w900,
+          fontSize: 16,
+          letterSpacing: 2.0,
+        ),
       ),
     );
   }

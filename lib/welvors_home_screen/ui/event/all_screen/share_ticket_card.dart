@@ -188,74 +188,83 @@ class ShareTicketCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: Column(
+                        child: QrImageView(
+                          data: ticketIdStr,
+                          version: QrVersions.auto,
+                          size: 130.0,
+                          foregroundColor: const Color(0xFF181A1F),
+                          errorStateBuilder: (cxt, err) {
+                            return Icon(
+                              Icons.qr_code_2,
+                              size: 130,
+                              color: Colors.black87.withOpacity(0.85),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      // Ticket Details below QR
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // QR Code
-                            QrImageView(
-                              data: ticketIdStr,
-                              version: QrVersions.auto,
-                              size: 130.0,
-                              foregroundColor: const Color(0xFF181A1F),
-                              errorStateBuilder: (cxt, err) {
-                                return Icon(
-                                  Icons.qr_code_2,
-                                  size: 130,
-                                  color: Colors.black87.withOpacity(0.85),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            // Ticket Details inside white box
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'TYPE',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.grey.shade500,
-                                        letterSpacing: 1.0,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      ticketType.toString().toUpperCase(),
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w800,
-                                        color: Color(0xFF181A1F),
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  'TYPE',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white.withOpacity(0.5),
+                                    letterSpacing: 1.0,
+                                  ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      'TICKET ID',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.grey.shade500,
-                                        letterSpacing: 1.0,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      ticketIdStr.length > 8
-                                          ? '${ticketIdStr.substring(0, 8)}...'
-                                          : ticketIdStr,
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w800,
-                                        color: Color(0xFF181A1F),
-                                      ),
-                                    ),
-                                  ],
+                                const SizedBox(height: 2),
+                                Text(
+                                  ticketType.toString().toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'TICKET ID',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white.withOpacity(0.5),
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  ticketIdStr.length > 8
+                                      ? '${ticketIdStr.substring(0, 8)}...'
+                                      : ticketIdStr,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ],
                             ),
