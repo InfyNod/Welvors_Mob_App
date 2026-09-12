@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
+import '../../service_admire/admirers_api_service.dart';
 import 'reveal_drawer.dart';
 import '../profile_view/profile_view.dart';
 
@@ -30,7 +31,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
     }
   }
 
-  void _handleAction(dynamic id, String popupText) {
+  void _handleAction(dynamic id, String popupText) async {
     final index = _likeCards.indexWhere((card) => card['id'] == id);
     if (index >= 0) {
       _likeCards.removeAt(index);
@@ -39,9 +40,17 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
     }
     
     // Pass the text to custom popup
-    // Usually popupText has an emoji at the end like "Rejected ❌", 
-    // so we can just display it directly.
     _showCustomPopup(context, popupText);
+
+    // Call API
+    try {
+      final action = popupText.toLowerCase().contains('reject') ? 'PASS' : 'LIKE';
+      final service = AdmirersApiService();
+      await service.swipeUser(targetUserId: id.toString(), action: action);
+      debugPrint('Successfully swiped $action on user $id');
+    } catch (e) {
+      debugPrint('Failed to swipe: $e');
+    }
   }
 
   void _showRevealedSnackbar(BuildContext context) {

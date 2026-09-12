@@ -96,4 +96,31 @@ class AdmirersApiService {
       throw Exception('Error fetching sent roses: $e');
     }
   }
+
+  /// Swipes on a user (LIKE or PASS)
+  Future<Map<String, dynamic>> swipeUser({required String targetUserId, required String action}) async {
+    final url = Uri.parse('https://api.welvors.com/api/user/swipe');
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
+        },
+        body: json.encode({
+          'targetUserId': targetUserId,
+          'action': action,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to swipe. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error swiping: $e');
+    }
+  }
 }

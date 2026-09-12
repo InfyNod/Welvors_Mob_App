@@ -725,9 +725,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       response['success'] == true) {
                                     final data = response['data'];
                                     var options = {
-                                      'key':
-                                          data['razorpayKeyId'] ??
-                                          'rzp_test_TX7SxmIJ0n6rJW',
+                                      'key': data['razorpayKeyId'] ?? 'rzp_test_TX7SxmIJ0n6rJW',
                                       'amount': (data['amount'] as num).toInt(),
                                       'name': 'Welvors',
                                       'description': 'Event Booking',
