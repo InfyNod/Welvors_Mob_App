@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../service_account_Setting.dart';
 
 class PushNotificationScreen extends StatefulWidget {
   const PushNotificationScreen({super.key});
@@ -14,6 +15,21 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
   bool likesAndRoses = true;
   bool eventsNearYou = false;
   bool promotionsOffers = false;
+
+  Future<void> _saveSettings() async {
+    final success = await AccountSettingService.updateNotificationSettings(
+      newMatchesEnabled: newMatches,
+      messagesEnabled: messages,
+      likesRosesEnabled: likesAndRoses,
+      eventsEnabled: eventsNearYou,
+      promotionsEnabled: promotionsOffers,
+    );
+    if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update settings. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,39 +112,54 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
                     iconBgColor: const Color(0xFFFCE8EE),
                     title: 'New matches',
                     value: newMatches,
-                    onChanged: (val) => setState(() => newMatches = val),
+                    onChanged: (val) {
+                      setState(() => newMatches = val);
+                      _saveSettings();
+                    },
                   ),
                   _buildDivider(),
                   _buildSwitchItem(
                     emoji: '💬',
-                    iconBgColor: const Color(0xFFE8F1FC),
+                    iconBgColor: const Color(0xFFE8F2FC),
                     title: 'Messages',
                     value: messages,
-                    onChanged: (val) => setState(() => messages = val),
+                    onChanged: (val) {
+                      setState(() => messages = val);
+                      _saveSettings();
+                    },
                   ),
                   _buildDivider(),
                   _buildSwitchItem(
-                    emoji: '⭐',
-                    iconBgColor: const Color(0xFFFBF4E4),
+                    emoji: '🌹',
+                    iconBgColor: const Color(0xFFFCE8E8),
                     title: 'Likes & Roses',
                     value: likesAndRoses,
-                    onChanged: (val) => setState(() => likesAndRoses = val),
+                    onChanged: (val) {
+                      setState(() => likesAndRoses = val);
+                      _saveSettings();
+                    },
                   ),
                   _buildDivider(),
                   _buildSwitchItem(
-                    emoji: '🎉',
-                    iconBgColor: const Color(0xFFE8F4FC), // Light blue-ish
+                    emoji: '🎟️',
+                    iconBgColor: const Color(0xFFFCF2E8),
                     title: 'Events near you',
                     value: eventsNearYou,
-                    onChanged: (val) => setState(() => eventsNearYou = val),
+                    onChanged: (val) {
+                      setState(() => eventsNearYou = val);
+                      _saveSettings();
+                    },
                   ),
                   _buildDivider(),
                   _buildSwitchItem(
                     emoji: '🎁',
-                    iconBgColor: const Color(0xFFEAFCE8), // Light green
-                    title: 'Promotions & offers',
+                    iconBgColor: const Color(0xFFF1E8FC),
+                    title: 'Promotions & Offers',
                     value: promotionsOffers,
-                    onChanged: (val) => setState(() => promotionsOffers = val),
+                    onChanged: (val) {
+                      setState(() => promotionsOffers = val);
+                      _saveSettings();
+                    },
                   ),
                 ],
               ),

@@ -117,7 +117,7 @@ class _TicketScreenState extends State<TicketScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return _ShareModalContent(
+        return ShareModalContent(
           tickets: _tickets,
           title: widget.title,
           date: widget.date,
@@ -679,14 +679,14 @@ class _TicketScreenState extends State<TicketScreen> {
   }
 }
 
-class _ShareModalContent extends StatefulWidget {
+class ShareModalContent extends StatefulWidget {
   final List<dynamic> tickets;
   final String title;
   final String date;
   final String location;
   final String status;
 
-  const _ShareModalContent({
+  const ShareModalContent({
     Key? key,
     required this.tickets,
     required this.title,
@@ -696,10 +696,10 @@ class _ShareModalContent extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<_ShareModalContent> createState() => _ShareModalContentState();
+  State<ShareModalContent> createState() => ShareModalContentState();
 }
 
-class _ShareModalContentState extends State<_ShareModalContent> {
+class ShareModalContentState extends State<ShareModalContent> {
   final ScreenshotController _screenshotController = ScreenshotController();
   int _currentIndex = 0;
   bool _isSharing = false;

@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../my_ticket.dart';
-
 import 'dart:convert';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/service_event/event_api_service.dart';
+import '../ticket_screen.dart';
 
 class BookingConfirmationScreen extends StatefulWidget {
   final String title;
@@ -534,7 +534,27 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       ],
                     ),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if (_bookingDetails?['booking']?['tickets'] == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No tickets available to share')),
+                          );
+                          return;
+                        }
+                        
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => ShareModalContent(
+                            tickets: _bookingDetails!['booking']['tickets'] as List<dynamic>,
+                            title: widget.title,
+                            date: widget.date,
+                            location: widget.location,
+                            status: _bookingDetails!['booking']?['status'] ?? 'CONFIRMED',
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
