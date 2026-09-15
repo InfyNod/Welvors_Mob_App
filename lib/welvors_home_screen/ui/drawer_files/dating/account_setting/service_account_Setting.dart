@@ -90,4 +90,68 @@ class AccountSettingService {
       return null;
     }
   }
+
+  static Future<bool> updateBankOrUpi(String id, Map<String, dynamic> data) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/bank-upi/update/$id');
+      final response = await http.patch(
+        url,
+        headers: await _headers,
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Bank/UPI updated successfully');
+        return true;
+      } else {
+        debugPrint('Failed to update Bank/UPI: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in updateBankOrUpi: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> setPrimaryBankUpi(String id) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/bank-upi/$id/primary');
+      final response = await http.patch(
+        url,
+        headers: await _headers,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Bank/UPI set as primary successfully');
+        return true;
+      } else {
+        debugPrint('Failed to set primary Bank/UPI: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in setPrimaryBankUpi: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> removeBankUpi(String id) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/bank-upi/$id/remove');
+      final response = await http.delete(
+        url,
+        headers: await _headers,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+        debugPrint('Bank/UPI removed successfully');
+        return true;
+      } else {
+        debugPrint('Failed to remove Bank/UPI: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in removeBankUpi: $e');
+      return false;
+    }
+  }
 }

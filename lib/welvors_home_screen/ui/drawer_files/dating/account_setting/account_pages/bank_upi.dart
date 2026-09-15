@@ -179,11 +179,28 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
                     emoji: '🏦',
                     iconBgColor: const Color(0xFFE8F6EF),
                     title: bank['bankName'] ?? 'Bank Account',
-                    subtitle: '${bank['accountHolderName'] ?? ''} · ${bank['accountNumber'] ?? ''}',
+                    subtitle: '${bank['accountHolderName'] ?? ''} · ${bank['accountNumberMasked'] ?? bank['accountNumber'] ?? ''}',
                     isPrimary: bank['isPrimary'] ?? false,
                     buttons: [
-                      _buildActionBtn('Remove', true, () {
-                        // TODO: Implement remove
+                      _buildActionBtn('Edit', false, () async {
+                        final updated = await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (BuildContext context) => _EditBankAccountSheet(bankData: bank),
+                        );
+                        if (updated == true) _fetchData();
+                      }),
+                      if (!(bank['isPrimary'] ?? false))
+                        _buildActionBtn('Set primary', false, () async {
+                          setState(() => _isLoading = true);
+                          await AccountSettingService.setPrimaryBankUpi(bank['id']);
+                          _fetchData();
+                        }),
+                      _buildActionBtn('Remove', true, () async {
+                        setState(() => _isLoading = true);
+                        await AccountSettingService.removeBankUpi(bank['id']);
+                        _fetchData();
                       }),
                     ],
                   ),
@@ -225,12 +242,25 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
                   subtitle: 'UPI ID',
                   isPrimary: upi['isPrimary'] ?? false,
                   buttons: [
+                    _buildActionBtn('Edit', false, () async {
+                      final updated = await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (BuildContext context) => _EditUpiSheet(upiData: upi),
+                      );
+                      if (updated == true) _fetchData();
+                    }),
                     if (!(upi['isPrimary'] ?? false))
-                      _buildActionBtn('Set primary', false, () {
-                        // TODO: Implement set primary
+                      _buildActionBtn('Set primary', false, () async {
+                        setState(() => _isLoading = true);
+                        await AccountSettingService.setPrimaryBankUpi(upi['id']);
+                        _fetchData();
                       }),
-                    _buildActionBtn('Remove', true, () {
-                      // TODO: Implement remove
+                    _buildActionBtn('Remove', true, () async {
+                      setState(() => _isLoading = true);
+                      await AccountSettingService.removeBankUpi(upi['id']);
+                      _fetchData();
                     }),
                   ],
                 ),
@@ -646,109 +676,190 @@ Widget _buildInputField(String label, String hint, {String? initialValue, TextEd
   );
 }
 
-void showEditUpiBottomSheet(BuildContext context, String currentUpi) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (BuildContext context) {
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+class _EditBankAccountSheet extends StatefulWidget {
+  final Map<String, dynamic> bankData;
+  const _EditBankAccountSheet({required this.bankData});
+  @override
+  State<_EditBankAccountSheet> createState() => _EditBankAccountSheetState();
+}
+
+class _EditBankAccountSheetState extends State<_EditBankAccountSheet> {
+  late TextEditingController _nameCtrl;
+  late TextEditingController _accCtrl;
+  late TextEditingController _ifscCtrl;
+  late TextEditingController _bankCtrl;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(text: widget.bankData['accountHolderName']);
+    _accCtrl = TextEditingController(text: widget.bankData['accountNumber']);
+    _ifscCtrl = TextEditingController(text: widget.bankData['ifscCode']);
+    _bankCtrl = TextEditingController(text: widget.bankData['bankName']);
+  }
+
+  void _submit() async {
+    if (_nameCtrl.text.isEmpty || _accCtrl.text.isEmpty || _ifscCtrl.text.isEmpty || _bankCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      return;
+    }
+    setState(() => _isLoading = true);
+    final success = await AccountSettingService.updateBankOrUpi(widget.bankData['id'], {
+      "type": "BANK_ACCOUNT",
+      "accountHolderName": _nameCtrl.text,
+      "accountNumber": _accCtrl.text,
+      "ifscCode": _ifscCtrl.text,
+      "bankName": _bankCtrl.text
+    });
+    setState(() => _isLoading = false);
+    if (success && mounted) {
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bank account updated')));
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _accCtrl.dispose();
+    _ifscCtrl.dispose();
+    _bankCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-          ),
-          padding: const EdgeInsets.only(
-            top: 16,
-            left: 24,
-            right: 24,
-            bottom: 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 24),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 24), decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+            const Text('Edit bank account', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)),
+            const SizedBox(height: 24),
+            _buildInputField('Account holder name', 'As per bank records', controller: _nameCtrl),
+            const SizedBox(height: 16),
+            _buildInputField('Account number', 'Enter account number', controller: _accCtrl),
+            const SizedBox(height: 16),
+            _buildInputField('IFSC code', 'e.g. HDFC0001234', controller: _ifscCtrl, textCapitalization: TextCapitalization.characters),
+            const SizedBox(height: 16),
+            _buildInputField('Bank name', 'e.g. HDFC Bank', controller: _bankCtrl),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity, height: 52,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _submit,
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE43A6A), elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                child: _isLoading ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2) : const Text('Save changes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
-              const Text(
-                'Edit UPI ID',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity, height: 52,
+              child: OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(backgroundColor: Colors.white, side: BorderSide(color: Colors.grey.shade300), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                child: const Text('Cancel', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87)),
               ),
-              const SizedBox(height: 24),
-              _buildInputField('UPI ID (VPA)', '', initialValue: currentUpi),
-              const SizedBox(height: 8),
-              Text(
-                'Example: yourname@oksbi, 98765xxxxx@ybl',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE43A6A),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Save changes',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    },
-  );
+      ),
+    );
+  }
+}
+
+class _EditUpiSheet extends StatefulWidget {
+  final Map<String, dynamic> upiData;
+  const _EditUpiSheet({required this.upiData});
+  @override
+  State<_EditUpiSheet> createState() => _EditUpiSheetState();
+}
+
+class _EditUpiSheetState extends State<_EditUpiSheet> {
+  late TextEditingController _upiCtrl;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _upiCtrl = TextEditingController(text: widget.upiData['upiId']);
+  }
+
+  void _submit() async {
+    if (_upiCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter UPI ID')));
+      return;
+    }
+    setState(() => _isLoading = true);
+    final success = await AccountSettingService.updateBankOrUpi(widget.upiData['id'], {
+      "type": "UPI",
+      "upiId": _upiCtrl.text
+    });
+    setState(() => _isLoading = false);
+    if (success && mounted) {
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('UPI updated successfully')));
+    }
+  }
+
+  @override
+  void dispose() {
+    _upiCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 24), decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+            const Text('Edit UPI ID', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)),
+            const SizedBox(height: 24),
+            _buildInputField('UPI ID (VPA)', 'e.g. yourname@oksbi', controller: _upiCtrl),
+            const SizedBox(height: 8),
+            Text('Example: yourname@oksbi, 98765xxxxx@ybl', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity, height: 52,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _submit,
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE43A6A), elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                child: _isLoading ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2) : const Text('Save changes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity, height: 52,
+              child: OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(backgroundColor: Colors.white, side: BorderSide(color: Colors.grey.shade300), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                child: const Text('Cancel', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 void showAddUpiBottomSheet(BuildContext context) {
   showModalBottomSheet(
