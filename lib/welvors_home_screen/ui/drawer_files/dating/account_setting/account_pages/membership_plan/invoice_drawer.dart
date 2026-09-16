@@ -165,24 +165,40 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F6EF),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          invoice['status'] ?? 'PAID',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1CB569),
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+                      Builder(
+                        builder: (context) {
+                          final statusText = invoice['status']?.toString().toUpperCase() ?? 'PAID';
+                          Color statusColor = const Color(0xFF1CB569); // Green for PAID
+                          Color statusBgColor = const Color(0xFFE8F6EF);
+                          
+                          if (statusText == 'REFUNDED' || statusText == 'FAILED') {
+                            statusColor = const Color(0xFFE43A6A); // Reddish for Refunded/Failed
+                            statusBgColor = const Color(0xFFFDF0F3);
+                          } else if (statusText == 'PENDING') {
+                            statusColor = const Color(0xFFE28A11); // Orange for pending
+                            statusBgColor = const Color(0xFFFFF7E6);
+                          }
+
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: statusBgColor,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              statusText,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: statusColor,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -211,6 +227,7 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
                           invoice['invoiceNumber'] ?? 'N/A',
                         ),
                       ),
+                      const SizedBox(width: 16),
                       Expanded(child: _buildDetailCol('DATE', _formatDate(invoice['date']))),
                     ],
                   ),
@@ -223,6 +240,7 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
                           billedTo['name'] ?? 'N/A',
                         ),
                       ),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: _buildDetailCol('GSTIN', billedTo['gstin'] ?? 'N/A'),
                       ),
@@ -348,6 +366,8 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
       ],
     );
