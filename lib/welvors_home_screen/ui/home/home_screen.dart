@@ -2444,25 +2444,38 @@ class _ProfileCardUI extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        image: DecorationImage(
-          image: profile.images.isNotEmpty
-              ? (profile.images.first.startsWith('http')
+        image: profile.images.isNotEmpty
+            ? DecorationImage(
+                image: profile.images.first.startsWith('http')
                     ? NetworkImage(profile.images.first) as ImageProvider
-                    : FileImage(File(profile.images.first)))
-              : const AssetImage('assets/dummyphoto.jpeg') as ImageProvider,
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.high,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
+                    : FileImage(File(profile.images.first)),
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+              )
+            : null,
+        gradient: profile.images.isEmpty
+            ? LinearGradient(
+                colors: [
+                  const Color(0xFF2C2C32),
+                  const Color(0xFF18181B),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
       ),
       child: Stack(
         children: [
+          if (profile.images.isEmpty)
+            const Positioned.fill(
+              child: Center(
+                child: Icon(
+                  Icons.person_rounded,
+                  size: 80,
+                  color: Colors.white24,
+                ),
+              ),
+            ),
           // Directional Glow Overlay (Red/Green based on swipe)
           Positioned.fill(
             child: AnimatedContainer(
