@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../service_account_Setting.dart';
 
 void showInvoiceBottomSheet(BuildContext context, Map<String, dynamic> item) {
@@ -58,14 +60,42 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
     }
   }
 
+  bool _isDownloading = false;
+
   Future<void> _downloadPdf() async {
     final actions = _invoiceData?['actions'];
     if (actions != null && actions['pdfAvailable'] == true) {
       final pdfUrl = actions['pdfUrl'];
       if (pdfUrl != null) {
-        final url = Uri.parse('https://api.welvors.com$pdfUrl');
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
+        setState(() => _isDownloading = true);
+        
+        final pdfBytes = await AccountSettingService.downloadInvoicePdf(pdfUrl);
+        
+        setState(() => _isDownloading = false);
+
+        if (pdfBytes != null) {
+          try {
+            final tempDir = await getTemporaryDirectory();
+            final invoiceNo = _invoiceData?['invoice']?['invoiceNumber'] ?? 'invoice';
+            final file = File('${tempDir.path}/$invoiceNo.pdf');
+            await file.writeAsBytes(pdfBytes);
+
+            // Share the file so user can save or view it
+            await Share.shareXFiles([XFile(file.path)], text: 'Invoice $invoiceNo');
+          } catch (e) {
+            debugPrint('Error sharing file: $e');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Failed to open PDF')),
+              );
+            }
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to download PDF')),
+            );
+          }
         }
       }
     }
@@ -293,15 +323,24 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton.icon(
-                  onPressed: _downloadPdf,
-                  icon: const Icon(
-                    Icons.arrow_downward,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  label: const Text(
-                    'Download PDF',
-                    style: TextStyle(
+                  onPressed: _isDownloading ? null : _downloadPdf,
+                  icon: _isDownloading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.arrow_downward,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                  label: Text(
+                    _isDownloading ? 'Downloading...' : 'Download PDF',
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -309,6 +348,7 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
+                    disabledBackgroundColor: const Color(0xFFE43A6A).withOpacity(0.6),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),

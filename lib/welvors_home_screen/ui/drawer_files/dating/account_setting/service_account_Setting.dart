@@ -176,6 +176,26 @@ class AccountSettingService {
     }
   }
 
+  static Future<List<int>?> downloadInvoicePdf(String pdfUrl) async {
+    try {
+      final url = Uri.parse('$baseUrl${pdfUrl.replaceFirst('/api', '')}');
+      final response = await http.get(
+        url,
+        headers: await _headers,
+      );
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      } else {
+        debugPrint('Failed PDF download: ${response.statusCode} - ${response.body}');
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error in downloadInvoicePdf: $e');
+      return null;
+    }
+  }
+
   static Future<bool> updatePrivacyControls(Map<String, dynamic> data) async {
     try {
       final url = Uri.parse('$baseUrl/user/privacy-controls/update');
