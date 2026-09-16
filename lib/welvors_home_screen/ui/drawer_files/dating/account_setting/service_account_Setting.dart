@@ -208,6 +208,22 @@ class AccountSettingService {
     }
   }
 
+  static Future<bool> unmuteUser(String userId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/notification/users/$userId/unmute');
+      final response = await http.patch(url, headers: await _headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('User unmuted successfully');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Error in unmuteUser: $e');
+      return false;
+    }
+  }
+
   static Future<bool> setPrimaryBankUpi(String id) async {
     try {
       final url = Uri.parse('$baseUrl/user/bank-upi/$id/primary');
