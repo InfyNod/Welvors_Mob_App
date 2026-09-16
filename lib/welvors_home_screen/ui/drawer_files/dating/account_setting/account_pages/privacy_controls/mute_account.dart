@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../service_account_Setting.dart';
+
 class MuteAccountScreen extends StatefulWidget {
   const MuteAccountScreen({super.key});
 
@@ -8,11 +10,28 @@ class MuteAccountScreen extends StatefulWidget {
 }
 
 class _MuteAccountScreenState extends State<MuteAccountScreen> {
-  // Dummy data for muted users
-  List<Map<String, String>> mutedUsers = [
-    {'id': '1', 'name': 'Rahul S.'},
-    {'id': '2', 'name': 'Priya M.'},
-  ];
+  List<Map<String, dynamic>> mutedUsers = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMutedUsers();
+  }
+
+  Future<void> _fetchMutedUsers() async {
+    final data = await AccountSettingService.getMutedUsers();
+    if (data != null && mounted) {
+      setState(() {
+        mutedUsers = List<Map<String, dynamic>>.from(data);
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +83,9 @@ class _MuteAccountScreenState extends State<MuteAccountScreen> {
         ),
         centerTitle: true,
       ),
-      body: mutedUsers.isEmpty
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : mutedUsers.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -110,7 +131,7 @@ class _MuteAccountScreenState extends State<MuteAccountScreen> {
                     return Column(
                       children: [
                         _buildMutedUserItem(
-                          name: user['name']!,
+                          name: user['user'] != null ? user['user']['full_name'] ?? 'Unknown' : 'Unknown',
                           onUnmute: () {
                             _unmuteUser(user['id']!);
                           },

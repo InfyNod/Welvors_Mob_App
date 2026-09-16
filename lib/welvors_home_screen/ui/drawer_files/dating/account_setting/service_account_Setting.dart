@@ -174,6 +174,24 @@ class AccountSettingService {
     }
   }
 
+  static Future<List<dynamic>?> getMutedUsers() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/notification/muted-users');
+      final response = await http.get(url, headers: await _headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          return data['data']; // Assuming 'data' contains the list of muted users
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error in getMutedUsers: $e');
+      return null;
+    }
+  }
+
   static Future<bool> unblockUser(String blockedId) async {
     try {
       final url = Uri.parse('$baseUrl/user/unblock/$blockedId');

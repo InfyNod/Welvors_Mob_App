@@ -18,6 +18,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
   bool ghostMode = false;
   String _messagePermissionValue = 'PAID_ONLY';
   int _blockedUsersCount = 0;
+  int _mutedUsersCount = 0;
   bool _isLoading = true;
 
   @override
@@ -29,6 +30,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
   Future<void> _fetchPrivacyControls() async {
     final data = await AccountSettingService.getPrivacyControls();
     final blockedUsersList = await AccountSettingService.getBlockedUsers();
+    final mutedUsersList = await AccountSettingService.getMutedUsers();
     
     if (mounted) {
       setState(() {
@@ -42,6 +44,10 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
         
         if (blockedUsersList != null) {
           _blockedUsersCount = blockedUsersList.length;
+        }
+
+        if (mutedUsersList != null) {
+          _mutedUsersCount = mutedUsersList.length;
         }
 
         _isLoading = false;
@@ -218,7 +224,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                   emoji: '🔕',
                   iconBgColor: const Color(0xFFFBF4E4), // Light yellow
                   title: 'Muted accounts',
-                  subtitle: '2 muted',
+                  subtitle: '$_mutedUsersCount muted',
                   trailing: Icon(
                     Icons.chevron_right,
                     color: Colors.grey.shade400,
@@ -230,7 +236,9 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                       MaterialPageRoute(
                         builder: (context) => const MuteAccountScreen(),
                       ),
-                    );
+                    ).then((_) {
+                      _fetchPrivacyControls(); // Refresh count when coming back
+                    });
                   },
                 ),
               ],
