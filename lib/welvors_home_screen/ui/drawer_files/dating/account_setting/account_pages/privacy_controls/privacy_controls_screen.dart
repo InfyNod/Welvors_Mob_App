@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'who_message.dart';
 import 'blocked_users.dart';
 import 'who_message.dart';
+import '../../service_account_Setting.dart';
 
 class PrivacyControlsScreen extends StatefulWidget {
   const PrivacyControlsScreen({super.key});
@@ -14,6 +15,30 @@ class PrivacyControlsScreen extends StatefulWidget {
 class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
   bool hideFromContacts = false;
   bool ghostMode = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPrivacyControls();
+  }
+
+  Future<void> _fetchPrivacyControls() async {
+    final data = await AccountSettingService.getPrivacyControls();
+    if (data != null && mounted) {
+      setState(() {
+        hideFromContacts = data['hideFromContacts'] ?? false;
+        ghostMode = data['ghostMode'] ?? false;
+        _isLoading = false;
+      });
+    } else {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +97,9 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
             // CONTACT & MESSAGING
             _buildSectionTitle('CONTACT & MESSAGING'),
             const SizedBox(height: 12),
-            _buildCardGroup(
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _buildCardGroup(
               children: [
                 _buildListItem(
                   emoji: '💬',

@@ -113,6 +113,27 @@ class AccountSettingService {
     }
   }
 
+  static Future<Map<String, dynamic>?> getPrivacyControls() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/privacy-controls/get');
+      final response = await http.get(
+        url,
+        headers: await _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error in getPrivacyControls: $e');
+      return null;
+    }
+  }
+
   static Future<bool> setPrimaryBankUpi(String id) async {
     try {
       final url = Uri.parse('$baseUrl/user/bank-upi/$id/primary');
