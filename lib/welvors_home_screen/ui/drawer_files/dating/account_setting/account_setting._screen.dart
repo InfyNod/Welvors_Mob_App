@@ -10,7 +10,9 @@ import 'account_pages/bank_upi.dart';
 import 'account_pages/privacy_controls/privacy_controls_screen.dart';
 import 'account_pages/push_notification.dart';
 import 'account_pages/pause_delete_drawer.dart';
+import 'account_pages/pause_delete_drawer.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
+import 'service_account_Setting.dart';
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -21,6 +23,28 @@ class AccountSettingScreen extends StatefulWidget {
 
 class _AccountSettingScreenState extends State<AccountSettingScreen> {
   bool _emailNotifications = true;
+  int _bankCount = 0;
+  int _upiCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCounts();
+  }
+
+  Future<void> _fetchCounts() async {
+    final data = await AccountSettingService.getBankAndUpi();
+    if (data != null && data['success'] == true && data['data'] != null && mounted) {
+      final dataObj = data['data'];
+      final banks = List<Map<String, dynamic>>.from(dataObj['bankAccounts'] ?? []);
+      final upis = List<Map<String, dynamic>>.from(dataObj['upiIds'] ?? []);
+      
+      setState(() {
+        _bankCount = banks.length;
+        _upiCount = upis.length;
+      });
+    }
+  }
 
   int _calculateAge(String dobString) {
     try {
@@ -251,14 +275,16 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 iconWidget: const Text('🏦', style: TextStyle(fontSize: 18)),
                 iconBgColor: const Color(0xFFE6FAE6),
                 title: 'Bank & UPI',
-                subtitle: '1 bank • 2 UPI IDs',
+                subtitle: '$_bankCount bank • $_upiCount UPI IDs',
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const BankUpiScreen(),
                     ),
-                  );
+                  ).then((_) {
+                    _fetchCounts();
+                  });
                 },
               ),
             ],

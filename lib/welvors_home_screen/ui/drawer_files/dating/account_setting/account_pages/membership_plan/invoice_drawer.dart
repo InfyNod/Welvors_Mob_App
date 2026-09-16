@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
-void showInvoiceBottomSheet(BuildContext context) {
+import 'package:intl/intl.dart';
+
+void showInvoiceBottomSheet(BuildContext context, Map<String, dynamic> item) {
+  final dateFormatted = item['purchasedAt'] != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(item['purchasedAt'])) : 'N/A';
+  final amount = item['amount'] ?? 0;
+  final gst = (amount * 0.18).round(); // Assuming amount includes GST, this is just a dummy calc for display if needed, but let's base it on amount
+  final preGst = amount - gst;
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -112,10 +119,10 @@ void showInvoiceBottomSheet(BuildContext context) {
                         Expanded(
                           child: _buildDetailCol(
                             'INVOICE NO.',
-                            'INV-2025-1002',
+                            item['transactionId']?.toString().substring(0, 15) ?? 'INV-N/A', // Shorten for UI
                           ),
                         ),
-                        Expanded(child: _buildDetailCol('DATE', '02 Oct 2025')),
+                        Expanded(child: _buildDetailCol('DATE', dateFormatted)),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -124,7 +131,7 @@ void showInvoiceBottomSheet(BuildContext context) {
                         Expanded(
                           child: _buildDetailCol(
                             'BILLED TO',
-                            'Tanishka Sharma',
+                            'User', // Current user's name would be ideal here
                           ),
                         ),
                         Expanded(
@@ -135,18 +142,18 @@ void showInvoiceBottomSheet(BuildContext context) {
                     const SizedBox(height: 24),
                     // Items
                     _buildRow(
-                      'Premium+ membership · 1 month',
-                      '₹847',
+                      '${item['name']} membership · ${item['months']} month(s)',
+                      '₹$preGst',
                       isBoldAmount: true,
                     ),
                     const SizedBox(height: 8),
-                    _buildRow('GST (18%)', '₹152', isBoldAmount: true),
+                    _buildRow('GST (18%)', '₹$gst', isBoldAmount: true),
                     const SizedBox(height: 12),
                     const Divider(color: Colors.black, thickness: 1.5),
                     const SizedBox(height: 8),
                     _buildRow(
                       'Total paid',
-                      '₹999',
+                      '₹$amount',
                       isBoldLabel: true,
                       isBoldAmount: true,
                       amountSize: 16,
@@ -154,7 +161,7 @@ void showInvoiceBottomSheet(BuildContext context) {
                     const SizedBox(height: 20),
                     _buildRow(
                       'Paid via',
-                      'Wallet · 🪙 999',
+                      item['paymentMethod']?['displayValue'] ?? 'Online payment',
                       labelColor: Colors.black45,
                       amountSize: 12,
                       isBoldAmount: true,

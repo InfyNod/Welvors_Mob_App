@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'invoice_drawer.dart';
 import 'cancel_auto_renew.dart';
+import '../../service_account_Setting.dart';
+import 'package:intl/intl.dart';
 
 class MembershipPlanScreen extends StatefulWidget {
   const MembershipPlanScreen({super.key});
@@ -11,6 +13,49 @@ class MembershipPlanScreen extends StatefulWidget {
 
 class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
   bool isAutoRenewCancelled = false;
+  Map<String, dynamic>? currentPlan;
+  List<Map<String, dynamic>> history = [];
+  Map<String, dynamic>? summary;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMembershipPlan();
+  }
+
+  Future<void> _fetchMembershipPlan() async {
+    final data = await AccountSettingService.getMembershipPlan();
+    if (data != null && mounted) {
+      setState(() {
+        currentPlan = data['currentPlan'];
+        if (data['history'] != null) {
+          history = List<Map<String, dynamic>>.from(data['history']);
+        }
+        summary = data['summary'];
+        
+        if (currentPlan != null) {
+          isAutoRenewCancelled = !(currentPlan!['autoRenew'] ?? false);
+        }
+        
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +101,12 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
         ),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: Column(
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : currentPlan == null 
+              ? const Center(child: Text('No active plan'))
+              : SafeArea(
+                  child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
@@ -91,23 +140,23 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                       emoji: '💎',
                       bgColor: const Color(0xFFE6F9FA),
                       title: 'Current plan',
-                      subtitle: 'VIP',
-                      trailingText: 'Active',
-                      trailingColor: Colors.black54,
+                      subtitle: currentPlan?['name'] ?? 'VIP',
+                      trailingText: currentPlan?['status'] ?? 'Active',
+                      trailingColor: currentPlan?['status'] == 'ACTIVE' ? Colors.green : Colors.black54,
                     ),
                     const Divider(height: 1, color: Color(0xFFF0F0F0)),
                     _buildInfoRow(
                       emoji: '📅',
                       bgColor: const Color(0xFFEEF2F6),
                       title: isAutoRenewCancelled ? 'Access until' : 'Renews on',
-                      subtitle: '12 Aug 2026',
+                      subtitle: _formatDate(currentPlan?['endDate']),
                     ),
                     const Divider(height: 1, color: Color(0xFFF0F0F0)),
                     _buildInfoRow(
                       emoji: '💳',
                       bgColor: const Color(0xFFE8F6EF),
                       title: 'Payment method',
-                      subtitle: 'UPI · ····@oksbi',
+                      subtitle: currentPlan?['paymentMethod']?['displayValue'] ?? 'Online payment',
                     ),
                   ],
                 ),
@@ -258,83 +307,39 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                   ],
                 ),
                 child: Column(
-                  children: [
-                    _buildHistoryItem(
-                      context: context,
-                      emoji: '💎',
-                      bgColor: const Color(0xFFE6F0FA),
-                      title: 'VIP · 3 months',
-                      subtitle: '12 May 2026 · UPI · ····@oksbi',
-                      status: 'ACTIVE',
-                      statusColor: const Color(0xFF1CB569),
-                      statusBgColor: const Color(0xFFE8F6EF),
-                      amount: '₹5,097',
-                    ),
-                    const Divider(
-                      height: 1,
-                      indent: 70,
-                      color: Color(0xFFF0F0F0),
-                    ),
-                    _buildHistoryItem(
-                      context: context,
-                      emoji: '⭐',
-                      bgColor: const Color(0xFFFFF7E6),
-                      title: 'Premium+ · 6 months',
-                      subtitle: '08 Nov 2025 · Card · ····4821',
-                      status: 'EXPIRED',
-                      statusColor: Colors.black54,
-                      statusBgColor: const Color(0xFFF2F2F2),
-                      amount: '₹3,594',
-                    ),
-                    const Divider(
-                      height: 1,
-                      indent: 70,
-                      color: Color(0xFFF0F0F0),
-                    ),
-                    _buildHistoryItem(
-                      context: context,
-                      emoji: '⭐',
-                      bgColor: const Color(0xFFFFF7E6),
-                      title: 'Premium+ · 1 month',
-                      subtitle: '02 Oct 2025 · Wallet · 🪙 999',
-                      status: 'EXPIRED',
-                      statusColor: Colors.black54,
-                      statusBgColor: const Color(0xFFF2F2F2),
-                      amount: '₹999',
-                    ),
-                    const Divider(
-                      height: 1,
-                      indent: 70,
-                      color: Color(0xFFF0F0F0),
-                    ),
-                    _buildHistoryItem(
-                      context: context,
-                      emoji: '💎',
-                      bgColor: const Color(0xFFE6F0FA),
-                      title: 'VIP · 1 month',
-                      subtitle: '18 Aug 2025 · UPI · ····@oksbi',
-                      status: 'REFUNDED',
-                      statusColor: const Color(0xFFE43A6A),
-                      statusBgColor: const Color(0xFFFDF0F3),
-                      amount: '₹1,999',
-                    ),
-                    const Divider(
-                      height: 1,
-                      indent: 70,
-                      color: Color(0xFFF0F0F0),
-                    ),
-                    _buildHistoryItem(
-                      context: context,
-                      emoji: '⭐',
-                      bgColor: const Color(0xFFFFF7E6),
-                      title: 'Premium+ · 1 month',
-                      subtitle: '14 Jul 2025 · Card · ····4821',
-                      status: 'EXPIRED',
-                      statusColor: Colors.black54,
-                      statusBgColor: const Color(0xFFF2F2F2),
-                      amount: '₹999',
-                    ),
-                  ],
+                  children: List.generate(history.length, (index) {
+                    final item = history[index];
+                    final emoji = item['slug'] == 'vip' ? '💎' : '⭐';
+                    final bgColor = item['slug'] == 'vip' ? const Color(0xFFE6F0FA) : const Color(0xFFFFF7E6);
+                    
+                    Color statusColor;
+                    Color statusBgColor;
+                    if (item['status'] == 'ACTIVE') {
+                      statusColor = const Color(0xFF1CB569);
+                      statusBgColor = const Color(0xFFE8F6EF);
+                    } else if (item['status'] == 'REFUNDED') {
+                      statusColor = const Color(0xFFE43A6A);
+                      statusBgColor = const Color(0xFFFDF0F3);
+                    } else {
+                      statusColor = Colors.black54;
+                      statusBgColor = const Color(0xFFF2F2F2);
+                    }
+
+                    return Column(
+                      children: [
+                        _buildHistoryItem(
+                          context: context,
+                          item: item,
+                        ),
+                        if (index < history.length - 1)
+                          const Divider(
+                            height: 1,
+                            indent: 70,
+                            color: Color(0xFFF0F0F0),
+                          ),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ],
@@ -368,9 +373,9 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                             color: Colors.black54,
                           ),
                         ),
-                        const Text(
-                          '₹11,596',
-                          style: TextStyle(
+                        Text(
+                          '₹${summary?['totalPaid'] ?? 0}',
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: Colors.black87,
@@ -471,15 +476,28 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
 
   Widget _buildHistoryItem({
     required BuildContext context,
-    required String emoji,
-    required Color bgColor,
-    required String title,
-    required String subtitle,
-    required String status,
-    required Color statusColor,
-    required Color statusBgColor,
-    required String amount,
+    required Map<String, dynamic> item,
   }) {
+    final emoji = item['slug'] == 'vip' ? '💎' : '⭐';
+    final bgColor = item['slug'] == 'vip' ? const Color(0xFFE6F0FA) : const Color(0xFFFFF7E6);
+    final title = '${item['name']} · ${item['months']} months';
+    final subtitle = '${_formatDate(item['purchasedAt'])} · ${item['paymentMethod']?['displayValue'] ?? 'Online payment'}';
+    final status = item['status'] ?? 'UNKNOWN';
+    final amount = '₹${item['amount']}';
+    
+    Color statusColor;
+    Color statusBgColor;
+    if (item['status'] == 'ACTIVE') {
+      statusColor = const Color(0xFF1CB569);
+      statusBgColor = const Color(0xFFE8F6EF);
+    } else if (item['status'] == 'REFUNDED') {
+      statusColor = const Color(0xFFE43A6A);
+      statusBgColor = const Color(0xFFFDF0F3);
+    } else {
+      statusColor = Colors.black54;
+      statusBgColor = const Color(0xFFF2F2F2);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
@@ -550,7 +568,7 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
               const SizedBox(height: 6),
               InkWell(
                 onTap: () {
-                  showInvoiceBottomSheet(context);
+                  showInvoiceBottomSheet(context, item);
                 },
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
