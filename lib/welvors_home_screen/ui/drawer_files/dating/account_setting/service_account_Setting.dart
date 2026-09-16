@@ -134,6 +134,28 @@ class AccountSettingService {
     }
   }
 
+  static Future<bool> updatePrivacyControls(Map<String, dynamic> data) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/privacy-controls/update');
+      final response = await http.patch(
+        url,
+        headers: await _headers,
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Privacy controls updated successfully');
+        return true;
+      } else {
+        debugPrint('Failed to update privacy controls: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in updatePrivacyControls: $e');
+      return false;
+    }
+  }
+
   static Future<bool> setPrimaryBankUpi(String id) async {
     try {
       final url = Uri.parse('$baseUrl/user/bank-upi/$id/primary');

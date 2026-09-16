@@ -15,6 +15,7 @@ class PrivacyControlsScreen extends StatefulWidget {
 class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
   bool hideFromContacts = false;
   bool ghostMode = false;
+  String _messagePermissionValue = 'PAID_ONLY';
   bool _isLoading = true;
 
   @override
@@ -29,6 +30,9 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
       setState(() {
         hideFromContacts = data['hideFromContacts'] ?? false;
         ghostMode = data['ghostMode'] ?? false;
+        if (data['messagePermission'] != null && data['messagePermission']['value'] != null) {
+          _messagePermissionValue = data['messagePermission']['value'];
+        }
         _isLoading = false;
       });
     } else {
@@ -111,12 +115,18 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                     size: 18,
                   ),
                   onTap: () {
+                    String passedOption = 'paid';
+                    if (_messagePermissionValue == 'MATCHES_ONLY') passedOption = 'matches';
+                    else if (_messagePermissionValue == 'VERIFIED_ONLY') passedOption = 'verified';
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const WhoMessageScreen(),
+                        builder: (context) => WhoMessageScreen(initialOption: passedOption),
                       ),
-                    );
+                    ).then((_) {
+                      _fetchPrivacyControls(); // Refresh when back
+                    });
                   },
                 ),
                 _buildDivider(),
@@ -127,10 +137,16 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                   subtitle: 'Don\'t show me to phone contacts',
                   trailing: CupertinoSwitch(
                     value: hideFromContacts,
-                    onChanged: (val) {
+                    onChanged: (val) async {
                       setState(() {
                         hideFromContacts = val;
                       });
+                      final success = await AccountSettingService.updatePrivacyControls({
+                        "hideFromContacts": val
+                      });
+                      if (!success && mounted) {
+                        setState(() => hideFromContacts = !val);
+                      }
                     },
                     activeColor: const Color(0xFFE43A6A),
                   ),
@@ -143,10 +159,16 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                   subtitle: 'Browse without being seen',
                   trailing: CupertinoSwitch(
                     value: ghostMode,
-                    onChanged: (val) {
+                    onChanged: (val) async {
                       setState(() {
                         ghostMode = val;
                       });
+                      final success = await AccountSettingService.updatePrivacyControls({
+                        "ghostMode": val
+                      });
+                      if (!success && mounted) {
+                        setState(() => ghostMode = !val);
+                      }
                     },
                     activeColor: const Color(0xFFE43A6A),
                   ),

@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../../service_account_Setting.dart';
+
 class WhoMessageScreen extends StatefulWidget {
-  const WhoMessageScreen({super.key});
+  final String initialOption;
+  const WhoMessageScreen({super.key, this.initialOption = 'paid'});
 
   @override
   State<WhoMessageScreen> createState() => _WhoMessageScreenState();
 }
 
 class _WhoMessageScreenState extends State<WhoMessageScreen> {
-  String selectedOption = 'paid';
+  late String selectedOption;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedOption = widget.initialOption;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,10 +136,34 @@ class _WhoMessageScreenState extends State<WhoMessageScreen> {
     final bool isSelected = selectedOption == id;
 
     return GestureDetector(
-      onTap: () {
+      onTap: _isLoading ? null : () async {
         setState(() {
           selectedOption = id;
+          _isLoading = true;
         });
+
+        String apiValue;
+        if (id == 'matches') apiValue = 'MATCHES_ONLY';
+        else if (id == 'verified') apiValue = 'VERIFIED_ONLY';
+        else apiValue = 'PAID_ONLY';
+
+        final success = await AccountSettingService.updatePrivacyControls({
+          "messagePermission": apiValue
+        });
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Message permission updated')),
+          );
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to update')),
+          );
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
