@@ -380,7 +380,10 @@ class _CommitmentScreenView extends StatelessWidget {
                                     : null,
                               ),
                               child: state.imageUrl.isEmpty
-                                  ? const Icon(Icons.person, color: Colors.white)
+                                  ? const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    )
                                   : null,
                             ),
                           ),
@@ -403,7 +406,10 @@ class _CommitmentScreenView extends StatelessWidget {
                                     : null,
                               ),
                               child: state.selfImageUrl.isEmpty
-                                  ? const Icon(Icons.person, color: Colors.white)
+                                  ? const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    )
                                   : null,
                             ),
                           ),
@@ -680,15 +686,15 @@ class _CommitmentScreenView extends StatelessWidget {
                 subtitle: 'Fully-paid dream honeymoon for you both',
                 borderColor: const Color(0xFFF0E5D1),
               ),
-              const SizedBox(height: 16),
-              _buildRewardItem(
-                icon: '💝',
-                title: '₹5,000/mo',
-                subtitle:
-                    'Shopping allowance for ${state.partnerName}, 3 years after marriage',
-                badgeText: 'FOR HER',
-                borderColor: const Color(0xFFFFD1DC), // Soft pink border
-              ),
+              const SizedBox(height: 0),
+              // _buildRewardItem(
+              //   icon: '💝',
+              //   title: '₹5,000/mo',
+              //   subtitle:
+              //       'Shopping allowance for ${state.partnerName}, 3 years after marriage',
+              //   badgeText: 'FOR HER',
+              //   borderColor: const Color(0xFFFFD1DC), // Soft pink border
+              // ),
               const SizedBox(height: 24),
               // See what you'll win button
               GestureDetector(
@@ -1021,15 +1027,18 @@ class _CommitmentScreenView extends StatelessWidget {
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (context) => const Center(child: CircularProgressIndicator()),
+                      builder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
                     );
 
-                    final result = await CommitmentApiService().endCommitment(currentState.relationshipId);
-                    
+                    final result = await CommitmentApiService().endCommitment(
+                      currentState.relationshipId,
+                    );
+
                     if (context.mounted) {
                       Navigator.pop(context); // Close loading dialog
-                      Navigator.pop(ctx);     // Close bottom sheet
-                      
+                      Navigator.pop(ctx); // Close bottom sheet
+
                       if (result == "success") {
                         bloc.add(EndExclusiveStatusRequested());
                       } else {
