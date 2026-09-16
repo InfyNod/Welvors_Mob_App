@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../service_account_Setting.dart';
+
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
 
@@ -8,13 +10,28 @@ class BlockedUsersScreen extends StatefulWidget {
 }
 
 class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
-  // Dummy data for blocked users
-  final List<Map<String, String>> blockedUsers = [
-    {'id': '1', 'name': 'Rohit K.'},
-    {'id': '2', 'name': 'Sameer J.'},
-    {'id': '3', 'name': 'Unknown +91····2201'},
-    {'id': '4', 'name': 'Vikram D.'},
-  ];
+  List<Map<String, dynamic>> blockedUsers = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBlockedUsers();
+  }
+
+  Future<void> _fetchBlockedUsers() async {
+    final data = await AccountSettingService.getBlockedUsers();
+    if (data != null && mounted) {
+      setState(() {
+        blockedUsers = List<Map<String, dynamic>>.from(data);
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +83,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         ),
         centerTitle: true,
       ),
-      body: blockedUsers.isEmpty
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : blockedUsers.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -195,19 +214,58 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   }
 
   void _unblockUser(String id) {
-    setState(() {
-      blockedUsers.removeWhere((user) => user['id'] == id);
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('User unblocked successfully.'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.black87,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
-        duration: const Duration(seconds: 2),
-      ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text('Unblock User'),
+          content: const Text(
+            'Are you sure you want to unblock this user? They will be able to message you and see your profile.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context); // Close dialog
+                setState(() => _isLoading = true);
+                
+                final success = await AccountSettingService.unblockUser(id);
+                
+                if (success && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('User unblocked')),
+                  );
+                  _fetchBlockedUsers();
+                } else if (mounted) {
+                  setState(() => _isLoading = false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to unblock user')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE43A6A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Unblock',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

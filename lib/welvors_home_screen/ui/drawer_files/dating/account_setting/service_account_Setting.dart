@@ -156,6 +156,40 @@ class AccountSettingService {
     }
   }
 
+  static Future<List<dynamic>?> getBlockedUsers() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/blocked-users/list');
+      final response = await http.get(url, headers: await _headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          return data['data']; // Assuming 'data' contains the list of blocked users
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error in getBlockedUsers: $e');
+      return null;
+    }
+  }
+
+  static Future<bool> unblockUser(String blockedId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/unblock/$blockedId');
+      final response = await http.delete(url, headers: await _headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('User unblocked successfully');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Error in unblockUser: $e');
+      return false;
+    }
+  }
+
   static Future<bool> setPrimaryBankUpi(String id) async {
     try {
       final url = Uri.parse('$baseUrl/user/bank-upi/$id/primary');
