@@ -155,6 +155,27 @@ class AccountSettingService {
     }
   }
 
+  static Future<Map<String, dynamic>?> getMembershipInvoice(String userPackageId) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/membership-plan/invoice/$userPackageId');
+      final response = await http.get(
+        url,
+        headers: await _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error in getMembershipInvoice: $e');
+      return null;
+    }
+  }
+
   static Future<bool> updatePrivacyControls(Map<String, dynamic> data) async {
     try {
       final url = Uri.parse('$baseUrl/user/privacy-controls/update');
