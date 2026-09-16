@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'who_message.dart';
 import 'blocked_users.dart';
 import 'who_message.dart';
+import 'mute_account.dart';
 import '../../service_account_Setting.dart';
 
 class PrivacyControlsScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
   bool hideFromContacts = false;
   bool ghostMode = false;
   String _messagePermissionValue = 'PAID_ONLY';
+  int _blockedUsersCount = 0;
   bool _isLoading = true;
 
   @override
@@ -26,21 +28,24 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
 
   Future<void> _fetchPrivacyControls() async {
     final data = await AccountSettingService.getPrivacyControls();
-    if (data != null && mounted) {
+    final blockedUsersList = await AccountSettingService.getBlockedUsers();
+    
+    if (mounted) {
       setState(() {
-        hideFromContacts = data['hideFromContacts'] ?? false;
-        ghostMode = data['ghostMode'] ?? false;
-        if (data['messagePermission'] != null && data['messagePermission']['value'] != null) {
-          _messagePermissionValue = data['messagePermission']['value'];
+        if (data != null) {
+          hideFromContacts = data['hideFromContacts'] ?? false;
+          ghostMode = data['ghostMode'] ?? false;
+          if (data['messagePermission'] != null && data['messagePermission']['value'] != null) {
+            _messagePermissionValue = data['messagePermission']['value'];
+          }
         }
+        
+        if (blockedUsersList != null) {
+          _blockedUsersCount = blockedUsersList.length;
+        }
+
         _isLoading = false;
       });
-    } else {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
@@ -191,7 +196,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                     233,
                   ), // Light red
                   title: 'Blocked users',
-                  subtitle: '4 people blocked',
+                  subtitle: '$_blockedUsersCount people blocked',
                   trailing: Icon(
                     Icons.chevron_right,
                     color: Colors.grey.shade400,
@@ -203,7 +208,9 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                       MaterialPageRoute(
                         builder: (context) => const BlockedUsersScreen(),
                       ),
-                    );
+                    ).then((_) {
+                      _fetchPrivacyControls(); // Refresh count when coming back
+                    });
                   },
                 ),
                 _buildDivider(),
@@ -217,7 +224,14 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                     color: Colors.grey.shade400,
                     size: 18,
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MuteAccountScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

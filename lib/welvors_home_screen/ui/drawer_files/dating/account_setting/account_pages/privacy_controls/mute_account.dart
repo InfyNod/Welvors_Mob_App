@@ -1,37 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../service_account_Setting.dart';
-
-class BlockedUsersScreen extends StatefulWidget {
-  const BlockedUsersScreen({super.key});
+class MuteAccountScreen extends StatefulWidget {
+  const MuteAccountScreen({super.key});
 
   @override
-  State<BlockedUsersScreen> createState() => _BlockedUsersScreenState();
+  State<MuteAccountScreen> createState() => _MuteAccountScreenState();
 }
 
-class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
-  List<Map<String, dynamic>> blockedUsers = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchBlockedUsers();
-  }
-
-  Future<void> _fetchBlockedUsers() async {
-    final data = await AccountSettingService.getBlockedUsers();
-    if (data != null && mounted) {
-      setState(() {
-        blockedUsers = List<Map<String, dynamic>>.from(data);
-        _isLoading = false;
-      });
-    } else if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+class _MuteAccountScreenState extends State<MuteAccountScreen> {
+  // Dummy data for muted users
+  List<Map<String, String>> mutedUsers = [
+    {'id': '1', 'name': 'Rahul S.'},
+    {'id': '2', 'name': 'Priya M.'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +54,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
           ),
         ),
         title: const Text(
-          'Blocked Users',
+          'Muted Accounts',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 18,
@@ -83,17 +64,15 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : blockedUsers.isEmpty
+      body: mutedUsers.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.block, size: 64, color: Colors.grey.shade300),
+                  Icon(Icons.volume_off, size: 64, color: Colors.grey.shade300),
                   const SizedBox(height: 16),
                   Text(
-                    'No blocked users',
+                    'No muted accounts',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey.shade500,
@@ -126,17 +105,17 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                   ],
                 ),
                 child: Column(
-                  children: List.generate(blockedUsers.length, (index) {
-                    final user = blockedUsers[index];
+                  children: List.generate(mutedUsers.length, (index) {
+                    final user = mutedUsers[index];
                     return Column(
                       children: [
-                        _buildBlockedUserItem(
+                        _buildMutedUserItem(
                           name: user['name']!,
-                          onUnblock: () {
-                            _unblockUser(user['id']!);
+                          onUnmute: () {
+                            _unmuteUser(user['id']!);
                           },
                         ),
-                        if (index < blockedUsers.length - 1)
+                        if (index < mutedUsers.length - 1)
                           Divider(
                             height: 1,
                             thickness: 1,
@@ -153,9 +132,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     );
   }
 
-  Widget _buildBlockedUserItem({
+  Widget _buildMutedUserItem({
     required String name,
-    required VoidCallback onUnblock,
+    required VoidCallback onUnmute,
   }) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -165,11 +144,11 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 252, 232, 233), // Light red bg
+              color: const Color(0xFFFBF4E4), // Light yellow bg
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: const Text('🚫', style: TextStyle(fontSize: 20)),
+            child: const Text('🔕', style: TextStyle(fontSize: 20)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -186,7 +165,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Blocked',
+                  'Muted',
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                 ),
               ],
@@ -194,12 +173,12 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
           ),
           const SizedBox(width: 12),
           GestureDetector(
-            onTap: onUnblock,
+            onTap: onUnmute,
             behavior: HitTestBehavior.opaque,
             child: const Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
               child: Text(
-                'Unblock',
+                'Unmute',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFFE43A6A),
@@ -213,7 +192,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     );
   }
 
-  void _unblockUser(String id) {
+  void _unmuteUser(String id) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -243,15 +222,15 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 252, 232, 233), // Light red bg
+                    color: const Color(0xFFFBF4E4), // Light yellow
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: const Text('🔓', style: TextStyle(fontSize: 32)),
+                  child: const Text('🔊', style: TextStyle(fontSize: 32)),
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  'Unblock User?',
+                  'Unmute User?',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -260,7 +239,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Are you sure you want to unblock this user? They will be able to message you and see your profile.',
+                  'Are you sure you want to unmute this user? You will start receiving their notifications and messages again.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -294,37 +273,21 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           Navigator.pop(context); // Close dialog
-                          setState(() => _isLoading = true);
-                          
-                          final success = await AccountSettingService.unblockUser(id);
-                          
-                          if (success && mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('User unblocked successfully!'),
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                backgroundColor: Colors.black87,
+                          setState(() {
+                            mutedUsers.removeWhere((user) => user['id'] == id);
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('User unmuted successfully!'),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            );
-                            _fetchBlockedUsers();
-                          } else if (mounted) {
-                            setState(() => _isLoading = false);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('Failed to unblock user'),
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                backgroundColor: Colors.redAccent,
-                              ),
-                            );
-                          }
+                              backgroundColor: Colors.black87,
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE43A6A),
@@ -335,7 +298,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                           ),
                         ),
                         child: const Text(
-                          'Unblock',
+                          'Unmute',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
