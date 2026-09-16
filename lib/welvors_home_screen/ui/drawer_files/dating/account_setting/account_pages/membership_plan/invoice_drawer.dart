@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../service_account_Setting.dart';
+import 'pdf_generator.dart';
 
 void showInvoiceBottomSheet(BuildContext context, Map<String, dynamic> item) {
   showModalBottomSheet(
@@ -63,40 +64,33 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
   bool _isDownloading = false;
 
   Future<void> _downloadPdf() async {
-    final actions = _invoiceData?['actions'];
-    if (actions != null && actions['pdfAvailable'] == true) {
-      final pdfUrl = actions['pdfUrl'];
-      if (pdfUrl != null) {
-        setState(() => _isDownloading = true);
-        
-        final pdfBytes = await AccountSettingService.downloadInvoicePdf(pdfUrl);
-        
-        setState(() => _isDownloading = false);
+    if (_invoiceData == null) return;
+    
+    setState(() => _isDownloading = true);
+    
+    // Generate PDF using frontend package instead of relying on the backend route
+    final file = await PdfGenerator.generateInvoice(_invoiceData!);
+    
+    setState(() => _isDownloading = false);
 
-        if (pdfBytes != null) {
-          try {
-            final tempDir = await getTemporaryDirectory();
-            final invoiceNo = _invoiceData?['invoice']?['invoiceNumber'] ?? 'invoice';
-            final file = File('${tempDir.path}/$invoiceNo.pdf');
-            await file.writeAsBytes(pdfBytes);
-
-            // Share the file so user can save or view it
-            await Share.shareXFiles([XFile(file.path)], text: 'Invoice $invoiceNo');
-          } catch (e) {
-            debugPrint('Error sharing file: $e');
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Failed to open PDF')),
-              );
-            }
-          }
-        } else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Failed to download PDF')),
-            );
-          }
+    if (file != null) {
+      try {
+        final invoiceNo = _invoiceData?['invoice']?['invoiceNumber'] ?? 'invoice';
+        // Share the file so user can save or view it
+        await Share.shareXFiles([XFile(file.path)], text: 'Invoice $invoiceNo');
+      } catch (e) {
+        debugPrint('Error sharing file: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to open PDF')),
+          );
         }
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to generate PDF')),
+        );
       }
     }
   }
@@ -318,12 +312,11 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
             ),
             const SizedBox(height: 24),
             // Buttons
-            if (_invoiceData!['actions'] != null && _invoiceData!['actions']['pdfAvailable'] == true)
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: _isDownloading ? null : _downloadPdf,
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                onPressed: _isDownloading ? null : _downloadPdf,
                   icon: _isDownloading
                       ? const SizedBox(
                           width: 18,

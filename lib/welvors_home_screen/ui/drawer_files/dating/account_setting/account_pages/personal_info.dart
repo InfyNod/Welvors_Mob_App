@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../edit_profile/bloc/profile_edit_cubit.dart';
+import '../../edit_profile/services/edit_profile_api_service.dart';
 // import '../../edit_profile/bloc/profile_edit_state.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
@@ -17,22 +18,69 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late TextEditingController _phoneController;
   late TextEditingController _dobController;
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Fetch values from Bloc state
+    // Fetch initial values from Bloc state (as fallback)
     final state = context.read<ProfileEditCubit>().state;
-    _nameController = TextEditingController(
-      text: state.fullName.isNotEmpty ? state.fullName : 'Tanishka Sharma',
-    );
-    _emailController = TextEditingController(
-      text: state.email.isNotEmpty ? state.email : 'tanishka.s@gmail.com',
-    );
-    _phoneController = TextEditingController(text: '9876543210');
-    _dobController = TextEditingController(
-      text: state.dob.isNotEmpty ? state.dob : '14 / 05 / 1998',
-    );
+    _nameController = TextEditingController(text: state.fullName);
+    _emailController = TextEditingController(text: state.email);
+    _phoneController = TextEditingController();
+    _dobController = TextEditingController(text: state.dob);
+    
+    _fetchProfileData();
+  }
+
+  Future<void> _fetchProfileData() async {
+    final response = await EditProfileApiService.getProfileDetails();
+    if (response['error'] == null && response['data'] != null) {
+      final data = response['data'];
+      final basicDetails = data['basicDetails'] ?? {};
+      
+      String rawPhone = basicDetails['phoneNumber']?.toString() ?? data['phoneNumber']?.toString() ?? basicDetails['phone']?.toString() ?? '';
+      
+      // Remove any non-digit characters (like +, -, spaces)
+      String phone = rawPhone.replaceAll(RegExp(r'\D'), '');
+      // If the number includes a country code (e.g. 918806655218), take the last 10 digits
+      if (phone.length > 10) {
+        phone = phone.substring(phone.length - 10);
+      }
+
+      setState(() {
+        if (basicDetails['fullName'] != null && basicDetails['fullName'].toString().isNotEmpty) {
+          _nameController.text = basicDetails['fullName'];
+        }
+        if (basicDetails['email'] != null && basicDetails['email'].toString().isNotEmpty) {
+          _emailController.text = basicDetails['email'];
+        }
+        if (phone.isNotEmpty) {
+          _phoneController.text = phone;
+        }
+        
+        String dob = basicDetails['birthDate']?.toString() ?? '';
+        if (dob.isNotEmpty) {
+          // Format dob if it's in ISO format
+          if (dob.contains('T')) dob = dob.split('T').first;
+          final parts = dob.split('-');
+          if (parts.length == 3) {
+            if (parts[0].length == 4) {
+              _dobController.text = '${parts[2]} / ${parts[1]} / ${parts[0]}';
+            } else {
+              _dobController.text = '${parts[0]} / ${parts[1]} / ${parts[2]}';
+            }
+          } else {
+            _dobController.text = dob;
+          }
+        }
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -112,7 +160,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Column(
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFE43A6A),
+                ),
+              )
+            : Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
@@ -128,92 +182,21 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                       _buildFormField(
                         label: 'Full name',
                         controller: _nameController,
-                        validator: (val) => val == null || val.trim().isEmpty
-                            ? 'Please enter your name'
-                            : null,
                       ),
                       const SizedBox(height: 20),
                       _buildFormField(
                         label: 'Email',
                         controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          if (!val.trim().toLowerCase().endsWith(
-                            '@gmail.com',
-                          )) {
-                            return 'Email must be a valid @gmail.com address';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 20),
                       _buildFormField(
                         label: 'Phone',
                         controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) {
-                            return 'Please enter your phone number';
-                          }
-                          if (val.length != 10) {
-                            return 'Enter valid 10 digit number';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 20),
                       _buildFormField(
                         label: 'Date of birth',
                         controller: _dobController,
-                        readOnly: true,
-                        onTap: () async {
-                          final now = DateTime.now();
-                          final maxDate = DateTime(
-                            now.year - 18,
-                            now.month,
-                            now.day,
-                          );
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: maxDate,
-                            firstDate: DateTime(1950),
-                            lastDate: maxDate,
-                            builder: (context, child) {
-                              return Theme(
-                                data: Theme.of(context).copyWith(
-                                  colorScheme: const ColorScheme.light(
-                                    primary: Color(0xFFE43A6A), // Pinkish red
-                                    onPrimary: Colors.white,
-                                    onSurface: Colors.black,
-                                  ),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          );
-                          if (picked != null) {
-                            setState(() {
-                              _dobController.text =
-                                  "${picked.day.toString().padLeft(2, '0')} / ${picked.month.toString().padLeft(2, '0')} / ${picked.year}";
-                            });
-                          }
-                        },
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) {
-                            return 'Please enter your date of birth';
-                          }
-                          if (_calculateAge(val) < 18) {
-                            return 'You must be at least 18 years old';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -229,44 +212,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 ),
               ),
             ),
-            // Fixed Bottom Button
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-              decoration: const BoxDecoration(color: Colors.white),
-              child: SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // TODO: Implement save logic using Cubit
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Changes saved successfully!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      Navigator.pop(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE43A6A), // Pinkish red
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Save changes',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -276,11 +221,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   Widget _buildFormField({
     required String label,
     required TextEditingController controller,
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-    List<TextInputFormatter>? inputFormatters,
-    bool readOnly = false,
-    VoidCallback? onTap,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,11 +247,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           ),
           child: TextFormField(
             controller: controller,
-            validator: validator,
-            keyboardType: keyboardType,
-            inputFormatters: inputFormatters,
-            readOnly: readOnly,
-            onTap: onTap,
+            readOnly: true,
+            enableInteractiveSelection: false, // Prevents text selection/copying if desired, makes it fully read-only feeling
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
