@@ -40,61 +40,68 @@ class _PrivacySafetyAndMembershipState
           child: Column(
             children: [
               // Header: SafeFace
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(
-                        255,
-                        251,
-                        219,
-                        236,
-                      ), // Very light pink
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/safefacee.png',
-                        width: 44,
-                        height: 44,
-                        fit: BoxFit.cover,
+              InkWell(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Coming soon!')),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(
+                          255,
+                          251,
+                          219,
+                          236,
+                        ), // Very light pink
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/safefacee.png',
+                          width: 44,
+                          height: 44,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'SafeFace',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black87,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'SafeFace',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black87,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Hide your real photo behind an avatar',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade600,
+                          const SizedBox(height: 2),
+                          Text(
+                            'Hide your real photo behind an avatar',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade600,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const Icon(
-                    Icons.chevron_right,
-                    size: 20,
-                    color: Colors.black26,
-                  ),
-                ],
+                    const Icon(
+                      Icons.chevron_right,
+                      size: 20,
+                      color: Colors.black26,
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               // Divider
@@ -129,9 +136,9 @@ class _PrivacySafetyAndMembershipState
                   ),
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _isSafetyModeOn = !_isSafetyModeOn;
-                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Coming soon!')),
+                      );
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),

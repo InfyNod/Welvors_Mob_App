@@ -98,6 +98,11 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                     ),
                   ],
                 ),
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Coming soon!')),
+                  );
+                },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
               _buildEcosystemTile(
