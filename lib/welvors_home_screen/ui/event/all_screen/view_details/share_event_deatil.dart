@@ -21,19 +21,22 @@ class ShareEventDetailCard extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        width: 350,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
+        color: Colors.white,
+        padding: const EdgeInsets.all(20),
+        child: Container(
+          width: 350,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -49,7 +52,7 @@ class ShareEventDetailCard extends StatelessWidget {
                 child: imageUrl.startsWith('http')
                     ? Image.network(imageUrl, fit: BoxFit.cover)
                     : Image.asset(imageUrl, fit: BoxFit.cover),
-              ),
+                ),
             ),
 
             // Event Details
@@ -188,6 +191,7 @@ class ShareEventDetailCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

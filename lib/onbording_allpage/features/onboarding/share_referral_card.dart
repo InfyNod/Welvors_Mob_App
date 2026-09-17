@@ -14,12 +14,22 @@ class ShareReferralCard extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        width: 350,
-        height: 350,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-        ),
+        color: Colors.white,
+        padding: const EdgeInsets.all(24),
+        child: Container(
+          width: 350,
+          height: 350,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -131,6 +141,7 @@ class ShareReferralCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
