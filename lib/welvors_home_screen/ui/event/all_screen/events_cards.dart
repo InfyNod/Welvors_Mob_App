@@ -123,7 +123,6 @@ class _EventsCardsState extends State<EventsCards> {
                  event['womenEntryPrice']?.toString() ?? 
                  event['otherEntryPrice']?.toString() ?? '0';
     }
-
     int price = int.tryParse(priceStr) ?? 0;
     return price > 0 ? '₹$price' : 'Free';
   }
@@ -138,9 +137,7 @@ class _EventsCardsState extends State<EventsCards> {
           child: CircularProgressIndicator(color: Color(0xFFE85A7A)),
         ),
       );
-
       final screenshotController = ScreenshotController();
-      
       // Capture the widget
       final capturedImage = await screenshotController.captureFromWidget(
         ShareEventDetailCard(
@@ -153,7 +150,6 @@ class _EventsCardsState extends State<EventsCards> {
         delay: const Duration(milliseconds: 200),
         context: context,
       );
-
       // Hide loading
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
