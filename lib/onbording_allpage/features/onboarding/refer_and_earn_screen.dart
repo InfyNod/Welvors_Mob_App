@@ -5,7 +5,10 @@ import 'package:share_plus/share_plus.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
 import '../../services/api_service.dart';
-
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'share_referral_card.dart';
 class ReferAndEarnScreen extends StatefulWidget {
   const ReferAndEarnScreen({super.key});
 
@@ -446,56 +449,55 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                   ),
                   const SizedBox(height: 24),
 
-                  // Social Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildSocialButton(
-                        'WhatsApp',
-                        lottiePath: 'assets/WhatsApp.json',
-                        scale: 1.5,
-                      ),
-                      _buildSocialButton(
-                        'Instagram',
-                        lottiePath: 'assets/Instagram1.json',
-                        scale: 1.3,
-                      ),
-                      _buildSocialButton(
-                        'Copy link',
-                        lottiePath: 'assets/urllink.json',
-                        scale: 1.9,
-                      ),
-                      Builder(
-                        builder: (context) => _buildSocialButton(
-                          'More',
-                          icon: Icons.more_horiz,
-                          onTap: () {
-                            final box =
-                                context.findRenderObject() as RenderBox?;
-                            Share.share(
-                              'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
-                              sharePositionOrigin: box != null
-                                  ? box.localToGlobal(Offset.zero) & box.size
-                                  : null,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+
 
                   // Invite friends & earn button
                   Builder(
                     builder: (context) => GestureDetector(
-                      onTap: () {
-                        final box = context.findRenderObject() as RenderBox?;
-                        Share.share(
-                          'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
-                          sharePositionOrigin: box != null
-                              ? box.localToGlobal(Offset.zero) & box.size
-                              : null,
-                        );
+                      onTap: () async {
+                        try {
+                          // Show loading indicator
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const Center(
+                              child: CircularProgressIndicator(color: AppColors.pinkDeep),
+                            ),
+                          );
+
+                          final screenshotController = ScreenshotController();
+                          
+                          // Capture the widget
+                          final capturedImage = await screenshotController.captureFromWidget(
+                            ShareReferralCard(referralCode: _referralCode),
+                            delay: const Duration(milliseconds: 200),
+                            context: context,
+                          );
+
+                          // Hide loading
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+
+                          // Save and Share
+                          final directory = await getTemporaryDirectory();
+                          final imagePath = await File('${directory.path}/referral_share.png').create();
+                          await imagePath.writeAsBytes(capturedImage);
+
+                          final box = context.findRenderObject() as RenderBox?;
+                          await Share.shareXFiles(
+                            [XFile(imagePath.path)],
+                            text: 'Join Velvors with my invite code $_referralCode and get rewards! 🚀\n$_shareLink',
+                            sharePositionOrigin: box != null
+                                ? box.localToGlobal(Offset.zero) & box.size
+                                : null,
+                          );
+                        } catch (e) {
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                          debugPrint('Error sharing referral: $e');
+                        }
                       },
                       child: Container(
                         width: double.infinity,
