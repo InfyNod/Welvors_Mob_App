@@ -162,7 +162,7 @@ class ShareEventDetailCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // Velvors Brand
+                      // Welvors Brand
                       ShaderMask(
                         shaderCallback: (bounds) => const LinearGradient(
                           colors: [

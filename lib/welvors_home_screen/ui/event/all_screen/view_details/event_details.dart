@@ -329,13 +329,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   _eventData?['startTime']
                 );
 
-                // Create the widget off-screen
-                final widgetToCapture = ShareEventDetailCard(
-                  title: widget.title,
-                  date: cardDate,
-                  location: widget.location,
-                  imageUrl: widget.imageUrl,
-                  price: priceStr == '0' ? 'FREE' : '₹$priceStr',
+                // Create the widget off-screen with a solid white background
+                // so the shadow renders nicely on WhatsApp (no black background)
+                final widgetToCapture = Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(16), // Padding around the card
+                  child: ShareEventDetailCard(
+                    title: widget.title,
+                    date: cardDate,
+                    location: widget.location,
+                    imageUrl: widget.imageUrl,
+                    price: priceStr == '0' ? 'FREE' : priceStr.startsWith('₹') ? priceStr : '₹$priceStr',
+                  ),
                 );
 
                 // Capture the image
@@ -357,9 +362,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
                 // Share image + text
                 final box = context.findRenderObject() as RenderBox?;
+                final eventLink = 'https://welvors.com/event/${widget.eventId}';
                 await Share.shareXFiles(
                   [XFile(imagePath.path)],
-                  text: 'Check out this awesome event on Velvors! 🌟\n\n${widget.title}\n📅 $cardDate\n📍 ${widget.location}\n\nDownload Velvors app to book your spot now!',
+                  text: 'Check out this awesome event on Welvors! 🌟\n\n${widget.title}\n📅 $cardDate\n📍 ${widget.location}\n\nTap the link below to view details and book your spot:\n$eventLink',
                   sharePositionOrigin: box != null
                       ? box.localToGlobal(Offset.zero) & box.size
                       : null,
