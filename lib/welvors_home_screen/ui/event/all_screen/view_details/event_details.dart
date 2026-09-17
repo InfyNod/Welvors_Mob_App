@@ -13,6 +13,10 @@ import 'booking_confirm.dart';
 import '../service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'share_event_deatil.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   final String eventId;
@@ -302,14 +306,69 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           IconButton(
             onPressed: () async {
               try {
+                // Show loading indicator in a dialog while generating the image
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const Center(
+                    child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                  ),
+                );
+
+                final screenshotController = ScreenshotController();
+                
+                // Get formatted price
+                String priceStr = '0';
+                if (_eventData != null) {
+                  priceStr = _getEventPrice(context, _eventData!);
+                }
+                
+                // Format the date properly for the card
+                final cardDate = _formatApiDate(
+                  _eventData?['date'], 
+                  _eventData?['startTime']
+                );
+
+                // Create the widget off-screen
+                final widgetToCapture = ShareEventDetailCard(
+                  title: widget.title,
+                  date: cardDate,
+                  location: widget.location,
+                  imageUrl: widget.imageUrl,
+                  price: priceStr == '0' ? 'FREE' : '₹$priceStr',
+                );
+
+                // Capture the image
+                final capturedImage = await screenshotController.captureFromWidget(
+                  widgetToCapture,
+                  delay: const Duration(milliseconds: 200),
+                  context: context,
+                );
+
+                // Hide loading dialog
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+
+                // Save image temporarily
+                final directory = await getTemporaryDirectory();
+                final imagePath = await File('${directory.path}/event_share.png').create();
+                await imagePath.writeAsBytes(capturedImage);
+
+                // Share image + text
                 final box = context.findRenderObject() as RenderBox?;
-                await Share.share(
-                  'Check out this event on Velvors: $title',
+                await Share.shareXFiles(
+                  [XFile(imagePath.path)],
+                  text: 'Check out this awesome event on Velvors! 🌟\n\n${widget.title}\n📅 $cardDate\n📍 ${widget.location}\n\nDownload Velvors app to book your spot now!',
                   sharePositionOrigin: box != null
                       ? box.localToGlobal(Offset.zero) & box.size
                       : null,
                 );
               } catch (e) {
+                // Hide loading dialog if error occurs
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
                 debugPrint('Error sharing: $e');
               }
             },
