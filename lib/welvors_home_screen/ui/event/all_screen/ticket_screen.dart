@@ -67,8 +67,6 @@ class _TicketScreenState extends State<TicketScreen> {
   }
 
   Future<void> _openMap() async {
-    if (_eventDetails == null) return;
-
     double? lat;
     double? lng;
 
@@ -86,21 +84,27 @@ class _TicketScreenState extends State<TicketScreen> {
       }
     }
 
-    if (lat == null || lng == null) {
+    String query;
+    if (lat != null && lng != null) {
+      query = '$lat,$lng';
+    } else if (widget.location.isNotEmpty) {
+      query = Uri.encodeComponent(widget.location);
+    } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Location coordinates not available')),
+          const SnackBar(content: Text('Location not available')),
         );
       }
       return;
     }
 
     final url = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+      'https://www.google.com/maps/search/?api=1&query=$query',
     );
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
+    
+    try {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
