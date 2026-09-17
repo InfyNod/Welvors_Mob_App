@@ -37,139 +37,183 @@ class PdfGenerator {
         statusBgColor = PdfColor.fromHex('#FFF7E6');
       }
 
+      final primaryColor = PdfColor.fromHex('#E43A6A');
+      final greyDark = PdfColor.fromHex('#333333');
+      final greyLight = PdfColor.fromHex('#F5F5F7');
+
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(0),
           build: (pw.Context context) {
-            return pw.Container(
-              padding: const pw.EdgeInsets.all(32),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  // HEADER
-                  pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            return pw.Column(
+              children: [
+                // Top Color Bar
+                pw.Container(
+                  height: 12,
+                  color: primaryColor,
+                ),
+                
+                // Main Content Container
+                pw.Container(
+                  padding: const pw.EdgeInsets.all(40),
+                  child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Column(
+                      // HEADER
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                          pw.Text(
-                            company['brandName'] ?? 'Welvors',
-                            style: pw.TextStyle(
-                              fontSize: 24,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
+                          pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.Text(
+                                company['brandName'] ?? 'Welvors',
+                                style: pw.TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: pw.FontWeight.bold,
+                                  color: primaryColor,
+                                ),
+                              ),
+                              pw.SizedBox(height: 4),
+                              pw.Text(
+                                'TAX INVOICE',
+                                style: pw.TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: pw.FontWeight.bold,
+                                  color: greyDark,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              pw.SizedBox(height: 4),
+                              pw.Text(
+                                company['legalName'] ?? 'INFYNOD TECH PRIVATE LIMITED',
+                                style: const pw.TextStyle(
+                                  fontSize: 10,
+                                  color: PdfColors.grey700,
+                                ),
+                              ),
+                            ],
                           ),
-                          pw.SizedBox(height: 4),
-                          pw.Text(
-                            company['legalName'] ?? 'INFYNOD TECH PRIVATE LIMITED',
-                            style: const pw.TextStyle(
-                              fontSize: 12,
-                              color: PdfColors.grey700,
+                          pw.Container(
+                            padding: const pw.EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: pw.BoxDecoration(
+                              color: statusBgColor,
+                              borderRadius: const pw.BorderRadius.all(pw.Radius.circular(8)),
+                              border: pw.Border.all(color: statusColor, width: 1),
+                            ),
+                            child: pw.Text(
+                              status,
+                              style: pw.TextStyle(
+                                fontSize: 14,
+                                fontWeight: pw.FontWeight.bold,
+                                color: statusColor,
+                                letterSpacing: 1,
+                              ),
                             ),
                           ),
                         ],
                       ),
+                      pw.SizedBox(height: 30),
+                      
+                      // DIVIDER
+                      pw.Divider(color: PdfColors.grey300, thickness: 1),
+                      pw.SizedBox(height: 30),
+                      
+                      // Details Grid
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildPdfDetailCol('INVOICE NO.', invoiceNo),
+                          _buildPdfDetailCol('DATE', dateFormatted),
+                          _buildPdfDetailCol('BILLED TO', billedTo['name'] ?? 'N/A'),
+                          _buildPdfDetailCol('GSTIN', billedTo['gstin'] ?? 'N/A'),
+                        ],
+                      ),
+                      pw.SizedBox(height: 40),
+                      
+                      // Items Table Header
                       pw.Container(
-                        padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const pw.EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: pw.BoxDecoration(
-                          color: statusBgColor,
-                          borderRadius: const pw.BorderRadius.all(pw.Radius.circular(6)),
-                        ),
-                        child: pw.Text(
-                          status,
-                          style: pw.TextStyle(
-                            fontSize: 12,
-                            fontWeight: pw.FontWeight.bold,
-                            color: statusColor,
+                          color: primaryColor,
+                          borderRadius: const pw.BorderRadius.only(
+                            topLeft: pw.Radius.circular(8),
+                            topRight: pw.Radius.circular(8),
                           ),
                         ),
+                        child: pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text('DESCRIPTION', style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                            pw.Text('AMOUNT', style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                      
+                      // Items Table Body
+                      pw.Container(
+                        padding: const pw.EdgeInsets.all(16),
+                        decoration: pw.BoxDecoration(
+                          color: greyLight,
+                          borderRadius: const pw.BorderRadius.only(
+                            bottomLeft: pw.Radius.circular(8),
+                            bottomRight: pw.Radius.circular(8),
+                          ),
+                        ),
+                        child: pw.Column(
+                          children: [
+                            _buildPdfRow(
+                              '${membership['packageName']} membership · ${membership['durationLabel']}',
+                              'Rs. ${amountData['taxableAmount'] ?? 0}',
+                            ),
+                            pw.SizedBox(height: 16),
+                            _buildPdfRow(
+                              'GST (${amountData['gstPercentage'] ?? 18}%)',
+                              'Rs. ${amountData['gstAmount'] ?? 0}',
+                            ),
+                            pw.SizedBox(height: 20),
+                            pw.Divider(color: PdfColors.grey400, thickness: 1),
+                            pw.SizedBox(height: 16),
+                            _buildPdfRow(
+                              'Total paid',
+                              'Rs. ${amountData['totalPaid'] ?? 0}',
+                              isBold: true,
+                              fontSize: 18,
+                              textColor: primaryColor,
+                            ),
+                            pw.SizedBox(height: 24),
+                            _buildPdfRow(
+                              'Payment Method',
+                              payment['displayMethod'] ?? 'Online payment',
+                              textColor: PdfColors.grey700,
+                              fontSize: 12,
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      pw.SizedBox(height: 60),
+                      
+                      // Footer
+                      pw.Divider(color: PdfColors.grey300),
+                      pw.SizedBox(height: 16),
+                      pw.Center(
+                        child: pw.Text(
+                          invoiceData['note'] ?? 'Digital service · SAC 998439 · This is a computer-generated invoice.\nRegistered office: Office No. 243, The Capital, Hadapsar, Pune, 411028',
+                          style: const pw.TextStyle(
+                            fontSize: 10,
+                            color: PdfColors.grey600,
+                            lineSpacing: 2,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
                       ),
                     ],
                   ),
-                  pw.SizedBox(height: 24),
-                  
-                  // DIVIDER
-                  pw.Divider(color: PdfColors.grey300),
-                  pw.SizedBox(height: 24),
-                  
-                  // Details Grid
-                  pw.Row(
-                    children: [
-                      pw.Expanded(
-                        child: _buildPdfDetailCol('INVOICE NO.', invoiceNo),
-                      ),
-                      pw.Expanded(
-                        child: _buildPdfDetailCol('DATE', dateFormatted),
-                      ),
-                    ],
-                  ),
-                  pw.SizedBox(height: 20),
-                  pw.Row(
-                    children: [
-                      pw.Expanded(
-                        child: _buildPdfDetailCol('BILLED TO', billedTo['name'] ?? 'N/A'),
-                      ),
-                      pw.Expanded(
-                        child: _buildPdfDetailCol('GSTIN', billedTo['gstin'] ?? 'N/A'),
-                      ),
-                    ],
-                  ),
-                  pw.SizedBox(height: 32),
-                  
-                  // Items Table
-                  pw.Container(
-                    padding: const pw.EdgeInsets.all(16),
-                    decoration: pw.BoxDecoration(
-                      color: PdfColor.fromHex('#F9F9F9'),
-                      borderRadius: const pw.BorderRadius.all(pw.Radius.circular(8)),
-                    ),
-                    child: pw.Column(
-                      children: [
-                        _buildPdfRow(
-                          '${membership['packageName']} membership · ${membership['durationLabel']}',
-                          '₹${amountData['taxableAmount'] ?? 0}',
-                        ),
-                        pw.SizedBox(height: 12),
-                        _buildPdfRow(
-                          'GST (${amountData['gstPercentage'] ?? 18}%)',
-                          '₹${amountData['gstAmount'] ?? 0}',
-                        ),
-                        pw.SizedBox(height: 16),
-                        pw.Divider(color: PdfColors.black, thickness: 1.5),
-                        pw.SizedBox(height: 12),
-                        _buildPdfRow(
-                          'Total paid',
-                          '₹${amountData['totalPaid'] ?? 0}',
-                          isBold: true,
-                          fontSize: 16,
-                        ),
-                        pw.SizedBox(height: 24),
-                        _buildPdfRow(
-                          'Paid via',
-                          payment['displayMethod'] ?? 'Online payment',
-                          textColor: PdfColors.grey700,
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  pw.Spacer(),
-                  
-                  // Footer
-                  pw.Divider(color: PdfColors.grey300),
-                  pw.SizedBox(height: 12),
-                  pw.Text(
-                    invoiceData['note'] ?? 'Digital service · SAC 998439 · This is a computer-generated invoice.\nRegistered office: Office No. 243, The Capital, Hadapsar, Pune, 411028',
-                    style: const pw.TextStyle(
-                      fontSize: 10,
-                      color: PdfColors.grey600,
-                    ),
-                    textAlign: pw.TextAlign.center,
-                  ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
