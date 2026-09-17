@@ -15,6 +15,31 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
   bool likesAndRoses = true;
   bool eventsNearYou = false;
   bool promotionsOffers = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSettings();
+  }
+
+  Future<void> _fetchSettings() async {
+    final settings = await AccountSettingService.getNotificationSettings();
+    if (settings != null && mounted) {
+      setState(() {
+        newMatches = settings['newMatchesEnabled'] ?? true;
+        messages = settings['messagesEnabled'] ?? true;
+        likesAndRoses = settings['likesRosesEnabled'] ?? true;
+        eventsNearYou = settings['eventsEnabled'] ?? false;
+        promotionsOffers = settings['promotionsEnabled'] ?? false;
+      });
+    }
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   Future<void> _saveSettings() async {
     final success = await AccountSettingService.updateNotificationSettings(
@@ -81,104 +106,108 @@ class _PushNotificationScreenState extends State<PushNotificationScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 16,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 4,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+      body: _isLoading 
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+            )
+          : SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 children: [
-                  _buildSwitchItem(
-                    emoji: '💖',
-                    iconBgColor: const Color(0xFFFCE8EE),
-                    title: 'New matches',
-                    value: newMatches,
-                    onChanged: (val) {
-                      setState(() => newMatches = val);
-                      _saveSettings();
-                    },
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 16,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 8),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 4,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        _buildSwitchItem(
+                          emoji: '💖',
+                          iconBgColor: const Color(0xFFFCE8EE),
+                          title: 'New matches',
+                          value: newMatches,
+                          onChanged: (val) {
+                            setState(() => newMatches = val);
+                            _saveSettings();
+                          },
+                        ),
+                        _buildDivider(),
+                        _buildSwitchItem(
+                          emoji: '💬',
+                          iconBgColor: const Color(0xFFE8F2FC),
+                          title: 'Messages',
+                          value: messages,
+                          onChanged: (val) {
+                            setState(() => messages = val);
+                            _saveSettings();
+                          },
+                        ),
+                        _buildDivider(),
+                        _buildSwitchItem(
+                          emoji: '🌹',
+                          iconBgColor: const Color(0xFFFCE8E8),
+                          title: 'Likes & Roses',
+                          value: likesAndRoses,
+                          onChanged: (val) {
+                            setState(() => likesAndRoses = val);
+                            _saveSettings();
+                          },
+                        ),
+                        _buildDivider(),
+                        _buildSwitchItem(
+                          emoji: '🎟️',
+                          iconBgColor: const Color(0xFFFCF2E8),
+                          title: 'Events near you',
+                          value: eventsNearYou,
+                          onChanged: (val) {
+                            setState(() => eventsNearYou = val);
+                            _saveSettings();
+                          },
+                        ),
+                        _buildDivider(),
+                        _buildSwitchItem(
+                          emoji: '🎁',
+                          iconBgColor: const Color(0xFFF1E8FC),
+                          title: 'Promotions & Offers',
+                          value: promotionsOffers,
+                          onChanged: (val) {
+                            setState(() => promotionsOffers = val);
+                            _saveSettings();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  _buildDivider(),
-                  _buildSwitchItem(
-                    emoji: '💬',
-                    iconBgColor: const Color(0xFFE8F2FC),
-                    title: 'Messages',
-                    value: messages,
-                    onChanged: (val) {
-                      setState(() => messages = val);
-                      _saveSettings();
-                    },
-                  ),
-                  _buildDivider(),
-                  _buildSwitchItem(
-                    emoji: '🌹',
-                    iconBgColor: const Color(0xFFFCE8E8),
-                    title: 'Likes & Roses',
-                    value: likesAndRoses,
-                    onChanged: (val) {
-                      setState(() => likesAndRoses = val);
-                      _saveSettings();
-                    },
-                  ),
-                  _buildDivider(),
-                  _buildSwitchItem(
-                    emoji: '🎟️',
-                    iconBgColor: const Color(0xFFFCF2E8),
-                    title: 'Events near you',
-                    value: eventsNearYou,
-                    onChanged: (val) {
-                      setState(() => eventsNearYou = val);
-                      _saveSettings();
-                    },
-                  ),
-                  _buildDivider(),
-                  _buildSwitchItem(
-                    emoji: '🎁',
-                    iconBgColor: const Color(0xFFF1E8FC),
-                    title: 'Promotions & Offers',
-                    value: promotionsOffers,
-                    onChanged: (val) {
-                      setState(() => promotionsOffers = val);
-                      _saveSettings();
-                    },
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Text(
+                      'Turn off promotions to only get notified about real activity.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                        height: 1.4,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text(
-                'Turn off promotions to only get notified about real activity.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade500,
-                  height: 1.4,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

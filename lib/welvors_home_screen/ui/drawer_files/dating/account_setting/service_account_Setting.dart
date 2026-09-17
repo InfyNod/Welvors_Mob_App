@@ -50,6 +50,32 @@ class AccountSettingService {
       return false;
     }
   }
+
+  static Future<Map<String, dynamic>?> getNotificationSettings() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/notification/settings');
+      final response = await http.get(
+        url,
+        headers: await _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        } else {
+          // If structure is just the data directly
+          return data;
+        }
+      } else {
+        debugPrint('Failed to get notification settings: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error in getNotificationSettings: $e');
+      return null;
+    }
+  }
   static Future<bool> addBankOrUpi(Map<String, dynamic> data) async {
     try {
       final url = Uri.parse('$baseUrl/user/bank-upi/create');

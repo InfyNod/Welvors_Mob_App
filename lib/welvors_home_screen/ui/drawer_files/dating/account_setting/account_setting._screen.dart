@@ -13,6 +13,7 @@ import 'account_pages/pause_delete_drawer.dart';
 import 'account_pages/pause_delete_drawer.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 import 'service_account_Setting.dart';
+import '../edit_profile/services/edit_profile_api_service.dart';
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -26,10 +27,39 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   int _bankCount = 0;
   int _upiCount = 0;
 
+  String _apiPhone = '+91 ••••• 43210';
+
   @override
   void initState() {
     super.initState();
     _fetchCounts();
+    _fetchProfileDetails();
+  }
+
+  Future<void> _fetchProfileDetails() async {
+    try {
+      final response = await EditProfileApiService.getProfileDetails();
+      if (response['error'] == null && response['data'] != null) {
+        final data = response['data'];
+        final basicDetails = data['basicDetails'] ?? {};
+        
+        String rawPhone = basicDetails['phoneNumber']?.toString() ?? data['phoneNumber']?.toString() ?? basicDetails['phone']?.toString() ?? '';
+        
+        if (rawPhone.isNotEmpty) {
+          String phone = rawPhone.replaceAll(RegExp(r'\D'), '');
+          if (phone.length > 10) {
+            phone = phone.substring(phone.length - 10);
+          }
+          if (phone.isNotEmpty && mounted) {
+            setState(() {
+              _apiPhone = '+91 $phone';
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   Future<void> _fetchCounts() async {
@@ -193,7 +223,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '$email • +91 ••••• 43210',
+                            '$email • $_apiPhone',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,
