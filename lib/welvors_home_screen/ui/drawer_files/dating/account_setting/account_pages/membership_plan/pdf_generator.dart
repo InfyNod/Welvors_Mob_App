@@ -17,10 +17,20 @@ class PdfGenerator {
       final payment = invoiceData['payment'] ?? {};
       
       final String invoiceNo = invoice['invoiceNumber'] ?? 'INV-N/A';
+      
       String dateFormatted = 'N/A';
       if (invoice['date'] != null) {
         try {
           dateFormatted = DateFormat('dd MMM yyyy').format(DateTime.parse(invoice['date']));
+        } catch (_) {}
+      }
+
+      String validityStr = '';
+      if (membership['startDate'] != null && membership['endDate'] != null) {
+        try {
+          final start = DateFormat('dd MMM yyyy').format(DateTime.parse(membership['startDate']));
+          final end = DateFormat('dd MMM yyyy').format(DateTime.parse(membership['endDate']));
+          validityStr = '$start - $end';
         } catch (_) {}
       }
       
@@ -89,8 +99,29 @@ class PdfGenerator {
                               pw.SizedBox(height: 4),
                               pw.Text(
                                 company['legalName'] ?? 'INFYNOD TECH PRIVATE LIMITED',
+                                style: pw.TextStyle( fontSize: 10, color: PdfColors.grey700, fontWeight: pw.FontWeight.bold,),
+                              ),
+                              pw.SizedBox(height: 2),
+                              pw.Text(
+                                company['registeredOffice'] ?? 'Office No. 243, The Capital, Hadapsar, Pune, 411028',
                                 style: const pw.TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 9,
+                                  color: PdfColors.grey700,
+                                ),
+                              ),
+                              pw.SizedBox(height: 2),
+                              pw.Text(
+                                'GSTIN: ${company['gstin'] ?? 'N/A'}',
+                                style: const pw.TextStyle(
+                                  fontSize: 9,
+                                  color: PdfColors.grey700,
+                                ),
+                              ),
+                              pw.SizedBox(height: 2),
+                              pw.Text(
+                                'SAC Code: ${company['sacCode'] ?? '998439'}',
+                                style: const pw.TextStyle(
+                                  fontSize: 9,
                                   color: PdfColors.grey700,
                                 ),
                               ),
@@ -123,11 +154,15 @@ class PdfGenerator {
                       
                       // Details Grid
                       pw.Row(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         children: [
                           _buildPdfDetailCol('INVOICE NO.', invoiceNo),
                           _buildPdfDetailCol('DATE', dateFormatted),
-                          _buildPdfDetailCol('BILLED TO', billedTo['name'] ?? 'N/A'),
+                          _buildPdfDetailCol(
+                            'BILLED TO', 
+                            '${billedTo['name'] ?? 'N/A'}\n${billedTo['phone'] ?? ''}'
+                          ),
                           _buildPdfDetailCol('GSTIN', billedTo['gstin'] ?? 'N/A'),
                         ],
                       ),
@@ -168,6 +203,17 @@ class PdfGenerator {
                               '${membership['packageName']} membership · ${membership['durationLabel']}',
                               'Rs. ${amountData['taxableAmount'] ?? 0}',
                             ),
+                            if (validityStr.isNotEmpty) ...[
+                              pw.SizedBox(height: 4),
+                              pw.Row(
+                                children: [
+                                  pw.Text(
+                                    'Validity: $validityStr',
+                                    style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+                                  ),
+                                ],
+                              ),
+                            ],
                             pw.SizedBox(height: 16),
                             _buildPdfRow(
                               'GST (${amountData['gstPercentage'] ?? 18}%)',
@@ -190,6 +236,17 @@ class PdfGenerator {
                               textColor: PdfColors.grey700,
                               fontSize: 12,
                             ),
+                            if (payment['transactionId'] != null) ...[
+                              pw.SizedBox(height: 4),
+                              pw.Row(
+                                children: [
+                                  pw.Text(
+                                    'Txn ID: ${payment['transactionId']}',
+                                    style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -246,9 +303,10 @@ class PdfGenerator {
         pw.Text(
           value,
           style: pw.TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: pw.FontWeight.bold,
             color: PdfColors.black,
+            lineSpacing: 1.5,
           ),
         ),
       ],
