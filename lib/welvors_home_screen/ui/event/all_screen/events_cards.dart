@@ -2,6 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'view_details/share_event_deatil.dart';
 import 'package:shimmer/shimmer.dart';
 import '../events_bloc/events_bloc.dart';
 import '../events_bloc/events_state.dart';
@@ -111,35 +115,80 @@ class _EventsCardsState extends State<EventsCards> {
       priceStr = event['womenEntryPrice']?.toString() ?? '0';
     } else if (userGender.toLowerCase() == 'man') {
       priceStr = event['menEntryPrice']?.toString() ?? '0';
-    } else {
+    } else if (userGender.isNotEmpty) {
       priceStr = event['otherEntryPrice']?.toString() ?? '0';
+    } else {
+      // Fallback if gender is not yet loaded to avoid wrongly showing 'Free'
+      priceStr = event['menEntryPrice']?.toString() ?? 
+                 event['womenEntryPrice']?.toString() ?? 
+                 event['otherEntryPrice']?.toString() ?? '0';
     }
 
     int price = int.tryParse(priceStr) ?? 0;
     return price > 0 ? '₹$price' : 'Free';
   }
 
-  void _shareEvent(BuildContext context, String eventName) async {
+  void _shareEvent(BuildContext context, String eventId, String title, String date, String location, String imageUrl, String price) async {
     try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFFE85A7A)),
+        ),
+      );
+
+      final screenshotController = ScreenshotController();
+      
+      // Capture the widget
+      final capturedImage = await screenshotController.captureFromWidget(
+        ShareEventDetailCard(
+          title: title,
+          date: date,
+          location: location,
+          imageUrl: imageUrl,
+          price: price,
+        ),
+        delay: const Duration(milliseconds: 200),
+        context: context,
+      );
+
+      // Hide loading
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      // Save to temp directory
+      final directory = await getTemporaryDirectory();
+      final imagePath = await File('${directory.path}/event_share_$eventId.png').create();
+      await imagePath.writeAsBytes(capturedImage);
+
       final box = context.findRenderObject() as RenderBox?;
-      await Share.share(
-        'Check out this event on Velvors: $eventName',
+      final shareLink = 'https://welvors.com/event/$eventId';
+      
+      await Share.shareXFiles(
+        [XFile(imagePath.path)],
+        text: 'Hey! Join me for this amazing event on Welvors:\n$shareLink',
         sharePositionOrigin: box != null
             ? box.localToGlobal(Offset.zero) & box.size
             : null,
       );
     } catch (e) {
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
       debugPrint('Error sharing: $e');
     }
   }
 
-  Widget _buildShareIcon(BuildContext parentContext, String eventName) {
+  Widget _buildShareIcon(BuildContext parentContext, String eventId, String title, String date, String location, String imageUrl, String price) {
     return Builder(
       builder: (BuildContext iconContext) {
         return InkWell(
           onTap: () {
-            debugPrint("Share clicked for $eventName");
-            _shareEvent(iconContext, eventName);
+            debugPrint("Share clicked for $title");
+            _shareEvent(iconContext, eventId, title, date, location, imageUrl, price);
           },
           borderRadius: BorderRadius.circular(20),
           child: const Padding(
@@ -153,6 +202,9 @@ class _EventsCardsState extends State<EventsCards> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch ProfileEditCubit so that when gender is loaded, the prices update automatically.
+    context.watch<ProfileEditCubit>();
+
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 24),
       child: BlocConsumer<EventsBloc, EventsState>(
@@ -693,7 +745,7 @@ class _EventsCardsState extends State<EventsCards> {
                     ),
                   ),
                   const Spacer(),
-                  _buildShareIcon(context, title),
+                  _buildShareIcon(context, eventId, title, dateStr, location, imageUrl, price),
                 ],
               ),
             ),
