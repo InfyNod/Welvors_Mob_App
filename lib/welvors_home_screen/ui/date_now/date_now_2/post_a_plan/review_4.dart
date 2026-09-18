@@ -20,7 +20,9 @@ class _Review4ViewState extends State<Review4View> {
   Future<void> _submitPublish(BuildContext context, PostPlanState state) async {
     final planId = state.planId;
     if (planId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan ID is missing. Please restart.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Plan ID is missing. Please restart.')),
+      );
       return;
     }
 
@@ -36,12 +38,18 @@ class _Review4ViewState extends State<Review4View> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to publish plan. Please try again.')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to publish plan. Please try again.'),
+            ),
+          );
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('An error occurred. Please try again.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('An error occurred. Please try again.')),
+        );
       }
     } finally {
       if (mounted) {
@@ -387,15 +395,17 @@ class _Review4ViewState extends State<Review4View> {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: _isPublishing 
+                          color: _isPublishing
                               ? const Color.fromARGB(255, 224, 222, 220)
                               : const Color(0xFFE43A6A),
                           borderRadius: BorderRadius.circular(16),
-                          boxShadow: _isPublishing 
-                              ? [] 
+                          boxShadow: _isPublishing
+                              ? []
                               : [
                                   BoxShadow(
-                                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                    color: const Color(
+                                      0xFFE43A6A,
+                                    ).withOpacity(0.3),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
@@ -408,7 +418,9 @@ class _Review4ViewState extends State<Review4View> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
                                   ),
                                 ),
                               )
