@@ -125,7 +125,7 @@ class _Review4ViewState extends State<Review4View> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(
+                              Flexible(
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
@@ -147,7 +147,7 @@ class _Review4ViewState extends State<Review4View> {
                                         ),
                                       ),
                                       const SizedBox(width: 6),
-                                      Expanded(
+                                      Flexible(
                                         child: Text(
                                           'Live · ${state.locationName.isNotEmpty ? state.locationName : 'Starbucks Reserve'}',
                                           style: const TextStyle(

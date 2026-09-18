@@ -883,6 +883,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
             const SizedBox(height: 0), // Reduced spacing
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
