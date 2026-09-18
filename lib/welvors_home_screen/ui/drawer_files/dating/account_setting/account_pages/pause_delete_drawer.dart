@@ -1,40 +1,157 @@
 import 'package:flutter/material.dart';
+import '../service_account_Setting.dart';
+import '../../../../../services/token_helper.dart';
+import '../../logout/splash_logout.dart';
 
-void showPauseAccountBottomSheet(BuildContext context) {
-  _showCustomBottomSheet(
+Future<bool?> showPauseAccountBottomSheet(BuildContext context) {
+  bool isLoading = false;
+  
+  return showModalBottomSheet<bool>(
     context: context,
-    icon: '⏸️',
-    iconBgColor: const Color(0xFFFBF4E4), // Light beige/yellowish
-    title: 'Pause your account?',
-    subtitle:
-        'Your profile will be hidden from everyone. Your matches and chats stay safe. Unpause anytime.',
-    primaryButtonText: 'Pause account',
-    primaryButtonColor: const Color(0xFFE43A6A), // Pink
-    onPrimaryPressed: () {
-      // TODO: Implement pause logic
-      Navigator.pop(context);
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (modalContext) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return _buildCustomBottomSheetContent(
+            context: modalContext,
+            icon: '⏸️',
+            iconBgColor: const Color(0xFFFBF4E4),
+            title: 'Pause your account?',
+            subtitle: 'Your profile will be hidden from everyone. Your matches and chats stay safe. Unpause anytime.',
+            primaryButtonText: isLoading ? 'Pausing...' : 'Pause account',
+            primaryButtonColor: const Color(0xFFE43A6A),
+            isLoading: isLoading,
+            onPrimaryPressed: () async {
+              if (isLoading) return;
+              setState(() => isLoading = true);
+              
+              bool success = await AccountSettingService.pauseAccount(reason: "Taking a break from dating");
+              
+              if (modalContext.mounted) {
+                setState(() => isLoading = false);
+                Navigator.pop(modalContext, success);
+                
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Account paused successfully.')),
+                  );
+                  // Navigation logic if required (e.g., to login screen)
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to pause account. Please try again.')),
+                  );
+                }
+              }
+            },
+          );
+        },
+      );
+    },
+  );
+}
+
+Future<bool?> showResumeAccountBottomSheet(BuildContext context) {
+  bool isLoading = false;
+  
+  return showModalBottomSheet<bool>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (modalContext) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return _buildCustomBottomSheetContent(
+            context: modalContext,
+            icon: '▶️',
+            iconBgColor: const Color(0xFFE8F5E9), // Light green
+            title: 'Resume your account?',
+            subtitle: 'Your profile will be visible to everyone again. You can start matching and chatting.',
+            primaryButtonText: isLoading ? 'Resuming...' : 'Resume account',
+            primaryButtonColor: const Color(0xFF4CAF50), // Green
+            isLoading: isLoading,
+            onPrimaryPressed: () async {
+              if (isLoading) return;
+              setState(() => isLoading = true);
+              
+              String? error = await AccountSettingService.resumeAccount();
+              bool success = error == null;
+              
+              if (modalContext.mounted) {
+                setState(() => isLoading = false);
+                Navigator.pop(modalContext, success);
+                
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Account resumed successfully.')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed: $error')),
+                  );
+                }
+              }
+            },
+          );
+        },
+      );
     },
   );
 }
 
 void showDeleteAccountBottomSheet(BuildContext context) {
-  _showCustomBottomSheet(
+  bool isLoading = false;
+  
+  showModalBottomSheet(
     context: context,
-    icon: '🗑️',
-    iconBgColor: const Color(0xFFFCE8EE), // Light red
-    title: 'Delete account permanently?',
-    subtitle:
-        'This erases your profile, matches, messages and wallet balance forever. This cannot be undone.',
-    primaryButtonText: 'Delete everything',
-    primaryButtonColor: const Color(0xFFE44E4E), // Red
-    onPrimaryPressed: () {
-      // TODO: Implement delete logic
-      Navigator.pop(context);
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (modalContext) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return _buildCustomBottomSheetContent(
+            context: modalContext,
+            icon: '🗑️',
+            iconBgColor: const Color(0xFFFCE8EE),
+            title: 'Delete account permanently?',
+            subtitle: 'This erases your profile, matches, messages and wallet balance forever. This cannot be undone.',
+            primaryButtonText: isLoading ? 'Deleting...' : 'Delete everything',
+            primaryButtonColor: const Color(0xFFE44E4E),
+            isLoading: isLoading,
+            onPrimaryPressed: () async {
+              if (isLoading) return;
+              setState(() => isLoading = true);
+              
+              bool success = await AccountSettingService.deleteAccount();
+              
+              if (modalContext.mounted) {
+                setState(() => isLoading = false);
+                Navigator.pop(modalContext);
+                
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Account deleted successfully.')),
+                  );
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SplashLogout()),
+                    (route) => false,
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to delete account. Please try again.')),
+                  );
+                }
+              }
+            },
+          );
+        },
+      );
     },
   );
 }
 
-void _showCustomBottomSheet({
+Widget _buildCustomBottomSheetContent({
   required BuildContext context,
   required String icon,
   required Color iconBgColor,
@@ -43,21 +160,17 @@ void _showCustomBottomSheet({
   required String primaryButtonText,
   required Color primaryButtonColor,
   required VoidCallback onPrimaryPressed,
+  bool isLoading = false,
 }) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    builder: (context) {
-      return Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+  return Container(
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
             // Drag handle
             Container(
               width: 40,
@@ -152,10 +265,8 @@ void _showCustomBottomSheet({
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Bottom padding
-          ],
-        ),
-      );
-    },
+        const SizedBox(height: 16), // Bottom padding
+      ],
+    ),
   );
 }

@@ -26,6 +26,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   bool _emailNotifications = true;
   int _bankCount = 0;
   int _upiCount = 0;
+  bool _isAccountPaused = false;
 
   String _apiPhone = '+91 ••••• 43210';
 
@@ -53,8 +54,24 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           if (phone.isNotEmpty && mounted) {
             setState(() {
               _apiPhone = '+91 $phone';
+              // Check if account is paused
+              _isAccountPaused = data['isPaused'] == true || 
+                                 data['accountStatus'] == 'PAUSED' || 
+                                 data['accountStatus'] == 'paused' ||
+                                 data['account_status'] == 'PAUSED' ||
+                                 data['account_status'] == 'paused' ||
+                                 data['paused_at'] != null;
             });
           }
+        } else if (mounted) {
+          setState(() {
+             _isAccountPaused = data['isPaused'] == true || 
+                                data['accountStatus'] == 'PAUSED' || 
+                                data['accountStatus'] == 'paused' ||
+                                data['account_status'] == 'PAUSED' ||
+                                data['account_status'] == 'paused' ||
+                                data['paused_at'] != null;
+          });
         }
       }
     } catch (e) {
@@ -380,11 +397,23 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           _buildCard(
             children: [
               _buildListItem(
-                iconWidget: const Text('⏸️', style: TextStyle(fontSize: 18)),
-                iconBgColor: const Color(0xFFFFF3E0), // Light Orange
-                title: 'Pause Account',
-                subtitle: 'Hide your profile temporarily',
-                onTap: () => showPauseAccountBottomSheet(context),
+                iconWidget: Text(_isAccountPaused ? '▶️' : '⏸️', style: const TextStyle(fontSize: 18)),
+                iconBgColor: _isAccountPaused ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0),
+                title: _isAccountPaused ? 'Resume Account' : 'Pause Account',
+                subtitle: _isAccountPaused ? 'Make your profile visible again' : 'Hide your profile temporarily',
+                onTap: () async {
+                  if (_isAccountPaused) {
+                    final result = await showResumeAccountBottomSheet(context);
+                    if (result == true) {
+                      setState(() => _isAccountPaused = false);
+                    }
+                  } else {
+                    final result = await showPauseAccountBottomSheet(context);
+                    if (result == true) {
+                      setState(() => _isAccountPaused = true);
+                    }
+                  }
+                },
               ),
               const Divider(
                 height: 1,

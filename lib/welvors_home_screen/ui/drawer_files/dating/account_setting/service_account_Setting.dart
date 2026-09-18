@@ -14,6 +14,67 @@ class AccountSettingService {
     };
   }
 
+  static Future<bool> pauseAccount({required String reason}) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/account/pause');
+      final response = await http.patch(
+        url,
+        headers: await _headers,
+        body: jsonEncode({"reason": reason}),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Account paused successfully');
+        return true;
+      } else {
+        debugPrint('Failed to pause account: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in pauseAccount: $e');
+      return false;
+    }
+  }
+
+  static Future<String?> resumeAccount() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/account/resume');
+      final response = await http.patch(
+        url,
+        headers: await _headers,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Account resumed successfully');
+        return null; // success
+      } else {
+        debugPrint('Failed to resume account: ${response.statusCode} - ${response.body}');
+        return response.body;
+      }
+    } catch (e) {
+      debugPrint('Error in resumeAccount: $e');
+      return e.toString();
+    }
+  }
+
+  static Future<bool> deleteAccount() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/account/delete');
+      final response = await http.delete(
+        url,
+        headers: await _headers,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Account deleted successfully');
+        return true;
+      } else {
+        debugPrint('Failed to delete account: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in deleteAccount: $e');
+      return false;
+    }
+  }
+
   static Future<bool> updateNotificationSettings({
     required bool newMatchesEnabled,
     required bool messagesEnabled,
