@@ -179,7 +179,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     iconBgColor: Colors.green.shade50,
                     title: 'Request a Call',
                     subtitle: 'We call you back\n',
-                    statusText: 'Mon–Sat, 10am–7pm',
+                    statusText: 'Mon-Sat, 10am-7pm',
                     statusColor: Colors.grey.shade600,
                     onTap: () {
                       Navigator.push(
@@ -195,7 +195,8 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 Expanded(
                   child: _buildContactCard(
                     emoji: '🟢',
-                    iconBgColor: Colors.green.shade50,
+                    imagePath: 'assets/whtp.png',
+                    iconBgColor: const Color.fromARGB(255, 54, 202, 66),
                     title: 'WhatsApp',
                     subtitle: '+91 97653 03735\n',
                     statusText: 'Fastest reply',
@@ -222,12 +223,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             const SizedBox(height: 16),
 
             // Questions List
-            _isLoadingFaqs 
-              ? const Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: Center(child: CircularProgressIndicator(color: Colors.black87)),
-                )
-              : _faqs.isEmpty
+            _isLoadingFaqs
+                ? const Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Center(
+                      child: CircularProgressIndicator(color: Colors.black87),
+                    ),
+                  )
+                : _faqs.isEmpty
                 ? const Padding(
                     padding: EdgeInsets.all(32.0),
                     child: Center(child: Text('No FAQs available.')),
@@ -270,7 +273,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
             const SizedBox(height: 32),
 
-
             const SizedBox(height: 20),
             Center(
               child: RichText(
@@ -297,6 +299,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
   Widget _buildContactCard({
     required String emoji,
+    String? imagePath,
     required Color iconBgColor,
     required String title,
     required String subtitle,
@@ -337,7 +340,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               alignment: Alignment.center,
-              child: Text(emoji, style: const TextStyle(fontSize: 22)),
+              child: imagePath != null
+                  ? Image.asset(
+                      imagePath,
+                      width: 32,
+                      height: 32,
+                      fit: BoxFit.contain,
+                    )
+                  : Text(emoji, style: const TextStyle(fontSize: 22)),
             ),
             const SizedBox(height: 12),
             Text(
@@ -385,8 +395,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       ),
     );
   }
-
-
 
   Widget _buildMoreItem({
     required String emoji,

@@ -181,6 +181,36 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
             ]),
             const SizedBox(height: 32),
 
+            // SAFETY & PROTECTION
+            _buildSectionTitle('SAFETY & PROTECTION'),
+            const SizedBox(height: 12),
+            _buildSectionContainer([
+              _buildPolicyItem(
+                emoji: '👶',
+                iconBgColor: Colors.blue.shade50,
+                title: 'Child Safety Standards',
+                subtitle: 'Zero tolerance · CSAE policy',
+                onTap: _showComingSoon,
+              ),
+              _buildDivider(),
+              _buildPolicyItem(
+                emoji: '🔞',
+                iconBgColor: Colors.red.shade50,
+                title: '18+ Age Policy',
+                subtitle: 'Age gate & verification',
+                onTap: _showComingSoon,
+              ),
+              _buildDivider(),
+              _buildPolicyItem(
+                emoji: '⚖️',
+                iconBgColor: Colors.grey.shade200,
+                title: 'Content Moderation & Law Enforcement',
+                subtitle: 'Reports, takedowns, legal requests',
+                onTap: _showComingSoon,
+              ),
+            ]),
+            const SizedBox(height: 32),
+
             // MONEY & PROGRAMMES
             _buildSectionTitle('MONEY & PROGRAMMES'),
             const SizedBox(height: 12),
@@ -279,6 +309,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                     ),
                   );
                 },
+              ),
+              _buildDivider(),
+              _buildPolicyItem(
+                emoji: '🗑️',
+                iconBgColor: Colors.red.shade50,
+                title: 'Delete Your Account & Data',
+                subtitle: 'How to request erasure',
+                onTap: _showComingSoon,
               ),
             ]),
             const SizedBox(height: 32),
