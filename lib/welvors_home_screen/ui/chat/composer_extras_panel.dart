@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_giphy_picker/giphy_ui.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
@@ -82,6 +83,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
   GiftItem? _selectedGift;
   List<GiftCategory> _apiGiftCategories = const [];
   List<ApiGift> _apiGifts = const [];
+  final Map<int, GlobalKey> _giftCategoryKeys = {};
   bool _giftLoading = false;
   String? _giftError;
 
@@ -104,6 +106,9 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
       if (!mounted) return;
       setState(() {
         _apiGiftCategories = catalog.categories;
+        for (int i = 0; i < _apiGiftCategories.length; i++) {
+          _giftCategoryKeys[i] = GlobalKey();
+        }
         _apiGifts = catalog.gifts;
         _giftCategory = _giftCategory.clamp(
           0,
@@ -118,6 +123,18 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         _giftLoading = false;
         _giftError = e.toString();
       });
+    }
+  }
+
+  void _scrollToGiftCategory(int index) {
+    final key = _giftCategoryKeys[index];
+    if (key != null && key.currentContext != null) {
+      Scrollable.ensureVisible(
+        key.currentContext!,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -934,122 +951,160 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         .where((g) => g.categoryId == category.id)
         .map(GiftItem.fromApi)
         .toList();
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.fromLTRB(18, 14, 18, 12),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFFFE9F3), Color(0xFFF0EDFF)],
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Image.asset('assets/gift.png', height: 56, width: 56),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Send a Gift', style: AppText.h2),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Choose a gift to send to your match',
-                          style: AppText.sub.copyWith(fontSize: 11.5),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 35,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _apiGiftCategories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (_, index) {
-                    final selected = index == _giftCategory;
-                    return GestureDetector(
-                      onTap: () => setState(() {
-                        _giftCategory = index;
-                        _selectedGift = null;
-                      }),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: selected
-                              ? AppColors.primaryDark
-                              : Colors.white70,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          _apiGiftCategories[index].name,
-                          style: AppText.pill.copyWith(
-                            fontSize: 11,
-                            color: selected ? Colors.white : AppColors.ink60,
-                          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFFFE9F3), Color(0xFFF0EDFF), Colors.white],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0.0, 0.2, 0.6],
+        ),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 14, bottom: 12),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Row(
+                    children: [
+                      Lottie.asset(
+                        'assets/Referral.json',
+                        height: 65,
+                        width: 65,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Send a Gift',
+                              style: AppText.h1.copyWith(fontSize: 22),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Choose a gift to send to your match',
+                              style: AppText.body.copyWith(
+                                color: AppColors.ink60,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 30,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _apiGiftCategories.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (_, index) {
+                      final selected = index == _giftCategory;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _giftCategory = index;
+                            _selectedGift = null;
+                          });
+                          _scrollToGiftCategory(index);
+                        },
+                        child: Container(
+                          key: _giftCategoryKeys[index],
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? const Color(0xFFE43A6A)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: selected
+                                ? [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFFE43A6A,
+                                      ).withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: Text(
+                            _apiGiftCategories[index].name,
+                            style: AppText.pill.copyWith(
+                              fontSize: 13,
+                              color: selected ? Colors.white : AppColors.ink60,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: gifts.isEmpty
-              ? const Center(child: Text('No gifts available'))
-              : _giftTileGrid(gifts),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-          child: SizedBox(
-            width: double.infinity,
-            height: 44,
-            child: FilledButton(
-              onPressed: _selectedGift == null
-                  ? null
-                  : () => widget.onGiftSelected(_selectedGift!),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primaryDark,
-                disabledBackgroundColor: AppColors.soft,
-                foregroundColor: Colors.white,
-                disabledForegroundColor: AppColors.muted,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+          Expanded(
+            child: gifts.isEmpty
+                ? const Center(child: Text('No gifts available'))
+                : _giftTileGrid(gifts),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: FilledButton(
+                onPressed: _selectedGift == null
+                    ? null
+                    : () => widget.onGiftSelected(_selectedGift!),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primaryDark,
+                  disabledBackgroundColor: AppColors.soft,
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: AppColors.muted,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-              ),
-              child: Text(
-                _selectedGift == null
-                    ? 'Select a gift'
-                    : 'Send ${_selectedGift!.name}',
-                style: AppText.pill.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+                child: Text(
+                  _selectedGift == null
+                      ? 'Select a gift'
+                      : 'Send ${_selectedGift!.name}',
+                  style: AppText.pill.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _selectedGift == null ? null : Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _giftTileGrid(List<GiftItem> items) {
     return GridView.builder(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       itemCount: items.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 0.85,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.8,
       ),
       itemBuilder: (_, index) {
         final gift = items[index];
@@ -1060,71 +1115,100 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
           onTap: () => setState(() => _selectedGift = gift),
           child: Container(
             decoration: BoxDecoration(
-              color: selected ? AppColors.primarySoft : const Color(0xFFFFFDFC),
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: selected ? AppColors.primary : AppColors.line,
+                color: selected
+                    ? const Color(0xFFE43A6A)
+                    : Colors.grey.shade100,
                 width: selected ? 2 : 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: selected
+                      ? const Color(0xFFE43A6A).withOpacity(0.3)
+                      : Colors.black.withOpacity(0.07),
+                  blurRadius: selected ? 18 : 10,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: gift.image.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                          ),
-                          child: Image.network(
-                            gift.image,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.card_giftcard_rounded,
-                              size: 34,
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      gradient: selected
+                          ? const LinearGradient(
+                              colors: [Color(0xFFFFF0F5), Color(0xFFFFE4EE)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                          : const LinearGradient(
+                              colors: [Color(0xFFF9F9F9), Color(0xFFF1F1F1)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ),
-                        )
-                      : Center(
-                          child: Text(
-                            gift.emoji.isEmpty ? '🎁' : gift.emoji,
-                            style: const TextStyle(fontSize: 30),
-                          ),
-                        ),
-                ),
-                const SizedBox(height: 15),
-                Text(
-                  gift.name,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppText.pill.copyWith(
-                    fontSize: 11.5,
-                    color: AppColors.ink,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('🪙', style: TextStyle(fontSize: 11)),
-                    const SizedBox(width: 3),
-                    Text(
-                      '${gift.coins}',
-                      style: AppText.pill.copyWith(
-                        fontSize: 11.5,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(18),
+                        topRight: Radius.circular(18),
                       ),
                     ),
-                  ],
+                    child: gift.image.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(18),
+                              topRight: Radius.circular(18),
+                            ),
+                            child: Image.network(
+                              gift.image,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.card_giftcard_rounded,
+                                size: 34,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            gift.emoji.isEmpty ? '🎁' : gift.emoji,
+                            style: const TextStyle(fontSize: 40),
+                          ),
+                  ),
                 ),
-                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      Text(
+                        gift.name,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppText.body.copyWith(fontSize: 14),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('🪙', style: TextStyle(fontSize: 12)),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${gift.coins}',
+                            style: AppText.pill.copyWith(
+                              fontSize: 13,
+                              color: const Color(0xFFE43A6A),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

@@ -6953,28 +6953,35 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     return SafeArea(
       bottom: true,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: AppColors.line),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // =========================================================
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // =========================================================
             // REPLY PREVIEW
             // =========================================================
-            if (_replyingTo != null) _replyComposerPreview(),
+            if (_replyingTo != null) 
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: _replyComposerPreview(),
+              ),
 
             // =========================================================
             // SINGLE MESSAGE COMPOSER
             // =========================================================
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // =======================================================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // =======================================================
                 // SINGLE TEXTFIELD
                 // =======================================================
                 Expanded(
@@ -7291,10 +7298,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                 ),
               ],
             ),
+          ),
 
-            // =========================================================
-            // EXTRAS PANEL
-            // =========================================================
+          // =========================================================
+          // EXTRAS PANEL
+          // =========================================================
             AnimatedSize(
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOut,
@@ -7314,6 +7322,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                   : const SizedBox.shrink(),
             ),
           ],
+        ),
         ),
       ),
     );
