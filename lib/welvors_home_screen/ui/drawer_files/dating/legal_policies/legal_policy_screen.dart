@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'all_page_legal/child_safety.dart';
 import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/cookie_policy.dart';
 import 'all_page_legal/data_rights.dart';
@@ -190,7 +191,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.blue.shade50,
                 title: 'Child Safety Standards',
                 subtitle: 'Zero tolerance · CSAE policy',
-                onTap: _showComingSoon,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChildSafetyScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
