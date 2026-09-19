@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'all_page_legal/18+_age_policy.dart';
 import 'all_page_legal/child_safety.dart';
+import 'all_page_legal/content_moderation_law.dart';
 import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/cookie_policy.dart';
 import 'all_page_legal/data_rights.dart';
@@ -222,7 +223,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.grey.shade200,
                 title: 'Content Moderation & Law Enforcement',
                 subtitle: 'Reports, takedowns, legal requests',
-                onTap: _showComingSoon,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ContentModerationScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 32),
