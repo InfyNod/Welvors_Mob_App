@@ -19,6 +19,73 @@ class ChatMessagesPage {
 }
 
 class ChatRepository {
+  Future<void> sendRelationshipTagProposal({
+    required String receiverId,
+    required String tag,
+    required String message,
+  }) async {
+    await _relationshipTagRequest(
+      'https://api.welvors.com/api/user/relationship-tags/create-proposals',
+      {
+        'receiverId': receiverId.trim(),
+        'tag': tag.trim(),
+        'message': message.trim(),
+      },
+    );
+  }
+
+  Future<void> acceptRelationshipTagProposal(String proposalId) async {
+    await _relationshipTagRequest(
+      'https://api.welvors.com/api/user/relationship-tags/proposals/${proposalId.trim()}/accept',
+      {},
+    );
+  }
+
+  Future<void> rejectRelationshipTagProposal(String proposalId) async {
+    await _relationshipTagRequest(
+      'https://api.welvors.com/api/user/relationship-tags/proposals/${proposalId.trim()}/reject',
+      {},
+    );
+  }
+
+  Future<void> _relationshipTagRequest(
+    String url,
+    Map<String, dynamic> body,
+  ) async {
+    if (url.contains('/proposals//')) throw Exception('Proposal ID is missing');
+    final prefs = await SharedPreferences.getInstance();
+    final rawToken = prefs.getString('auth_token')?.trim() ?? '';
+    if (rawToken.isEmpty) throw Exception('Authentication token is missing');
+    final token = rawToken.toLowerCase().startsWith('bearer ')
+        ? rawToken
+        : 'Bearer $rawToken';
+    debugPrint('💗 RELATIONSHIP API: $url');
+    debugPrint('💗 RELATIONSHIP BODY: ${jsonEncode(body)}');
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      },
+      body: jsonEncode(body),
+    );
+    debugPrint('💗 RELATIONSHIP STATUS: ${response.statusCode}');
+    debugPrint('💗 RELATIONSHIP RESPONSE: ${response.body}');
+    Map<String, dynamic>? data;
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map<String, dynamic>) data = decoded;
+    } catch (_) {}
+    if (response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        data?['success'] == false) {
+      throw Exception(
+        data?['message']?.toString() ?? 'Relationship tag request failed',
+      );
+    }
+  }
+
   /// Blocks a user using the backend block endpoint.
   Future<void> blockUser(String blockedId) async {
     final cleanId = blockedId.trim();
@@ -78,6 +145,77 @@ class ChatRepository {
         }
       }
       throw Exception(message);
+    }
+  }
+
+  /// Reports a user.
+  Future<void> reportUser({
+    required String reportedId,
+    required String reason,
+    String description = '',
+  }) async {
+    final cleanReportedId = reportedId.trim();
+    final cleanReason = reason.trim();
+    final cleanDescription = description.trim();
+
+    if (cleanReportedId.isEmpty) {
+      throw Exception('Reported user id is empty');
+    }
+    if (cleanReason.isEmpty) {
+      throw Exception('Report reason is required');
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final rawToken = prefs.getString('auth_token')?.trim() ?? '';
+    if (rawToken.isEmpty) {
+      throw Exception('Authentication token is missing');
+    }
+
+    final authorization = rawToken.toLowerCase().startsWith('bearer ')
+        ? rawToken
+        : 'Bearer $rawToken';
+
+    final uri = Uri.parse('https://api.welvors.com/api/user/reports');
+    final body = jsonEncode(<String, dynamic>{
+      'reportedId': cleanReportedId,
+      'reason': cleanReason,
+      'description': cleanDescription,
+    });
+
+    debugPrint('========== REPORT USER API ==========');
+    debugPrint('METHOD: POST');
+    debugPrint('URL: $uri');
+    debugPrint('BODY: $body');
+
+    final response = await http.post(
+      uri,
+      headers: <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': authorization,
+      },
+      body: body,
+    );
+
+    debugPrint('REPORT USER STATUS: ${response.statusCode}');
+    debugPrint('REPORT USER RESPONSE: ${response.body}');
+    debugPrint('====================================');
+
+    Map<String, dynamic>? decoded;
+    try {
+      final json = jsonDecode(response.body);
+      if (json is Map<String, dynamic>) {
+        decoded = json;
+      }
+    } catch (_) {}
+
+    if (response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        decoded?['success'] == false) {
+      throw Exception(
+        decoded?['message']?.toString() ??
+            'Unable to report user (${response.statusCode})',
+      );
     }
   }
 
@@ -160,6 +298,26 @@ class ChatRepository {
       final payload = jsonDecode(utf8.decode(base64Url.decode(normalized)));
 
       if (payload is Map) {
+        // Different auth versions use different JWT claims. Prefer the
+        // // explicit user id, then fall back to `sub` (standard JWT subject).
+        // // Some backends also nest the logged-in user inside `user`.
+        // final nestedUser = payload['user'];
+        // final nested = nestedUser is Map
+        //     ? Map<String, dynamic>.from(nestedUser)
+        //     : const <String, dynamic>{};
+
+        // final value =
+        //     payload['userId'] ??
+        //     payload['user_id'] ??
+        //     payload['id'] ??
+        //     payload['sub'] ??
+        //     nested['userId'] ??
+        //     nested['user_id'] ??
+        //     nested['id'];
+
+        // if (value != null && value.toString().trim().isNotEmpty) {
+        //   return value.toString().trim();
+        // }
         final value = payload['userId'] ?? payload['user_id'] ?? payload['id'];
         if (value != null && value.toString().isNotEmpty) {
           return value.toString();
@@ -188,7 +346,10 @@ class ChatRepository {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        if (token?.isNotEmpty == true) 'Authorization': token!.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
+        if (token?.isNotEmpty == true)
+          'Authorization': token!.toLowerCase().startsWith('bearer ')
+              ? token
+              : 'Bearer $token',
       },
     );
 
@@ -201,7 +362,7 @@ class ChatRepository {
     }
   }
 
-  final List<ChatMessage> aanyaMessages = const [
+  final List<ChatMessage> aanyaMessages = [
     // ----------------------------------------------------------
     // ROSE RECEIVED
     // ----------------------------------------------------------
@@ -325,7 +486,7 @@ class ChatRepository {
       text: 'Exclusively Dating',
       time: '2026-09-01T04:43:55.238Z',
       isMine: false,
-      type: ChatMessageType.proposal,
+      type: ChatMessageType.RELATIONSHIP_TAG_PROPOSAL,
     ),
 
     // ----------------------------------------------------------
@@ -454,7 +615,7 @@ class ChatRepository {
       inviteSubline: 'Requests close in 2h 40m · 1 spot left',
       inviteQuote:
           'No small talk, just the good stuff. Come find me at the corner table.',
-      inviteStats: {
+      inviteStats: const {
         '🤝 Bill': 'Split (TTMM)',
         '👥 Joining': 'Just 1 person',
         '🔥 Interest': '7 people asked',
@@ -515,208 +676,215 @@ class ChatRepository {
   // gift, proposal, rose, compliment, date invite, event invite) can be
   // reviewed in one place.
 
-  static const String demoAllCardsUserId = 'demo_all_cards_user';
+  // static const String demoAllCardsUserId = 'demo_all_cards_user';
 
-  static final ChatUser demoAllCardsUser = ChatUser(
-    id: demoAllCardsUserId,
-    conversationId: demoAllCardsUserId,
-    userId: demoAllCardsUserId,
-    name: 'Card Showcase',
-    age: 0,
-    image:
-        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80',
-    preview: 'Every message card style, in one chat',
-    time: '10:30 AM',
-    match: '—',
-    trust: '—',
-    online: true,
-    unread: 0,
-    progress: '',
-    reward: '',
-  );
+  // static final ChatUser demoAllCardsUser = ChatUser(
+  //   id: demoAllCardsUserId,
+  //   conversationId: demoAllCardsUserId,
+  //   userId: demoAllCardsUserId,
+  //   name: 'Card Showcase',
+  //   age: 0,
+  //   image:
+  //       'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80',
+  //   preview: 'Every message card style, in one chat',
+  //   time: '10:30 AM',
+  //   match: '—',
+  //   trust: '—',
+  //   online: true,
+  //   unread: 0,
+  //   progress: '',
+  //   reward: '',
+  //   progressCurrent: 0,
+  //   progressTarget: 0,
+  //   progressPercentage: 0,
+  //   progressLabel: '',
+  //   progressType: '',
+  //   giftName: '',
+  //   progressExpiresAt: DateTime.parse('2026-09-14T09:30:53.592Z'),
+  // );
 
-  // ============================================================
+  // // ============================================================
   // DEMO CARD SHOWCASE — SCREENSHOT 1 → SCREENSHOT 6
   // Each message below maps directly to the supplied UI references.
   // ============================================================
   static final List<ChatMessage> demoAllCardsMessages = [
     // SCREENSHOT 1 — Gift received / Chocolate Box / 18 of 25 replies
-    // const ChatMessage(
-    //   id: 'demo_card_1_chocolate',
-    //   text: "You said you'd had a long week. Consider this a small fix.",
-    //   time: '2026-09-01T20:44:00.000Z',
-    //   isMine: false,
-    //   type: ChatMessageType.gift,
-    //   giftId: 'demo_chocolate_box',
-    //   giftName: 'Chocolate Box',
-    //   giftEmoji: '🍫',
-    //   giftCoins: '650',
-    //   giftClaimed: false,
-    //   messageProgress: 18,
-    //   messageTarget: 25,
-    //   imageUrl:
-    //       'https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=1000&q=85',
-    // ),
+    ChatMessage(
+      id: 'demo_card_1_chocolate',
+      text: "You said you'd had a long week. Consider this a small fix.",
+      time: '2026-09-01T20:44:00.000Z',
+      isMine: false,
+      type: ChatMessageType.gift,
+      giftId: 'demo_chocolate_box',
+      giftName: 'Chocolate Box',
+      giftEmoji: '🍫',
+      giftCoins: '650',
+      giftClaimed: false,
+      messageProgress: 18,
+      messageTarget: 25,
+      imageUrl:
+          'https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=1000&q=85',
+    ),
 
     // SCREENSHOT 2 — Gift sent / Premium Rose / 25 of 25 unlocked
-    // const ChatMessage(
-    //   id: 'demo_card_2_rose_gift',
-    //   text: 'A token of my appreciation.',
-    //   time: '2026-09-01T20:58:00.000Z',
-    //   isMine: true,
-    //   type: ChatMessageType.gift,
-    //   giftId: 'demo_premium_rose',
-    //   giftName: 'Premium Rose',
-    //   giftEmoji: '🌹',
-    //   giftCoins: '500',
-    //   giftClaimed: true,
-    //   messageProgress: 25,
-    //   messageTarget: 25,
-    //   imageUrl:
-    //       'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=1000&q=85',
-    // ),
+    ChatMessage(
+      id: 'demo_card_2_rose_gift',
+      text: 'A token of my appreciation.',
+      time: '2026-09-01T20:58:00.000Z',
+      isMine: true,
+      type: ChatMessageType.gift,
+      giftId: 'demo_premium_rose',
+      giftName: 'Premium Rose',
+      giftEmoji: '🌹',
+      giftCoins: '500',
+      giftClaimed: true,
+      messageProgress: 25,
+      messageTarget: 25,
+      imageUrl:
+          'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=1000&q=85',
+    ),
 
     // SCREENSHOT 3 — Gift sent / Luxury Watch / 14 of 25 replies
-    // const ChatMessage(
-    //   id: 'demo_card_3_watch',
-    //   text: 'Saw this and thought of you — hope it makes you smile.',
-    //   time: '2026-09-01T21:18:00.000Z',
-    //   isMine: true,
-    //   type: ChatMessageType.gift,
-    //   giftId: 'demo_luxury_watch',
-    //   giftName: 'Luxury Watch',
-    //   giftEmoji: '⌚',
-    //   giftCoins: '3,200',
-    //   giftClaimed: false,
-    //   messageProgress: 14,
-    //   messageTarget: 25,
-    //   imageUrl:
-    //       'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=1000&q=85',
-    // ),
+    ChatMessage(
+      id: 'demo_card_3_watch',
+      text: 'Saw this and thought of you — hope it makes you smile.',
+      time: '2026-09-01T21:18:00.000Z',
+      isMine: true,
+      type: ChatMessageType.gift,
+      giftId: 'demo_luxury_watch',
+      giftName: 'Luxury Watch',
+      giftEmoji: '⌚',
+      giftCoins: '3,200',
+      giftClaimed: false,
+      messageProgress: 14,
+      messageTarget: 25,
+      imageUrl:
+          'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=1000&q=85',
+    ),
 
     // SCREENSHOT 4 — Compliment received / hero photo
-    // const ChatMessage(
-    //   id: 'demo_card_4_compliment_photo',
-    //   text:
-    //       'That first photo of yours is so you — steady, warm, no posing. I like that.',
-    //   time: '2026-09-01T20:40:00.000Z',
-    //   isMine: false,
-    //   type: ChatMessageType.compliment,
-    //   coinAmount: '30',
-    //   locationLabel: 'hero photo',
-    //   complimentImageUrl:
-    //       'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=85',
-    //   isNew: false,
-    // ),
+    ChatMessage(
+      id: 'demo_card_4_compliment_photo',
+      text:
+          'That first photo of yours is so you — steady, warm, no posing. I like that.',
+      time: '2026-09-01T20:40:00.000Z',
+      isMine: false,
+      type: ChatMessageType.compliment,
+      coinAmount: '30',
+      locationLabel: 'hero photo',
+      complimentImageUrl:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=85',
+      isNew: false,
+    ),
 
     // SCREENSHOT 5A — Compliment sent / Her Lifestyle
-    // const ChatMessage(
-    //   id: 'demo_card_5_lifestyle',
-    //   text:
-    //       "Trekking, yoga and a cat parent — that's a whole personality and I'm into it.",
-    //   time: '2026-09-01T20:47:00.000Z',
-    //   isMine: true,
-    //   type: ChatMessageType.compliment,
-    //   coinAmount: '30',
-    //   complimentIcon: '🌿',
-    //   complimentFactTitle: 'Her Lifestyle',
-    //   complimentFactSubtitle:
-    //       'Vegetarian · Gym 4×/week · Cat parent · Night owl',
-    //   seen: true,
-    // ),
+    ChatMessage(
+      id: 'demo_card_5_lifestyle',
+      text:
+          "Trekking, yoga and a cat parent — that's a whole personality and I'm into it.",
+      time: '2026-09-01T20:47:00.000Z',
+      isMine: true,
+      type: ChatMessageType.compliment,
+      coinAmount: '30',
+      complimentIcon: '🌿',
+      complimentFactTitle: 'Her Lifestyle',
+      complimentFactSubtitle:
+          'Vegetarian · Gym 4×/week · Cat parent · Night owl',
+      seen: true,
+    ),
 
     // SCREENSHOT 5B — Compliment received / Your Career & ambition
-    // const ChatMessage(
-    //   id: 'demo_card_5_career',
-    //   text:
-    //       "Building your own studio by 28? That's not a plan, that's a decision. Respect.",
-    //   time: '2026-09-01T20:52:00.000Z',
-    //   isMine: false,
-    //   type: ChatMessageType.compliment,
-    //   coinAmount: '30',
-    //   complimentIcon: '💼',
-    //   complimentFactTitle: 'Your Career & ambition',
-    //   complimentFactSubtitle:
-    //       'Senior PM · Building my own studio, settled by 28',
-    // ),
+    ChatMessage(
+      id: 'demo_card_5_career',
+      text:
+          "Building your own studio by 28? That's not a plan, that's a decision. Respect.",
+      time: '2026-09-01T20:52:00.000Z',
+      isMine: false,
+      type: ChatMessageType.compliment,
+      coinAmount: '30',
+      complimentIcon: '💼',
+      complimentFactTitle: 'Your Career & ambition',
+      complimentFactSubtitle:
+          'Senior PM · Building my own studio, settled by 28',
+    ),
 
-    // // SCREENSHOT 6 — Proposal message
-    // const ChatMessage(
-    //   id: 'demo_card_6_proposal',
-    //   text:
-    //       'Good morning! I just sent that proposal because I really feel like we have something special. What do you think? 🌹',
-    //   time: '2026-09-01T09:20:00.000Z',
-    //   isMine: false,
-    //   type: ChatMessageType.text,
-    //   typemsg: 'Text',
-    // ),
+    // SCREENSHOT 6 — Proposal message
+    ChatMessage(
+      id: 'demo_card_6_proposal',
+      text:
+          'Good morning! I just sent that proposal because I really feel like we have something special. What do you think? 🌹',
+      time: '2026-09-01T09:20:00.000Z',
+      isMine: false,
+      type: ChatMessageType.text,
+      typemsg: 'Text',
+    ),
 
-    // // Remaining card types — kept in the same showcase user so every
-    // // existing ChatMessageType remains testable from one conversation.
-    // const ChatMessage(
-    //   id: 'demo_extra_text',
-    //   text: 'Hey! Here is a normal text message too.',
-    //   time: '2026-09-01T09:21:00.000Z',
-    //   isMine: true,
-    //   type: ChatMessageType.text,
-    // ),
-    // const ChatMessage(
-    //   id: 'demo_extra_image',
-    //   text: '',
-    //   time: '2026-09-01T09:22:00.000Z',
-    //   isMine: false,
-    //   type: ChatMessageType.image,
-    //   imageUrl:
-    //       'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=85',
-    // ),
-    // const ChatMessage(
-    //   id: 'demo_extra_audio',
-    //   text: '',
-    //   time: '2026-09-01T09:23:00.000Z',
-    //   isMine: true,
-    //   type: ChatMessageType.audio,
-    //   audioUrl: '',
-    // ),
-    // const ChatMessage(
-    //   id: 'demo_extra_document',
-    //   text: '',
-    //   time: '2026-09-01T09:24:00.000Z',
-    //   isMine: false,
-    //   type: ChatMessageType.document,
-    //   fileName: 'Weekend_Plan.pdf',
-    //   fileSize: '1.2 MB',
-    // ),
-    // const ChatMessage(
-    //   id: 'demo_extra_location',
-    //   text: 'Blue Tokai, Bandra · 1.2 km away',
-    //   time: '2026-09-01T09:25:00.000Z',
-    //   isMine: true,
-    //   type: ChatMessageType.location,
-    // ),
-    // const ChatMessage(
-    //   id: 'demo_extra_contact',
-    //   text: 'Aanya Sharma',
-    //   time: '2026-09-01T09:26:00.000Z',
-    //   isMine: false,
-    //   type: ChatMessageType.contact,
-    //   fileName: '+91 98765 43210',
-    // ),
-    // const ChatMessage(
-    //   id: 'demo_extra_date',
-    //   text: 'Would love to try that new French spot with you this Friday!',
-    //   time: '2026-09-01T09:27:00.000Z',
-    //   isMine: true,
-    //   type: ChatMessageType.dateInvite,
-    //   inviteTitle: 'Dinner Invitation',
-    //   inviteVenue: 'Le Petit Bistro · 8:00 PM',
-    //   inviteStatus: 'ACCEPTED',
-    // ),
-    const ChatMessage(
+    // Remaining card types — kept in the same showcase user so every
+    // existing ChatMessageType remains testable from one conversation.
+    ChatMessage(
+      id: 'demo_extra_text',
+      text: 'Hey! Here is a normal text message too.',
+      time: '2026-09-01T09:21:00.000Z',
+      isMine: true,
+      type: ChatMessageType.text,
+    ),
+    ChatMessage(
+      id: 'demo_extra_image',
+      text: '',
+      time: '2026-09-01T09:22:00.000Z',
+      isMine: false,
+      type: ChatMessageType.image,
+      imageUrl:
+          'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=85',
+    ),
+    ChatMessage(
+      id: 'demo_extra_audio',
+      text: '',
+      time: '2026-09-01T09:23:00.000Z',
+      isMine: true,
+      type: ChatMessageType.audio,
+      audioUrl: '',
+    ),
+    ChatMessage(
+      id: 'demo_extra_document',
+      text: '',
+      time: '2026-09-01T09:24:00.000Z',
+      isMine: false,
+      type: ChatMessageType.document,
+      fileName: 'Weekend_Plan.pdf',
+      fileSize: '1.2 MB',
+    ),
+    ChatMessage(
+      id: 'demo_extra_location',
+      text: 'Blue Tokai, Bandra · 1.2 km away',
+      time: '2026-09-01T09:25:00.000Z',
+      isMine: true,
+      type: ChatMessageType.location,
+    ),
+    ChatMessage(
+      id: 'demo_extra_contact',
+      text: 'Aanya Sharma',
+      time: '2026-09-01T09:26:00.000Z',
+      isMine: false,
+      type: ChatMessageType.contact,
+      fileName: '+91 98765 43210',
+    ),
+    ChatMessage(
+      id: 'demo_extra_date',
+      text: 'Would love to try that new French spot with you this Friday!',
+      time: '2026-09-01T09:27:00.000Z',
+      isMine: true,
+      type: ChatMessageType.dateInvite,
+      inviteTitle: 'Dinner Invitation',
+      inviteVenue: 'Le Petit Bistro · 8:00 PM',
+      inviteStatus: 'ACCEPTED',
+    ),
+    ChatMessage(
       id: 'demo_extra_NOWPLAN',
       text: '',
       time: '2026-09-01T09:28:00.000Z',
       isMine: true,
-      type: ChatMessageType.dateNOWPLAN,
+      type: ChatMessageType.DATECONFIRMED,
       inviteEyebrow: 'EVENT INVITE',
       inviteBadge: 'AWAITING RSVP',
       eventMenEntryPrice: '₹1,250',
@@ -749,7 +917,7 @@ class ChatRepository {
           "nly the venue is shared — never your exact location. Aanya approves who joins.",
       eventVenueName: "Requests close in 2h 40m · 1 spot left",
     ),
-    const ChatMessage(
+    ChatMessage(
       id: 'demo_extra_event',
       text: '',
       time: '2026-09-01T09:28:00.000Z',
@@ -856,7 +1024,10 @@ class ChatRepository {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        if (token?.isNotEmpty == true) 'Authorization': token!.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
+        if (token?.isNotEmpty == true)
+          'Authorization': token!.toLowerCase().startsWith('bearer ')
+              ? token
+              : 'Bearer $token',
       },
     );
 
@@ -968,7 +1139,6 @@ class ChatRepository {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("auth_token");
-
       final uri = Uri.parse(
         'https://api.welvors.com/api/user/chat/conversations',
         // "https://dating-app-backend-plum.vercel.app/api/user/chat/conversations",
@@ -981,8 +1151,10 @@ class ChatRepository {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          if (token?.isNotEmpty == true) 
-            'Authorization': token!.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
+          if (token?.isNotEmpty == true)
+            'Authorization': token!.toLowerCase().startsWith('bearer ')
+                ? token
+                : 'Bearer $token',
         },
       );
 
@@ -1029,7 +1201,7 @@ class ChatRepository {
         'type=$type count=${chats.length}',
       );
 
-      return [demoAllCardsUser, ...chats];
+      return [...chats];
     } catch (e, stackTrace) {
       debugPrint(
         '❌ Error fetching chat conversations '
@@ -1074,13 +1246,14 @@ class ChatRepository {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        if (token?.isNotEmpty == true) 'Authorization': token!.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
+        if (token?.isNotEmpty == true)
+          'Authorization': token!.toLowerCase().startsWith('bearer ')
+              ? token
+              : 'Bearer $token',
       },
     );
 
-    debugPrint(
-      '👤 Conversation user details status: ${response.statusCode}',
-    );
+    debugPrint('👤 Conversation user details status: ${response.statusCode}');
     debugPrint('👤 Conversation user details body: ${response.body}');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -1092,9 +1265,7 @@ class ChatRepository {
     final decoded = jsonDecode(response.body);
 
     if (decoded is! Map<String, dynamic> || decoded['success'] != true) {
-      throw Exception(
-        'Conversation user details API returned success=false',
-      );
+      throw Exception('Conversation user details API returned success=false');
     }
 
     return ConversationProfileDetails.fromJson(decoded);
@@ -1149,13 +1320,13 @@ class ChatRepository {
   }) async {
     // Static demo thread — never hits the network, always returns the full
     // card showcase so it's available even without a signed-in session.
-    if (chatId == demoAllCardsUserId || conversationId == demoAllCardsUserId) {
-      return ChatMessagesPage(
-        messages: demoAllCardsMessages,
-        hasMore: false,
-        nextCursor: null,
-      );
-    }
+    // if (chatId == demoAllCardsUserId || conversationId == demoAllCardsUserId) {
+    //   return ChatMessagesPage(
+    //     messages: demoAllCardsMessages,
+    //     hasMore: false,
+    //     nextCursor: null,
+    //   );
+    // }
 
     final id = (conversationId ?? chatId).trim();
     if (id.isEmpty) {
@@ -1184,7 +1355,10 @@ class ChatRepository {
         // ✅ FIX: was a hardcoded test JWT instead of the `token` fetched
         // above, so messages always loaded/authenticated as one fixed
         // dummy account regardless of who was actually logged in.
-        if (token?.isNotEmpty == true) 'Authorization': token!.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
+        if (token?.isNotEmpty == true)
+          'Authorization': token!.toLowerCase().startsWith('bearer ')
+              ? token
+              : 'Bearer $token',
       },
     );
 
@@ -1241,5 +1415,92 @@ class ChatRepository {
       hasMore: hasMore,
       nextCursor: nextCursor == 'null' ? null : nextCursor,
     );
+  }
+
+  //unused this place
+  /// Unmatches the current user with another user.
+  Future<void> unmatchUser({
+    required String otherUserId,
+    required String reason,
+    String? note,
+  }) async {
+    final cleanOtherUserId = otherUserId.trim();
+    final cleanReason = reason.trim();
+    final cleanNote = note?.trim();
+
+    if (cleanOtherUserId.isEmpty) {
+      throw Exception('Other user id is empty');
+    }
+
+    if (cleanReason.isEmpty) {
+      throw Exception('Unmatch reason is required');
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final rawToken = prefs.getString('auth_token')?.trim() ?? '';
+
+    if (rawToken.isEmpty) {
+      throw Exception('Authentication token is missing');
+    }
+
+    final authorization = rawToken.toLowerCase().startsWith('bearer ')
+        ? rawToken
+        : 'Bearer $rawToken';
+
+    final uri = Uri.parse(
+      'https://api.welvors.com/api/user/unmatch/$cleanOtherUserId',
+    );
+
+    final body = <String, dynamic>{
+      'reason': cleanReason,
+      if (cleanNote != null && cleanNote.isNotEmpty) 'note': cleanNote,
+    };
+
+    debugPrint('========== UNMATCH USER API ==========');
+    debugPrint('METHOD: POST');
+    debugPrint('URL: $uri');
+    debugPrint('BODY: ${jsonEncode(body)}');
+
+    final response = await http.post(
+      uri,
+      headers: <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': authorization,
+      },
+      body: jsonEncode(body),
+    );
+
+    debugPrint('UNMATCH STATUS: ${response.statusCode}');
+    debugPrint('UNMATCH RESPONSE: ${response.body}');
+    debugPrint('======================================');
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      String message = 'Unable to unmatch user (${response.statusCode})';
+
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map && decoded['message'] != null) {
+          message = decoded['message'].toString();
+        }
+      } catch (_) {
+        if (response.body.trim().isNotEmpty) {
+          message = response.body.trim();
+        }
+      }
+
+      throw Exception(message);
+    }
+
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map && decoded['success'] == false) {
+        throw Exception(
+          decoded['message']?.toString() ?? 'Unable to unmatch user',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+    }
   }
 }

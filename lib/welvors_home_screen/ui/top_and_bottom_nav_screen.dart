@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:velvors/welvors_home_screen/ui/admirers/admirers_bloc/admirers_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/admirers/admirers_bloc/admirers_event.dart';
 import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/home/notification/services/notification_api_service.dart';
 import '../home_bloc/home_bloc.dart';
 import 'home/home_screen.dart';
 import 'home/send_compliment/complimenting.dart';
@@ -72,12 +73,40 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   late int _selectedIndex;
   bool _isRoseVisible = true;
   bool _isDrawerOpen = false;
-  bool _hasUnreadNotifications = true;
+
+  // ============================================================
+  // UNREAD NOTIFICATION COUNT
+  // ============================================================
+  int _unreadNotificationCount = 0;
+  Timer? _unreadCountPollTimer;
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+
+    _fetchUnreadNotificationCount();
+
+    // Silently re-check every 30s so the badge stays fresh even if
+    // the user doesn't open the notification screen.
+    _unreadCountPollTimer = Timer.periodic(
+      const Duration(minutes: 30),
+      (_) => _fetchUnreadNotificationCount(),
+    );
+  }
+
+  Future<void> _fetchUnreadNotificationCount() async {
+    try {
+      final count = await NotificationApiService.getUnreadCount();
+
+      if (!mounted) return;
+
+      setState(() {
+        _unreadNotificationCount = count;
+      });
+    } catch (e) {
+      debugPrint('🔔 Failed to fetch unread notification count: $e');
+    }
   }
 
   final ValueNotifier<Offset?> _rosePositionNotifier = ValueNotifier(null);
@@ -87,6 +116,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   void dispose() {
     _rosePositionNotifier.dispose();
     _isDraggingRoseNotifier.dispose();
+    _unreadCountPollTimer?.cancel();
     super.dispose();
   }
 
@@ -492,19 +522,25 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
 
   Widget _buildNotificationIcon() {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => NotificationScreen(
               onMarkAllRead: () {
+                if (!mounted) return;
                 setState(() {
-                  _hasUnreadNotifications = false;
+                  _unreadNotificationCount = 0;
                 });
               },
             ),
           ),
         );
+
+        // Refresh the count after coming back from the notification
+        // screen — covers the case where individual notifications
+        // were marked as read one by one rather than "mark all".
+        _fetchUnreadNotificationCount();
       },
       child: Container(
         width: 40,
@@ -521,19 +557,43 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
           ],
         ),
         child: Stack(
+          clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: [
-            const Icon(Icons.notifications_none, size: 24, color: Colors.black54),
-            if (_hasUnreadNotifications)
+            const Icon(
+              Icons.notifications_none,
+              size: 24,
+              color: Colors.black54,
+            ),
+            if (_unreadNotificationCount > 0)
               Positioned(
-                right: 8,
-                top: 8,
+                right: -2,
+                top: -2,
                 child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 1,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  decoration: BoxDecoration(
                     color: Colors.red,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    _unreadNotificationCount > 99
+                        ? '99+'
+                        : '$_unreadNotificationCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      height: 1,
+                    ),
                   ),
                 ),
               ),

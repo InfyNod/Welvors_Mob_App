@@ -1,14 +1,17 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/SocketService.dart';
+
 import 'chat_bloc/chat_bloc.dart';
 import 'chat_bloc/chat_event.dart';
 import 'chat_bloc/chat_state.dart';
 import 'chat_repository.dart';
 import 'chat_detail_screen.dart';
+
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 
@@ -418,6 +421,7 @@ class _ChatListViewState extends State<_ChatListView> {
     'Online',
     'Nearby',
     'Date Invites',
+    'Event',
   ];
 
   // ==========================================================
@@ -448,8 +452,10 @@ class _ChatListViewState extends State<_ChatListView> {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          if (token?.isNotEmpty == true) 
-            'Authorization': token!.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
+          if (token?.isNotEmpty == true)
+            'Authorization': token!.toLowerCase().startsWith('bearer ')
+                ? token
+                : 'Bearer $token',
         },
       );
 
@@ -1031,12 +1037,9 @@ class _ChatListViewState extends State<_ChatListView> {
   Widget _header() {
     return Container(
       color: AppColors.white,
-      padding: const EdgeInsets.fromLTRB(20, 0, 16, 0),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Row(
         children: [
-          // Expanded(
-          //   child: Text('Messages', style: TextStyle(color: Colors.black)),
-          // ),
           Expanded(
             child: RichText(
               text: const TextSpan(
@@ -1074,7 +1077,7 @@ class _ChatListViewState extends State<_ChatListView> {
   Widget _search() {
     return Container(
       color: AppColors.canvas,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       margin: EdgeInsets.only(bottom: 10),
       child: TextField(
         controller: searchController,
@@ -1131,7 +1134,7 @@ class _ChatListViewState extends State<_ChatListView> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 1, 20, 10),
+            padding: const EdgeInsets.fromLTRB(10, 1, 10, 10),
             child: Row(
               children: [
                 Text(
@@ -1159,53 +1162,15 @@ class _ChatListViewState extends State<_ChatListView> {
           ),
           SizedBox(
             height: _newMatchesLoading ? 0 : 116,
-            child:
-                //  _newMatchesLoading
-                //     ? ListView.separated(
-                //         padding: const EdgeInsets.symmetric(horizontal: 20),
-                //         scrollDirection: Axis.horizontal,
-                //         physics: const NeverScrollableScrollPhysics(),
-                //         itemCount: 4,
-                //         separatorBuilder: (_, __) => const SizedBox(width: 17),
-                //         itemBuilder: (_, index) => _newMatchShimmer(index),
-                //       )
-                //     :
-                ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _newMatchesData.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 17),
-                  itemBuilder: (_, index) {
-                    return _newMatchItem(_newMatchesData[index]);
-                  },
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _newMatchShimmer(int index) {
-    return SizedBox(
-      width: 88,
-      child: Column(
-        children: [
-          Container(
-            width: 88,
-            height: 88,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey.shade200,
-            ),
-          ),
-          const SizedBox(height: 7),
-          Container(
-            width: 58,
-            height: 10,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(8),
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              itemCount: _newMatchesData.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 17),
+              itemBuilder: (_, index) {
+                return _newMatchItem(_newMatchesData[index]);
+              },
             ),
           ),
         ],
@@ -1327,98 +1292,6 @@ class _ChatListViewState extends State<_ChatListView> {
   // FILTERS
   // ==========================================================
 
-  //   Widget _filters() {
-  //     return SizedBox(
-  //       height: 50,
-  //       child: ListView.separated(
-  //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-  //         scrollDirection: Axis.horizontal,
-  //         physics: const BouncingScrollPhysics(),
-  //         itemCount: filters.length,
-  //         separatorBuilder: (_, __) => const SizedBox(width: 10),
-  //         itemBuilder: (_, index) {
-  //           return BlocBuilder<ChatBloc, ChatState>(
-  //             builder: (_, state) {
-  //               final bool selected = state.filter == filters[index];
-
-  //               return GestureDetector(
-  //                 // onTap: () {
-  //                 //   context.read<ChatBloc>().add(
-  //                 //     SelectFilterEvent(filters[index]),
-  //                 //   );
-  //                 // },
-  //                 onTap: () {
-  //   final selectedFilter = filters[index];
-
-  //   String type;
-
-  //   switch (selectedFilter) {
-  //     case 'All':
-  //       type = 'all';
-  //       break;
-
-  //     case 'Unread':
-  //       type = 'unread';
-  //       break;
-
-  //     case 'Nearby':
-  //       type = 'nearby';
-  //       break;
-
-  //     case 'Date Invites':
-  //       type = 'date_invite';
-  //       break;
-
-  //     case 'Gift':
-  //       type = 'gift';
-  //       break;
-
-  //     default:
-  //       type = 'all';
-  //   }
-
-  //   context.read<ChatBloc>().add(
-  //     LoadChatsEvent(
-  //       type: type,
-  //     ),
-  //   );
-  // },
-  //                 child: AnimatedContainer(
-  //                   duration: const Duration(milliseconds: 180),
-  //                   padding: const EdgeInsets.symmetric(horizontal: 24),
-  //                   alignment: Alignment.center,
-  //                   decoration: BoxDecoration(
-  //                     color: selected ? AppColors.primary : Colors.white,
-  //                     borderRadius: BorderRadius.circular(26),
-  //                     border: Border.all(
-  //                       color: selected ? AppColors.primary : AppColors.line,
-  //                     ),
-  //                     boxShadow: selected
-  //                         ? const [
-  //                             BoxShadow(
-  //                               color: Color(0x16000000),
-  //                               blurRadius: 8,
-  //                               offset: Offset(0, 3),
-  //                             ),
-  //                           ]
-  //                         : null,
-  //                   ),
-  //                   child: Text(
-  //                     filters[index],
-  //                     style: AppText.body.copyWith(
-  //                       fontSize: 15,
-  //                       color: selected ? Colors.white : AppColors.ink60,
-  //                       fontWeight: FontWeight.w700,
-  //                     ),
-  //                   ),
-  //                 ),
-  //               );
-  //             },
-  //           );
-  //         },
-  //       ),
-  //     );
-  //   }
   final ScrollController _filterScrollController = ScrollController();
 
   final List<GlobalKey> _filterKeys = [];
@@ -1444,15 +1317,16 @@ class _ChatListViewState extends State<_ChatListView> {
       height: 50,
       child: ListView.separated(
         controller: _filterScrollController,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 7),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: filters.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 18),
         itemBuilder: (_, index) {
           return BlocBuilder<ChatBloc, ChatState>(
+            buildWhen: (previous, current) => previous.filter != current.filter,
             builder: (_, state) {
-              final bool selected = state.filter == filters[index];
+              final selected = state.filter == filters[index];
 
               return GestureDetector(
                 key: _filterKeys[index],
@@ -1486,14 +1360,15 @@ class _ChatListViewState extends State<_ChatListView> {
                       type = 'gift';
                       break;
 
+                    case 'Event':
+                      type = 'event';
+                      break;
+
                     default:
                       type = 'all';
                   }
 
-                  debugPrint(
-                    '🔎 Filter clicked: '
-                    '$selectedFilter -> $type',
-                  );
+                  debugPrint('🔎 Filter clicked: $selectedFilter -> $type');
 
                   context.read<ChatBloc>().add(
                     SelectFilterEvent(selectedFilter),
@@ -1501,35 +1376,31 @@ class _ChatListViewState extends State<_ChatListView> {
 
                   context.read<ChatBloc>().add(LoadChatsEvent(type: type));
 
-                  // ⭐ Selected filter ko center mein lao
+                  // Selected filter ko center mein lao
                   _centerSelectedFilter(index);
                 },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  alignment: Alignment.center,
+                child: Container(
+                  padding: const EdgeInsets.only(top: 10, bottom: 6),
                   decoration: BoxDecoration(
-                    color: selected ? AppColors.primary : Colors.white,
-                    borderRadius: BorderRadius.circular(26),
-                    border: Border.all(
-                      color: selected ? AppColors.primary : AppColors.line,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: selected
+                            ? const Color(0xFFE43A6A)
+                            : Colors.transparent,
+                        width: 3,
+                      ),
                     ),
-                    boxShadow: selected
-                        ? const [
-                            BoxShadow(
-                              color: Color(0x16000000),
-                              blurRadius: 8,
-                              offset: Offset(0, 3),
-                            ),
-                          ]
-                        : null,
                   ),
                   child: Text(
                     filters[index],
+                    maxLines: 1,
+                    softWrap: false,
                     style: AppText.body.copyWith(
-                      fontSize: 15,
-                      color: selected ? Colors.white : AppColors.ink60,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: selected
+                          ? const Color(0xFFE43A6A)
+                          : AppColors.ink60,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -1548,21 +1419,10 @@ class _ChatListViewState extends State<_ChatListView> {
   Widget _chatSliver() {
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
-        if (state.loading) {
-          return const SliverToBoxAdapter(
-            child: SizedBox(
-              height: 300,
-              child: Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
-            ),
-          );
-        }
-
         if (state.filteredChats.isEmpty) {
           return SliverToBoxAdapter(
             child: SizedBox(
-              height: 300,
+              height: MediaQuery.of(context).size.height * 0.70,
               child: Center(
                 child: Text(
                   'No messages found',
@@ -1573,7 +1433,7 @@ class _ChatListViewState extends State<_ChatListView> {
           );
         }
         return SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 3, 20, 24),
+          padding: const EdgeInsets.fromLTRB(10, 3, 10, 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               final user = state.filteredChats[index];
@@ -1640,7 +1500,7 @@ class _ChatListViewState extends State<_ChatListView> {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  _avatar(user.image, 70),
+                  _avatar(user.image, 60, user.name, user.age.toString()),
                   if (isOnline)
                     Positioned(
                       right: -1,
@@ -1793,28 +1653,29 @@ class _ChatListViewState extends State<_ChatListView> {
                     // ===========================================
                     // PROGRESS / REWARD
                     // ===========================================
-                    if (user.progress != '0%' || user.reward.isNotEmpty)
+                    if (user.reward.isNotEmpty)
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (user.progress != '0%')
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: LinearProgressIndicator(
-                                  value: progress,
-                                  minHeight: 7,
-                                  borderRadius: BorderRadius.circular(10),
-                                  backgroundColor: Colors.white.withValues(
-                                    alpha: 0.28,
-                                  ),
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    progressColor,
-                                  ),
+                          Container(
+                            padding: EdgeInsets.only(right: 10),
+                            width: MediaQuery.of(context).size.width * 0.50,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: LinearProgressIndicator(
+                                value: progress,
+                                minHeight: 7,
+                                borderRadius: BorderRadius.circular(10),
+                                backgroundColor: Colors.grey.withValues(
+                                  alpha: 0.28,
+                                ),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  progressColor,
                                 ),
                               ),
                             ),
-
+                          ),
+                          // wSized10,
                           if (user.reward.isNotEmpty)
                             Expanded(
                               child: Text(
@@ -1953,33 +1814,134 @@ class _ChatListViewState extends State<_ChatListView> {
   // AVATAR
   // ==========================================================
 
-  Widget _avatar(String url, double size) {
-    return Container(
-      width: size,
-      height: size,
-      padding: const EdgeInsets.all(2),
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.primary,
-      ),
+  Widget _avatar(String url, double size, String name, String age) {
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierColor: Colors.black.withOpacity(0.8),
+          builder: (context) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.all(20),
+              child: SizedBox(
+                width: 400,
+                height: 440,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Main white container
+                    Container(
+                      width: 400,
+                      height: 440,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          // Image
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12),
+                            ),
+                            child: Image.network(
+                              url,
+                              width: 400,
+                              height: 400,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) {
+                                return const SizedBox(
+                                  width: 400,
+                                  height: 400,
+                                  child: ColoredBox(
+                                    color: AppColors.soft,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.person,
+                                        color: AppColors.muted,
+                                        size: 80,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+
+                          // Bottom 20px white strip
+                          SizedBox(
+                            height: 40,
+                            child: Center(
+                              child: Text(
+                                '$name${int.tryParse(age?.toString() ?? '0') != null && int.tryParse(age?.toString() ?? '')! > 0 ? ", ${age} yrs" : ""}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Cross icon - Top Right
+                    Positioned(
+                      top: -12,
+                      right: -12,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: const BoxDecoration(
+                            color: Colors.black,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
       child: Container(
-        padding: const EdgeInsets.all(2),
-        decoration: const BoxDecoration(
+        width: size,
+        height: size,
+        // padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.canvas,
+          border: Border.all(color: AppColors.primary, width: 2),
         ),
-        child: ClipOval(
-          child: Image.network(
-            url,
-            width: size,
-            height: size,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) {
-              return const ColoredBox(
-                color: AppColors.soft,
-                child: Icon(Icons.person, color: AppColors.muted),
-              );
-            },
+        child: Container(
+          // padding: const EdgeInsets.all(2),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.canvas,
+          ),
+          child: ClipOval(
+            child: Image.network(
+              url,
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) {
+                return const ColoredBox(
+                  color: AppColors.soft,
+                  child: Icon(Icons.person, color: AppColors.muted),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -2036,7 +1998,6 @@ class _ChatListViewState extends State<_ChatListView> {
 
     chatBloc.joinConversation(conversationId);
 
-    // ❌ Yahan message:read mat bhejo.
     // Message read individual message ke messageId se hoga.
     // debugPrint("user>>>idd>>${user.userId}");
     Navigator.push(

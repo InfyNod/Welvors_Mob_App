@@ -19,6 +19,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<SelectFilterEvent>(_selectFilter);
     on<LoadMessagesEvent>(_loadMessages);
     on<SendMessageEvent>(_sendMessage);
+    on<SendRelationshipTagProposalEvent>(_sendRelationshipTagProposal);
+    on<AcceptRelationshipTagProposalEvent>(_acceptRelationshipTagProposal);
+    on<RejectRelationshipTagProposalEvent>(_rejectRelationshipTagProposal);
     on<IncomingMessageEvent>(_incomingMessage);
     on<ConversationUpdateEvent>(_conversationUpdate);
     on<MessageReadSocketEvent>(_messageReadSocketEvent);
@@ -402,22 +405,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     // The "Card Showcase" dummy thread isn't a real conversation on the
     // backend, so there's nothing to delete there — just drop it locally.
-    if (id == ChatRepository.demoAllCardsUserId) {
-      final all = state.allChats
-          .where((chat) => (chat.conversationId ?? '').trim() != id)
-          .toList(growable: false);
-      final filtered = _applyFilter(List<ChatUser>.from(all), state.filter);
+    // if (id == ChatRepository.demoAllCardsUserId) {
+    //   final all = state.allChats
+    //       .where((chat) => (chat.conversationId ?? '').trim() != id)
+    //       .toList(growable: false);
+    //   final filtered = _applyFilter(List<ChatUser>.from(all), state.filter);
 
-      emit(
-        state.copyWith(
-          allChats: all,
-          filteredChats: filtered,
-          chatAction: 'deleted',
-          chatActionError: null,
-        ),
-      );
-      return;
-    }
+    //   emit(
+    //     state.copyWith(
+    //       allChats: all,
+    //       filteredChats: filtered,
+    //       chatAction: 'deleted',
+    //       chatActionError: null,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     emit(state.copyWith(chatAction: 'deleting', chatActionError: null));
     try {
@@ -472,19 +475,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     // Same idea as delete above — clear the dummy showcase thread locally
     // instead of calling a backend that has never heard of it.
-    if (id == ChatRepository.demoAllCardsUserId) {
-      final messages = Map<String, List<ChatMessage>>.from(state.messages);
-      messages[id] = const <ChatMessage>[];
+    // if (id == ChatRepository.demoAllCardsUserId) {
+    //   final messages = Map<String, List<ChatMessage>>.from(state.messages);
+    //   messages[id] = const <ChatMessage>[];
 
-      emit(
-        state.copyWith(
-          messages: messages,
-          chatAction: 'cleared',
-          chatActionError: null,
-        ),
-      );
-      return;
-    }
+    //   emit(
+    //     state.copyWith(
+    //       messages: messages,
+    //       chatAction: 'cleared',
+    //       chatActionError: null,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     emit(state.copyWith(chatAction: 'clearing', chatActionError: null));
     try {
@@ -545,11 +548,41 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         'type=${event.type}, count=${chats.length}',
       );
 
+      // `allChats` is the authoritative local source. For a filtered API
+      // request, merge the returned rows into it instead of throwing away
+      // conversations from the other filters. For `all`, replace it.
+      List<ChatUser> allChats;
+      if (event.type == 'all') {
+        allChats = List<ChatUser>.from(chats);
+      } else {
+        final byConversation = <String, ChatUser>{
+          for (final chat in state.allChats)
+            (chat.conversationId ?? chat.id).trim(): chat,
+        };
+        for (final chat in chats) {
+          byConversation[(chat.conversationId ?? chat.id).trim()] = chat;
+        }
+        allChats = byConversation.values.toList();
+      }
+
+      var filtered = _applyFilter(List<ChatUser>.from(allChats), state.filter);
+
+      final query = state.search.trim().toLowerCase();
+      if (query.isNotEmpty) {
+        filtered = filtered
+            .where(
+              (chat) =>
+                  chat.name.toLowerCase().contains(query) ||
+                  chat.preview.toLowerCase().contains(query),
+            )
+            .toList(growable: false);
+      }
+
       emit(
         state.copyWith(
           loading: false,
-          allChats: event.type == 'all' ? chats : state.allChats,
-          filteredChats: chats,
+          allChats: allChats,
+          filteredChats: filtered,
         ),
       );
     } catch (e, stackTrace) {
@@ -898,7 +931,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // never existed on the backend, so joining it on the real socket would
     // just be a wasted/failing round-trip. Its messages are served entirely
     // from local demo data, so there's nothing to join.
-    if (conversationId == ChatRepository.demoAllCardsUserId) return;
+    // if (conversationId == ChatRepository.demoAllCardsUserId) return;
 
     socketService.emit('conversation:join', {'conversationId': conversationId});
   }
@@ -1009,9 +1042,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (event.type == ChatMessageType.gift) {
       return 'GIFT';
     }
-    if (event.type == ChatMessageType.dateNOWPLAN) {
-      return 'DATE_NOW_PLAN';
-    }
+
     if (event.type == ChatMessageType.eventInvite) {
       return 'EVENT';
     }
@@ -1021,7 +1052,138 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (event.type == ChatMessageType.location) {
       return 'LOCATION';
     }
+    if (event.type == ChatMessageType.DATECONFIRMED) {
+      return 'DATE_CONFIRMED';
+    }
     return 'TEXT';
+  }
+
+  Future<void> _sendRelationshipTagProposal(
+    SendRelationshipTagProposalEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        relationshipTagLoading: true,
+        relationshipTagAction: 'CREATE',
+        relationshipTagActionProposalId: null,
+        relationshipTagError: null,
+      ),
+    );
+    try {
+      await repository.sendRelationshipTagProposal(
+        receiverId: event.receiverId,
+        tag: event.tag,
+        message: event.message,
+      );
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'CREATE_SUCCESS',
+          relationshipTagError: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'CREATE_ERROR',
+          relationshipTagError: e.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
+  }
+
+  Future<void> _acceptRelationshipTagProposal(
+    AcceptRelationshipTagProposalEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final id = event.proposalId.trim();
+    if (id.isEmpty) {
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'ACCEPT_ERROR',
+          relationshipTagActionProposalId: id,
+          relationshipTagError: 'Proposal ID is missing',
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        relationshipTagLoading: true,
+        relationshipTagAction: 'ACCEPT',
+        relationshipTagActionProposalId: id,
+        relationshipTagError: null,
+      ),
+    );
+    try {
+      await repository.acceptRelationshipTagProposal(id);
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'ACCEPT_SUCCESS',
+          relationshipTagActionProposalId: id,
+          relationshipTagError: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'ACCEPT_ERROR',
+          relationshipTagActionProposalId: id,
+          relationshipTagError: e.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
+  }
+
+  Future<void> _rejectRelationshipTagProposal(
+    RejectRelationshipTagProposalEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final id = event.proposalId.trim();
+    if (id.isEmpty) {
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'REJECT_ERROR',
+          relationshipTagActionProposalId: id,
+          relationshipTagError: 'Proposal ID is missing',
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        relationshipTagLoading: true,
+        relationshipTagAction: 'REJECT',
+        relationshipTagActionProposalId: id,
+        relationshipTagError: null,
+      ),
+    );
+    try {
+      await repository.rejectRelationshipTagProposal(id);
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'REJECT_SUCCESS',
+          relationshipTagActionProposalId: id,
+          relationshipTagError: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          relationshipTagLoading: false,
+          relationshipTagAction: 'REJECT_ERROR',
+          relationshipTagActionProposalId: id,
+          relationshipTagError: e.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
   }
 
   void _sendMessage(SendMessageEvent event, Emitter<ChatState> emit) {
@@ -1118,6 +1280,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         },
       };
     }
+    if (socketMessageType == 'GIFT') {
+      final giftId = int.tryParse('${event.giftId}');
+
+      socketPayload['mediaUrl'] = event.imageUrl;
+
+      socketPayload['metadata'] = {
+        'giftId': giftId,
+        'giftName': event.giftName,
+        'giftEmoji': event.giftEmoji,
+        'giftCoins': event.giftCoins,
+        'giftClaimed': event.giftClaimed,
+        'messageProgress': event.messageProgress,
+        'messageTarget': event.messageTarget,
+        'expiresIn': event.expiresIn,
+      };
+      debugPrint('🎁 GIFT SEND');
+      debugPrint('🎁 giftId => ${giftId}');
+      debugPrint('🎁 payload => $socketPayload');
+    }
 
     // ==========================================================
     // 6. LOCATION
@@ -1168,9 +1349,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // 8. SEND THROUGH SOCKET
     // ==========================================================
 
-    if (event.conversationId != ChatRepository.demoAllCardsUserId) {
-      socketService.emitWhenConnected('message:send', socketPayload);
-    }
+    // if (event.conversationId != ChatRepository.demoAllCardsUserId) {
+    socketService.emitWhenConnected('message:send', socketPayload);
+    // }
 
     // ==========================================================
     // 9. GET OLD MESSAGES
@@ -1574,9 +1755,43 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       int matchIndex = -1;
 
       // ============================================================
+      // GIFT
+      // ============================================================
+      // Reconcile the server echo with the optimistic gift by giftId.
+      // The optimistic message uses a local timestamp id, while the server
+      // echo has a real id.
+      if (incoming.type == ChatMessageType.gift || incoming.giftId != null) {
+        final incomingGiftId = (incoming.giftId ?? '').trim();
+        if (incomingGiftId.isNotEmpty) {
+          matchIndex = existing.indexWhere((message) {
+            return message.isMine &&
+                _tempIdPattern.hasMatch(message.id) &&
+                message.type == ChatMessageType.gift &&
+                (message.giftId ?? '').trim() == incomingGiftId;
+          });
+        }
+
+        if (matchIndex == -1) {
+          final incomingName = (incoming.giftName ?? '').trim();
+          final incomingEmoji = (incoming.giftEmoji ?? '').trim();
+          matchIndex = existing.indexWhere((message) {
+            if (!message.isMine || !_tempIdPattern.hasMatch(message.id))
+              return false;
+            if (message.type != ChatMessageType.gift) return false;
+            final nameMatch =
+                incomingName.isEmpty ||
+                (message.giftName ?? '').trim() == incomingName;
+            final emojiMatch =
+                incomingEmoji.isEmpty ||
+                (message.giftEmoji ?? '').trim() == incomingEmoji;
+            return nameMatch && emojiMatch;
+          });
+        }
+      }
+      // ============================================================
       // CONTACT
       // ============================================================
-      if (isContact) {
+      else if (isContact) {
         final incomingName = (incoming.contactName ?? '').trim();
         final incomingPhone = (incoming.contactPhoneNumber ?? '').trim();
 
@@ -1740,6 +1955,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           replyImageUrl: incoming.replyImageUrl ?? local.replyImageUrl,
           replyFileUrl: incoming.replyFileUrl ?? local.replyFileUrl,
           replyType: incoming.replyType ?? local.replyType,
+
+          // Gift fields are protected from partial socket/API echoes.
+          giftId: incoming.giftId ?? local.giftId,
+          giftName: incoming.giftName ?? local.giftName,
+          giftEmoji: incoming.giftEmoji ?? local.giftEmoji,
+          giftCoins: _preferNonZero(incoming.giftCoins, local.giftCoins),
+          giftClaimed: incoming.giftClaimed || local.giftClaimed,
+          messageProgress: incoming.messageProgress ?? local.messageProgress,
+          messageTarget: incoming.messageTarget ?? local.messageTarget,
+          expiresIn: incoming.expiresIn ?? local.expiresIn,
+          // imageUrl: incoming.imageUrl ?? local.imageUrl,
         );
 
         replaced.sort((a, b) => ChatMessage.compareByTime(b, a));
@@ -1776,6 +2002,45 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     return value is Map ? Map<String, dynamic>.from(value) : raw;
   }
 
+  String? _preferNonZero(String? incoming, String? existing) {
+    final incomingValue = (incoming ?? '').trim();
+    final existingValue = (existing ?? '').trim();
+    final incomingNumber = int.tryParse(
+      incomingValue.replaceAll(RegExp(r'[^0-9-]'), ''),
+    );
+    final existingNumber = int.tryParse(
+      existingValue.replaceAll(RegExp(r'[^0-9-]'), ''),
+    );
+
+    if (incomingNumber != null && incomingNumber > 0) return incomingValue;
+    if (existingNumber != null && existingNumber > 0) return existingValue;
+    return incomingValue.isNotEmpty ? incomingValue : existing;
+  }
+
+  ChatMessage _mergeMessagePreservingRichData(
+    ChatMessage oldMessage,
+    ChatMessage newMessage,
+  ) {
+    if (oldMessage.type != ChatMessageType.gift &&
+        newMessage.type != ChatMessageType.gift &&
+        oldMessage.giftId == null &&
+        newMessage.giftId == null) {
+      return newMessage;
+    }
+
+    return newMessage.copyWith(
+      giftId: newMessage.giftId ?? oldMessage.giftId,
+      giftName: newMessage.giftName ?? oldMessage.giftName,
+      giftEmoji: newMessage.giftEmoji ?? oldMessage.giftEmoji,
+      giftCoins: _preferNonZero(newMessage.giftCoins, oldMessage.giftCoins),
+      giftClaimed: newMessage.giftClaimed || oldMessage.giftClaimed,
+      messageProgress: newMessage.messageProgress ?? oldMessage.messageProgress,
+      messageTarget: newMessage.messageTarget ?? oldMessage.messageTarget,
+      expiresIn: newMessage.expiresIn ?? oldMessage.expiresIn,
+      imageUrl: newMessage.imageUrl ?? oldMessage.imageUrl,
+    );
+  }
+
   List<ChatMessage> _mergeMessages(
     List<ChatMessage> existing,
     List<ChatMessage> incoming,
@@ -1785,14 +2050,39 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     };
 
     for (final message in incoming) {
+      final exact = byId[message.id];
+      if (exact != null) {
+        byId[message.id] = _mergeMessagePreservingRichData(exact, message);
+        continue;
+      }
+
+      // Reconcile optimistic gift -> API/socket message using giftId.
+      if (message.type == ChatMessageType.gift || message.giftId != null) {
+        final giftId = (message.giftId ?? '').trim();
+        if (giftId.isNotEmpty) {
+          String? optimisticId;
+          for (final entry in byId.entries) {
+            final old = entry.value;
+            if (old.isMine &&
+                _tempIdPattern.hasMatch(old.id) &&
+                old.type == ChatMessageType.gift &&
+                (old.giftId ?? '').trim() == giftId) {
+              optimisticId = entry.key;
+              break;
+            }
+          }
+          if (optimisticId != null) {
+            final old = byId.remove(optimisticId)!;
+            byId[message.id] = _mergeMessagePreservingRichData(old, message);
+            continue;
+          }
+        }
+      }
+
       byId[message.id] = message;
     }
 
     final result = byId.values.toList();
-
-    // IMPORTANT: ListView uses reverse:true. Keep newest message first.
-    // Index 0 is rendered at the bottom, so a newly typed/sent message
-    // is always shown at the bottom instead of at the top.
     result.sort((a, b) => ChatMessage.compareByTime(b, a));
     return result;
   }

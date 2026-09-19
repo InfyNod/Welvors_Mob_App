@@ -17,14 +17,15 @@ enum ChatMessageType {
   document,
   location,
   contact,
-  proposal,
+  RELATIONSHIP_TAG_PROPOSAL,
+  RELATIONSHIP_TAG_ACCEPTED,
   gift,
   rose,
   effect,
   ENGAGEMENT,
   compliment,
   dateInvite,
-  dateNOWPLAN,
+  DATECONFIRMED,
   eventInvite,
 }
 
@@ -200,6 +201,7 @@ class ChatMessage extends Equatable {
   // EVENT INVITE
   // ==========================================================
 
+  final String? eventId;
   final String? eventType;
   final String? eventTitle;
   final String? eventCity;
@@ -216,20 +218,29 @@ class ChatMessage extends Equatable {
   final String? eventWomenDiscountedPrice;
   final String? eventOtherDiscountedPrice;
   final String? eventHeroImage;
+  final String? dateplanid;
   final List<String>? eventSafetyFeatures;
 
   // ==========================================================
-  // CONTACT
+  // CONTACT / RELATIONSHIP
   // ==========================================================
 
   final String? contactName;
   final String? contactPhoneNumber;
 
+  final String? relationproposalId;
+  final String? relationshipTag;
+  final String? relationshipStatus;
+  final String? relationshipMessage;
+  final String? relationshipSenderId;
+  final String? relationshipReceiverId;
+  final bool isEventBook;
+  bool? isAlreadyRequested;
   // ==========================================================
   // CONSTRUCTOR
   // ==========================================================
 
-  const ChatMessage({
+  ChatMessage({
     required this.id,
     this.text = '',
     required this.time,
@@ -264,6 +275,14 @@ class ChatMessage extends Equatable {
     // Contact
     this.contactName,
     this.contactPhoneNumber,
+
+    // Relationship
+    this.relationproposalId,
+    this.relationshipTag,
+    this.relationshipStatus,
+    this.relationshipMessage,
+    this.relationshipSenderId,
+    this.relationshipReceiverId,
 
     // Gift
     this.giftId,
@@ -346,6 +365,7 @@ class ChatMessage extends Equatable {
     this.inviteButtonSecondarySub,
 
     // Event invite
+    this.eventId,
     this.eventType,
     this.eventTitle,
     this.eventCity,
@@ -363,6 +383,9 @@ class ChatMessage extends Equatable {
     this.eventOtherDiscountedPrice,
     this.eventHeroImage,
     this.eventSafetyFeatures,
+    this.dateplanid,
+    this.isEventBook = false,
+    this.isAlreadyRequested = false,
   });
 
   // ==========================================================
@@ -423,7 +446,99 @@ class ChatMessage extends Equatable {
     final compliment = _map(json['compliment']);
 
     final gift = _map(json['gift']);
+    // ========================================================
+    // GIFT
+    // ========================================================
 
+    final giftData = json['gift'] is Map
+        ? Map<String, dynamic>.from(json['gift'])
+        : <String, dynamic>{};
+
+    final giftMaster = giftData['gift'] is Map
+        ? Map<String, dynamic>.from(giftData['gift'])
+        : <String, dynamic>{};
+
+    final socketGiftMetadata = json['metadata'] is Map
+        ? Map<String, dynamic>.from(json['metadata'])
+        : <String, dynamic>{};
+
+    final giftImageUrl =
+        (giftMaster['image'] ??
+                giftData['image'] ??
+                json['giftImage'] ??
+                json['giftImageUrl'] ??
+                json['imageUrl'] ??
+                socketGiftMetadata['giftImage'] ??
+                socketGiftMetadata['giftImageUrl'])
+            ?.toString()
+            .trim();
+    final parsedGiftId = _string(
+      json['giftId'] ??
+          json['gift_id'] ??
+          gift?['giftId'] ??
+          gift?['gift_id'] ??
+          gift?['id'] ??
+          socketGiftMetadata['giftId'] ??
+          socketGiftMetadata['gift_id'],
+    );
+
+    final parsedGiftName = _string(
+      json['giftName'] ??
+          json['gift_name'] ??
+          gift?['giftName'] ??
+          gift?['gift_name'] ??
+          gift?['name'] ??
+          giftMaster?['name'] ??
+          socketGiftMetadata['giftName'] ??
+          socketGiftMetadata['gift_name'],
+    );
+
+    final parsedGiftEmoji = _string(
+      json['giftEmoji'] ??
+          json['gift_emoji'] ??
+          gift?['giftEmoji'] ??
+          gift?['gift_emoji'] ??
+          gift?['emoji'] ??
+          socketGiftMetadata['giftEmoji'] ??
+          socketGiftMetadata['gift_emoji'],
+    );
+
+    final parsedGiftCoins = _string(
+      json['giftCoins'] ??
+          json['gift_coins'] ??
+          json['coins'] ??
+          gift?['giftCoins'] ??
+          gift?['gift_coins'] ??
+          gift?['coins'] ??
+          gift?['pricePaid'] ??
+          giftMaster?['coinCost'] ??
+          socketGiftMetadata['giftCoins'] ??
+          socketGiftMetadata['gift_coins'],
+    );
+    final nestedGift = gift is Map && gift!['gift'] is Map
+        ? Map<String, dynamic>.from(gift['gift'] as Map)
+        : <String, dynamic>{};
+
+    final parsedGiftImageUrl = _string(
+      json['mediaUrl'] ??
+          json['imageUrl'] ??
+          json['giftImageUrl'] ??
+          (gift is Map ? gift!['image'] : null) ??
+          nestedGift['image'] ??
+          giftMaster?['image'] ??
+          socketGiftMetadata['giftImage'] ??
+          socketGiftMetadata['giftImageUrl'],
+    );
+    // final parsedGiftImageUrl = _string(
+    //   json['giftImage'] ??
+    //       json['gift_image'] ??
+    //       json['giftImageUrl'] ??
+    //       json['gift_image_url'] ??
+    //       gift?['image'] ??
+    //       gift?['imageUrl'] ??
+    //       gift?['image_url'] ??
+    //       giftMaster?['image'],
+    // );
     final progress = _map(json['progress']);
 
     // ========================================================
@@ -431,6 +546,28 @@ class ChatMessage extends Equatable {
     // ========================================================
 
     final metadata = _map(json['metadata']);
+
+    // ========================================================
+    // RELATIONSHIP
+    // ========================================================
+
+    final relationproposalId = _string(
+      metadata?['proposalId'] ?? metadata?['proposal_id'],
+    );
+
+    final relationshipTag = _string(metadata?['tag']);
+
+    final relationshipStatus = _string(metadata?['status']);
+
+    final relationshipMessage = _string(metadata?['message']);
+
+    final relationshipSenderId = _string(
+      metadata?['senderId'] ?? metadata?['sender_id'],
+    );
+
+    final relationshipReceiverId = _string(
+      metadata?['receiverId'] ?? metadata?['receiver_id'],
+    );
 
     // ========================================================
     // CONTACT
@@ -459,6 +596,41 @@ class ChatMessage extends Equatable {
     // ========================================================
 
     final event = _map(json['event']);
+
+    final bool isEventBook =
+        _bool(event?['is_event_book'] ?? event?['isEventBook']) ?? false;
+    // ========================================================
+    // DATE CONFIRMED / DATE PLAN
+    // ========================================================
+
+    final datePlan = _map(json['datePlan'] ?? json['date_plan']);
+
+    final bool isAlreadyRequested =
+        _bool(
+          datePlan?['is_already_requested'] ?? datePlan?['isAlreadyRequested'],
+        ) ??
+        false;
+    final datePlanActivity = _map(datePlan?['activity']);
+    final datePlanWhoPays = _map(datePlan?['whoPays'] ?? datePlan?['who_pays']);
+    final datePlanJoinGender = _map(
+      datePlan?['joinRequestGender'] ?? datePlan?['join_request_gender'],
+    );
+    final datePlanVisibility = _map(datePlan?['visibility']);
+
+    final datePlanDateTime = _string(
+      datePlan?['eventDateTime'] ?? datePlan?['event_date_time'],
+    );
+    final datePlanDuration = _int(datePlan?['duration']);
+
+    String? datePlanEndTime;
+    if (datePlanDateTime != null) {
+      final start = DateTime.tryParse(datePlanDateTime);
+      if (start != null) {
+        datePlanEndTime = start
+            .add(Duration(minutes: datePlanDuration ?? 0))
+            .toIso8601String();
+      }
+    }
 
     // ========================================================
     // BUNDLE
@@ -547,6 +719,7 @@ class ChatMessage extends Equatable {
           json['text'] ??
               json['message'] ??
               json['content'] ??
+              (type == ChatMessageType.location ? parsedLocationLabel : null) ??
               complimentMessage,
         ) ??
         '';
@@ -554,39 +727,6 @@ class ChatMessage extends Equatable {
     // ========================================================
     // GIFT
     // ========================================================
-
-    final parsedGiftId = _string(
-      json['giftId'] ??
-          json['gift_id'] ??
-          gift?['giftId'] ??
-          gift?['gift_id'] ??
-          gift?['id'],
-    );
-
-    final parsedGiftName = _string(
-      json['giftName'] ??
-          json['gift_name'] ??
-          gift?['giftName'] ??
-          gift?['gift_name'] ??
-          gift?['name'],
-    );
-
-    final parsedGiftEmoji = _string(
-      json['giftEmoji'] ??
-          json['gift_emoji'] ??
-          gift?['giftEmoji'] ??
-          gift?['gift_emoji'] ??
-          gift?['emoji'],
-    );
-
-    final parsedGiftCoins = _string(
-      json['giftCoins'] ??
-          json['gift_coins'] ??
-          json['coins'] ??
-          gift?['giftCoins'] ??
-          gift?['gift_coins'] ??
-          gift?['coins'],
-    );
 
     // ========================================================
     // MESSAGE PROGRESS
@@ -609,6 +749,7 @@ class ChatMessage extends Equatable {
     // ========================================================
 
     final eventSafetyFeatures = _stringList(event?['safetyFeatures']);
+    final dateplanid = _string(datePlan?['id']);
 
     // ========================================================
     // RETURN MESSAGE
@@ -643,13 +784,16 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // IMAGE
       // ------------------------------------------------------
-      imageUrl: _string(
-        json['imageUrl'] ??
-            json['image_url'] ??
-            json['mediaUrl'] ??
-            json['media_url'] ??
-            json['image'],
-      ),
+      imageUrl:
+          type == ChatMessageType.gift || type == ChatMessageType.ENGAGEMENT
+          ? parsedGiftImageUrl
+          : _string(
+              json['imageUrl'] ??
+                  json['image_url'] ??
+                  json['mediaUrl'] ??
+                  json['media_url'] ??
+                  json['image'],
+            ),
 
       // ------------------------------------------------------
       // VIDEO
@@ -694,6 +838,21 @@ class ChatMessage extends Equatable {
       contactName: contactName,
 
       contactPhoneNumber: contactPhoneNumber,
+
+      // ------------------------------------------------------
+      // RELATIONSHIP
+      // ------------------------------------------------------
+      relationproposalId: relationproposalId,
+
+      relationshipTag: relationshipTag,
+
+      relationshipStatus: relationshipStatus,
+
+      relationshipMessage: relationshipMessage,
+
+      relationshipSenderId: relationshipSenderId,
+
+      relationshipReceiverId: relationshipReceiverId,
 
       // ------------------------------------------------------
       // LOCATION
@@ -756,7 +915,14 @@ class ChatMessage extends Equatable {
         json['coinAmount'] ?? json['coin_amount'] ?? json['coins'],
       ),
 
-      seen: _bool(json['seen'] ?? json['isRead'] ?? json['is_read']) ?? false,
+      seen:
+          _bool(
+            json['seen'] ??
+                json['isRead'] ??
+                json['is_read'] ??
+                json['readAt'] != null, // 👈 yahi logic
+          ) ??
+          false,
 
       delivered:
           _bool(
@@ -839,36 +1005,80 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // PROPOSAL
       // ------------------------------------------------------
-      proposalId: _string(json['proposalId'] ?? json['proposal_id']),
+      proposalId: _string(
+        json['proposalId'] ??
+            json['proposal_id'] ??
+            (json['proposal'] is Map ? json['proposal']['id'] : null),
+      ),
 
       // ------------------------------------------------------
       // DATE INVITE
       // ------------------------------------------------------
-      inviteTitle: _string(json['inviteTitle'] ?? json['invite_title']),
+      inviteTitle: _string(
+        json['inviteTitle'] ?? json['invite_title'] ?? datePlan?['title'],
+      ),
 
-      inviteVenue: _string(json['inviteVenue'] ?? json['invite_venue']),
+      inviteVenue: _string(
+        json['inviteVenue'] ??
+            json['invite_venue'] ??
+            datePlan?['venueName'] ??
+            datePlan?['venue_name'],
+      ),
 
-      inviteStatus: _string(json['inviteStatus'] ?? json['invite_status']),
+      inviteStatus: _string(
+        json['inviteStatus'] ??
+            json['invite_status'] ??
+            metadata?['status'] ??
+            datePlan?['status'],
+      ),
 
       // ------------------------------------------------------
       // RICH INVITE
       // ------------------------------------------------------
-      inviteEyebrow: _string(json['inviteEyebrow'] ?? json['invite_eyebrow']),
-
-      inviteImageUrl: _string(
-        json['inviteImageUrl'] ?? json['invite_image_url'],
+      // DATE_CONFIRMED API -> existing rich-card fields.
+      // Keep the card UI/design unchanged; only populate its existing model fields.
+      inviteEyebrow: _string(
+        json['inviteEyebrow'] ??
+            json['invite_eyebrow'] ??
+            (type == ChatMessageType.DATECONFIRMED ? 'EVENT INVITE' : null),
       ),
 
-      inviteBadge: _string(json['inviteBadge'] ?? json['invite_badge']),
+      inviteImageUrl: _string(
+        json['inviteImageUrl'] ??
+            json['invite_image_url'] ??
+            datePlan?['photoUrl'] ??
+            datePlan?['photo_url'] ??
+            datePlanActivity?['icon'],
+      ),
 
-      inviteDateDay: _string(json['inviteDateDay'] ?? json['invite_date_day']),
+      inviteBadge: _string(
+        json['inviteBadge'] ??
+            json['invite_badge'] ??
+            (type == ChatMessageType.DATECONFIRMED ? 'AWAITING RSVP' : null),
+      ),
+
+      inviteDateDay: _string(
+        json['inviteDateDay'] ??
+            json['invite_date_day'] ??
+            (datePlanDateTime != null
+                ? DateTime.tryParse(datePlanDateTime)?.day.toString()
+                : null),
+      ),
 
       inviteDateMonth: _string(
-        json['inviteDateMonth'] ?? json['invite_date_month'],
+        json['inviteDateMonth'] ??
+            json['invite_date_month'] ??
+            (datePlanDateTime != null
+                ? _inviteDateMonth(datePlanDateTime)
+                : null),
       ),
 
       inviteTimeRange: _string(
-        json['inviteTimeRange'] ?? json['invite_time_range'],
+        json['inviteTimeRange'] ??
+            json['invite_time_range'] ??
+            (datePlanDateTime != null
+                ? _formatInviteTimeRange(datePlanDateTime, datePlanEndTime)
+                : null),
       ),
 
       inviteSubline: _string(json['inviteSubline'] ?? json['invite_subline']),
@@ -878,10 +1088,32 @@ class ChatMessage extends Equatable {
       invitePrice: _string(json['invitePrice'] ?? json['invite_price']),
 
       inviteSafetyNote: _string(
-        json['inviteSafetyNote'] ?? json['invite_safety_note'],
+        json['inviteSafetyNote'] ??
+            json['invite_safety_note'] ??
+            (datePlan?['venueAddress'] != null
+                ? '${datePlan!['venueAddress']}'
+                : null) ??
+            'Date confirmed',
       ),
 
-      inviteStats: _stringMap(json['inviteStats'] ?? json['invite_stats']),
+      inviteStats: _stringMap(
+        json['inviteStats'] ??
+            json['invite_stats'] ??
+            (datePlan != null
+                ? <String, String>{
+                    if (_string(datePlanActivity?['label']) != null)
+                      'Activity': _string(datePlanActivity?['label'])!,
+                    if (datePlanDuration != null)
+                      'Duration': '$datePlanDuration min',
+                    if (_string(datePlanWhoPays?['label']) != null)
+                      'Who pays': _string(datePlanWhoPays?['label'])!,
+                    if (_string(datePlanJoinGender?['label']) != null)
+                      'Joining': _string(datePlanJoinGender?['label'])!,
+                    if (_string(datePlanVisibility?['label']) != null)
+                      'Visibility': _string(datePlanVisibility?['label'])!,
+                  }
+                : null),
+      ),
 
       inviteButtonPrimary: _string(
         json['inviteButtonPrimary'] ?? json['invite_button_primary'],
@@ -902,23 +1134,39 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // EVENT INVITE
       // ------------------------------------------------------
-      eventType: _string(event?['eventType']),
+      eventId: _string(event?['id']),
 
-      eventTitle: _string(event?['title']),
+      eventType: _string(
+        event?['eventType'] ??
+            datePlanActivity?['label'] ??
+            datePlanActivity?['value'],
+      ),
+
+      eventTitle: _string(
+        event?['title'] ?? event?['eventTitle'] ?? datePlan?['title'],
+      ),
 
       eventCity: _string(event?['city']),
 
       eventTag: _string(event?['eventTag']),
 
-      eventDate: _string(event?['eventDate']),
+      eventDate: _string(event?['eventDate'] ?? datePlanDateTime),
 
-      eventStartTime: _string(event?['startTime']),
+      eventStartTime: _string(event?['startTime'] ?? datePlanDateTime),
 
-      eventEndTime: _string(event?['endTime']),
+      eventEndTime: _string(event?['endTime'] ?? datePlanEndTime),
 
-      eventVenueName: _string(event?['venueName']),
+      eventVenueName: _string(
+        event?['venueName'] ??
+            datePlan?['venueName'] ??
+            datePlan?['venue_name'],
+      ),
 
-      eventFullAddress: _string(event?['fullAddress']),
+      eventFullAddress: _string(
+        event?['fullAddress'] ??
+            datePlan?['venueAddress'] ??
+            datePlan?['venue_address'],
+      ),
 
       eventMenEntryPrice: _string(event?['menEntryPrice']),
 
@@ -932,10 +1180,55 @@ class ChatMessage extends Equatable {
 
       eventOtherDiscountedPrice: _string(event?['otherDiscountedPrice']),
 
-      eventHeroImage: _string(event?['heroImage']),
+      eventHeroImage: _string(
+        event?['heroImage'] ??
+            datePlan?['photoUrl'] ??
+            datePlan?['photo_url'] ??
+            datePlanActivity?['icon'],
+      ),
 
       eventSafetyFeatures: eventSafetyFeatures,
+      dateplanid: dateplanid,
+      isEventBook: isEventBook,
+      isAlreadyRequested: isAlreadyRequested,
     );
+  }
+
+  static String? _inviteDateMonth(String value) {
+    final date = DateTime.tryParse(value);
+    if (date == null) return null;
+
+    const months = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
+
+    return months[date.month - 1];
+  }
+
+  static String? _formatInviteTimeRange(String startValue, String? endValue) {
+    final start = DateTime.tryParse(startValue);
+    if (start == null) return null;
+
+    String format(DateTime value) {
+      final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
+      final minute = value.minute.toString().padLeft(2, '0');
+      final period = value.hour >= 12 ? 'PM' : 'AM';
+      return '$hour:$minute $period';
+    }
+
+    final end = endValue == null ? null : DateTime.tryParse(endValue);
+    return end == null ? format(start) : '${format(start)} - ${format(end)}';
   }
 
   // ==========================================================
@@ -1060,7 +1353,10 @@ class ChatMessage extends Equatable {
       'contact': ChatMessageType.contact,
 
       // Proposal
-      'proposal': ChatMessageType.proposal,
+      'proposal': ChatMessageType.RELATIONSHIP_TAG_PROPOSAL,
+      'relationshiptagproposal': ChatMessageType.RELATIONSHIP_TAG_PROPOSAL,
+      'relationshipproposal': ChatMessageType.RELATIONSHIP_TAG_PROPOSAL,
+      'relationshiptagaccepted': ChatMessageType.RELATIONSHIP_TAG_ACCEPTED,
 
       // Gift
       'gift': ChatMessageType.gift,
@@ -1080,7 +1376,7 @@ class ChatMessage extends Equatable {
       // Date
       'dateinvite': ChatMessageType.dateInvite,
       'date': ChatMessageType.dateInvite,
-
+      'dateconfirmed': ChatMessageType.DATECONFIRMED,
       // Event
       'eventinvite': ChatMessageType.eventInvite,
       'event': ChatMessageType.eventInvite,
@@ -1233,6 +1529,16 @@ class ChatMessage extends Equatable {
     String? contactName,
     String? contactPhoneNumber,
 
+    // ========================================================
+    // RELATIONSHIP
+    // ========================================================
+    String? relationproposalId,
+    String? relationshipTag,
+    String? relationshipStatus,
+    String? relationshipMessage,
+    String? relationshipSenderId,
+    String? relationshipReceiverId,
+
     // Gift
     String? giftId,
     String? giftName,
@@ -1311,6 +1617,7 @@ class ChatMessage extends Equatable {
     String? inviteButtonSecondarySub,
 
     // Event
+    String? eventId,
     String? eventType,
     String? eventTitle,
     String? eventCity,
@@ -1327,7 +1634,10 @@ class ChatMessage extends Equatable {
     String? eventWomenDiscountedPrice,
     String? eventOtherDiscountedPrice,
     String? eventHeroImage,
-    List<String>? eventSafetyFeatures,
+    String? dateplanid,
+    List<String>? eventSafetyFeatures, // NEW
+    bool? isEventBook,
+    bool? isAlreadyRequested,
   }) {
     return ChatMessage(
       // ========================================================
@@ -1391,6 +1701,22 @@ class ChatMessage extends Equatable {
       contactName: contactName ?? this.contactName,
 
       contactPhoneNumber: contactPhoneNumber ?? this.contactPhoneNumber,
+
+      // ========================================================
+      // RELATIONSHIP
+      // ========================================================
+      relationproposalId: relationproposalId ?? this.relationproposalId,
+
+      relationshipTag: relationshipTag ?? this.relationshipTag,
+
+      relationshipStatus: relationshipStatus ?? this.relationshipStatus,
+
+      relationshipMessage: relationshipMessage ?? this.relationshipMessage,
+
+      relationshipSenderId: relationshipSenderId ?? this.relationshipSenderId,
+
+      relationshipReceiverId:
+          relationshipReceiverId ?? this.relationshipReceiverId,
 
       // ========================================================
       // GIFT
@@ -1547,6 +1873,7 @@ class ChatMessage extends Equatable {
       // ========================================================
       // EVENT
       // ========================================================
+      eventId: eventId ?? this.eventId,
       eventType: eventType ?? this.eventType,
 
       eventTitle: eventTitle ?? this.eventTitle,
@@ -1583,6 +1910,7 @@ class ChatMessage extends Equatable {
       eventHeroImage: eventHeroImage ?? this.eventHeroImage,
 
       eventSafetyFeatures: eventSafetyFeatures ?? this.eventSafetyFeatures,
+      dateplanid: dateplanid ?? this.dateplanid,
     );
   }
 
@@ -1640,6 +1968,16 @@ class ChatMessage extends Equatable {
     // Contact
     contactName,
     contactPhoneNumber,
+
+    // ========================================================
+    // RELATIONSHIP
+    // ========================================================
+    relationproposalId,
+    relationshipTag,
+    relationshipStatus,
+    relationshipMessage,
+    relationshipSenderId,
+    relationshipReceiverId,
 
     // Gift
     giftId,
@@ -1719,6 +2057,7 @@ class ChatMessage extends Equatable {
     inviteButtonSecondarySub,
 
     // Event
+    eventId,
     eventType,
     eventTitle,
     eventCity,
@@ -1735,7 +2074,7 @@ class ChatMessage extends Equatable {
     eventWomenDiscountedPrice,
     eventOtherDiscountedPrice,
     eventHeroImage,
-    eventSafetyFeatures,
+    eventSafetyFeatures, dateplanid,
   ];
 }
 
@@ -1758,8 +2097,20 @@ class ChatUser extends Equatable {
   final String trust;
   final bool online;
   final int unread;
+
+  // ==========================================================
+  // PROGRESS
+  // ==========================================================
+
   final String progress;
   final String reward;
+  final int progressCurrent;
+  final int progressTarget;
+  final double progressPercentage;
+  final String progressLabel;
+  final String progressType;
+  final String giftName;
+  final DateTime? progressExpiresAt;
 
   const ChatUser({
     required this.id,
@@ -1774,8 +2125,17 @@ class ChatUser extends Equatable {
     required this.trust,
     required this.online,
     required this.unread,
+
+    // Progress
     required this.progress,
     required this.reward,
+    required this.progressCurrent,
+    required this.progressTarget,
+    required this.progressPercentage,
+    required this.progressLabel,
+    required this.progressType,
+    required this.giftName,
+    required this.progressExpiresAt,
   });
 
   // ==========================================================
@@ -1791,6 +2151,10 @@ class ChatUser extends Equatable {
         ? Map<String, dynamic>.from(json['lastMessage'] as Map)
         : const <String, dynamic>{};
 
+    // ==========================================================
+    // BASIC DATA
+    // ==========================================================
+
     final id = (json['id'] ?? '').toString();
 
     final conversationId = (json['conversationId'] ?? '').toString();
@@ -1803,13 +2167,21 @@ class ChatUser extends Equatable {
 
     final trustPercentage = (user['trustPercentage'] ?? 'Unknown').toString();
 
-    final isOnline = user['isOnline'] ?? false;
+    final isOnline = user['isOnline'] == true;
+
+    // ==========================================================
+    // AGE
+    // ==========================================================
 
     final ageValue = user['age'];
 
     final age = ageValue is num
         ? ageValue.toInt()
         : int.tryParse(ageValue?.toString() ?? '') ?? 0;
+
+    // ==========================================================
+    // LAST MESSAGE
+    // ==========================================================
 
     final content = (lastMessage['content'] ?? '').toString();
 
@@ -1827,21 +2199,97 @@ class ChatUser extends Equatable {
     final createdAt = (lastMessage['createdAt'] ?? json['updatedAt'] ?? '')
         .toString();
 
+    // ==========================================================
+    // PROGRESS
+    // ==========================================================
+
+    final progressData = json['progress'] is Map
+        ? Map<String, dynamic>.from(json['progress'] as Map)
+        : null;
+
+    int progressCurrent = 0;
+    int progressTarget = 0;
+    double progressPercentage = 0.0;
+    String progressLabel = '';
+    String progressType = '';
+    String giftName = '';
+    DateTime? progressExpiresAt;
+
+    if (progressData != null) {
+      progressCurrent = toInt(progressData['current']);
+
+      progressTarget = toInt(progressData['target']);
+
+      final percentageValue = progressData['percentage'];
+
+      if (percentageValue is num) {
+        progressPercentage = percentageValue.toDouble();
+      } else {
+        progressPercentage =
+            double.tryParse(percentageValue?.toString() ?? '') ?? 0.0;
+      }
+
+      progressPercentage = progressPercentage.clamp(0.0, 100.0);
+
+      progressLabel = (progressData['label'] ?? '').toString();
+
+      progressType = (progressData['type'] ?? '').toString();
+
+      giftName = (progressData['giftName'] ?? '').toString();
+
+      final expiresAtValue = progressData['expiresAt'];
+
+      if (expiresAtValue != null && expiresAtValue.toString().isNotEmpty) {
+        progressExpiresAt = DateTime.tryParse(expiresAtValue.toString());
+      }
+    }
+
+    final progressString = '${progressPercentage.toStringAsFixed(0)}%';
+
+    final rewardString = giftName.isNotEmpty ? giftName : progressLabel;
+
     return ChatUser(
       id: id,
+
       conversationId: conversationId,
+
       userId: profileId,
+
       name: fullName,
+
       age: age,
+
       image: (user['profilePhoto'] ?? '').toString(),
+
       preview: content.isNotEmpty ? content : (mediaLabel ?? 'No messages yet'),
+
       time: formatConversationTime(createdAt),
+
       match: matchPercentage,
+
       trust: trustPercentage,
+
       online: isOnline,
+
       unread: toInt(json['unreadCount']),
-      progress: '0%',
-      reward: '',
+
+      progress: progressString,
+
+      reward: rewardString,
+
+      progressCurrent: progressCurrent,
+
+      progressTarget: progressTarget,
+
+      progressPercentage: progressPercentage,
+
+      progressLabel: progressLabel,
+
+      progressType: progressType,
+
+      giftName: giftName,
+
+      progressExpiresAt: progressExpiresAt,
     );
   }
 
@@ -1885,6 +2333,18 @@ class ChatUser extends Equatable {
     }
 
     return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  // ==========================================================
+  // DOUBLE
+  // ==========================================================
+
+  static double toDouble(dynamic value) {
+    if (value is num) {
+      return value.toDouble();
+    }
+
+    return double.tryParse(value?.toString() ?? '') ?? 0.0;
   }
 
   // ==========================================================
@@ -1940,45 +2400,98 @@ class ChatUser extends Equatable {
   // ==========================================================
 
   ChatUser copyWith({
+    String? conversationId,
     String? preview,
     String? time,
     int? unread,
     bool? online,
+
+    String? progress,
+    String? reward,
+    int? progressCurrent,
+    int? progressTarget,
+    double? progressPercentage,
+    String? progressLabel,
+    String? progressType,
+    String? giftName,
+    DateTime? progressExpiresAt,
   }) {
     return ChatUser(
       id: id,
-      conversationId: conversationId,
+
+      conversationId: conversationId ?? this.conversationId,
+
       userId: userId,
+
       name: name,
+
       age: age,
+
       image: image,
+
       preview: preview ?? this.preview,
+
       time: time ?? this.time,
+
       match: match,
+
       trust: trust,
+
       online: online ?? this.online,
+
       unread: unread ?? this.unread,
-      progress: progress,
-      reward: reward,
+
+      progress: progress ?? this.progress,
+
+      reward: reward ?? this.reward,
+
+      progressCurrent: progressCurrent ?? this.progressCurrent,
+
+      progressTarget: progressTarget ?? this.progressTarget,
+
+      progressPercentage: progressPercentage ?? this.progressPercentage,
+
+      progressLabel: progressLabel ?? this.progressLabel,
+
+      progressType: progressType ?? this.progressType,
+
+      giftName: giftName ?? this.giftName,
+
+      progressExpiresAt: progressExpiresAt ?? this.progressExpiresAt,
     );
   }
+
+  // ==========================================================
+  // EQUATABLE
+  // ==========================================================
 
   @override
   List<Object?> get props => [
     id,
     conversationId,
     userId,
+
     name,
     age,
     image,
     preview,
     time,
+
     match,
     trust,
+
     online,
     unread,
+
     progress,
     reward,
+    progressCurrent,
+    progressTarget,
+    progressPercentage,
+    progressLabel,
+    progressType,
+    giftName,
+    progressExpiresAt,
   ];
 }
 
@@ -2140,6 +2653,18 @@ class ChatState extends Equatable {
 
   final String? chatActionError;
 
+  // ==========================================================
+  // RELATIONSHIP TAG
+  // ==========================================================
+
+  final bool relationshipTagLoading;
+
+  final String? relationshipTagAction;
+
+  final String? relationshipTagActionProposalId;
+
+  final String? relationshipTagError;
+
   const ChatState({
     this.loading = false,
     this.allChats = const [],
@@ -2151,6 +2676,12 @@ class ChatState extends Equatable {
     this.messageHasMore = const {},
     this.chatAction,
     this.chatActionError,
+
+    // Relationship
+    this.relationshipTagLoading = false,
+    this.relationshipTagAction,
+    this.relationshipTagActionProposalId,
+    this.relationshipTagError,
   });
 
   ChatState copyWith({
@@ -2164,6 +2695,12 @@ class ChatState extends Equatable {
     Map<String, bool>? messageHasMore,
     String? chatAction,
     String? chatActionError,
+
+    // Relationship
+    bool? relationshipTagLoading,
+    String? relationshipTagAction,
+    String? relationshipTagActionProposalId,
+    String? relationshipTagError,
   }) {
     return ChatState(
       loading: loading ?? this.loading,
@@ -2185,6 +2722,18 @@ class ChatState extends Equatable {
       chatAction: chatAction,
 
       chatActionError: chatActionError,
+
+      // ========================================================
+      // RELATIONSHIP
+      // ========================================================
+      relationshipTagLoading:
+          relationshipTagLoading ?? this.relationshipTagLoading,
+
+      relationshipTagAction: relationshipTagAction,
+
+      relationshipTagActionProposalId: relationshipTagActionProposalId,
+
+      relationshipTagError: relationshipTagError,
     );
   }
 
@@ -2200,5 +2749,11 @@ class ChatState extends Equatable {
     messageHasMore,
     chatAction,
     chatActionError,
+
+    // Relationship
+    relationshipTagLoading,
+    relationshipTagAction,
+    relationshipTagActionProposalId,
+    relationshipTagError,
   ];
 }

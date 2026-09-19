@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/main.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 
 class ReportUserDialog extends StatefulWidget {
@@ -6,7 +7,12 @@ class ReportUserDialog extends StatefulWidget {
   final int userAge;
   final String? matchedDate;
   final bool isBlocked;
-  final VoidCallback? onSubmit;
+  final Future<void> Function(
+    String reason,
+    String description,
+    bool alsoBlock,
+  )?
+  onSubmit;
 
   const ReportUserDialog({
     super.key,
@@ -42,7 +48,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
     'Met and behaved badly',
     'Something else',
   ];
-  void _submitReport() {
+  Future<void> _submitReport() async {
     if (selectedReason == null) {
       ScaffoldMessenger.of(
         context,
@@ -50,22 +56,61 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
       return;
     }
 
-    // First close Report form
+    final reason = selectedReason!;
+    final description = descriptionController.text.trim();
+    final alsoBlock = _alsoBlock;
+
+    try {
+      await widget.onSubmit?.call(reason, description, alsoBlock);
+      debugPrint("navneet>>>>>>${alsoBlock}");
+    } catch (e) {
+      debugPrint("navneet22");
+
+      final errorMessage = e.toString().replaceFirst('Exception: ', '');
+
+      // "already reported" case: close this sheet first, then show
+      // the message — retrying here won't help the user.
+      final isAlreadyReported = errorMessage.toLowerCase().contains(
+        'already reported',
+      );
+
+      if (isAlreadyReported) {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+
+        // Use the root navigator's context since this sheet's own
+        // context is no longer valid once popped.
+        final ctx = navigatorKey.currentContext;
+        if (ctx != null) {
+          ScaffoldMessenger.of(ctx).showSnackBar(
+            SnackBar(
+              backgroundColor: Mycolor.redlight,
+              content: Text(errorMessage),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
+      // Any other error: keep the sheet open so the user can retry.
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
+      return;
+    }
+
+    if (!mounted) return;
+
     Navigator.pop(context);
 
-    // Then show success screen
     Future.delayed(const Duration(milliseconds: 200), () {
       if (!mounted) return;
-
-      _showReportSuccessDialog(
-        onDone: () {
-          // IMPORTANT:
-          // Success dialog close hone ke baad parent ko block karo
-          if (_alsoBlock) {
-            widget.onSubmit?.call();
-          }
-        },
-      );
+      _showReportSuccessDialog();
     });
   }
 

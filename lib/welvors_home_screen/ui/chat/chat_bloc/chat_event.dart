@@ -68,6 +68,33 @@ class IncomingMessageEvent extends ChatEvent {
   List<Object?> get props => [chatId, payload];
 }
 
+class SendRelationshipTagProposalEvent extends ChatEvent {
+  final String receiverId;
+  final String tag;
+  final String message;
+  const SendRelationshipTagProposalEvent({
+    required this.receiverId,
+    required this.tag,
+    required this.message,
+  });
+  @override
+  List<Object?> get props => [receiverId, tag, message];
+}
+
+class AcceptRelationshipTagProposalEvent extends ChatEvent {
+  final String proposalId;
+  const AcceptRelationshipTagProposalEvent({required this.proposalId});
+  @override
+  List<Object?> get props => [proposalId];
+}
+
+class RejectRelationshipTagProposalEvent extends ChatEvent {
+  final String proposalId;
+  const RejectRelationshipTagProposalEvent({required this.proposalId});
+  @override
+  List<Object?> get props => [proposalId];
+}
+
 class SendMessageEvent extends ChatEvent {
   final String chatId;
   final ChatMessageType type;

@@ -1670,7 +1670,9 @@ class _ProfileDetailsView extends StatelessWidget {
                 if (isSelfPreview) return;
                 ComplimentingBottomSheet.show(
                   context,
-                  type: 'Photo',
+                  type: 'PHOTO',
+                  complimentingID: profile.id.toString(),
+                  user_ID: profile.id.toString(),
                   profilemodel: profile,
                 );
               },
@@ -2163,7 +2165,9 @@ class _ProfileDetailsView extends StatelessWidget {
                     if (isSelfPreview) return;
                     ComplimentingBottomSheet.show(
                       context,
-                      type: 'Prompt',
+                      type: 'PROMPT',
+                      complimentingID: profile.id.toString(),
+                      user_ID: profile.id.toString(),
                       profilemodel: profile,
                     );
                   },
@@ -2977,7 +2981,9 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                   if (widget.isSelfPreview) return;
                   ComplimentingBottomSheet.show(
                     context,
-                    type: 'Video intro',
+                    type: 'VIDEO',
+                    complimentingID: widget.profile!.id.toString(),
+                    user_ID: widget.profile!.id.toString(),
                     profilemodel: widget.profile,
                   );
                 },

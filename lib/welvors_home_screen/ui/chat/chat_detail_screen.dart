@@ -1,10 +1,8 @@
-import 'dart:math' as math;
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -12,13 +10,19 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:video_player/video_player.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/ChatVideoPlayer.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/RoseTwinkleOverlay.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/SuggestionLine.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/_FloatingRose.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/_SwipeToReply.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/sidedrawer.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/requests_sent/requests_sent_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/send_request_drawer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/RelationshipTagSheet.dart';
@@ -29,12 +33,18 @@ import 'package:velvors/welvors_home_screen/ui/chat/report_user_dialog.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/block_user_dialog.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_details.dart';
 import 'SocketService.dart';
 import 'chat_repository.dart';
 import 'chat_bloc/chat_bloc.dart';
 import 'chat_bloc/chat_event.dart';
 import 'chat_bloc/chat_state.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
+import 'custom_camera_screen.dart' as custom_camera;
+import 'location_map_screen.dart';
+import 'chat_image_pdf_viewer_screen.dart';
+import 'chat_media_links_docs_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -45,26 +55,17 @@ class ChatDetailScreen extends StatefulWidget {
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
 
-class _ChatDetailScreenState extends State<ChatDetailScreen> {
+bool _isBlocked = false;
+
+class _ChatDetailScreenState extends State<ChatDetailScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController controller = TextEditingController();
   final TextEditingController _unmatchNoteController = TextEditingController();
-  // int _getLineCount(double maxWidth) {
-  //   if (controller.text.isEmpty) {
-  //     return 1;
-  //   }
-
-  //   final textPainter = TextPainter(
-  //     text: TextSpan(text: controller.text, style: AppText.body),
-  //     textDirection: TextDirection.ltr,
-  //   );
-
-  //   textPainter.layout(maxWidth: maxWidth);
-
-  //   final lines = textPainter.computeLineMetrics().length;
-
-  //   return lines.clamp(1, 6);
-  // }
+  late TabController _tabController;
   final GlobalKey _textFieldKey = GlobalKey();
+
+  bool _notificationsEnabled = true;
+  bool _muteNotificationLoading = false;
   int _getLineCount() {
     final context = _textFieldKey.currentContext;
 
@@ -100,24 +101,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   final scrollController = ScrollController();
   final SocketService _socketService = SocketService();
-  final ImagePicker _imagePicker = ImagePicker();
   final FocusNode _messageFocusNode = FocusNode();
 
   ChatMessage? _replyingTo;
 
-  // ==========================================================
-  // OPTIMISTIC "SENDING" MESSAGES
-  // A locally-built ChatMessage per photo currently uploading,
-  // shown at the last-message position in the list (with a
-  // loading indicator) until the real send completes.
-  // Newest-first — same order as the bloc's `messages` list.
-  // ==========================================================
-  final List<ChatMessage> _pendingMessages = [];
-
   // Live status for the other participant. This must be mutable UI state;
   // _isUserOnline is immutable and therefore cannot refresh on socket events.
   late bool _isUserOnline;
-  bool _isBlocked = false;
   bool _isUnmatched = false;
 
   // Live, dynamic profile/user details for this conversation. Loaded once
@@ -133,6 +123,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       : widget.user.name;
 
   int get _liveAge => _profileDetails?.age ?? widget.user.age;
+  String? get _liveuserId => _profileDetails?.userId.toString();
 
   String get _liveImage =>
       (_profileDetails?.profileImage.trim().isNotEmpty ?? false)
@@ -178,7 +169,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   // True when this is the built-in "Card Showcase" thread
   // (ChatRepository.demoAllCardsUser) used to preview every card type.
-  bool get _isDemoThread => _messageKey == ChatRepository.demoAllCardsUserId;
+  // bool get _isDemoThread => _messageKey == ChatRepository.demoAllCardsUserId;
 
   // Emoji / Stickers / Meme & Fun / Effects / GIF / Gifts panel
   bool _showExtrasPanel = false;
@@ -366,24 +357,52 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   void _onGiftItemSelected(GiftItem gift) {
+    debugPrint('🎁 GIFT SELECTED');
+    debugPrint('🎁 giftId => ${gift.id}');
+    debugPrint('🎁 giftName => ${gift.name}');
+    debugPrint('🎁 giftEmoji => ${gift.emoji}');
+    debugPrint('🎁 giftCoins => ${gift.coins}');
+    debugPrint('🎁 giftImage => ${gift.image}');
+
     context.read<ChatBloc>().add(
       SendMessageEvent(
         chatId: widget.user.id,
         conversationId: widget.user.conversationId,
+
+        // ==========================================================
+        // GIFT
+        // ==========================================================
         type: ChatMessageType.gift,
+
         message: gift.name + gift.emoji,
-        giftId: 'gift_${DateTime.now().millisecondsSinceEpoch}',
+
+        giftId: gift.id > 0
+            ? gift.id.toString()
+            : 'gift_${DateTime.now().millisecondsSinceEpoch}',
+
         giftName: gift.name,
-        giftEmoji: gift.emoji,
-        giftCoins: '${gift.coins} coins',
+
+        giftEmoji: gift.emoji.isEmpty ? '🎁' : gift.emoji,
+
+        // Keep coins on the optimistic message so a partial socket echo
+        // can never reset the gift card to null/0.
+        giftCoins: gift.coins > 0 ? gift.coins.toString() : null,
         giftClaimed: false,
+
         messageProgress: 1,
         messageTarget: 25,
         expiresIn: '7d',
+
         typemsg: "",
+
+        imageUrl: gift.image,
       ),
     );
+
+    _showExtrasPanel = false;
+
     _scrollToBottom();
+
     _toast('${gift.name} sent ✓');
   }
 
@@ -405,6 +424,34 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _getMuteNotificationStatus();
+    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
+
+    tab = 0;
+
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) return;
+
+      if (tab != _tabController.index) {
+        setState(() {
+          tab = _tabController.index;
+        });
+
+        if (scrollController.hasClients) {
+          scrollController.jumpTo(0);
+        }
+
+        _initialScrollDone = true;
+      }
+    });
+
+    // _tabController.addListener(() {
+    //   if (!_tabController.indexIsChanging) {
+    //     context.read<AdmirersBloc>().add(
+    //       ChangeAdmirersTab(_tabKeys[_tabController.index]),
+    //     );
+    //   }
+    // });
     scrollController.addListener(() {
       if (scrollController.position.pixels > 20 && !_hideBanner) {
         setState(() {
@@ -416,73 +463,79 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         });
       }
     });
+
     _isUserOnline = widget.user.online;
+
     scrollController.addListener(_handleMessageScroll);
 
-    final conversationId = widget.user.conversationId;
+    final conversationId = widget.user.conversationId?.trim() ?? '';
 
-    debugPrint('🟢 CHAT DETAIL: conversationId=$conversationId');
+    debugPrint('');
+    debugPrint('==============================================');
+    debugPrint('🟢 CHAT DETAIL INIT');
+    debugPrint('==============================================');
+    debugPrint('chatId         = ${widget.user.id}');
+    debugPrint('userId         = ${widget.user.userId}');
+    debugPrint('conversationId = $conversationId');
+    debugPrint('==============================================');
 
-    if (conversationId != null && conversationId.isNotEmpty) {
+    // ==========================================================
+    // SOCKET JOIN
+    // ==========================================================
+
+    if (conversationId.isNotEmpty) {
       joinConversation(conversationId);
     } else {
       debugPrint('❌ CHAT DETAIL: conversationId is NULL/EMPTY');
     }
 
+    // ==========================================================
+    // SOCKET LISTENERS
+    // ==========================================================
+
     _registerMessageReceiveListener();
     _registerOnlineStatusListeners();
     _registerProfileDetailsListener();
 
-    if (conversationId != null && conversationId.isNotEmpty) {
+    // ==========================================================
+    // PROFILE DETAILS
+    // ==========================================================
+
+    if (conversationId.isNotEmpty) {
       _loadConversationUserDetails(conversationId);
     }
 
-    final chatBloc = context.read<ChatBloc>();
+    // ==========================================================
+    // MESSAGE LOAD
+    // ==========================================================
 
-    final realConversationId = conversationId?.trim();
-    if (realConversationId != null && realConversationId.isNotEmpty) {
-      chatBloc.add(
-        LoadMessagesEvent(widget.user.id, conversationId: realConversationId),
-      );
-
-      // First message can become readable a moment after the send endpoint
-      // creates the conversation. Retry only when the first load is empty.
-      Future<void>.delayed(const Duration(milliseconds: 700), () {
-        if (!mounted) return;
-        final bloc = context.read<ChatBloc>();
-        // Defensive guard: never call add() on a bloc that has already
-        // been closed (e.g. its owning BlocProvider was disposed). Without
-        // this check a stray retry throws "Bad state: Cannot add new
-        // events after calling close" and crashes the screen.
-        if (bloc.isClosed) return;
-        final loaded = bloc.state.messages[realConversationId];
-        if (loaded == null || loaded.isEmpty) {
-          debugPrint(
-            '🔁 CHAT DETAIL: initial load empty, retrying $realConversationId',
-          );
-          if (!bloc.isClosed) {
-            bloc.add(
-              LoadMessagesEvent(
-                widget.user.id,
-                conversationId: realConversationId,
-              ),
-            );
-          }
-        }
-      });
+    if (conversationId.isNotEmpty) {
+      _loadChatMessages(conversationId: conversationId);
     } else {
       debugPrint(
-        '⚠️ CHAT DETAIL: missing conversationId; using legacy chat id',
+        '⚠️ CHAT DETAIL: missing conversationId; '
+        'using legacy chat id',
       );
-      chatBloc.add(LoadMessagesEvent(widget.user.id));
+
+      final chatBloc = context.read<ChatBloc>();
+
+      if (!chatBloc.isClosed) {
+        chatBloc.add(LoadMessagesEvent(widget.user.id));
+      }
     }
+
+    // ==========================================================
+    // BANNER TIMER
+    // ==========================================================
 
     _bannerRotationTimer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted) return;
-      setState(() => _bannerIndex = _bannerIndex == 0 ? 1 : 0);
+
+      setState(() {
+        _bannerIndex = _bannerIndex == 0 ? 1 : 0;
+      });
     });
   }
-
   // ============================================================
   // ONLINE / OFFLINE SOCKET
   // ============================================================
@@ -496,6 +549,76 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
     debugPrint('🟢 CHAT DETAIL: user:online listener registered');
     debugPrint('🟢 CHAT DETAIL: user:offline listener registered');
+  }
+
+  Future<void> _loadChatMessages({required String conversationId}) async {
+    final id = conversationId.trim();
+
+    if (id.isEmpty) {
+      debugPrint('❌ _loadChatMessages: conversationId empty');
+      return;
+    }
+
+    if (!mounted) return;
+
+    final bloc = context.read<ChatBloc>();
+
+    if (bloc.isClosed) {
+      debugPrint('❌ _loadChatMessages: ChatBloc already closed');
+      return;
+    }
+
+    debugPrint('');
+    debugPrint('==============================================');
+    debugPrint('📥 LOAD CHAT MESSAGES');
+    debugPrint('==============================================');
+    debugPrint('conversationId = $id');
+    debugPrint('chatId         = ${widget.user.id}');
+    debugPrint('==============================================');
+
+    // ----------------------------------------------------------
+    // FIRST LOAD
+    // ----------------------------------------------------------
+
+    bloc.add(LoadMessagesEvent(widget.user.id, conversationId: id));
+
+    // ----------------------------------------------------------
+    // RETRY #1
+    // ----------------------------------------------------------
+
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+
+    if (!mounted || bloc.isClosed) return;
+
+    var messages = bloc.state.messages[id];
+
+    debugPrint(
+      '📥 FIRST LOAD RESULT: '
+      '${messages?.length ?? 0} messages',
+    );
+
+    if (messages != null && messages.isNotEmpty) {
+      return;
+    }
+
+    debugPrint('🔁 Message list empty. Retry #1...');
+
+    bloc.add(LoadMessagesEvent(widget.user.id, conversationId: id));
+
+    // ----------------------------------------------------------
+    // RETRY #2
+    // ----------------------------------------------------------
+
+    await Future<void>.delayed(const Duration(milliseconds: 1200));
+
+    if (!mounted || bloc.isClosed) return;
+
+    messages = bloc.state.messages[id];
+
+    if (messages != null && messages.isNotEmpty) {
+      return;
+    }
+    bloc.add(LoadMessagesEvent(widget.user.id, conversationId: id));
   }
 
   String? _extractOnlineUserId(dynamic data) {
@@ -645,7 +768,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // ============================================================
 
   void _registerMessageReceiveListener() {
-    _socketService.off('message:receive');
+    // IMPORTANT: SocketService is a singleton shared with ChatBloc.
+    // Never call off('message:receive') here because that removes the
+    // ChatBloc's chat-list listener as well. Only this screen's callback
+    // is removed in dispose().
     _socketService.on('message:receive', _onMessageReceive);
 
     debugPrint('🟢 CHAT DETAIL: message:receive listener registered');
@@ -893,7 +1019,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   void dispose() {
-    _socketService.off('message:receive');
+    // Remove only this screen's listener. Do NOT remove the global
+    // ChatBloc message:receive listener.
+    _socketService.offListener('message:receive', _onMessageReceive);
     _socketService.offListener('user:online', _onUserOnline);
     _socketService.offListener('user:offline', _onUserOffline);
     _socketService.offListener('profile:details', _onProfileDetails);
@@ -1190,12 +1318,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       case ChatMessageType.location:
       case ChatMessageType.contact:
       case ChatMessageType.gift:
-      case ChatMessageType.proposal:
+      case ChatMessageType.RELATIONSHIP_TAG_PROPOSAL:
+      case ChatMessageType.RELATIONSHIP_TAG_ACCEPTED:
       case ChatMessageType.rose:
       case ChatMessageType.ENGAGEMENT:
       case ChatMessageType.compliment:
-      case ChatMessageType.dateNOWPLAN:
       case ChatMessageType.dateInvite:
+      case ChatMessageType.DATECONFIRMED:
       case ChatMessageType.video:
         return 140;
       case ChatMessageType.eventInvite:
@@ -1317,40 +1446,44 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           backgroundColor: AppColors.white,
           elevation: 0,
           surfaceTintColor: Colors.transparent,
-
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-            child: InkWell(
-              onTap: () => Navigator.pop(context),
-              borderRadius: BorderRadius.circular(24),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade200),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.black87,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
-
+          automaticallyImplyLeading: false,
+          // leading: Padding(
+          //   padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+          //   child: InkWell(
+          //     onTap: () => Navigator.pop(context),
+          //     borderRadius: BorderRadius.circular(24),
+          //     child: Container(
+          //       decoration: BoxDecoration(
+          //         color: Colors.white,
+          //         shape: BoxShape.circle,
+          //         border: Border.all(color: Colors.grey.shade200),
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.black.withOpacity(0.04),
+          //             blurRadius: 4,
+          //             offset: const Offset(0, 2),
+          //           ),
+          //         ],
+          //       ),
+          //       child: const Icon(
+          //         Icons.arrow_back_ios_new,
+          //         color: Colors.black87,
+          //         size: 16,
+          //       ),
+          //     ),
+          //   ),
+          // ),
           titleSpacing: 0,
 
           title: Row(
             children: [
-              wSized8,
-              _avatar(_liveImage, size: 48),
+              wSized15,
+              _avatar(
+                _liveImage,
+                size: 48,
+                name: _liveName,
+                age: _liveAge.toString(),
+              ),
 
               const SizedBox(width: 12),
 
@@ -1369,9 +1502,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         ),
                         const SizedBox(width: 7),
                         _badge(
-                          _isDemoThread
-                              ? 'DEMO'
-                              : _livePackageType.toUpperCase(),
+                          // _isDemoThread
+                          //     ? 'DEMO'
+                          //     :
+                          _livePackageType.toUpperCase(),
                         ),
                       ],
                     ),
@@ -1411,7 +1545,60 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             // _circleButton(Icons.phone_outlined, () {}),
             // _circleButton(Icons.videocam_outlined, () {}),
             IconButton(
-              onPressed: _openProfileSheet,
+              onPressed: () {
+                Sidedrawer(
+                  context: context,
+
+                  liveImage: _liveImage,
+                  liveName: _liveName,
+                  liveAge: _liveAge,
+                  isUserOnline: _isUserOnline,
+                  bannerIndex: _bannerIndex,
+                  messageKey: _messageKey,
+                  isBlocked: _isBlocked,
+
+                  userName: widget.user.name,
+
+                  conversationId: "d8a02aa0-0f15-4c6a-bb82-5ace6aac183e",
+
+                  avatar: (String image, double size, String name, String age) {
+                    return _avatar(image, size: size, name: name, age: age);
+                  },
+
+                  giftUnlockProgress: () {
+                    return _giftUnlockProgress();
+                  },
+
+                  relationshipProgress: () {
+                    return _relationshipProgress();
+                  },
+
+                  openRelationshipTagSheet: () {
+                    _openRelationshipTagSheet(false);
+                  },
+
+                  confirmClearChat: () {
+                    _confirmClearChat();
+                  },
+
+                  confirmDeleteConversation: () {
+                    _confirmDeleteConversation();
+                  },
+
+                  showReportUserSheet: () {
+                    _showReportUserSheet();
+                  },
+
+                  showBlockUserSheet: () {
+                    _showBlockUserSheet();
+                  },
+
+                  openUnmatchSheet: () {
+                    _openUnmatchSheet();
+                  },
+                ).openProfileSheet();
+                // _openProfileSheet(_isBlocked);
+              },
               icon: const Icon(Icons.more_vert, color: AppColors.ink),
             ),
           ],
@@ -1420,21 +1607,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              AnimatedSize(
-                duration: const Duration(milliseconds: 450),
-                curve: Curves.easeInOutCubic,
-                alignment: Alignment.topCenter,
-                child: _hideBanner
-                    ? const SizedBox.shrink()
-                    : AnimatedOpacity(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOut,
-                        opacity: _hideBanner ? 0.0 : 1.0,
-                        child: _bannerIndex == 0
-                            ? _giftUnlockProgress()
-                            : _relationshipProgress(),
-                      ),
-              ),
               _tabs(),
               Expanded(
                 child: _isUnmatched
@@ -1497,7 +1669,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           const SizedBox(height: 6),
 
           GestureDetector(
-            onTap: _unblockUser,
+            onTap: () async {
+              await _confirmUnblockUser();
+              // _unblockUser(widget.user.userId.toString(), false);
+            },
             child: const Text(
               'Unblock',
               style: TextStyle(
@@ -1512,18 +1687,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  Future<void> _unblockUser() async {
+  Future<void> _unblockUser(String userId, bool check) async {
     try {
       // The backend exposes the block action at this endpoint.
       // If the backend treats this endpoint as a toggle, calling it again
       // removes the block.
-      await ChatRepository().UnblockUser(widget.user.userId);
+      await ChatRepository().UnblockUser(userId);
 
       if (!mounted) return;
       setState(() {
         _isBlocked = false;
       });
       _toast('${widget.user.name} unblocked');
+      debugPrint("check>>>>>${check}");
+      // if (check) {
+      //   Navigator.pop(context);
+      // }
     } catch (e) {
       debugPrint('❌ UNBLOCK USER ERROR: $e');
       if (mounted) {
@@ -1532,6 +1711,31 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
+  // Future<bool> _unblockUser(String userId, bool check) async {
+  //   try {
+  //     await ChatRepository().UnblockUser(userId);
+
+  //     if (!mounted) return false;
+
+  //     setState(() {
+  //       _isBlocked = false;
+  //     });
+
+  //     _toast('${widget.user.name} unblocked');
+
+  //     debugPrint("check >>>>> $check");
+
+  //     return false; // ✅ success par false
+  //   } catch (e) {
+  //     debugPrint('❌ UNBLOCK USER ERROR: $e');
+
+  //     if (mounted) {
+  //       _toast(e.toString().replaceFirst('Exception: ', ''));
+  //     }
+
+  //     return false; // ❌ error par bhi false
+  //   }
+  // }
   Widget _giftUnlockProgress() {
     const int repliesSoFar = 14;
     const int repliesNeeded = 25;
@@ -1831,28 +2035,31 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             .where(
               (m) =>
                   m.type == ChatMessageType.dateInvite ||
-                  m.type == ChatMessageType.eventInvite,
+                  m.type == ChatMessageType.eventInvite ||
+                  m.type == ChatMessageType.DATECONFIRMED,
             )
             .length;
 
-        return Container(
-          padding: const EdgeInsets.fromLTRB(10, 9, 10, 10),
-          child: SingleChildScrollView(
-            controller: _tabScrollController,
-            scrollDirection: Axis.horizontal,
+        return SingleChildScrollView(
+          controller: _tabScrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 10),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 _tab('💬 All', '', 0),
 
-                const SizedBox(width: 10),
+                const SizedBox(width: 18),
 
                 _tab('🎁 Gifts', _countLabel(giftsCount), 1),
 
-                const SizedBox(width: 10),
+                const SizedBox(width: 18),
 
                 _tab('💖 Compliments', _countLabel(complimentsCount), 2),
 
-                const SizedBox(width: 10),
+                const SizedBox(width: 18),
 
                 _tab('📅 Date Invites', _countLabel(dateInvitesCount), 3),
               ],
@@ -1863,62 +2070,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  int _selectedTabIndex = 0;
-
-  // Widget _tab(String title, String count, int index, {Key? key}) {
-  //   final isSelected = _selectedTabIndex == index;
-
-  //   return GestureDetector(
-  //     key: key,
-  //     onTap: () {
-  //       setState(() {
-  //         _selectedTabIndex = index;
-  //       });
-
-  //       context.read<ChatBloc>().add(SelectFilterEvent(index.toString()));
-
-  //       _centerSelectedTab(index);
-  //     },
-  //     child: Container(
-  //       height: 30,
-  //       padding: const EdgeInsets.symmetric(horizontal: 16),
-  //       decoration: BoxDecoration(
-  //         color: isSelected ? AppColors.primary : Colors.transparent,
-  //         borderRadius: BorderRadius.circular(20),
-  //         border: Border.all(
-  //           color: isSelected ? AppColors.primary : AppColors.line,
-  //           width: 1,
-  //         ),
-  //       ),
-  //       child: Row(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           Text(
-  //             title,
-  //             style: TextStyle(
-  //               color: isSelected ? Colors.white : Colors.black87,
-  //               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-  //             ),
-  //           ),
-
-  //           if (count.isNotEmpty) ...[
-  //             const SizedBox(width: 5),
-  //             Text(
-  //               count,
-  //               style: TextStyle(
-  //                 color: isSelected ? Colors.white : Colors.black54,
-  //                 fontWeight: FontWeight.w600,
-  //               ),
-  //             ),
-  //           ],
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _tab(String title, String count, int index) {
     final selected = tab == index;
+
     final tabKey = _tabKeys.putIfAbsent(index, GlobalKey.new);
 
     return GestureDetector(
@@ -1926,24 +2080,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         setState(() {
           tab = index;
         });
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-          if (!scrollController.hasClients) return;
 
-          // reverse:true => offset 0 is the latest/bottom message, NOT
-          // maxScrollExtent (that's the oldest/top). Jumping to
-          // maxScrollExtent here was landing on the oldest message
-          // whenever the tab changed, making it look like new/sent
-          // messages had disappeared.
-          scrollController.jumpTo(0);
+          if (scrollController.hasClients) {
+            scrollController.jumpTo(0);
+          }
 
           _initialScrollDone = true;
 
-          // Bring the tapped tab to the center of the horizontally
-          // scrolling tab bar, instead of leaving it wherever it happened
-          // to be (which could be clipped off the left/right edge for
-          // tabs like "📅 Date Invites" near the end of the row).
           final tabContext = tabKey.currentContext;
+
           if (tabContext != null) {
             Scrollable.ensureVisible(
               tabContext,
@@ -1957,14 +2105,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       child: KeyedSubtree(
         key: tabKey,
         child: Container(
-          height: 30,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          alignment: Alignment.center,
+          padding: const EdgeInsets.only(bottom: 6, top: 10),
           decoration: BoxDecoration(
-            color: selected ? AppColors.primary : Colors.white,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: selected ? AppColors.primary : AppColors.line,
+            border: Border(
+              bottom: BorderSide(
+                color: selected ? const Color(0xFFE43A6A) : Colors.transparent,
+                width: 3,
+              ),
             ),
           ),
           child: Row(
@@ -1972,29 +2119,24 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             children: [
               Text(
                 title,
+                maxLines: 1,
+                softWrap: false,
                 style: AppText.h2.copyWith(
-                  fontSize: 15,
-                  color: selected ? Colors.white : AppColors.ink60,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? const Color(0xFFE43A6A) : AppColors.ink60,
                 ),
               ),
 
               if (count.isNotEmpty) ...[
-                const SizedBox(width: 6),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: selected ? Colors.white24 : AppColors.soft,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    count,
-                    style: AppText.pill.copyWith(
-                      color: selected ? Colors.white : AppColors.muted,
-                    ),
+                const SizedBox(width: 4),
+                Text(
+                  count,
+                  maxLines: 1,
+                  style: AppText.pill.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? const Color(0xFFE43A6A) : AppColors.muted,
                   ),
                 ),
               ],
@@ -2021,13 +2163,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       child: BlocBuilder<ChatBloc, ChatState>(
         builder: (context, state) {
           final messages = state.messages[_messageKey] ?? const <ChatMessage>[];
-
-          // Messages abhi load nahi hue
-          // if (messages.isEmpty) {
-          //   return const Center(
-          //     child: CircularProgressIndicator(color: AppColors.primary),
-          //   );
-          // }
 
           // Filter messages according to selected tab
           final filtered = messages.where((m) {
@@ -2127,7 +2262,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
                 return Container(
                   key: _keyForMessage(message.id),
-                  child: _SwipeToReply(
+                  child: SwipeToReply(
                     onDelete: () {},
                     onReply: () => _startReply(message),
                     child: _messageCardWithDelete(message),
@@ -2284,10 +2419,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   Widget _messageCard(ChatMessage message) {
     // First handle gift-related messages based on actual gift data.
-    if ((message.type == ChatMessageType.gift ||
-            message.type == ChatMessageType.ENGAGEMENT) &&
+    if ((message.type == ChatMessageType.ENGAGEMENT) &&
         message.giftId != null) {
-      return _giftCard(message);
+      return _engagementBundleCard(message);
     }
 
     // Handle rose messages.
@@ -2326,14 +2460,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
       case ChatMessageType.gift:
         // giftId null hone par fallback
-        return _textCard(message);
+        return _giftCard(message);
 
       case ChatMessageType.ENGAGEMENT:
         // giftId null hone par engagement/rose fallback
         return _roseCard(message);
 
-      case ChatMessageType.proposal:
-        return _proposalCard(message);
+      case ChatMessageType.RELATIONSHIP_TAG_PROPOSAL ||
+          ChatMessageType.RELATIONSHIP_TAG_ACCEPTED:
+        return _relationshipTagProposalCard(message);
 
       case ChatMessageType.rose:
         return _roseCard(message);
@@ -2342,11 +2477,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         return _complimentCard(message);
 
       case ChatMessageType.dateInvite:
-        return _dateInviteCard(message);
+        return _datenowplanCard(message);
 
       case ChatMessageType.eventInvite:
         return _eventInviteCard(message);
-      case ChatMessageType.dateNOWPLAN:
+
+      case ChatMessageType.DATECONFIRMED:
         return _datenowplanCard(message);
     }
   }
@@ -2400,119 +2536,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       child: const Icon(Icons.image_outlined, color: AppColors.muted, size: 22),
     );
   }
-  // Widget _quotedMessage(ChatMessage message) {
-  //   final isImage = _hasReplyImage(message);
-
-  //   return GestureDetector(
-  //     behavior: HitTestBehavior.opaque,
-  //     onTap: () => _scrollToMessage(message.replyToId),
-  //     child: Container(
-  //       width: double.infinity,
-  //       margin: const EdgeInsets.only(bottom: 8),
-  //       padding: const EdgeInsets.all(10),
-  //       decoration: BoxDecoration(
-  //         color: const Color(0xFFFFF9FA),
-  //         borderRadius: BorderRadius.circular(14),
-  //         border: Border.all(color: const Color(0xFFF3C9D2), width: 1),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: const Color(0xFFE34F72).withOpacity(0.06),
-  //             blurRadius: 8,
-  //             offset: const Offset(0, 3),
-  //           ),
-  //         ],
-  //       ),
-  //       child: Row(
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: [
-  //           // Pink vertical line
-  //           Container(
-  //             width: 4,
-  //             height: 48,
-  //             decoration: BoxDecoration(
-  //               color: AppColors.primary,
-  //               borderRadius: BorderRadius.circular(10),
-  //             ),
-  //           ),
-
-  //           const SizedBox(width: 9),
-
-  //           // Image
-  //           if (isImage) ...[
-  //             ClipRRect(
-  //               borderRadius: BorderRadius.circular(9),
-  //               child: SizedBox(
-  //                 width: 48,
-  //                 height: 48,
-  //                 child: _buildReplyImage(message),
-  //               ),
-  //             ),
-  //             const SizedBox(width: 10),
-  //           ],
-
-  //           // Message content
-  //           Expanded(
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Row(
-  //                   children: [
-  //                     const Icon(
-  //                       Icons.reply_rounded,
-  //                       size: 14,
-  //                       color: Color(0xFFE34F72),
-  //                     ),
-  //                     const SizedBox(width: 4),
-  //                     Expanded(
-  //                       child: Text(
-  //                         message.isMine ? 'You' : widget.user.name,
-  //                         maxLines: 1,
-  //                         overflow: TextOverflow.ellipsis,
-  //                         style: AppText.sub.copyWith(
-  //                           color: AppColors.primary,
-  //                           fontSize: 12,
-  //                           fontWeight: FontWeight.w700,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-
-  //                 const SizedBox(height: 4),
-
-  //                 Text(
-  //                   isImage
-  //                       ? '📷  Photo'
-  //                       : (message.replyText?.trim().isNotEmpty == true
-  //                             ? message.replyText!
-  //                             : 'Message'),
-  //                   maxLines: 2,
-  //                   overflow: TextOverflow.ellipsis,
-  //                   style: AppText.sub.copyWith(
-  //                     color: const Color(0xFF5F5A5B),
-  //                     fontSize: 13,
-  //                     fontWeight: FontWeight.w500,
-  //                     height: 1.25,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-
-  //           const SizedBox(width: 5),
-
-  //           // Arrow
-  //           Icon(
-  //             Icons.chevron_right_rounded,
-  //             size: 20,
-  //             color: AppColors.primary.withOpacity(0.55),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _quotedMessage(ChatMessage message) {
     final isImage = _hasReplyImage(message);
@@ -2525,13 +2548,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           width: (isImage)
               ? MediaQuery.of(context).size.width * 0.7
               : double.infinity,
-          // margin: const EdgeInsets.only(bottom: 8),
-          // clipBehavior: Clip.antiAlias,
-          // decoration: BoxDecoration(
-          //   color: const Color(0xFFFFF7F8), // Subtle warm pink background
-          //   borderRadius: BorderRadius.circular(20),
-          //   border: Border.all(color: const Color(0xFFFCDDEC), width: 1.5),
-          // ),
+
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2961,16 +2978,30 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         ),
                         if (isMine) ...[
                           const SizedBox(width: 4),
-                          Text(
-                            message.delivered ? ' ✓✓' : '✓',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -2,
-                              color: message.delivered
-                                  ? AppColors.primary
-                                  : const Color(0xFFB07B8D),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                formatMessageTime(message.time),
+                                style: AppText.body.copyWith(
+                                  color: const Color(0xff928d89),
+
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                ((message.isMine)
+                                    ? (message.seen ? ' ✓✓' : '  ✓')
+                                    : ""),
+                                style: AppText.body.copyWith(
+                                  // color: const Color(0xff928d89),
+                                  color: message.seen
+                                      ? AppColors.primary
+                                      : Colors.black,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ],
@@ -3089,14 +3120,30 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   ),
                   if (isMine) ...[
                     const SizedBox(width: 4),
-                    const Text(
-                      ' ✓✓',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -2,
-                        color: Color(0xFFB07B8D),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          formatMessageTime(message.time),
+                          style: AppText.body.copyWith(
+                            color: const Color(0xff928d89),
+
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          ((message.isMine)
+                              ? (message.seen ? ' ✓✓' : '  ✓')
+                              : ""),
+                          style: AppText.body.copyWith(
+                            // color: const Color(0xff928d89),
+                            color: message.seen
+                                ? AppColors.primary
+                                : Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ],
@@ -3146,107 +3193,112 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.only(
-          left: isMine ? 30 : 0,
-          right: isMine ? 0 : 30,
+          left: isMine ? 20 : 0,
+          right: isMine ? 0 : 20,
           bottom: 18,
         ),
-        child: Column(
-          crossAxisAlignment: isMine
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
+        child: Stack(
+          clipBehavior: Clip.none,
           children: [
             // =====================================================
-            // IMAGE + WHATSAPP TAIL
+            // MAIN WHITE BUBBLE + IMAGE
             // =====================================================
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                if (message.replyToId != null)
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    right: 10,
-                    child: _imageReplyOverlay(message),
-                  ),
-
-                // =================================================
-                // MAIN WHITE BUBBLE
-                // =================================================
-                Container(
-                  width: 320,
-                  height: 380,
-                  padding: const EdgeInsets.all(5),
-                  margin: EdgeInsets.only(right: 1),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(22),
-                      topRight: Radius.circular(22),
-                      bottomLeft: isMine
-                          ? Radius.circular(22)
-                          : Radius.circular(0),
-                      bottomRight: isMine
-                          ? Radius.circular(0)
-                          : Radius.circular(22),
-                    ),
-
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: _buildImage(message),
-                    ),
-                  ),
+            Container(
+              width: 320,
+              height: 380,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(22),
+                  topRight: const Radius.circular(22),
+                  bottomLeft: isMine
+                      ? const Radius.circular(22)
+                      : const Radius.circular(0),
+                  bottomRight: isMine
+                      ? const Radius.circular(0)
+                      : const Radius.circular(22),
                 ),
-
-                // =================================================
-                // WHATSAPP TOP CORNER NODE
-                // =================================================
-                // Positioned(
-                //   top: 375,
-                //   left: isMine ? null : -5,
-                //   right: isMine ? -3 : null,
-                //   child: CustomPaint(
-                //     size: const Size(24, 22),
-                //     painter: WhatsAppTailPainter(
-                //       isMine: isMine,
-                //       color: const Color.fromARGB(255, 207, 203, 203),
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-
-            const SizedBox(height: 15),
-
-            // =====================================================
-            // TIME
-            // =====================================================
-            Padding(
-              padding: EdgeInsets.only(
-                left: isMine ? 0 : 8,
-                right: isMine ? 8 : 0,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    message.time,
-                    style: AppText.sub.copyWith(
-                      color: AppColors.muted,
-                      fontSize: 11,
+                child: Stack(
+                  children: [
+                    // IMAGE
+                    Positioned.fill(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _openChatImage(message),
+                        child: Hero(
+                          tag: 'chat-image-${message.id}',
+                          child: _buildImage(message),
+                        ),
+                      ),
                     ),
-                  ),
 
-                  if (isMine) ...[
-                    const SizedBox(width: 4),
-                    const Icon(Icons.done_all, size: 15, color: Colors.blue),
+                    // =================================================
+                    // BOTTOM RIGHT DATETIME
+                    // =================================================
+                    Positioned(
+                      right: 10,
+                      bottom: 10,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            formatMessageTime(message.time),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black54,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          if (isMine) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              message.seen ? '✓✓' : '✓',
+                              style: TextStyle(
+                                color: message.seen
+                                    ? AppColors.primary
+                                    : Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black54,
+                                    blurRadius: 3,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ],
-                ],
+                ),
               ),
             ),
+
+            // =====================================================
+            // REPLY OVERLAY
+            // =====================================================
+            if (message.replyToId != null)
+              Positioned(
+                top: 10,
+                left: 10,
+                right: 10,
+                child: _imageReplyOverlay(message),
+              ),
           ],
         ),
       ),
@@ -3409,7 +3461,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: _ChatVideoPlayer(url: url),
+          child: ChatVideoPlayer(url: url),
         ),
       ),
     );
@@ -3502,36 +3554,70 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
+  Future<void> _openChatImage(ChatMessage message) async {
+    final imageUrl = (message.imageUrl ?? '').trim();
+    if (imageUrl.isEmpty) {
+      debugPrint('❌ IMAGE VIEW: imageUrl is empty');
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatImageViewerScreen(
+          imageUrl: imageUrl,
+          heroTag: 'chat-image-${message.id}',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openChatDocument(ChatMessage message) async {
+    final fileUrl = (message.fileUrl ?? '').trim();
+    if (fileUrl.isEmpty) {
+      debugPrint('❌ DOCUMENT VIEW: fileUrl is empty');
+      return;
+    }
+
+    final cleanUrl = fileUrl.split('?').first.toLowerCase();
+    final isPdf =
+        cleanUrl.endsWith('.pdf') ||
+        (message.fileName ?? '').toLowerCase().endsWith('.pdf');
+
+    if (isPdf) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatPdfViewerScreen(
+            pdfUrl: fileUrl,
+            title: message.fileName ?? 'PDF',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final uri = Uri.tryParse(fileUrl);
+
+    if (uri == null) {
+      debugPrint('❌ Invalid document URL: $fileUrl');
+      return;
+    }
+
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+      debugPrint('📄 Document opened: $opened');
+    } catch (e) {
+      debugPrint('❌ Document open error: $e');
+    }
+  }
+
   Widget _documentCard(ChatMessage message) {
     return Align(
       alignment: message.isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
-        onTap: () async {
-          final fileUrl = message.fileUrl?.trim();
-
-          if (fileUrl == null || fileUrl.isEmpty) {
-            debugPrint('❌ Document URL is empty');
-            return;
-          }
-
-          final uri = Uri.tryParse(fileUrl);
-
-          if (uri == null) {
-            debugPrint('❌ Invalid document URL: $fileUrl');
-            return;
-          }
-
-          try {
-            final opened = await launchUrl(
-              uri,
-              mode: LaunchMode.externalApplication,
-            );
-
-            debugPrint('📄 Document opened: $opened');
-          } catch (e) {
-            debugPrint('❌ Document open error: $e');
-          }
-        },
+        onTap: () => _openChatDocument(message),
         child: _attachmentBubble(
           icon: Icons.insert_drive_file_rounded,
           iconColor: const Color(0xFF3D8BE8),
@@ -3544,50 +3630,199 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   Widget _locationCard(ChatMessage message) {
+    final latitude = message.latitude;
+    final longitude = message.longitude;
+
+    final hasCoordinates = latitude != null && longitude != null;
+
+    final locationText = (message.locationLabel ?? message.text).trim();
+
+    final address = locationText.isEmpty ? 'Location' : locationText;
+
     return Align(
       alignment: message.isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        width: 300,
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(24),
-            topRight: const Radius.circular(24),
-            bottomLeft: Radius.circular(message.isMine ? 24 : 0),
-            bottomRight: Radius.circular(message.isMine ? 0 : 24),
+
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+
+        onTap: hasCoordinates
+            ? () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => LocationMapScreen(
+                      latitude: latitude!,
+                      longitude: longitude!,
+                      label: address,
+                    ),
+                  ),
+                );
+              }
+            : null,
+
+        child: Container(
+          width: 310,
+
+          margin: const EdgeInsets.only(bottom: 16),
+
+          clipBehavior: Clip.antiAlias,
+
+          decoration: BoxDecoration(
+            color: Colors.white,
+
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(24),
+              topRight: const Radius.circular(24),
+
+              bottomLeft: Radius.circular(message.isMine ? 24 : 0),
+
+              bottomRight: Radius.circular(message.isMine ? 0 : 24),
+            ),
+
+            boxShadow: AppColors.shadow,
           ),
-          boxShadow: AppColors.shadow,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.primarySoft,
-                borderRadius: BorderRadius.circular(16),
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: [
+              // =================================================
+              // MAP
+              // =================================================
+              SizedBox(
+                height: 155,
+                width: double.infinity,
+
+                child: hasCoordinates
+                    ? GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(latitude!, longitude!),
+                          zoom: 15.5,
+                        ),
+
+                        markers: {
+                          Marker(
+                            markerId: MarkerId('chat_${message.id}'),
+
+                            position: LatLng(latitude, longitude),
+                          ),
+                        },
+
+                        myLocationButtonEnabled: false,
+
+                        zoomControlsEnabled: false,
+
+                        compassEnabled: false,
+
+                        mapToolbarEnabled: false,
+
+                        liteModeEnabled: true,
+
+                        scrollGesturesEnabled: false,
+
+                        zoomGesturesEnabled: false,
+
+                        rotateGesturesEnabled: false,
+
+                        tiltGesturesEnabled: false,
+                      )
+                    : Container(
+                        color: AppColors.primarySoft,
+
+                        alignment: Alignment.center,
+
+                        child: const Icon(
+                          Icons.location_on_rounded,
+
+                          color: AppColors.primary,
+
+                          size: 50,
+                        ),
+                      ),
               ),
-              child: const Center(
-                child: Icon(
-                  Icons.location_on_rounded,
-                  color: AppColors.primary,
-                  size: 50,
+
+              // =================================================
+              // LOCATION DETAILS
+              // =================================================
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  children: [
+                    // -------------------------------------------
+                    // LOCATION ICON
+                    // -------------------------------------------
+                    Container(
+                      width: 38,
+                      height: 38,
+
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+
+                      child: const Icon(
+                        Icons.location_on_rounded,
+
+                        color: AppColors.primary,
+
+                        size: 21,
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    // -------------------------------------------
+                    // ADDRESS
+                    // -------------------------------------------
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+
+                        children: [
+                          Text(
+                            'Location',
+
+                            style: AppText.h2.copyWith(fontSize: 16),
+                          ),
+
+                          const SizedBox(height: 3),
+
+                          Text(
+                            address,
+
+                            maxLines: 3,
+
+                            overflow: TextOverflow.ellipsis,
+
+                            style: AppText.sub.copyWith(color: AppColors.muted),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // -------------------------------------------
+                    // OPEN ICON
+                    // -------------------------------------------
+                    if (hasCoordinates)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4),
+
+                        child: Icon(
+                          Icons.open_in_new_rounded,
+
+                          size: 18,
+
+                          color: AppColors.muted,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text('Current Location', style: AppText.h2.copyWith(fontSize: 16)),
-            const SizedBox(height: 4),
-            Text(
-              message.text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: AppText.sub.copyWith(color: AppColors.muted),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -3903,13 +4138,46 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         ),
                       ),
                       const Spacer(),
-                      Text(
-                        formatMessageTime(message.time) +
-                            (isMine ? ' ✓✓' : '✓'),
-                        style: AppText.body.copyWith(
-                          color: const Color(0xff928d89),
-                          fontSize: 14,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            formatMessageTime(message.time),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black54,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          if (isMine) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              message.seen ? '✓✓' : '✓',
+                              style: TextStyle(
+                                color: message.seen
+                                    ? AppColors.primary
+                                    : Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black54,
+                                    blurRadius: 3,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ],
                   ),
@@ -3922,85 +4190,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  String _formatGiftExpiry(String value) {
-    if (value == '7d') return '7d';
-    return value;
-  }
-
   // ============================================================
   // ROSE CARD (sent / received)
   // ============================================================
 
-  /// Rounded "N/M replies" progress bar used on rose cards, matching the
-  /// design reference: label + fraction on top, a pill-shaped linear bar
-  /// underneath, then a short helper line.
-  Widget _replyProgressBox({
-    required String label,
-    required int current,
-    required int target,
-    required String helperText,
-  }) {
-    final value = target > 0 ? (current / target).clamp(0.0, 1.0) : 0.0;
-
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 14),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: AppColors.shadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: AppText.body.copyWith(
-                  color: AppColors.ink60,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12.5,
-                ),
-              ),
-              Text(
-                '$current/$target replies',
-                style: AppText.body.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12.5,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: value),
-              duration: const Duration(milliseconds: 700),
-              curve: Curves.easeOutCubic,
-              builder: (context, animatedValue, _) => LinearProgressIndicator(
-                value: animatedValue,
-                minHeight: 8,
-                backgroundColor: AppColors.soft,
-                valueColor: const AlwaysStoppedAnimation(AppColors.primary),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            helperText,
-            style: AppText.body.copyWith(color: AppColors.muted, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _roseCard(ChatMessage message) {
+  Widget _engagementBundleCard(ChatMessage message) {
     final coin = message.coinAmount ?? '10';
 
     final progress = message.messageProgress;
@@ -4016,30 +4210,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       margin: const EdgeInsets.only(bottom: 18),
       padding: const EdgeInsets.fromLTRB(15, 20, 15, 10),
 
-      // decoration: BoxDecoration(
-      //   color: const Color(0xFFFFFBFB),
-      //   borderRadius: BorderRadius.circular(22),
-      //   border: Border.all(color: const Color(0xFFF6D7C2), width: 1.5),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: const Color(0xFFE35B78).withOpacity(0.08),
-      //       blurRadius: 18,
-      //       offset: const Offset(0, 8),
-      //     ),
-      //   ],
-      // ),
-      // decoration: BoxDecoration(
-      //   color: const Color(0xFFFFFBFB),
-      //   borderRadius: BorderRadius.circular(22),
-      //   border: Border.all(color: const Color(0xFFF6D7C2), width: 1.5),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: const Color(0xFFE35B78).withOpacity(0.08),
-      //       blurRadius: 18,
-      //       offset: const Offset(0, 8),
-      //     ),
-      //   ],
-      // ),
       decoration: BoxDecoration(
         color: const Color(0xFFFFFBFB),
         borderRadius: BorderRadius.circular(22),
@@ -4056,51 +4226,94 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // =========================================================
-          // ROSE HEADER
-          // KEEPING YOUR EXISTING ROSE MOTION
-          // =========================================================
-          Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        message.isMine
-                            ? Icons.arrow_upward_rounded
-                            : Icons.arrow_downward_rounded,
-                        size: 14,
-                        color: message.isMine
-                            ? const Color(0xFF8A6010)
-                            : AppColors.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        message.isMine
-                            ? 'ROSE SENT · TO ${widget.user.name.toUpperCase()}'
-                            : 'ROSE RECEIVED · FROM ${widget.user.name.toUpperCase()}',
-                        style: AppText.eyebrow.copyWith(
-                          color: message.isMine
-                              ? const Color(0xFF8A6010)
-                              : AppColors.primary,
+              // =======================================================
+              // ROSE - LEFT
+              // =======================================================
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Positioned.fill(child: RoseTwinkleOverlay()),
+
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              message.isMine
+                                  ? Icons.arrow_upward_rounded
+                                  : Icons.arrow_downward_rounded,
+                              size: 13,
+                              color: message.isMine
+                                  ? const Color(0xFF8A6010)
+                                  : AppColors.primary,
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 6),
+                        const SizedBox(height: 5),
 
-                  // DO NOT REMOVE - animated rose
-                  const _FloatingRose(),
-                ],
+                        // SAME EXISTING ANIMATED ROSE
+                        const FloatingRose(), const SizedBox(width: 3),
+
+                        Flexible(
+                          child: Text(
+                            message.isMine ? 'ROSE SENT' : 'ROSE RECEIVED',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppText.eyebrow.copyWith(
+                              fontSize: 10,
+                              color: message.isMine
+                                  ? const Color(0xFF8A6010)
+                                  : AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
 
-              // DO NOT REMOVE - animated twinkles
-              const Positioned.fill(child: _RoseTwinkleOverlay()),
+              // const SizedBox(width: 10),
+
+              // =======================================================
+              // GIFT - RIGHT
+              // =======================================================
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Positioned.fill(child: RoseTwinkleOverlay()),
+                    Column(
+                      // mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // GIFT IMAGE
+                        const SizedBox(height: 27),
+                        FloatingGift(imageUrl: message.imageUrl),
+
+                        const SizedBox(height: 13),
+                        Text(
+                          message.giftName ?? 'Special Gift',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: AppText.body.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF302A2C),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
 
@@ -4263,7 +4476,284 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           const SizedBox(height: 14),
           Text(
             message.isMine
-                ? "Sent yesterday · ${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · ✓✓ Seen"
+                ? "Sent · ${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · ${message.seen ? '✓✓ Seen' : '✓ Sent'}"
+                : 'Received today ·${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · her rose unlocks as you talk',
+            textAlign: TextAlign.center,
+            style: AppText.sub1.copyWith(
+              color: const Color(0xFF999294),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _roseCard(ChatMessage message) {
+    final coin = message.coinAmount ?? '10';
+
+    final progress = message.messageProgress;
+    final target = message.messageTarget;
+
+    final hasReplyProgress = progress != null && target != null && target > 0;
+
+    final remaining = hasReplyProgress
+        ? (target! - progress!).clamp(0, target!)
+        : 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.fromLTRB(15, 20, 15, 10),
+
+      // decoration: BoxDecoration(
+      //   color: const Color(0xFFFFFBFB),
+      //   borderRadius: BorderRadius.circular(22),
+      //   border: Border.all(color: const Color(0xFFF6D7C2), width: 1.5),
+      //   boxShadow: [
+      //     BoxShadow(
+      //       color: const Color(0xFFE35B78).withOpacity(0.08),
+      //       blurRadius: 18,
+      //       offset: const Offset(0, 8),
+      //     ),
+      //   ],
+      // ),
+      // decoration: BoxDecoration(
+      //   color: const Color(0xFFFFFBFB),
+      //   borderRadius: BorderRadius.circular(22),
+      //   border: Border.all(color: const Color(0xFFF6D7C2), width: 1.5),
+      //   boxShadow: [
+      //     BoxShadow(
+      //       color: const Color(0xFFE35B78).withOpacity(0.08),
+      //       blurRadius: 18,
+      //       offset: const Offset(0, 8),
+      //     ),
+      //   ],
+      // ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFBFB),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFF6D7C2), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF9EEEF),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // =========================================================
+          // ROSE HEADER
+          // KEEPING YOUR EXISTING ROSE MOTION
+          // =========================================================
+          Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        message.isMine
+                            ? Icons.arrow_upward_rounded
+                            : Icons.arrow_downward_rounded,
+                        size: 14,
+                        color: message.isMine
+                            ? const Color(0xFF8A6010)
+                            : AppColors.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        message.isMine
+                            ? 'ROSE SENT · TO ${widget.user.name.toUpperCase()}'
+                            : 'ROSE RECEIVED · FROM ${widget.user.name.toUpperCase()}',
+                        style: AppText.eyebrow.copyWith(
+                          color: message.isMine
+                              ? const Color(0xFF8A6010)
+                              : AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // DO NOT REMOVE - animated rose
+                  const FloatingRose(),
+                ],
+              ),
+
+              // DO NOT REMOVE - animated twinkles
+              const Positioned.fill(child: RoseTwinkleOverlay()),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          // =========================================================
+          // ROSE MESSAGE / QUOTE
+          // =========================================================
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              '"${message.complimentMessage ?? 'You are a beautiful soul, and I cherish every moment we share together.'}"',
+              textAlign: TextAlign.center,
+              style: AppText.h2.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+                height: 1.35,
+                color: const Color(0xFF272326),
+              ),
+            ),
+          ),
+
+          // =========================================================
+          // INFO CARD
+          // SCREENSHOT STYLE
+          // =========================================================
+          if (message.hintLine != null) ...[
+            const SizedBox(height: 18),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.90),
+                borderRadius: BorderRadius.circular(17),
+                border: Border.all(color: const Color(0xFFF0ECEC), width: 1),
+              ),
+              child: Text(
+                message.hintLine!,
+                textAlign: TextAlign.center,
+                style: AppText.body.copyWith(
+                  color: const Color(0xFF686163),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  height: 1.45,
+                ),
+              ),
+            ),
+          ],
+
+          // =========================================================
+          // REPLY PROGRESS
+          // SCREENSHOT STYLE
+          // =========================================================
+          if (hasReplyProgress) ...[
+            const SizedBox(height: 20),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(18, 1, 18, 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: const Color(0xfff3d4dc), width: 1.3),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // -----------------------------------------------
+                  // TITLE + 14/25
+                  // -----------------------------------------------
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          message.isMine
+                              ? 'Her reply progress'
+                              : 'Reply progress',
+                          style: AppText.body.copyWith(
+                            color: const Color(0xFF8B8680),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      Text(
+                        '$progress/$target replies',
+                        style: AppText.body.copyWith(
+                          color: const Color(0xFFD83D62),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // -----------------------------------------------
+                  // PROGRESS BAR
+                  // -----------------------------------------------
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: LinearProgressIndicator(
+                      value: (progress / target).clamp(0.0, 1.0),
+                      minHeight: 11,
+                      backgroundColor: const Color(0xFFF4E1E6),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Color(0xFFD94768),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // -----------------------------------------------
+                  // HELPER TEXT
+                  // -----------------------------------------------
+                  Text(
+                    message.isMine
+                        ? '$remaining more replies to unlock your rose for her'
+                        : '$remaining more replies to unlock her rose',
+                    style: AppText.body.copyWith(
+                      color: const Color(0xFF686163),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w300,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          // =========================================================
+          // BOTTOM STATUS
+          // =========================================================
+          message.isMine ? SizedBox() : const SizedBox(height: 14),
+          message.isMine
+              ? SizedBox()
+              : Container(
+                  width: double.infinity,
+                  // height: 1,
+                  // color: const Color(0xFFF0ECEC),
+                  child: Text(
+                    "She sent this hoping you'd write back. Keep it going  — a few replies in, the rose unlocks as 🪙 10.",
+                    style: AppText.sub1.copyWith(
+                      color: const Color(0xFFC7395E),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+          const SizedBox(height: 14),
+          Text(
+            message.isMine
+                ? "Sent · ${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · ${message.seen ? '✓✓ Seen' : '✓ Sent'}"
                 : 'Received today ·${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · her rose unlocks as you talk',
             textAlign: TextAlign.center,
             style: AppText.sub1.copyWith(
@@ -4516,13 +5006,28 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         ),
                       ),
                       const Spacer(),
-                      Text(
-                        formatMessageTime(message.time) +
-                            (read == true ? ' ✓✓' : '  ✓'),
-                        style: AppText.body.copyWith(
-                          color: const Color(0xff928d89),
-                          fontSize: 14,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            formatMessageTime(message.time),
+                            style: AppText.body.copyWith(
+                              color: const Color(0xff928d89),
+
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            ((message.isMine) ? (read ? ' ✓✓' : '  ✓') : ""),
+                            style: AppText.body.copyWith(
+                              // color: const Color(0xff928d89),
+                              color: message.seen
+                                  ? AppColors.primary
+                                  : Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -4643,8 +5148,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
     return Padding(
       padding: EdgeInsets.only(
-        left: message.isMine ? 40 : 0,
-        right: message.isMine ? 0 : 40,
+        left: message.isMine ? 20 : 0,
+        right: message.isMine ? 0 : 20,
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 18),
@@ -4910,7 +5415,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 style: AppText.body.copyWith(
                                   color: AppColors.colorc7395e,
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 11,
+                                  fontSize: 15,
                                 ),
                               ),
                             ],
@@ -5010,27 +5515,106 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   // if (message.inviteButtonPrimary != null) ...[
                   const SizedBox(height: 10),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _richInviteButton1(
-                          label: "Request to join",
-                          primary: true,
-                        ),
-                      ),
-                      // if (hasSecondaryButton) ...[
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _richInviteButton1(
-                          label: "View Plan",
-                          primary: false,
-                        ),
-                      ),
-                      // ],
-                    ],
-                  ),
+                  message.isMine
+                      ? const Text(
+                          "You sent a date plan",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      : message.isAlreadyRequested == true
+                      ? SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    final requestSent = await showRequestDateBottomSheet(
+                                      context,
+                                      {
+                                        "id": message.dateplanid,
+                                        "imageUrl": message.imageUrl,
+                                        "location": message.inviteSafetyNote!,
+                                        // "distance": "Near you",
+                                        // "match": "26% match",
+                                        "date":
+                                            "📅 ${message.eventDate!.toString().substring(0, 10)}",
+                                        "time":
+                                            "🕔 ${message.eventType!.toString()}",
+                                        "type": message.eventType,
+                                        "title": message.eventTitle,
+                                        // "subtitle": "3rd one",
+                                        "people":
+                                            "⏱️ ${message.inviteStats} mins",
+                                        "pay": message.inviteStats,
+                                        "name": "${_liveName}, ${_liveAge}",
+                                        "userId": message.senderId,
+                                        "verified": "false",
+                                        "nameSubtitle": "Host",
+                                        "avatarUrl":
+                                            "https://ik.imagekit.io/hzyuadmua/user-photos/upload_1788931884236_znX2xo652.jpg",
+                                      },
+                                    );
 
-                  const SizedBox(height: 12),
+                                    if (requestSent == true) {
+                                      message.isAlreadyRequested = true;
+                                      // request sent successfully
+                                    }
+                                  },
+                                  child: _richInviteButton1(
+                                    label: "Request to join",
+                                    primary: true,
+                                  ),
+                                ),
+                              ),
+                              // Expanded(
+                              //   child: InkWell(
+                              //     //navneet
+                              //     // onTap: () => _showViewPlanBottomSheet(context, {
+                              //     //   "id": "78d5b281-0be1-40d7-be05-e054839f64b7",
+                              //     //   "planId":
+                              //     //       "3dfb1dd1-e253-4d57-80fc-0a8b20755abf",
+                              //     //   "imageUrl":
+                              //     //       "https://ik.imagekit.io/hzyuadmua/date-plan-options/1787118624770-download_fuuujdZNe.jpg",
+                              //     //   "activityName": "Dinner",
+                              //     //   "title": "rahul date",
+                              //     //   "subtitle": "Today · 7:35 PM · amnora",
+                              //     //   "hostName": "Rahul",
+                              //     //   "hostAvatar": null,
+                              //     //   "status": "Pending",
+                              //     //   "message": "heeello",
+                              //     //   "billSuggestionLabel": "🤷 Decide there",
+                              //     //   "statusMessage":
+                              //     //       "Waiting for host to approve. You can withdraw anytime.",
+                              //     //   "pay": "🙋 I’ll pay",
+                              //     //   "match": "88%",
+                              //     //   "isLive": false,
+                              //     // }),
+                              //     onTap: () {
+                              //       Navigator.pushAndRemoveUntil(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //           builder: (context) =>
+                              //               const RequestsSentScreen(
+                              //                 initialTabIndex: 0,
+                              //               ),
+                              //         ),
+                              //         (route) => route.isFirst,
+                              //       );
+                              //     },
+                              //     child: _richInviteButton1(
+                              //       label: "View Plan",
+                              //       primary: false,
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                        ),
+                  // const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
@@ -5045,7 +5629,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            "🛡️${message.inviteSafetyNote!}",
+                            "🛡️ Venue: ${message.inviteSafetyNote ?? ""}",
                             style: AppText.body.copyWith(
                               color: AppColors.green,
                               fontSize: 12,
@@ -5061,10 +5645,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        formatMessageTime(message.time) +
-                            (message.giftClaimed ? ' ✓✓' : '  ✓'),
+                        formatMessageTime(message.time),
                         style: AppText.body.copyWith(
                           color: const Color(0xff928d89),
+
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        ((message.isMine)
+                            ? (message.seen ? ' ✓✓' : '  ✓')
+                            : ""),
+                        style: AppText.body.copyWith(
+                          // color: const Color(0xff928d89),
+                          color: message.seen
+                              ? AppColors.primary
+                              : Colors.white,
                           fontSize: 14,
                         ),
                       ),
@@ -5080,11 +5676,325 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  Widget _eventInviteCard(ChatMessage message) {
-    debugPrint('Rendering event invite card for message: ${message.text}');
-    debugPrint(
-      'Rendering event invite card for message: ${message.inviteImageUrl}',
+  void _showViewPlanBottomSheet(
+    BuildContext context,
+    Map<String, dynamic> plan,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Top image with title overlay
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
+                child: Container(
+                  height: 260,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image:
+                          plan['imageUrl'] != null &&
+                              plan['imageUrl'].toString().isNotEmpty
+                          ? NetworkImage(plan['imageUrl']) as ImageProvider
+                          : const AssetImage('assets/dummyphoto.jpeg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.7),
+                        ],
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(20),
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      plan['title'],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 16,
+                  left: 24,
+                  right: 24,
+                  bottom: 24,
+                ),
+                child: SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '💜 ${plan['match']} match',
+                              style: const TextStyle(
+                                color: Color(0xFF9C27B0),
+                              ), // Purple color for match
+                            ),
+                            const TextSpan(text: ' · 🛡️ 98% trust'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Date/Time
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Colors.black54,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            plan['subtitle'],
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Tags row (Payment, people)
+                      Row(
+                        children: [
+                          Text(
+                            plan['pay'],
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            '·',
+                            style: TextStyle(color: Colors.black54),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            '👥 2 people',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      // Host details card
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF6F4EF),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage:
+                                  plan['hostAvatar'] != null &&
+                                      plan['hostAvatar'].toString().isNotEmpty
+                                  ? NetworkImage(plan['hostAvatar'])
+                                        as ImageProvider
+                                  : const AssetImage('assets/dummyphoto.jpeg'),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    plan['hostName'],
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  const Text(
+                                    'Host of this plan',
+                                    style: TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Message card
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF6F4EF),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          plan['message'].replaceAll('You: ', 'You said: '),
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      // Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                // Navigator.pop(context); // Close view plan
+                                // _showWithdrawBottomSheet(
+                                //   context,
+                                //   plan,
+                                // ); // Show withdraw
+                              },
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'Withdraw',
+                                    style: TextStyle(
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFFA6A85),
+                                      Color(0xFFDE2957),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'Close',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
+  }
+
+  String getEventPrice(BuildContext context, ChatMessage message) {
+    final gender =
+        context
+            .read<ProfileEditCubit>()
+            .state
+            .gender
+            ?.toString()
+            .trim()
+            .toLowerCase() ??
+        '';
+
+    String? originalPrice;
+    String? discountedPrice;
+
+    if (gender == 'woman') {
+      originalPrice = message.eventWomenEntryPrice;
+      discountedPrice = message.eventWomenDiscountedPrice;
+    } else if (gender == 'man') {
+      originalPrice = message.eventMenEntryPrice;
+      discountedPrice = message.eventMenDiscountedPrice;
+    } else {
+      discountedPrice = message.eventOtherDiscountedPrice;
+    }
+
+    // Discounted price available hai to wahi show karo
+    final discounted = double.tryParse(discountedPrice ?? '');
+
+    if (discounted != null && discounted > 0) {
+      return discounted == discounted.truncateToDouble()
+          ? '₹${discounted.toInt()}'
+          : '₹${discounted.toStringAsFixed(1)}';
+    }
+
+    // Fallback original price
+    final original = double.tryParse(originalPrice ?? '');
+
+    if (original != null && original > 0) {
+      return original == original.truncateToDouble()
+          ? '₹${original.toInt()}'
+          : '₹${original.toStringAsFixed(1)}';
+    }
+
+    return 'Free';
+  }
+
+  Widget _eventInviteCard(ChatMessage message) {
     return _richInviteCard(message);
   }
 
@@ -5094,12 +6004,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Widget _richInviteCard(ChatMessage message) {
     final hasStats =
         message.inviteStats != null && message.inviteStats!.isNotEmpty;
-    final hasSecondaryButton = message.inviteButtonSecondary != null;
 
     return Padding(
       padding: EdgeInsets.only(
-        left: message.isMine ? 40 : 0,
-        right: message.isMine ? 0 : 40,
+        left: message.isMine ? 20 : 0,
+        right: message.isMine ? 0 : 20,
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 18),
@@ -5165,20 +6074,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       ),
                     ),
                   ),
-                  // Positioned.fill(
-                  //   child: DecoratedBox(
-                  //     decoration: BoxDecoration(
-                  //       gradient: LinearGradient(
-                  //         begin: Alignment.topCenter,
-                  //         end: Alignment.bottomCenter,
-                  //         colors: [
-                  //           Colors.black.withOpacity(0.0),
-                  //           Colors.black.withOpacity(0.2),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
+
                   if (message.inviteBadge != 'LIVE NOW')
                     Container(
                       height: 40,
@@ -5345,28 +6241,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           ),
                         ),
                       hSized10,
-                      // if (message.inviteVenue != null) ...[
-                      //   const SizedBox(height: 3),
-                      //   Row(
-                      //     children: [
-                      //       const Icon(
-                      //         Icons.location_on_rounded,
-                      //         size: 14,
-                      //         color: Colors.white,
-                      //       ),
-                      //       const SizedBox(width: 3),
-                      //       Expanded(
-                      //         child: Text(
-                      //           message.inviteVenue!,
-                      //           style: AppText.body.copyWith(
-                      //             color: Colors.white,
-                      //             fontSize: 12.5,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ],
                     ],
                   ),
                   if (message.inviteStatus == 'LIVE') hSized20,
@@ -5462,7 +6336,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           children: [
                             if (message.eventStartTime != null)
                               Text(
-                                message.eventStartTime!,
+                                formatMessageTime(message.eventStartTime!),
                                 style: AppText.h2.copyWith(fontSize: 16),
                               ),
                             if (message.eventVenueName != null) ...[
@@ -5654,45 +6528,126 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   // if (message.inviteButtonPrimary != null) ...[
                   const SizedBox(height: 10),
 
-                  Row(
-                    children: [
-                      (message.inviteStatus == "LIVE")
-                          ? Expanded(
-                              child: _richInviteButton1(
-                                label: "I'll book both",
-                                sub:
-                                    '2 tickets · ₹{message.eventMenEntryPrice!} × 2',
-                                primary: true,
+                  if (message.isEventBook == false)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              // if (message.isEventBook) {
+                              // } else {}
+                              final featureTags =
+                                  (message.eventSafetyFeatures as List? ?? [])
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
+                                        final index = entry.key;
+                                        final feature = entry.value;
+
+                                        return {
+                                          'id': feature is Map
+                                              ? feature['id']?.toString() ?? ''
+                                              : '',
+                                          'label': feature is Map
+                                              ? feature['label']?.toString() ??
+                                                    ''
+                                              : feature.toString(),
+                                          'displayOrder': index,
+                                        };
+                                      })
+                                      .toList();
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EventDetailsScreen(
+                                    eventId: message.eventId.toString(),
+                                    title: message.eventTitle.toString(),
+                                    date: message.eventDate.toString(),
+                                    location: message.eventFullAddress
+                                        .toString(),
+                                    imageUrl: message.eventHeroImage.toString(),
+                                    status: message.eventType.toString(),
+                                    // price:
+                                    //     (int.parse(
+                                    //               message.eventMenEntryPrice
+                                    //                   .toString(),
+                                    //             ) *
+                                    //             2)
+                                    //         .toString(),
+                                    price: getEventPrice(context, message),
+                                    featureTags: featureTags,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 40,
+                              width: MediaQuery.of(context).size.width * 0.80,
+                              decoration: BoxDecoration(
+                                color: Mycolor.pink,
+                                borderRadius: BorderRadius.circular(15),
                               ),
-                            )
-                          : Expanded(
-                              child: _richInviteButton(
-                                label: "I'll book both",
-                                sub:
-                                    '2 tickets · ₹${message.eventMenEntryPrice} × 2',
-                                primary: true,
+                              child: Center(
+                                child: Text(
+                                  "Book Now",
+                                  style: TextStyle(
+                                    color: Mycolor.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                             ),
-                      // if (hasSecondaryButton) ...[
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _richInviteButton(
-                          label: "Book separately",
-                          sub: '1 ticket each · ₹${message.eventMenEntryPrice}',
-                          primary: false,
+                          ),
                         ),
-                      ),
-                      // ],
-                    ],
-                  ),
+                        // if (hasSecondaryButton) ...[
+
+                        // ],
+                      ],
+                    ),
                   // const Spacer(),
+
+                  // ],
+
+                  // // SAFETY NOTE (footer style, for date-now-plan card)
+                  // if (message.inviteSafetyNote != null &&
+                  //     message.inviteTitle != 'Sunset Soirée for Singles') ...[
+                  //   const SizedBox(height: 12),
+                  //   Container(
+                  //     width: double.infinity,
+                  //     padding: const EdgeInsets.symmetric(
+                  //       horizontal: 12,
+                  //       vertical: 10,
+                  //     ),
+                  //     decoration: BoxDecoration(
+                  //       color: AppColors.greenSoft,
+                  //       borderRadius: BorderRadius.circular(12),
+                  //     ),
+                  //     child: Row(
+                  //       children: [
+                  //         Expanded(
+                  //           child: Text(
+                  //             "🛡️${message.inviteSafetyNote!}",
+                  //             style: AppText.body.copyWith(
+                  //               color: AppColors.green,
+                  //               fontSize: 12,
+                  //               height: 1.35,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ],
                   hSized10,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
                         formatMessageTime(message.time) +
-                            (message.giftClaimed ? ' ✓✓' : '  ✓'),
+                            ((message.isMine)
+                                ? (message.seen ? ' ✓✓' : ' ✓')
+                                : ""),
                         style: AppText.body.copyWith(
                           color: const Color(0xff928d89),
                           fontSize: 14,
@@ -5700,38 +6655,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       ),
                     ],
                   ),
-                  // ],
-
-                  // SAFETY NOTE (footer style, for date-now-plan card)
-                  if (message.inviteSafetyNote != null &&
-                      message.inviteTitle != 'Sunset Soirée for Singles') ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.greenSoft,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "🛡️${message.inviteSafetyNote!}",
-                              style: AppText.body.copyWith(
-                                color: AppColors.green,
-                                fontSize: 12,
-                                height: 1.35,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -5826,147 +6749,196 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // RELATIONSHIP PROPOSAL
   // ============================================================
 
-  Widget _proposalCard(ChatMessage message) {
-    final accepted = message.inviteStatus == 'ACCEPTED';
-    final pendding = message.inviteStatus == 'PENDING';
-    return (accepted == true || pendding == true)
-        ? Container()
-        : Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF8FA),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.primary.withOpacity(.35)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _relationshipTagProposalCard(ChatMessage message) {
+    final isMine = message.isMine;
+
+    String title = 'Relationship Proposal';
+    String description = message.text.isNotEmpty
+        ? message.text
+        : 'Wants to update your relationship status.';
+
+    final rawTag = (message.text).trim().toUpperCase();
+
+    if (rawTag.contains('IN_RELATIONSHIP')) {
+      title = 'In a Relationship';
+      description = 'Committed and official.';
+    } else if (rawTag.contains('OPEN_RELATIONSHIP')) {
+      title = 'Open Relationship';
+      description = 'Explore with transparency.';
+    } else if (rawTag.contains('ENGAGED')) {
+      title = 'Engaged';
+      description = 'Planning for a future together.';
+    } else if (rawTag.contains('DATE_TO_MARRY')) {
+      title = 'Date to Marry';
+      description = 'Committed to a future marriage.';
+    }
+
+    return Align(
+      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.82,
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF8FA),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.primary.withOpacity(.25)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.favorite,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-
-                    const SizedBox(width: 14),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'RELATIONSHIP PROPOSAL',
-                            style: AppText.eyebrow.copyWith(
-                              color: AppColors.primary,
-                            ),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          Text(
-                            '"${message.text}"',
-                            style: AppText.h2.copyWith(
-                              fontSize: 17,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  '${widget.user.name} has proposed updating your relationship status to Exclusively Dating on both profiles.',
-                  style: AppText.body.copyWith(
-                    fontSize: 12,
-                    height: 1.5,
-                    color: AppColors.ink60,
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.favorite,
+                    color: Colors.white,
+                    size: 25,
                   ),
                 ),
 
-                const SizedBox(height: 18),
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'RELATIONSHIP TAG',
+                        style: AppText.eyebrow.copyWith(
+                          color: AppColors.primary,
+                        ),
+                      ),
+
+                      const SizedBox(height: 2),
+
+                      Text(title, style: AppText.h2.copyWith(fontSize: 17)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 13),
+
+            RichText(
+              text: TextSpan(
+                style: AppText.body.copyWith(
+                  fontSize: 12,
+                  height: 1.5,
+                  color: AppColors.ink60,
+                ),
+                children: [
+                  if (isMine)
+                    const TextSpan(text: 'Relationship tag proposal sent.')
+                  else ...[
+                    TextSpan(
+                      text:
+                          '${widget.user.name} has proposed this relationship status to ',
+                    ),
+                    TextSpan(
+                      text: title,
+                      style: AppText.body.copyWith(
+                        fontSize: 12,
+                        height: 1.5,
+                        color: AppColors.ink, // dark
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const TextSpan(text: ' on both profiles.'),
+                  ],
+                ],
+              ),
+            ),
+
+            if (!isMine) ...[
+              const SizedBox(height: 10),
+              // Text(message.relationshipStatus.toString()),
+              if (message.relationshipStatus == "PENDING")
                 Row(
                   children: [
-                    // ACCEPT
                     Expanded(
-                      flex: 6,
                       child: SizedBox(
-                        height: 45,
+                        height: 44,
                         child: ElevatedButton(
-                          onPressed: () {},
-                          style:
-                              ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shadowColor: AppColors.primary.withOpacity(
-                                  0.10,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ).copyWith(
-                                // Custom shadow
-                                elevation: WidgetStateProperty.all(0),
+                          onPressed: () {
+                            debugPrint(
+                              "message>>>relationproposalId>>>${message.relationproposalId}",
+                            );
+                            final chatBloc = context.read<ChatBloc>();
+                            chatBloc.add(
+                              AcceptRelationshipTagProposalEvent(
+                                proposalId: message.relationproposalId
+                                    .toString(),
                               ),
+                            );
+                            // Accept API yahan add karenge
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
                           child: const Text(
-                            'Accept Proposal',
+                            'Accept',
                             style: TextStyle(
+                              fontWeight: FontWeight.w800,
                               fontSize: 13,
-                              height: 1.5,
-                              fontWeight: FontWeight.w900,
-                              color: Mycolor.white,
                             ),
                           ),
                         ),
                       ),
                     ),
 
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
 
-                    // MAYBE LATER - SMALLER
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.30,
-                      height: 45,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppColors.line),
-                          foregroundColor: AppColors.ink60,
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                    Expanded(
+                      child: SizedBox(
+                        height: 44,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            final chatBloc = context.read<ChatBloc>();
+                            chatBloc.add(
+                              RejectRelationshipTagProposalEvent(
+                                proposalId: message.relationproposalId
+                                    .toString(),
+                              ),
+                            );
+                            // Maybe later
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: AppColors.line),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Maybe later',
-                          style: TextStyle(
-                            fontSize: 12,
-                            height: 1.4,
-                            fontWeight: FontWeight.w700,
-                            color: Mycolor.black,
+                          child: const Text(
+                            'Maybe later',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                              color: Mycolor.black,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          );
+            ],
+          ],
+        ),
+      ),
+    );
   }
 
   // ============================================================
@@ -6189,10 +7161,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                     // ---------------------------------------
                                     // CAMERA
                                     // ---------------------------------------
-                                    // _smallAction(
-                                    //   Icons.camera_alt_outlined,
-                                    //   _openCameraDirectly,
-                                    // ),
                                     GestureDetector(
                                       onTap: _openGiftPanel,
                                       child: Material(
@@ -6536,82 +7504,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       ),
                     ],
                   ),
-                  // const SizedBox(height: 8),
-                  // Text('WELVOR1S', style: AppText.eyebrow),
-                  // const SizedBox(height: 16),
-                  // GridView.count(
-                  //   crossAxisCount: 4,
-                  //   shrinkWrap: true,
-                  //   physics: const NeverScrollableScrollPhysics(),
-                  //   mainAxisSpacing: 18,
-                  //   crossAxisSpacing: 12,
-                  //   childAspectRatio: .8,
-                  //   children: [
-                  //     _shareOption(
-                  //       Icons.calendar_today_outlined,
-                  //       'Date plan',
-                  //       AppColors.primary,
-                  //       () {
-                  //         Navigator.pop(sheetContext);
-                  //         _openDatePlan();
-                  //       },
-                  //     ),
-                  //     _shareOption(
-                  //       Icons.lightbulb_outline,
-                  //       'Openers',
-                  //       const Color(0xFFE8A53D),
-                  //       () {
-                  //         Navigator.pop(sheetContext);
-                  //         _openSaySomethingBetterSheet();
-                  //       },
-                  //     ),
-                  //     _shareOption(
-                  //       Icons.celebration_outlined,
-                  //       'Event',
-                  //       const Color(0xFF9B6DFF),
-                  //       () {
-                  //         Navigator.pop(sheetContext);
-                  //         _sendEvent();
-                  //       },
-                  //     ),
-                  //     _shareOption(
-                  //       Icons.card_giftcard_outlined,
-                  //       'Gift',
-                  //       const Color(0xFFE85D8B),
-                  //       () {
-                  //         Navigator.pop(sheetContext);
-                  //         _sendGift();
-                  //       },
-                  //     ),
-                  //     _shareOption(
-                  //       Icons.local_florist_outlined,
-                  //       'Rose',
-                  //       const Color(0xFFD83A68),
-                  //       () {
-                  //         Navigator.pop(sheetContext);
-                  //         _sendRose();
-                  //       },
-                  //     ),
-                  //     _shareOption(
-                  //       Icons.favorite_border_rounded,
-                  //       'Compliment',
-                  //       const Color(0xFF9B6DFF),
-                  //       () {
-                  //         Navigator.pop(sheetContext);
-                  //         _sendCompliment();
-                  //       },
-                  //     ),
-                  //     _shareOption(
-                  //       Icons.favorite_outline_rounded,
-                  //       'Proposal',
-                  //       AppColors.primary,
-                  //       () {
-                  //         Navigator.pop(sheetContext);
-                  //         _openRelationshipTagSheet(false);
-                  //       },
-                  //     ),
-                  //   ],
-                  // ),
                 ],
               ),
             ),
@@ -6736,7 +7628,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       // OS / debugger to consider the process unresponsive
       // ("Lost connection to device", callGcSupression NPE noise).
       // ==========================================================
-      final jpgBytes = await compute(_encodeChatImageIsolate, originalBytes);
+      final jpgBytes = await compute(encodeChatImageIsolate, originalBytes);
 
       if (jpgBytes == null) {
         debugPrint('❌ IMAGE DECODE/ENCODE FAILED');
@@ -6762,97 +7654,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  // ============================================================
-  // IMAGE: UPLOAD FIRST, THEN SEND mediaUrl THROUGH SOCKET
-  // ============================================================
-  // Future<void> _uploadAndSendImage(XFile image) async {
-  //   final conversationId = widget.user.conversationId;
-  //   if (conversationId == null || conversationId.isEmpty) {
-  //     debugPrint('❌ IMAGE: conversationId missing');
-  //     return;
-  //   }
-
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     final rawToken = prefs.getString('auth_token') ?? '';
-  //     final auth =
-  //         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs';
-
-  //     // Compress before multipart upload to avoid HTTP 413.
-  //     final compressedFile = await _compressChatImage(image);
-  //     if (compressedFile == null) {
-  //       throw Exception('Image compression failed');
-  //     }
-
-  //     final compressedSize = await compressedFile.length();
-  //     debugPrint(
-  //       '📦 UPLOAD FILE SIZE => '
-  //       '${(compressedSize / 1024).toStringAsFixed(2)} KB',
-  //     );
-
-  //     final request = http.MultipartRequest(
-  //       'POST',
-  //       Uri.parse('https://api.welvors.com/api/chat/media/upload'),
-  //     );
-  //     request.headers['Accept'] = 'application/json';
-  //     if (auth.isNotEmpty) request.headers['Authorization'] = auth;
-
-  //     // REQUIRED BY BACKEND
-  //     request.fields['mediaType'] = 'IMAGE';
-
-  //     request.files.add(
-  //       await http.MultipartFile.fromPath(
-  //         'file',
-  //         compressedFile.path,
-  //         filename: 'chat_image.jpg',
-  //       ),
-  //     );
-
-  //     debugPrint('📤 IMAGE UPLOAD START => ${compressedFile.path}');
-  //     debugPrint('📤 mediaType => IMAGE');
-
-  //     final response = await http.Response.fromStream(await request.send());
-  //     debugPrint('📥 IMAGE UPLOAD STATUS => ${response.statusCode}');
-  //     debugPrint('📥 IMAGE UPLOAD BODY => ${response.body}');
-
-  //     if (response.statusCode < 200 || response.statusCode >= 300) {
-  //       throw Exception('Upload failed: HTTP ${response.statusCode}');
-  //     }
-
-  //     final decoded = jsonDecode(response.body);
-  //     final data = decoded is Map && decoded['data'] is Map
-  //         ? Map<String, dynamic>.from(decoded['data'])
-  //         : <String, dynamic>{};
-  //     final mediaUrl = (data['url'] ?? '').toString().trim();
-
-  //     if (mediaUrl.isEmpty) {
-  //       throw Exception('Upload succeeded but data.url is empty');
-  //     }
-
-  //     debugPrint('✅ IMAGE UPLOADED URL => $mediaUrl');
-
-  //     if (!mounted) return;
-
-  //     // ChatBloc must send this as:
-  //     // conversationId + content:null + messageType:IMAGE + mediaUrl:url
-  //     context.read<ChatBloc>().add(
-  //       SendMessageEvent(
-  //         chatId: widget.user.id,
-  //         conversationId: conversationId,
-  //         type: ChatMessageType.image,
-  //         typemsg: 'IMAGE',
-  //         message: null,
-  //         imageUrl: mediaUrl,
-  //       ),
-  //     );
-
-  //     _scrollToBottom();
-  //   } catch (e, st) {
-  //     debugPrint('❌ IMAGE UPLOAD/SEND ERROR => $e');
-  //     debugPrint('$st');
-  //     if (mounted) _toast('Unable to send image');
-  //   }
-  // }
   Future<void> _uploadAndSendImage(XFile image) async {
     final conversationId = widget.user.conversationId;
 
@@ -6901,7 +7702,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
       request.headers.addAll({
         'Accept': 'application/json',
-        'Authorization': token != null && token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token',
+        'Authorization':
+            token != null && token.toLowerCase().startsWith('bearer ')
+            ? token
+            : 'Bearer $token',
       });
 
       // IMPORTANT
@@ -7000,11 +7804,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         throw Exception('Upload response data.url is empty');
       }
 
-      debugPrint('==========================================');
-      debugPrint('✅ IMAGE UPLOADED SUCCESSFULLY');
-      debugPrint('✅ MEDIA URL => $mediaUrl');
-      debugPrint('==========================================');
-
       // ==========================================================
       // SEND IMAGE MESSAGE
       // ==========================================================
@@ -7012,14 +7811,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       final reply = _replyingTo;
 
       if (!mounted) return;
-
-      debugPrint('==========================================');
-      debugPrint('📤 SENDING IMAGE MESSAGE');
-      debugPrint('📤 conversationId => $conversationId');
-      debugPrint('📤 content => null');
-      debugPrint('📤 messageType => IMAGE');
-      debugPrint('📤 mediaUrl => $mediaUrl');
-      debugPrint('==========================================');
 
       context.read<ChatBloc>().add(
         SendMessageEvent(
@@ -7099,32 +7890,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     await _captureImage();
   }
 
-  Future<void> _openCameraDirectly() async {
-    if (_openingCamera) return; // Prevent double clicks
-    _openingCamera = true;
-
-    _closeExtrasPanel();
-
-    // Slight delay so the UI animation/state settles before launching native camera
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    await _captureImage();
-    _openingCamera = false;
-  }
-
   Future<void> _captureImage() async {
     try {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📷 CAMERA: ImagePicker START');
-      debugPrint('📷 CAMERA: mounted = $mounted');
-      debugPrint('📷 CAMERA: opening picker...');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.camera,
-        // imageQuality: 70,
-        // maxWidth: 1280,
-        // maxHeight: 1280,
+      final XFile? image = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const custom_camera.CustomCameraScreen(),
+        ),
       );
 
       debugPrint('📷 CAMERA: picker returned');
@@ -7163,7 +7935,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       debugPrint('❌ CAMERA STACKTRACE: $stackTrace');
 
       if (mounted) {
-        if (e.toString().contains('upload') || e.toString().contains('Upload')) {
+        if (e.toString().contains('upload') ||
+            e.toString().contains('Upload')) {
           _toast('Unable to send photo');
         } else {
           _toast('Unable to open camera');
@@ -7290,7 +8063,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       );
       request.headers['Accept'] = 'application/json';
       if (token.isNotEmpty) {
-        request.headers['Authorization'] = token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
+        request.headers['Authorization'] =
+            token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       }
       request.fields['mediaType'] = mediaType;
       request.files.add(
@@ -7411,7 +8185,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       );
       request.headers['Accept'] = 'application/json';
       if (token.isNotEmpty) {
-        request.headers['Authorization'] = token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
+        request.headers['Authorization'] =
+            token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       }
       request.fields['mediaType'] = 'VIDEO';
       request.files.add(
@@ -7480,53 +8255,69 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   Future<void> _sendLocation() async {
-    Navigator.pop(context);
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
         _toast('Please enable location service');
         return;
       }
+
       var permission = await Geolocator.checkPermission();
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
+
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         _toast('Location permission denied');
         return;
       }
+
+      // Get current location ONLY to open the picker initially.
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      var address = 'Current Location';
-      try {
-        final places = await placemarkFromCoordinates(
-          position.latitude,
-          position.longitude,
-        );
-        if (places.isNotEmpty) {
-          final p = places.first;
-          address = [
-            p.name,
-            p.locality,
-            p.administrativeArea,
-          ].whereType<String>().where((e) => e.isNotEmpty).join(', ');
-        }
-      } catch (_) {}
-      // _sendAttachment(
-      //   type: ChatMessageType.location,
-      //   text: address,
-      //   filePath: '${position.latitude},${position.longitude}',
-      // );
-      _sendAttachment(
-        type: ChatMessageType.location,
+
+      if (!mounted) return;
+
+      final selected = await LocationMapScreen.pick(
+        context: context,
         latitude: position.latitude,
         longitude: position.longitude,
-        locationLabel: address,
+        label: 'Current Location',
       );
+
+      if (!mounted || selected == null) return;
+
+      debugPrint('📍 SELECTED LOCATION');
+      debugPrint('Latitude  : ${selected.latitude}');
+      debugPrint('Longitude : ${selected.longitude}');
+      debugPrint('Label     : ${selected.label}');
+      debugPrint('Address   : ${selected.address}');
+
+      _sendAttachment(
+        type: ChatMessageType.location,
+
+        // Address ko message text me bhejo
+        text: selected.address.isNotEmpty ? selected.address : selected.label,
+
+        latitude: selected.latitude,
+        longitude: selected.longitude,
+
+        // Actual selected address
+        locationLabel: selected.address.isNotEmpty
+            ? selected.address
+            : selected.label,
+      );
+      Navigator.pop(context);
       _toast('Location sent ✓');
-    } catch (e) {
-      _toast('Unable to get location');
+    } catch (e, st) {
+      debugPrint('❌ LOCATION PICKER ERROR => $e');
+      debugPrint('$st');
+
+      if (mounted) {
+        _toast('Unable to get location');
+      }
     }
   }
 
@@ -7788,6 +8579,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ? 'LOCATION'
             : 'Attachment',
 
+        // LOCATION should also have a readable text fallback so the
+        // location card never renders an empty subtitle.
+        message: isLocation ? (locationLabel ?? text) : text,
+
         // ========================================================
         // REPLY
         // ========================================================
@@ -7811,145 +8606,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     // ============================================================
     _scrollToBottom();
   }
-  // void _scrollToBottom() {
-  //   Future.delayed(const Duration(milliseconds: 100), () {
-  //     if (!mounted || !scrollController.hasClients) return;
-  //     scrollController.animateTo(
-  //       scrollController.position.maxScrollExtent,
-  //       duration: const Duration(milliseconds: 300),
-  //       curve: Curves.easeOut,
-  //     );
-  //   });
-  // }
-
-  void _openDatePlan() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Text('☕', style: TextStyle(fontSize: 24)),
-              title: const Text('Coffee Date'),
-              onTap: () => _sendSpecialMessage('☕ Coffee Date'),
-            ),
-            ListTile(
-              leading: const Text('🍽️', style: TextStyle(fontSize: 24)),
-              title: const Text('Dinner'),
-              onTap: () => _sendSpecialMessage('🍽️ Dinner'),
-            ),
-            ListTile(
-              leading: const Text('🎬', style: TextStyle(fontSize: 24)),
-              title: const Text('Movie'),
-              onTap: () => _sendSpecialMessage('🎬 Movie'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _sendSpecialMessage(String text) {
-    Navigator.pop(context);
-    final parts = text.split(' ');
-    final title = parts.length > 1
-        ? text.substring(parts.first.length).trim()
-        : text;
-
-    context.read<ChatBloc>().add(
-      SendMessageEvent(
-        chatId: widget.user.id,
-        conversationId: widget.user.conversationId,
-        type: ChatMessageType.dateInvite,
-        message: text,
-        inviteTitle: '$title Invitation',
-        inviteVenue: 'To be decided',
-        inviteStatus: 'PENDING',
-        typemsg: "",
-      ),
-    );
-    _scrollToBottom();
-    _toast('Date plan sent ✓');
-  }
-
-  void _sendEvent() {
-    context.read<ChatBloc>().add(
-      SendMessageEvent(
-        chatId: widget.user.id,
-        conversationId: widget.user.conversationId,
-        type: ChatMessageType.dateInvite,
-        message: '🎉 Event invitation',
-        inviteTitle: 'Event Invitation',
-        inviteVenue: 'To be decided',
-        inviteStatus: 'PENDING',
-        typemsg: "",
-      ),
-    );
-    _scrollToBottom();
-    _toast('Event sent ✓');
-  }
-
-  void _sendGift() {
-    context.read<ChatBloc>().add(
-      SendMessageEvent(
-        chatId: widget.user.id,
-        conversationId: widget.user.conversationId,
-        type: ChatMessageType.gift,
-        message: 'A little something for you 💝',
-        giftId: 'gift_${DateTime.now().millisecondsSinceEpoch}',
-        giftName: 'Virtual Coffee',
-        giftEmoji: '☕',
-        giftCoins: '+100 Coins',
-        giftClaimed: false,
-        messageProgress: 1,
-        messageTarget: 25,
-        expiresIn: '7d',
-        typemsg: "",
-      ),
-    );
-    _scrollToBottom();
-    _toast('Gift sent ✓');
-  }
-
-  void _sendRose() {
-    context.read<ChatBloc>().add(
-      SendMessageEvent(
-        chatId: widget.user.id,
-        conversationId: widget.user.conversationId,
-        type: ChatMessageType.rose,
-        message:
-            "Not a pickup line — I'd genuinely like to take you for coffee. 🌹",
-        coinAmount: '10',
-        hintLine: 'Rose sent successfully.',
-        typemsg: "",
-      ),
-    );
-    _scrollToBottom();
-    _toast('Rose sent ✓');
-  }
-
-  void _sendCompliment() {
-    context.read<ChatBloc>().add(
-      SendMessageEvent(
-        chatId: widget.user.id,
-        conversationId: widget.user.conversationId,
-        type: ChatMessageType.compliment,
-        message:
-            'Your energy is amazing — you make ordinary days look special. ✨',
-        coinAmount: '30',
-        seen: false,
-        locationLabel: 'On your profile',
-        typemsg: "",
-      ),
-    );
-    _scrollToBottom();
-    _toast('Compliment sent ✓');
-  }
 
   // ============================================================
   // "SAY SOMETHING BETTER" SHEET (opened from the Try pill)
@@ -7965,7 +8621,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        return _SaySomethingBetterSheet(
+        return SaySomethingBetterSheet(
           onPick: (line) {
             controller.text = line;
             controller.selection = TextSelection.fromPosition(
@@ -8260,13 +8916,61 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: enabled
-                                    ? () {
-                                        Navigator.pop(sheetContext);
-                                        if (mounted) {
-                                          setState(() => _isUnmatched = true);
+                                    ? () async {
+                                        final reason = selectedReason.value;
+
+                                        if (reason == null ||
+                                            reason.trim().isEmpty) {
+                                          return;
                                         }
+
+                                        final note = _unmatchNoteController.text
+                                            .trim();
+
+                                        try {
+                                          debugPrint('💔 UNMATCH API CALL');
+                                          debugPrint(
+                                            'Other User ID: ${widget.user.userId}',
+                                          );
+                                          debugPrint('Reason: $reason');
+                                          debugPrint('Note: $note');
+
+                                          await ChatRepository().unmatchUser(
+                                            otherUserId: widget.user.userId,
+                                            reason: reason,
+                                            note: note.isEmpty ? null : note,
+                                          );
+
+                                          if (!mounted) return;
+
+                                          // Bottom sheet close
+                                          Navigator.pop(sheetContext);
+
+                                          // Unmatched state
+                                          setState(() {
+                                            _isUnmatched = true;
+                                          });
+
+                                          _toast('User unmatched successfully');
+                                        } catch (e) {
+                                          debugPrint('❌ UNMATCH API ERROR: $e');
+
+                                          if (!mounted) return;
+
+                                          _toast(
+                                            e.toString().replaceFirst(
+                                              'Exception: ',
+                                              '',
+                                            ),
+                                          );
+                                        } // repository
+                                        // Navigator.pop(sheetContext);
+                                        // if (mounted) {
+                                        //   setState(() => _isUnmatched = true);
+                                        // }
                                       }
                                     : null,
+
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFE85D7D),
                                   disabledBackgroundColor: Colors.grey[300],
@@ -8287,7 +8991,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                     color: enabled
                                         ? Colors.white
                                         : Colors.grey[600],
-                                    fontSize: 22,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -8326,252 +9030,448 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // PROFILE SHEET (opened from the ⋮ menu)
   // ============================================================
 
-  void _openProfileSheet() {
+  void _openProfileSheet(bool _isBlocked) {
     showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: false,
       backgroundColor: Colors.white,
+      constraints: BoxConstraints(
+        minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width,
+        minHeight: MediaQuery.of(context).size.height,
+        maxHeight: MediaQuery.of(context).size.height,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (sheetContext) {
-        return SafeArea(
-          top: false,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(sheetContext).size.height * 0.90,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        margin: const EdgeInsets.only(bottom: 18),
+        return SizedBox(
+          height: MediaQuery.of(sheetContext).size.height,
+          width: double.infinity,
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                hSized30,
+                // ============================================================
+                // TOP APP BAR / PROFILE HEADER
+                // ============================================================
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 20,
+                  ),
+                  child: SizedBox(
+                    height: 82,
+                    child: Row(
+                      children: [
+                        // BACK BUTTON
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(sheetContext);
+                          },
+                          icon: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 21,
+                            color: Colors.black,
+                          ),
+                        ),
+
+                        // CENTER PROFILE IMAGE
+                        Expanded(
+                          child: Center(
+                            child: _avatar(
+                              _liveImage,
+                              size: 72,
+                              name: _liveName,
+                              age: _liveAge.toString(),
+                            ),
+                          ),
+                        ),
+
+                        // Keeps avatar exactly centered
+                        const SizedBox(width: 48),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ============================================================
+                // PROFILE NAME
+                // ============================================================
+                const SizedBox(height: 5),
+
+                Center(
+                  child: Text(
+                    _liveAge > 0 ? '$_liveName, $_liveAge' : _liveName,
+                    style: AppText.h1.copyWith(fontSize: 20),
+                  ),
+                ),
+
+                // ============================================================
+                // ONLINE / OFFLINE
+                // ============================================================
+                const SizedBox(height: 4),
+
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
                         decoration: BoxDecoration(
-                          color: AppColors.line,
-                          borderRadius: BorderRadius.circular(4),
+                          color: _isUserOnline
+                              ? AppColors.green
+                              : AppColors.muted,
+                          shape: BoxShape.circle,
                         ),
                       ),
-                    ),
-
-                    Center(child: _avatar(_liveImage, size: 72)),
-
-                    const SizedBox(height: 5),
-
-                    Center(
-                      child: Text(
-                        _liveAge > 0 ? '$_liveName, $_liveAge' : _liveName,
-                        style: AppText.h1.copyWith(fontSize: 20),
+                      const SizedBox(width: 5),
+                      Text(
+                        _isUserOnline ? 'Online' : 'Offline',
+                        style: AppText.body.copyWith(
+                          color: _isUserOnline
+                              ? AppColors.green
+                              : AppColors.muted,
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                ),
 
-                    const SizedBox(height: 4),
+                // ============================================================
+                // LOCATION
+                // ============================================================
+                const SizedBox(height: 4),
 
-                    Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 7,
-                            height: 7,
-                            decoration: BoxDecoration(
-                              color: _isUserOnline
-                                  ? AppColors.green
-                                  : AppColors.muted,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            _isUserOnline ? 'Online' : 'Offline',
-                            style: AppText.body.copyWith(
-                              color: _isUserOnline
-                                  ? AppColors.green
-                                  : AppColors.muted,
-                            ),
-                          ),
-                        ],
+                Center(
+                  child: Wrap(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 13,
+                        color: AppColors.muted,
                       ),
-                    ),
+                      Text(
+                        'Mumbai, India',
+                        style: AppText.sub.copyWith(color: AppColors.muted),
+                      ),
+                    ],
+                  ),
+                ),
 
-                    const SizedBox(height: 4),
+                hSized10,
 
-                    Center(
-                      child: Wrap(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 13,
+                // ============================================================
+                // BANNER
+                // ============================================================
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.easeInOutCubic,
+                  alignment: Alignment.topCenter,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                    opacity: 1.0,
+                    child: _bannerIndex == 0
+                        ? _giftUnlockProgress()
+                        : _relationshipProgress(),
+                  ),
+                ),
+
+                hSized20,
+
+                Divider(color: Mycolor.grey1, height: 2),
+
+                hSized10,
+
+                // ============================================================
+                // SCROLLABLE CONTENT
+                // ============================================================
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ======================================================
+                        // PREFERENCES
+                        // ======================================================
+                        Text('PREFERENCES', style: AppText.eyebrow),
+
+                        const SizedBox(height: 6),
+
+                        // ======================================================
+                        // RELATIONSHIP TAGS
+                        // ======================================================
+                        _sheetTile(
+                          color: Mycolor.pinkffeef2,
+                          Icons.favorite,
+                          'Relationship Tags',
+                          'Define how you connect',
+                          titleColor: const Color(0xffe15555),
+                          textColor: Colors.black,
+                          iconcolor: const Color(0xffe15555),
+                          trailing: const Icon(
+                            Icons.chevron_right,
                             color: AppColors.muted,
                           ),
-                          Text(
-                            'Mumbai, India',
-                            style: AppText.sub.copyWith(color: AppColors.muted),
+
+                          // ----------------------------------------------------
+                          // RELATIONSHIP TAG TAP
+                          // ----------------------------------------------------
+                          onTap: () {
+                            if (_isBlocked == false) {
+                              _openRelationshipTagSheet(false);
+                            } else {
+                              final overlay = Overlay.of(context);
+
+                              late OverlayEntry entry;
+
+                              entry = OverlayEntry(
+                                builder: (context) {
+                                  return Positioned(
+                                    top:
+                                        MediaQuery.of(context).padding.top + 10,
+                                    left: 16,
+                                    right: 16,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 14,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Mycolor.colore11d74,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'User blocked',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+
+                              overlay.insert(entry);
+
+                              Future.delayed(const Duration(seconds: 2), () {
+                                if (entry.mounted) {
+                                  entry.remove();
+                                }
+                              });
+                            }
+                          },
+                        ),
+
+                        // ======================================================
+                        // MUTE NOTIFICATIONS
+                        // ======================================================
+                        _sheetToggleTile(
+                          Icons.notifications_off_outlined,
+                          'Mute Notifications',
+                          Mycolor.colorf5f2ec,
+                        ),
+
+                        // ======================================================
+                        // MEDIA LINKS DOCS
+                        // ======================================================
+                        _sheetTile(
+                          color: Mycolor.colorf5f2ec,
+                          Icons.perm_media_outlined,
+                          'Media, Links & Docs',
+                          '${(() {
+                            final sharedMessages = context.read<ChatBloc>().state.messages[_messageKey] ?? const <ChatMessage>[];
+
+                            return sharedMessages.where((m) => m.type == ChatMessageType.image || m.type == ChatMessageType.video || m.type == ChatMessageType.audio || m.type == ChatMessageType.document || m.text.contains('http://') || m.text.contains('https://')).length;
+                          })()} shared items',
+                          titleColor: Colors.black,
+                          trailing: const Icon(
+                            Icons.chevron_right,
+                            color: AppColors.muted,
                           ),
-                        ],
-                      ),
+
+                          // ----------------------------------------------------
+                          // MEDIA TAP
+                          // ----------------------------------------------------
+                          onTap: () {
+                            Navigator.pop(sheetContext);
+
+                            final sharedMessages = List<ChatMessage>.from(
+                              context
+                                      .read<ChatBloc>()
+                                      .state
+                                      .messages[_messageKey] ??
+                                  const <ChatMessage>[],
+                            );
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ChatMediaLinksDocsScreen(
+                                  userName: _liveName,
+                                  conversationId:
+                                      "d8a02aa0-0f15-4c6a-bb82-5ace6aac183e",
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        // ======================================================
+                        // PRIVACY & SAFETY
+                        // ======================================================
+                        Text('PRIVACY & SAFETY', style: AppText.eyebrow),
+
+                        const SizedBox(height: 6),
+
+                        // ======================================================
+                        // REPORT USER
+                        // ======================================================
+                        _sheetTile(
+                          Icons.flag_outlined,
+                          titleColor: const Color(0xffe15555),
+                          iconcolor: const Color(0xffe15555),
+                          textColor: const Color(0xffe15555),
+                          'Report User',
+                          null,
+                          color: Mycolor.pinkffeef2,
+                          onTap: () {
+                            Navigator.pop(sheetContext, 'report');
+                          },
+                        ),
+
+                        // ======================================================
+                        // BLOCK USER
+                        // ======================================================
+                        (_isBlocked == false)
+                            ? _sheetTile(
+                                Icons.block,
+                                'Block ${widget.user.name}',
+                                iconcolor: const Color(0xffe15555),
+                                textColor: const Color(0xffe15555),
+                                null,
+                                titleColor: const Color(0xffe15555),
+                                color: Mycolor.pinkffeef2,
+                                onTap: () {
+                                  Navigator.pop(sheetContext, 'block');
+                                },
+                              )
+                            : Container(),
+
+                        // ======================================================
+                        // UNMATCH
+                        // ======================================================
+                        if (_isBlocked == false)
+                          _sheetTile(
+                            Icons.heart_broken,
+                            'Unmatch',
+                            titleColor: const Color(0xffe15555),
+                            iconcolor: const Color(0xffe15555),
+                            textColor: const Color(0xffe15555),
+                            'Removes the match and this chat',
+                            color: Mycolor.pinkffeef2,
+                            onTap: () {
+                              Navigator.pop(sheetContext, 'unmatch');
+                            },
+                          ),
+
+                        const SizedBox(height: 6),
+
+                        // ======================================================
+                        // CLEAR CHAT
+                        // ======================================================
+                        _sheetTile(
+                          Icons.cleaning_services_outlined,
+                          iconcolor: const Color(0xffe15555),
+                          'Clear Chat',
+                          titleColor: const Color(0xffe15555),
+                          textColor: const Color(0xffe15555),
+                          'Remove all messages from this chat',
+                          color: Mycolor.pinkffeef2,
+
+                          onTap: () {
+                            Navigator.pop(sheetContext);
+
+                            // Small delay ensures bottom sheet
+                            // is completely closed first.
+                            Future.delayed(
+                              const Duration(milliseconds: 200),
+                              () {
+                                if (mounted) {
+                                  _confirmClearChat();
+                                }
+                              },
+                            );
+                          },
+                        ),
+
+                        // ======================================================
+                        // DELETE CONVERSATION
+                        // ======================================================
+                        _sheetTile(
+                          Icons.delete_outline_rounded,
+                          iconcolor: const Color(0xffe15555),
+                          textColor: const Color(0xffe15555),
+                          'Delete Conversation',
+                          'Remove this conversation from your chat list',
+                          color: Mycolor.pinkffeef2,
+                          titleColor: const Color(0xffe15555),
+
+                          onTap: () {
+                            Navigator.pop(sheetContext);
+
+                            Future.delayed(
+                              const Duration(milliseconds: 200),
+                              () {
+                                if (mounted) {
+                                  _confirmDeleteConversation();
+                                }
+                              },
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 10),
+                      ],
                     ),
-
-                    hSized20,
-                    Divider(color: Mycolor.grey1, height: 2),
-                    hSized10,
-                    Text('PREFERENCES', style: AppText.eyebrow),
-
-                    const SizedBox(height: 6),
-
-                    _sheetTile(
-                      color: Mycolor.pinkffeef2,
-                      Icons.favorite,
-                      'Relationship Tags',
-                      'Define how you connect',
-                      titleColor: Color(0xffe15555),
-                      textColor: Colors.black,
-                      iconcolor: Color(0xffe15555),
-                      trailing: const Icon(
-                        Icons.chevron_right,
-                        color: AppColors.muted,
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                        _openRelationshipTagSheet(false);
-                      },
-                    ),
-
-                    _sheetToggleTile(
-                      Icons.notifications_off_outlined,
-                      'Mute Notifications',
-                      Mycolor.colorf5f2ec,
-                    ),
-
-                    _sheetTile(
-                      color: Mycolor.colorf5f2ec,
-                      Icons.perm_media_outlined,
-                      'Media, Links & Docs',
-                      '48 shared items',
-                      titleColor: Colors.black,
-                      trailing: const Icon(
-                        Icons.chevron_right,
-                        color: AppColors.muted,
-                      ),
-                      onTap: () {
-                        Navigator.pop(sheetContext);
-                      },
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    Text('PRIVACY & SAFETY', style: AppText.eyebrow),
-
-                    const SizedBox(height: 6),
-
-                    _sheetTile(
-                      Icons.flag_outlined,
-                      titleColor: Color(0xffe15555),
-                      iconcolor: Color(0xffe15555),
-                      textColor: Color(0xffe15555),
-                      'Report User',
-                      null,
-                      color: Mycolor.pinkffeef2,
-                      onTap: () => Navigator.pop(sheetContext, 'report'),
-                    ),
-
-                    if (_isBlocked == false)
-                      _sheetTile(
-                        Icons.block,
-                        'Block ${widget.user.name}',
-                        iconcolor: Color(0xffe15555),
-                        textColor: Color(0xffe15555),
-                        null,
-                        titleColor: Color(0xffe15555),
-                        color: Mycolor.pinkffeef2,
-                        onTap: () => Navigator.pop(sheetContext, 'block'),
-                      ),
-
-                    if (_isBlocked == false)
-                      _sheetTile(
-                        Icons.heart_broken,
-                        'Unmatch',
-                        titleColor: Color(0xffe15555),
-                        iconcolor: Color(0xffe15555),
-                        textColor: Color(0xffe15555),
-                        'Removes the match and this chat',
-                        color: Mycolor.pinkffeef2,
-                        onTap: () => Navigator.pop(sheetContext, 'unmatch'),
-                      ),
-
-                    const SizedBox(height: 6),
-
-                    // -------------------------
-                    // CLEAR CHAT
-                    // -------------------------
-                    _sheetTile(
-                      Icons.cleaning_services_outlined,
-                      iconcolor: Color(0xffe15555),
-                      'Clear Chat',
-                      titleColor: Color(0xffe15555),
-                      textColor: Color(0xffe15555),
-                      'Remove all messages from this chat',
-                      color: Mycolor.pinkffeef2,
-                      onTap: () {
-                        Navigator.pop(sheetContext);
-
-                        // Small delay ensures bottom sheet
-                        // is completely closed first.
-                        Future.delayed(const Duration(milliseconds: 200), () {
-                          if (mounted) {
-                            _confirmClearChat();
-                          }
-                        });
-                      },
-                    ),
-
-                    // -------------------------
-                    // DELETE CONVERSATION
-                    // -------------------------
-                    _sheetTile(
-                      Icons.delete_outline_rounded,
-                      iconcolor: Color(0xffe15555),
-                      textColor: Color(0xffe15555),
-                      'Delete Conversation',
-                      'Remove this conversation from your chat list',
-                      color: Mycolor.pinkffeef2,
-                      titleColor: Color(0xffe15555),
-                      onTap: () {
-                        Navigator.pop(sheetContext);
-
-                        Future.delayed(const Duration(milliseconds: 200), () {
-                          if (mounted) {
-                            _confirmDeleteConversation();
-                          }
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );
       },
     ).then((action) {
       if (!mounted || action == null) return;
+
       debugPrint("action>>>>>>${action}");
+
       switch (action) {
         case 'report':
           _showReportUserSheet();
           break;
+
         case 'block':
           _showBlockUserSheet();
           break;
+
         case 'unmatch':
           _openUnmatchSheet();
           break;
@@ -8595,13 +9495,37 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             userAge: widget.user.age,
             matchedDate: 'matched ${widget.user.match}',
 
-            onSubmit: () {
-              debugPrint('🚫 REPORT + BLOCK => setting _isBlocked = true');
+            onSubmit: (reason, description, alsoBlock) async {
+              final reportedId = widget.user.userId.trim();
+
+              debugPrint('🚫 REPORT USER CLICKED');
+              debugPrint('🚫 reportedId => $reportedId');
+              debugPrint('🚫 reason => $reason');
+              debugPrint('🚫 description => $description');
+              debugPrint('🚫 alsoBlock => $alsoBlock');
+
+              if (reportedId.isEmpty) {
+                throw Exception('User ID is missing');
+              }
+
+              final repository = ChatRepository();
+
+              await repository.reportUser(
+                reportedId: reportedId,
+                reason: reason,
+                description: description,
+              );
+
+              if (alsoBlock) {
+                await repository.blockUser(reportedId);
+              }
 
               if (!mounted) return;
 
               setState(() {
-                _isBlocked = true;
+                if (alsoBlock) {
+                  _isBlocked = true;
+                }
               });
             },
           ),
@@ -8610,7 +9534,115 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  void _showBlockUserSheet() {
+  Future<void> _confirmUnblockUser() async {
+    const accentColor = Color(0xFFD6336C);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 36, 24, 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon badge
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.block, color: accentColor, size: 32),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Title
+              const Text(
+                'Unblock user?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Message
+              Text(
+                'Are you sure you want to unblock '
+                '${widget.user.name}? You will be able to interact with this user again.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.4,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              // Primary action
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext, true);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accentColor,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Unblock',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Cancel
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext, false);
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.grey.shade700,
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(0, 0),
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await _unblockUser(_liveuserId.toString(), true);
+    }
+  }
+
+  void _showBlockUserSheet() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("reciverId", widget.user.userId);
+    print("reciverId>>>>>>>${prefs.getString("reciverId")}");
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -8621,6 +9653,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           child: BlockUserDialog(
             userName: widget.user.name,
             userAge: widget.user.age,
+            userId: widget.user.id.toString(),
 
             onBlock: (selectedOption) async {
               final blockedId = widget.user.userId.trim();
@@ -8637,7 +9670,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               // });
 
               // IMPORTANT: API is called here, before changing the UI state.
-              await ChatRepository().blockUser(blockedId);
+              if (selectedOption == "block_only") {
+                await ChatRepository().blockUser(blockedId);
+              }
 
               if (!mounted) return;
               setState(() {
@@ -8867,58 +9902,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  // Widget _sheetTile(
-  //   IconData icon,
-
-  //   String title,
-  //   String? subtitle, {
-  //   Widget? trailing,
-  //   Color? color,
-  //   required VoidCallback onTap,
-  // }) {
-  //   return InkWell(
-  //     onTap: onTap,
-  //     borderRadius: BorderRadius.circular(12),
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 10),
-  //       child: Row(
-  //         children: [
-  //           Container(
-  //             decoration: BoxDecoration(
-  //               color: color ?? Mycolor.pinkffeef2,
-  //               borderRadius: BorderRadius.circular(6),
-  //             ),
-  //             width: 30,
-  //             height: 30,
-  //             child: Icon(icon, color: Colors.black, size: 20),
-  //           ),
-  //           const SizedBox(width: 14),
-  //           Expanded(
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Text(
-  //                   title,
-  //                   style: AppText.body.copyWith(
-  //                     color: Color(0xffe15555),
-  //                     fontSize: 15,
-  //                   ),
-  //                 ),
-  //                 if (subtitle != null)
-  //                   Text(
-  //                     subtitle,
-  //                     style: AppText.sub.copyWith(color: AppColors.muted),
-  //                   ),
-  //               ],
-  //             ),
-  //           ),
-  //           ?trailing,
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _sheetTile(
     IconData icon,
     String title,
@@ -8979,60 +9962,188 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  bool value = false;
+  Future<void> _getMuteNotificationStatus() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null || token.trim().isEmpty) {
+        debugPrint('🔔 MUTE GET: auth token missing');
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse('https://api.welvors.com/api/user/notification/mute'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': token.toLowerCase().startsWith('bearer ')
+              ? token
+              : 'Bearer $token',
+        },
+      );
+
+      debugPrint('🔔 MUTE GET => ${response.statusCode}');
+      debugPrint('🔔 MUTE GET BODY => ${response.body}');
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final decoded = jsonDecode(response.body);
+        final data = decoded is Map && decoded['data'] is Map
+            ? Map<String, dynamic>.from(decoded['data'])
+            : null;
+        final enabled = data?['isEnabled'];
+
+        if (enabled is bool && mounted) {
+          setState(() {
+            _notificationsEnabled = enabled;
+          });
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint('🔔 MUTE GET ERROR => $e');
+      debugPrint('$stackTrace');
+    }
+  }
+
+  Future<bool> _updateMuteNotification(bool enabled) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null || token.trim().isEmpty) {
+        debugPrint('🔔 MUTE PATCH: auth token missing');
+        return false;
+      }
+
+      final response = await http.patch(
+        Uri.parse('https://api.welvors.com/api/user/notification/mute'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token.toLowerCase().startsWith('bearer ')
+              ? token
+              : 'Bearer $token',
+        },
+        body: jsonEncode({'isEnabled': enabled}),
+      );
+
+      debugPrint('🔔 MUTE PATCH isEnabled=$enabled');
+      debugPrint('🔔 MUTE PATCH => ${response.statusCode}');
+      debugPrint('🔔 MUTE PATCH BODY => ${response.body}');
+
+      return response.statusCode >= 200 && response.statusCode < 300;
+    } catch (e, stackTrace) {
+      debugPrint('🔔 MUTE PATCH ERROR => $e');
+      debugPrint('$stackTrace');
+      return false;
+    }
+  }
+
   Widget _sheetToggleTile(IconData icon, String title, Color color) {
+    // IMPORTANT:
+    // This local value must live OUTSIDE StatefulBuilder's builder callback.
+    // Otherwise every setLocal() rebuild resets it back to false.
+    bool isEnabled = _notificationsEnabled;
+
     return StatefulBuilder(
-      builder: (context, setLocal) {
-        var value = false;
+      builder: (tileContext, setTileState) {
+        final isMuted = !isEnabled;
+
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: color ?? Mycolor.pinkffeef2,
+                  color: color,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 width: 30,
                 height: 30,
                 child: Icon(icon, color: Colors.black, size: 20),
               ),
-              // Icon(icon, color: AppColors.ink, size: 20),
               const SizedBox(width: 14),
               Expanded(
                 child: Text(title, style: AppText.body.copyWith(fontSize: 15)),
               ),
               GestureDetector(
-                onTap: () {
-                  setLocal(() {
-                    value = !value;
-                  });
-                },
+                behavior: HitTestBehavior.opaque,
+                onTap: _muteNotificationLoading
+                    ? null
+                    : () async {
+                        final oldEnabled = isEnabled;
+                        final newEnabled = !oldEnabled;
+
+                        debugPrint(
+                          '🔔 MUTE TOGGLE CLICKED: '
+                          'old=$oldEnabled new=$newEnabled',
+                        );
+
+                        // Update the bottom-sheet switch immediately.
+                        setTileState(() {
+                          isEnabled = newEnabled;
+                        });
+
+                        if (mounted) {
+                          setState(() {
+                            _notificationsEnabled = newEnabled;
+                            _muteNotificationLoading = true;
+                          });
+                        }
+
+                        final success = await _updateMuteNotification(
+                          newEnabled,
+                        );
+
+                        if (!mounted) return;
+
+                        setState(() {
+                          _muteNotificationLoading = false;
+                          if (!success) {
+                            _notificationsEnabled = oldEnabled;
+                          }
+                        });
+
+                        if (!success) {
+                          setTileState(() {
+                            isEnabled = oldEnabled;
+                          });
+                          _toast('Failed to update notification settings');
+                        }
+                      },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   width: 52,
                   height: 30,
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: value ? AppColors.primary : Colors.grey.shade300,
+                    color: isMuted ? AppColors.primary : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: value ? AppColors.primary : Colors.grey.shade300,
+                      color: isMuted ? AppColors.primary : Colors.grey.shade300,
                     ),
                   ),
                   child: AnimatedAlign(
                     duration: const Duration(milliseconds: 200),
-                    alignment: value
+                    alignment: isMuted
                         ? Alignment.centerRight
                         : Alignment.centerLeft,
-                    child: Container(
-                      width: 25,
-                      height: 35,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+                    child: _muteNotificationLoading
+                        ? const SizedBox(
+                            width: 25,
+                            height: 25,
+                            child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : Container(
+                            width: 25,
+                            height: 25,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -9049,58 +10160,179 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void _openRelationshipTagSheet(bool check) {
     final chatBloc = context.read<ChatBloc>();
 
+    final receiverId = widget.user.userId.trim().isNotEmpty
+        ? widget.user.userId.trim()
+        : widget.user.id.trim();
+
+    debugPrint('💗 RELATIONSHIP RECEIVER: $receiverId');
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useSafeArea: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
       builder: (sheetContext) {
-        return RelationshipTagSheet(
-          onSend: (tag) {
-            // Close sheet
-            if (check) Navigator.of(sheetContext).pop();
-            Navigator.of(sheetContext).pop();
+        return BlocProvider.value(
+          value: chatBloc,
+          child: BlocConsumer<ChatBloc, ChatState>(
+            listenWhen: (previous, current) =>
+                previous.relationshipTagAction !=
+                    current.relationshipTagAction ||
+                previous.relationshipTagError != current.relationshipTagError,
+            listener: (context, state) async {
+              debugPrint(
+                '💗 RELATIONSHIP ACTION: ${state.relationshipTagAction}',
+              );
 
-            // Use ORIGINAL ChatBloc
-            chatBloc.add(
-              SendMessageEvent(
-                chatId: widget.user.id,
-                conversationId: widget.user.conversationId,
-                type: ChatMessageType.proposal,
-                message: tag,
-                proposalId: 'proposal_${DateTime.now().millisecondsSinceEpoch}',
-                typemsg: "",
-              ),
-            );
+              // ==========================================================
+              // SUCCESS
+              // ==========================================================
+              if (state.relationshipTagAction == 'CREATE_SUCCESS') {
+                if (Navigator.of(sheetContext).canPop()) {
+                  Navigator.of(sheetContext).pop();
+                }
 
-            _scrollToBottom();
+                // Relationship sheet is opened from inside the profile
+                // Sidedrawer sheet. Close BOTH sheets so the user lands back
+                // directly on ChatDetailScreen.
+                if (Navigator.of(sheetContext).canPop()) {
+                  Navigator.of(sheetContext).pop();
+                }
 
-            _toast('Proposal sent ✓');
-          },
+                // Wait for the relationship sheet to finish closing, then
+                // close the Sidedrawer/profile sheet as well.
+                await Future<void>.delayed(const Duration(milliseconds: 180));
+
+                if (!mounted) return;
+
+                final rootContext = context;
+                // if (Navigator.of(rootContext).canPop()) {
+                //   Navigator.of(rootContext).pop();
+                // }
+
+                // Reload the current conversation so the newly-created
+                // proposal is immediately visible in ChatDetailScreen.
+                final conversationId = widget.user.conversationId?.trim() ?? '';
+
+                if (conversationId.isNotEmpty && !chatBloc.isClosed) {
+                  chatBloc.add(
+                    LoadMessagesEvent(
+                      widget.user.id,
+                      conversationId: conversationId,
+                    ),
+                  );
+                }
+
+                Future.delayed(const Duration(milliseconds: 450), () {
+                  if (mounted) {
+                    _scrollToBottom();
+                    _toast('Proposal sent ✓');
+                  }
+                });
+                return;
+              }
+
+              // ==========================================================
+              // ERROR
+              // ==========================================================
+              if (state.relationshipTagAction == 'CREATE_ERROR') {
+                final error = (state.relationshipTagError ?? '').trim();
+                final message = error.isNotEmpty
+                    ? error
+                    : 'Unable to send relationship tag proposal.';
+
+                // Always close the bottom sheet first. The error must be
+                // shown as a popup/dialog so the user clearly sees why the
+                // request was not sent.
+                if (Navigator.of(sheetContext).canPop()) {
+                  Navigator.of(sheetContext).pop();
+                }
+
+                await Future<void>.delayed(const Duration(milliseconds: 150));
+
+                if (mounted) {
+                  _showRelationshipPopup(message, isError: true);
+                }
+              }
+            },
+            builder: (context, state) {
+              return RelationshipTagSheet(
+                onSend: (tag, message) {
+                  debugPrint('💗 RELATIONSHIP TAG: $tag');
+                  debugPrint('💗 RELATIONSHIP MESSAGE: $message');
+                  debugPrint('💗 RELATIONSHIP RECEIVER: $receiverId');
+
+                  if (receiverId.isEmpty) {
+                    if (Navigator.of(sheetContext).canPop()) {
+                      Navigator.of(sheetContext).pop();
+                    }
+                    _showRelationshipPopup(
+                      'Receiver ID is missing',
+                      isError: true,
+                    );
+                    return;
+                  }
+
+                  context.read<ChatBloc>().add(
+                    SendRelationshipTagProposalEvent(
+                      receiverId: receiverId,
+                      tag: tag,
+                      message: message,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         );
       },
     );
   }
 
-  Widget _circleButton(IconData icon, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 35,
-          height: 46,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: AppColors.shadow,
+  void _showRelationshipPopup(String message, {bool isError = false}) {
+    if (!mounted) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 18),
-        ),
-      ),
+          title: Row(
+            children: [
+              Icon(
+                isError ? Icons.info_outline : Icons.check_circle_outline,
+                color: isError ? AppColors.primary : Colors.green,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  isError ? 'Proposal not sent' : 'Proposal sent',
+                  style: AppText.h1.copyWith(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            message,
+            style: AppText.body.copyWith(color: AppColors.ink),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                'OK',
+                style: AppText.body.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -9121,24 +10353,130 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  Widget _avatar(String url, {double size = 58}) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.primary, width: 3),
-      ),
-      child: ClipOval(
-        child: Image.network(
-          url,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) {
-            return const ColoredBox(
-              color: AppColors.soft,
-              child: Icon(Icons.person, color: AppColors.muted),
+  Widget _avatar(
+    String url, {
+    double size = 58,
+    required String name,
+    required String age,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierColor: Colors.black.withOpacity(0.8),
+          builder: (context) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.all(20),
+              child: SizedBox(
+                width: 400,
+                height: 440,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Main white container
+                    Container(
+                      width: 400,
+                      height: 440,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          // Image
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12),
+                            ),
+                            child: Image.network(
+                              url,
+                              width: 400,
+                              height: 400,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) {
+                                return const SizedBox(
+                                  width: 400,
+                                  height: 400,
+                                  child: ColoredBox(
+                                    color: AppColors.soft,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.person,
+                                        color: AppColors.muted,
+                                        size: 80,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+
+                          // Bottom 20px white strip
+                          SizedBox(
+                            height: 40,
+                            child: Center(
+                              child: Text(
+                                '$name${int.tryParse(age?.toString() ?? '0') != null && int.tryParse(age?.toString() ?? '')! > 0 ? ", ${age} yrs" : ""}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Cross icon - Top Right
+                    Positioned(
+                      top: -12,
+                      right: -12,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: const BoxDecoration(
+                            color: Colors.black,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             );
           },
+        );
+      },
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.primary, width: 2),
+        ),
+        child: ClipOval(
+          child: Image.network(
+            url,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) {
+              return const ColoredBox(
+                color: AppColors.soft,
+                child: Icon(Icons.person, color: AppColors.muted),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -9149,293 +10487,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 // SAY SOMETHING BETTER SHEET WIDGET
 // ============================================================
 
-class _SuggestionLine {
-  final String text;
-  final String tag;
-  const _SuggestionLine(this.text, this.tag);
-}
-
-class _SaySomethingBetterSheet extends StatefulWidget {
-  final ValueChanged<String> onPick;
-
-  const _SaySomethingBetterSheet({required this.onPick});
-
-  @override
-  State<_SaySomethingBetterSheet> createState() =>
-      _SaySomethingBetterSheetState();
-}
-
-class _SaySomethingBetterSheetState extends State<_SaySomethingBetterSheet> {
-  int _mode =
-      1; // 0 Openers, 1 Impression, 2 Go deeper, 3 Ask her out, 4 Revive it
-
-  static const _tabs = [
-    '🌱 Openers',
-    '✨ Impression',
-    '💬 Go deeper',
-    '💌 Ask her out',
-    '🔄 Revive it',
-  ];
-
-  static const _hints = [
-    'First message. Reference her profile — generic "hey" gets ignored.',
-    'Warm but not over the top. Say one real thing, not five compliments.',
-    'Once the small talk is done. These move a chat forward.',
-    'Be specific — day, place, and an easy way to say yes to.',
-    'Chat gone quiet? Own the gap and give her something easy to reply to.',
-  ];
-
-  static const Map<int, List<_SuggestionLine>> _lines = {
-    0: [
-      _SuggestionLine(
-        'Okay, the Lonavala trek photo — was that sunrise or sunset? I keep meaning to do that one.',
-        'USES HER PHOTO',
-      ),
-      _SuggestionLine(
-        'Your bio says "night owl" and your gym check-in says 6 AM. I need an explanation.',
-        'PLAYFUL, SPECIFIC',
-      ),
-      _SuggestionLine(
-        'Two questions: best filter coffee in Pune, and are you free this week to prove it?',
-        'OPENER + PLAN',
-      ),
-      _SuggestionLine(
-        'You listed pottery and product management in the same breath. That combination is very interesting.',
-        'CURIOUS',
-      ),
-      _SuggestionLine(
-        'I read the whole profile before typing this, so I refuse to open with "hey".',
-        'HONEST, LIGHT',
-      ),
-    ],
-    1: [
-      _SuggestionLine(
-        'You have that rare thing where the photos and the words sound like the same person.',
-        'SINCERE',
-      ),
-      _SuggestionLine(
-        'I like that you know exactly what you want and you said it plainly. That is attractive.',
-        'VALUES HER CLARITY',
-      ),
-      _SuggestionLine(
-        'Talking to you feels easy in a way that most conversations here really are not.',
-        'WARM',
-      ),
-      _SuggestionLine(
-        'You are the first person in weeks whose reply I actually looked forward to.',
-        'HONEST',
-      ),
-      _SuggestionLine(
-        'You make ordinary plans sound like they would be a good evening.',
-        'PLAYFUL',
-      ),
-    ],
-    2: [
-      _SuggestionLine(
-        'What does a really good weekend look like for you — the honest version, not the Instagram one?',
-        'REAL ANSWER',
-      ),
-      _SuggestionLine(
-        'What are you building towards this year? Work, personal, anything.',
-        'AMBITION',
-      ),
-      _SuggestionLine(
-        'What is something you changed your mind about in the last year?',
-        'THOUGHTFUL',
-      ),
-      _SuggestionLine(
-        'What made you join Welvors — what are you hoping to find?',
-        'INTENT',
-      ),
-      _SuggestionLine(
-        'Who knows you best, and what would they say about you?',
-        'PERSONAL',
-      ),
-    ],
-    3: [
-      _SuggestionLine(
-        'Coffee this Saturday, 5 PM, Blue Tokai in Bandra? Say the word and I will book it.',
-        'SPECIFIC',
-      ),
-      _SuggestionLine(
-        'I would rather talk to you in person than type. Are you free one evening this week?',
-        'DIRECT',
-      ),
-      _SuggestionLine(
-        'There is a pottery place in Koregaon Park I have been meaning to try. Come make something ugly with me?',
-        'ACTIVITY',
-      ),
-      _SuggestionLine(
-        'No pressure at all — but if you are free Friday, dinner is on me.',
-        'LOW PRESSURE',
-      ),
-      _SuggestionLine(
-        'I am posting a Date Now plan for Sunday brunch. If it looks good, request to join.',
-        'SOFT ASK',
-      ),
-    ],
-    4: [
-      _SuggestionLine(
-        'I disappeared into a work week. Sorry! How did yours go?',
-        'OWNS THE GAP',
-      ),
-      _SuggestionLine(
-        'Still owe you an answer on the coffee question. And a coffee.',
-        'CALLBACK',
-      ),
-      _SuggestionLine(
-        'This chat deserves better than my last reply. Starting again: how was your weekend?',
-        'LIGHT',
-      ),
-      _SuggestionLine(
-        'Random, but I saw a cat today that looked exactly like your profile cat. Had to tell someone.',
-        'EASY REPLY',
-      ),
-    ],
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final lines = _lines[_mode] ?? const [];
-
-    return DraggableScrollableSheet(
-      initialChildSize: 0.72,
-      minChildSize: 0.4,
-      maxChildSize: 0.92,
-      expand: false,
-      builder: (context, scrollController) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 18),
-                  decoration: BoxDecoration(
-                    color: AppColors.line,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-
-              Text('Say something better', style: AppText.h1),
-
-              const SizedBox(height: 4),
-
-              Text(
-                'Tap a line to drop it in your message box.',
-                style: AppText.body.copyWith(color: AppColors.muted),
-              ),
-
-              const SizedBox(height: 16),
-
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _tabs.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final selected = _mode == index;
-                    return GestureDetector(
-                      onTap: () => setState(() => _mode = index),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: selected ? AppColors.darkChip : Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: selected
-                                ? AppColors.darkChip
-                                : AppColors.line,
-                          ),
-                        ),
-                        child: Text(
-                          _tabs[index],
-                          style: AppText.pill.copyWith(
-                            color: selected ? Colors.white : AppColors.ink60,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.soft,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Text(
-                  _hints[_mode],
-                  style: AppText.body.copyWith(color: AppColors.ink60),
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              Expanded(
-                child: ListView.separated(
-                  controller: scrollController,
-                  itemCount: lines.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final line = lines[index];
-                    return GestureDetector(
-                      onTap: () => widget.onPick(line.text),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.line),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              line.text,
-                              style: AppText.body.copyWith(
-                                fontSize: 15,
-                                height: 1.4,
-                                color: AppColors.ink,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              line.tag,
-                              style: AppText.eyebrow.copyWith(
-                                color: AppColors.muted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
 // ============================================================
 // RELATIONSHIP TAG PROPOSAL SHEET WIDGET
 // ============================================================
@@ -9444,564 +10495,7 @@ class _SaySomethingBetterSheetState extends State<_SaySomethingBetterSheet> {
 // ANIMATED ROSE — soft pulsing glow + floating twinkle decorations
 // ============================================================
 
-class _FloatingRose extends StatefulWidget {
-  const _FloatingRose();
-
-  @override
-  State<_FloatingRose> createState() => _FloatingRoseState();
-}
-
-class _FloatingRoseState extends State<_FloatingRose>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final dy = -6 * Curves.easeInOut.transform(_controller.value);
-        return Transform.translate(offset: Offset(0, dy), child: child);
-      },
-      child: const Text('🌹', style: TextStyle(fontSize: 70)),
-    );
-  }
-}
-
-class _RoseTwinkleOverlay extends StatefulWidget {
-  const _RoseTwinkleOverlay();
-
-  @override
-  State<_RoseTwinkleOverlay> createState() => _RoseTwinkleOverlayState();
-}
-
-class _RoseTwinkleOverlayState extends State<_RoseTwinkleOverlay>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  /// 0 → 1 → 0
-  double _pulse(double value) {
-    return math.sin(value * math.pi);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final t = _controller.value;
-
-          // ----------------------------------------------------------
-          // HEART
-          // ----------------------------------------------------------
-
-          final heartProgress = (t + 0.00) % 1.0;
-
-          final heart = _pulse(heartProgress);
-
-          final heartScale = 0.80 + (heart * 0.75);
-
-          final heartY = -28 * Curves.easeOut.transform(heart);
-
-          final heartOpacity = heartProgress < 0.15
-              ? heartProgress / 0.15
-              : heartProgress > 0.70
-              ? (1 - heartProgress) / 0.30
-              : 1.0;
-
-          // ----------------------------------------------------------
-          // FLOWER
-          // ----------------------------------------------------------
-
-          final flowerProgress = (t + 0.28) % 1.0;
-
-          final flower = _pulse(flowerProgress);
-
-          final flowerScale = 0.55 + (flower * 0.85);
-
-          final flowerY = -32 * Curves.easeOut.transform(flower);
-
-          final flowerOpacity = flowerProgress < 0.15
-              ? flowerProgress / 0.15
-              : flowerProgress > 0.70
-              ? (1 - flowerProgress) / 0.30
-              : 1.0;
-
-          // ----------------------------------------------------------
-          // SPARKLE
-          // ----------------------------------------------------------
-
-          final sparkleProgress = (t + 0.55) % 1.0;
-
-          final sparkle = _pulse(sparkleProgress);
-
-          final sparkleScale = 0.45 + (sparkle * 0.95);
-
-          final sparkleY = -30 * Curves.easeOut.transform(sparkle);
-
-          final sparkleOpacity = sparkleProgress < 0.15
-              ? sparkleProgress / 0.15
-              : sparkleProgress > 0.70
-              ? (1 - sparkleProgress) / 0.30
-              : 1.0;
-
-          return Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
-            children: [
-              // ------------------------------------------------------
-              // HEART
-              // ------------------------------------------------------
-              Positioned(
-                top: 18 + heartY,
-                child: Opacity(
-                  opacity: heartOpacity.clamp(0.0, 1.0),
-                  child: Transform.scale(
-                    scale: heartScale,
-                    child: const Text('💗', style: TextStyle(fontSize: 14)),
-                  ),
-                ),
-              ),
-
-              // ------------------------------------------------------
-              // FLOWER
-              // ------------------------------------------------------
-              Positioned(
-                left: 108,
-                top: 48 + flowerY,
-                child: Opacity(
-                  opacity: flowerOpacity.clamp(0.0, 1.0),
-                  child: Transform.scale(
-                    scale: flowerScale,
-                    child: const Text('🌸', style: TextStyle(fontSize: 15)),
-                  ),
-                ),
-              ),
-
-              // ------------------------------------------------------
-              // SPARKLE
-              // ------------------------------------------------------
-              Positioned(
-                right: 108,
-                top: 52 + sparkleY,
-                child: Opacity(
-                  opacity: sparkleOpacity.clamp(0.0, 1.0),
-                  child: Transform.scale(
-                    scale: sparkleScale,
-                    child: const Text('✨', style: TextStyle(fontSize: 14)),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
 /// WhatsApp-style swipe-to-reply interaction.
 /// The message visibly follows the user's finger while swiping right.
 /// Reply is triggered only after crossing the threshold; taps and long-presses
 /// do not trigger it.
-enum _SwipeDirection { none, reply, delete }
-
-class _SwipeToReply extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onReply;
-  final VoidCallback? onDelete;
-
-  const _SwipeToReply({
-    required this.child,
-    required this.onReply,
-    this.onDelete,
-  });
-
-  @override
-  State<_SwipeToReply> createState() => _SwipeToReplyState();
-}
-
-class _SwipeToReplyState extends State<_SwipeToReply>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _resetController;
-
-  double _dragX = 0;
-  double _startX = 0;
-
-  _SwipeDirection _direction = _SwipeDirection.none;
-
-  bool _actionTriggered = false;
-
-  static const double _maxDrag = 82;
-  static const double _replyThreshold = 58;
-  static const double _deleteThreshold = -58;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _resetController =
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 180),
-        )..addListener(() {
-          if (!mounted) return;
-
-          setState(() {
-            _dragX = _startX * (1 - _resetController.value);
-          });
-        });
-  }
-
-  @override
-  void dispose() {
-    _resetController.dispose();
-    super.dispose();
-  }
-
-  void _onDragStart(DragStartDetails details) {
-    _resetController.stop();
-
-    _startX = _dragX;
-
-    // New gesture
-    _direction = _SwipeDirection.none;
-    _actionTriggered = false;
-  }
-
-  void _onDragUpdate(DragUpdateDetails details) {
-    if (_actionTriggered) return;
-
-    final dx = details.delta.dx;
-
-    // First movement decides direction.
-    if (_direction == _SwipeDirection.none) {
-      if (dx > 0) {
-        _direction = _SwipeDirection.reply;
-      } else if (dx < 0) {
-        _direction = _SwipeDirection.delete;
-      }
-    }
-
-    double nextX = _dragX;
-
-    if (_direction == _SwipeDirection.reply) {
-      // Reply can ONLY move right.
-      nextX = (_dragX + dx).clamp(0.0, _maxDrag);
-    } else if (_direction == _SwipeDirection.delete) {
-      // Delete can ONLY move left.
-      nextX = (_dragX + dx).clamp(-_maxDrag, 0.0);
-    }
-
-    if (nextX == _dragX) return;
-
-    setState(() {
-      _dragX = nextX;
-    });
-  }
-
-  void _onDragEnd(DragEndDetails details) {
-    if (_actionTriggered) {
-      _animateBack();
-      return;
-    }
-
-    // ============================================================
-    // REPLY
-    // ============================================================
-
-    if (_direction == _SwipeDirection.reply && _dragX >= _replyThreshold) {
-      _actionTriggered = true;
-
-      debugPrint('↩️ REPLY ONLY');
-
-      widget.onReply();
-
-      _animateBack();
-      return;
-    }
-
-    // ============================================================
-    // DELETE
-    // ============================================================
-
-    if (_direction == _SwipeDirection.delete && _dragX <= _deleteThreshold) {
-      _actionTriggered = true;
-
-      debugPrint('🗑️ DELETE ONLY');
-
-      widget.onDelete?.call();
-
-      _animateBack();
-      return;
-    }
-
-    _animateBack();
-  }
-
-  void _onDragCancel() {
-    _animateBack();
-  }
-
-  void _animateBack() {
-    _startX = _dragX;
-
-    _resetController
-      ..reset()
-      ..forward().whenComplete(() {
-        if (!mounted) return;
-
-        setState(() {
-          _dragX = 0;
-          _startX = 0;
-          _direction = _SwipeDirection.none;
-          _actionTriggered = false;
-        });
-      });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // IMPORTANT:
-    // Only show Reply icon when current gesture is Reply.
-    final double replyProgress = _direction == _SwipeDirection.reply
-        ? (_dragX / _replyThreshold).clamp(0.0, 1.0)
-        : 0.0;
-
-    // IMPORTANT:
-    // Only show Delete icon when current gesture is Delete.
-    final double deleteProgress = _direction == _SwipeDirection.delete
-        ? (-_dragX / -_deleteThreshold).clamp(0.0, 1.0)
-        : 0.0;
-
-    return SizedBox(
-      width: double.infinity,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          // ========================================================
-          // DELETE
-          // ========================================================
-          // Positioned(
-          //   right: 16,
-          //   child: IgnorePointer(
-          //     child: Opacity(
-          //       opacity: deleteProgress,
-          //       child: Transform.scale(
-          //         scale: 0.75 + (0.25 * deleteProgress),
-          //         child: Container(
-          //           width: 38,
-          //           height: 38,
-          //           decoration: BoxDecoration(
-          //             color: Colors.red.withOpacity(0.10),
-          //             shape: BoxShape.circle,
-          //           ),
-          //           alignment: Alignment.center,
-          //           child: const Icon(
-          //             Icons.delete_outline_rounded,
-          //             size: 21,
-          //             color: Colors.red,
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
-          // ========================================================
-          // REPLY
-          // ========================================================
-          Positioned(
-            left: 16,
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: replyProgress,
-                child: Transform.scale(
-                  scale: 0.75 + (0.25 * replyProgress),
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.10),
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.reply_rounded,
-                      size: 21,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // ========================================================
-          // MESSAGE
-          // ========================================================
-          GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onHorizontalDragStart: _onDragStart,
-            onHorizontalDragUpdate: _onDragUpdate,
-            onHorizontalDragEnd: _onDragEnd,
-            onHorizontalDragCancel: _onDragCancel,
-            child: Transform.translate(
-              offset: Offset(_dragX, 0),
-              child: widget.child,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ChatVideoPlayer extends StatefulWidget {
-  final String url;
-  const _ChatVideoPlayer({required this.url});
-
-  @override
-  State<_ChatVideoPlayer> createState() => _ChatVideoPlayerState();
-}
-
-class _ChatVideoPlayerState extends State<_ChatVideoPlayer> {
-  late final VideoPlayerController _controller;
-  bool _ready = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url));
-    _controller
-        .initialize()
-        .then((_) {
-          if (mounted) setState(() => _ready = true);
-        })
-        .catchError((e) => debugPrint('❌ VIDEO PLAYER ERROR => $e'));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _toggle() async {
-    if (!_ready) return;
-    if (_controller.value.isPlaying) {
-      await _controller.pause();
-    } else {
-      await _controller.play();
-    }
-    if (mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_ready) {
-      return const SizedBox(
-        height: 260,
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-    final aspect = _controller.value.aspectRatio == 0
-        ? 16 / 9
-        : _controller.value.aspectRatio;
-    return GestureDetector(
-      onTap: _toggle,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          AspectRatio(aspectRatio: aspect, child: VideoPlayer(_controller)),
-          if (!_controller.value.isPlaying)
-            Container(
-              width: 58,
-              height: 58,
-              decoration: const BoxDecoration(
-                color: Colors.black54,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.play_arrow_rounded,
-                color: Colors.white,
-                size: 36,
-              ),
-            ),
-          Positioned(
-            left: 8,
-            right: 8,
-            bottom: 4,
-            child: VideoProgressIndicator(_controller, allowScrubbing: true),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ==========================================================
-// Runs on a background isolate via compute(). Must be a
-// top-level (or static) function — decodes, resizes (max
-// 1600px on the longer side), and JPEG-encodes the image,
-// stepping quality down until it is comfortably below common
-// server upload limits (~900 KB).
-// ==========================================================
-Uint8List? _encodeChatImageIsolate(Uint8List originalBytes) {
-  final decoded = img.decodeImage(originalBytes);
-  if (decoded == null) return null;
-
-  img.Image resized = decoded;
-  if (decoded.width > 1600 || decoded.height > 1600) {
-    if (decoded.width >= decoded.height) {
-      resized = img.copyResize(decoded, width: 1600);
-    } else {
-      resized = img.copyResize(decoded, height: 1600);
-    }
-  }
-
-  int quality = 75;
-  Uint8List jpgBytes = Uint8List.fromList(
-    img.encodeJpg(resized, quality: quality),
-  );
-
-  while (jpgBytes.length > 900 * 1024 && quality > 25) {
-    quality -= 10;
-    jpgBytes = Uint8List.fromList(img.encodeJpg(resized, quality: quality));
-  }
-
-  return jpgBytes;
-}

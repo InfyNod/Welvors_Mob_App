@@ -8,6 +8,41 @@ import 'package:velvors/main.dart';
 class ApiService {
   static const String baseUrl = 'https://api.welvors.com/api';
 
+  /// Fetch current user's compliments, roses and wallet balance.
+  static Future<Map<String, dynamic>> getMyBalances() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final response = await http.get(
+        Uri.parse('$baseUrl/user/my-balances'),
+        headers: {
+          'Accept': 'application/json',
+          if (token != null && token.isNotEmpty)
+            'Authorization': token.toLowerCase().startsWith('bearer ')
+                ? token
+                : 'Bearer $token',
+        },
+      );
+
+      debugPrint('MY BALANCES STATUS: ${response.statusCode}');
+      debugPrint('MY BALANCES BODY: ${response.body}');
+
+      await handleTokenExpiration(response.statusCode);
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map<String, dynamic>) {
+          return decoded;
+        }
+      }
+
+      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+    } catch (e) {
+      debugPrint('MY BALANCES ERROR: $e');
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
   /// Centralized method to handle 401 Unauthorized token expiration
   static Future<void> handleTokenExpiration(int statusCode) async {
     if (statusCode == 401 || statusCode == 403) {

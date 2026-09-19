@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:velvors/main.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/chat_repository.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/report_user_dialog.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 
 class BlockUserDialog extends StatefulWidget {
   final String userName;
   final int userAge;
+  final String userId;
   final Future<void> Function(String selectedOption)? onBlock;
 
   const BlockUserDialog({
     super.key,
     required this.userName,
     required this.userAge,
+    required this.userId,
     this.onBlock,
   });
 
@@ -21,6 +26,116 @@ class BlockUserDialog extends StatefulWidget {
 class _BlockUserDialogState extends State<BlockUserDialog> {
   String? selectedOption;
   bool shouldReport = false;
+
+  // ============================================================
+  // Helper: open ReportUserDialog on the ROOT navigator.
+  // Used both from "Block & report" flow and from the
+  // "Also report her" flow after the success sheet.
+  // Does NOT depend on this State's `mounted` flag because by the
+  // time this runs, `BlockUserDialog` (Sheet A) has usually already
+  // been popped and disposed.
+  // ============================================================
+  void _openReportDialog({required bool isBlocked}) {
+    final rootContext = navigatorKey.currentContext;
+
+    if (rootContext == null) {
+      debugPrint('❌ rootContext is null, cannot open report sheet');
+      return;
+    }
+
+    debugPrint('🟢 OPENING REPORT SHEET (isBlocked: $isBlocked)');
+
+    showModalBottomSheet(
+      context: rootContext,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (reportContext) {
+        Widget child = ReportUserDialog(
+          userName: widget.userName,
+          userAge: widget.userAge,
+          isBlocked: isBlocked,
+          onSubmit: (reason, description, alsoBlock) async {
+            try {
+              final prefs = await SharedPreferences.getInstance();
+              final reportedId = prefs.getString("reciverId")?.trim() ?? '';
+
+              debugPrint('🚫 REPORT USER CLICKED');
+              debugPrint('🚫 reportedId => $reportedId');
+              debugPrint('🚫 reason => $reason');
+              debugPrint('🚫 description => $description');
+              debugPrint('🚫 alsoBlock => $alsoBlock');
+
+              if (reportedId.isEmpty) {
+                throw Exception('User ID is missing');
+              }
+
+              final repository = ChatRepository();
+
+              // Block first if requested (matches original ordering
+              // used in the "block_and_report" path).
+              if (alsoBlock) {
+                await repository.blockUser(reportedId);
+                debugPrint('✅ USER BLOCK SUCCESS');
+              }
+
+              await repository.reportUser(
+                reportedId: reportedId,
+                reason: reason,
+                description: description,
+              );
+
+              debugPrint('✅ USER REPORT SUCCESS');
+
+              final ctx = navigatorKey.currentContext;
+              if (ctx == null) return;
+
+              Navigator.of(reportContext).pop();
+
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                const SnackBar(
+                  content: Text('User reported successfully'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            } catch (e) {
+              debugPrint('❌ REPORT USER ERROR: $e');
+
+              final errorMessage = e.toString().replaceFirst('Exception: ', '');
+
+              // "already reported" isn't something retrying will fix —
+              // close the sheet instead of leaving the user stuck on it.
+              final isAlreadyReported = errorMessage.toLowerCase().contains(
+                'already reported',
+              );
+
+              if (isAlreadyReported) {
+                Navigator.of(reportContext).pop();
+              }
+
+              final ctx = navigatorKey.currentContext;
+              if (ctx == null) return;
+
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(
+                  content: Text(errorMessage),
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
+          },
+        );
+
+        // Preserve the heightFactor behaviour that the
+        // "Also report her" flow originally used.
+        return FractionallySizedBox(heightFactor: 0.7, child: child);
+      },
+    );
+  }
 
   Future<void> _confirmBlock() async {
     if (selectedOption == null) return;
@@ -38,37 +153,37 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
     }
 
     if (selectedOption == 'block_and_report') {
+      // Close Sheet A (this dialog) first.
       Navigator.pop(context);
+
+      // NOTE: we intentionally do NOT check `this.mounted` below —
+      // this State is already disposed once we've popped it. We only
+      // need the root navigator's context, which stays alive for the
+      // app's lifetime.
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          isDismissible: false,
-          enableDrag: false,
-          builder: (_) => ReportUserDialog(
-            userName: widget.userName,
-            userAge: widget.userAge,
-            isBlocked: true,
-          ),
-        );
+        _openReportDialog(isBlocked: true);
       });
       return;
     }
 
+    // 'block_only' path
     Navigator.pop(context);
-    _showBlockSuccessDialog(selectedOption);
+    final shouldReport = await _showBlockSuccessDialog(selectedOption);
+
+    debugPrint('🟢 shouldReport = $shouldReport');
   }
 
-  void _showBlockSuccessDialog(String? selectedOption) {
-    showModalBottomSheet(
-      context: context,
+  Future<bool?> _showBlockSuccessDialog(String? selectedOption) {
+    final rootContext = navigatorKey.currentContext!;
+
+    return showModalBottomSheet<bool>(
+      context: rootContext,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       isDismissible: false,
       enableDrag: false,
-      builder: (context) => SafeArea(
+      builder: (sheetContext) => SafeArea(
         bottom: false,
         child: Container(
           decoration: BoxDecoration(
@@ -81,16 +196,16 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 90,
-                  height: 90,
-                  decoration: BoxDecoration(
+                  width: 50,
+                  height: 50,
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFFE6F4E6),
+                    color: Color(0xFFE6F4E6),
                   ),
                   child: const Icon(
                     Icons.check,
                     color: Color(0xFF70B97A),
-                    size: 52,
+                    size: 30,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -98,7 +213,7 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                   '${widget.userName} is blocked',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 28,
+                    fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: Colors.black87,
                     letterSpacing: -0.6,
@@ -107,10 +222,11 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'She can no longer contact you or see your profile. Manage blocked people in Account Settings.',
+                  'She can no longer contact you or see your profile. '
+                  'Manage blocked people in Account Settings.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: Colors.grey[600],
                     height: 1.45,
                   ),
@@ -119,7 +235,9 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context, selectedOption),
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop(false);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE85D7D),
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -141,23 +259,9 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                 const SizedBox(height: 14),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (!mounted) return;
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (_) => FractionallySizedBox(
-                          heightFactor: 0.7,
-                          child: ReportUserDialog(
-                            userName: widget.userName,
-                            userAge: widget.userAge,
-                            isBlocked: true,
-                          ),
-                        ),
-                      );
-                    });
+                    debugPrint('🟢 ALSO REPORT HER CLICKED');
+                    // Close current sheet and return true.
+                    Navigator.of(sheetContext).pop(true);
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 4),
@@ -177,7 +281,23 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
           ),
         ),
       ),
-    );
+    ).then((onValue) async {
+      debugPrint('🟢 BLOCK SUCCESS SHEET CLOSED');
+      debugPrint('🟢 RESULT => $onValue');
+
+      if (onValue == true) {
+        // Small delay lets the previous sheet's closing animation
+        // finish before we push the next one on the same navigator.
+        await Future.delayed(const Duration(milliseconds: 250));
+
+        // IMPORTANT: no `this.mounted` check here — this State is
+        // long disposed by this point (Sheet A was popped earlier).
+        // We only rely on the root navigator being alive.
+        _openReportDialog(isBlocked: false);
+      }
+
+      return onValue;
+    });
   }
 
   @override

@@ -3,14 +3,41 @@ import 'package:flutter_giphy_picker/giphy_ui.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
+import 'package:velvors/welvors_home_screen/services/gift_api_service.dart';
 
 /// One item inside a gift grid.
 class GiftItem {
+  final int id;
   final String name;
   final String emoji;
   final int coins;
+  final String image;
+  final String triggerLine;
+  final String receiverLine;
+  final int categoryId;
 
-  const GiftItem(this.name, this.emoji, this.coins);
+  const GiftItem(
+    this.name,
+    this.emoji,
+    this.coins, {
+    this.id = 0,
+    this.image = '',
+    this.triggerLine = '',
+    this.receiverLine = '',
+    this.categoryId = 0,
+  });
+
+  factory GiftItem.fromApi(ApiGift gift) => GiftItem(
+    gift.name,
+    '',
+    gift.coinCost,
+    id: gift.id,
+    image: gift.image,
+
+    triggerLine: gift.triggerLine,
+    receiverLine: gift.receiverLine,
+    categoryId: gift.categoryId,
+  );
 }
 
 /// One item inside a GIF grid.
@@ -53,6 +80,46 @@ class ComposerExtrasPanel extends StatefulWidget {
 class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
   late int _mainTab = widget.initialTab;
   GiftItem? _selectedGift;
+  List<GiftCategory> _apiGiftCategories = const [];
+  List<ApiGift> _apiGifts = const [];
+  bool _giftLoading = false;
+  String? _giftError;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_mainTab == 5) {
+      _loadGifts();
+    }
+  }
+
+  Future<void> _loadGifts() async {
+    if (_giftLoading) return;
+    setState(() {
+      _giftLoading = true;
+      _giftError = null;
+    });
+    try {
+      final catalog = await GiftApiService.fetchCatalog();
+      if (!mounted) return;
+      setState(() {
+        _apiGiftCategories = catalog.categories;
+        _apiGifts = catalog.gifts;
+        _giftCategory = _giftCategory.clamp(
+          0,
+          catalog.categories.isEmpty ? 0 : catalog.categories.length - 1,
+        );
+        _giftLoading = false;
+      });
+    } catch (e) {
+      debugPrint('❌ Gift catalog load failed: $e');
+      if (!mounted) return;
+      setState(() {
+        _giftLoading = false;
+        _giftError = e.toString();
+      });
+    }
+  }
 
   @override
   void didUpdateWidget(covariant ComposerExtrasPanel oldWidget) {
@@ -62,6 +129,9 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         _mainTab = widget.initialTab;
         _selectedGift = null;
       });
+      if (_mainTab == 5 && _apiGifts.isEmpty) {
+        _loadGifts();
+      }
     }
   }
 
@@ -834,8 +904,36 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
   // --------------------------------------------------------------
 
   Widget _giftPanel() {
-    final gifts = _gifts[_giftCategories[_giftCategory]]!;
-
+    if (_giftLoading) return const Center(child: CircularProgressIndicator());
+    if (_giftError != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Unable to load gifts'),
+            const SizedBox(height: 8),
+            OutlinedButton(onPressed: _loadGifts, child: const Text('Retry')),
+          ],
+        ),
+      );
+    }
+    if (_apiGiftCategories.isEmpty) {
+      return Center(
+        child: OutlinedButton(
+          onPressed: _loadGifts,
+          child: const Text('Load Gifts'),
+        ),
+      );
+    }
+    final category =
+        _apiGiftCategories[_giftCategory.clamp(
+          0,
+          _apiGiftCategories.length - 1,
+        )];
+    final gifts = _apiGifts
+        .where((g) => g.categoryId == category.id)
+        .map(GiftItem.fromApi)
+        .toList();
     return Column(
       children: [
         Container(
@@ -857,22 +955,13 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                       children: [
                         Text('Send a Gift', style: AppText.h2),
                         const SizedBox(height: 2),
-                        Text.rich(
-                          TextSpan(
-                            text: 'to your match · they’ll get a notification',
-                            style: AppText.sub.copyWith(fontSize: 11.5),
-                          ),
+                        Text(
+                          'Choose a gift to send to your match',
+                          style: AppText.sub.copyWith(fontSize: 11.5),
                         ),
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.toll_rounded,
-                    color: AppColors.gold,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 3),
-                  Text('5,258', style: AppText.pill.copyWith(fontSize: 13)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -880,9 +969,9 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                 height: 35,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: _giftCategories.length,
+                  itemCount: _apiGiftCategories.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
+                  itemBuilder: (_, index) {
                     final selected = index == _giftCategory;
                     return GestureDetector(
                       onTap: () => setState(() {
@@ -899,7 +988,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          _giftCategories[index],
+                          _apiGiftCategories[index].name,
                           style: AppText.pill.copyWith(
                             fontSize: 11,
                             color: selected ? Colors.white : AppColors.ink60,
@@ -913,7 +1002,11 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
             ],
           ),
         ),
-        Expanded(child: _giftTileGrid(gifts)),
+        Expanded(
+          child: gifts.isEmpty
+              ? const Center(child: Text('No gifts available'))
+              : _giftTileGrid(gifts),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
           child: SizedBox(
@@ -958,34 +1051,56 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         crossAxisSpacing: 10,
         childAspectRatio: 0.85,
       ),
-      itemBuilder: (context, index) {
+      itemBuilder: (_, index) {
         final gift = items[index];
-
+        final selected =
+            _selectedGift?.categoryId == gift.categoryId &&
+            _selectedGift?.name == gift.name;
         return GestureDetector(
           onTap: () => setState(() => _selectedGift = gift),
           child: Container(
             decoration: BoxDecoration(
-              color: _selectedGift == gift
-                  ? AppColors.primarySoft
-                  : const Color(0xFFFFFDFC),
+              color: selected ? AppColors.primarySoft : const Color(0xFFFFFDFC),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: _selectedGift == gift
-                    ? AppColors.primary
-                    : AppColors.line,
-                width: _selectedGift == gift ? 2 : 1,
+                color: selected ? AppColors.primary : AppColors.line,
+                width: selected ? 2 : 1,
               ),
             ),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            // padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(gift.emoji, style: const TextStyle(fontSize: 30)),
-                const SizedBox(height: 6),
+                Expanded(
+                  child: gift.image.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
+                          child: Image.network(
+                            gift.image,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.card_giftcard_rounded,
+                              size: 34,
+                            ),
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            gift.emoji.isEmpty ? '🎁' : gift.emoji,
+                            style: const TextStyle(fontSize: 30),
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 15),
                 Text(
                   gift.name,
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppText.pill.copyWith(
                     fontSize: 11.5,
                     color: AppColors.ink,
@@ -997,7 +1112,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('🌎', style: TextStyle(fontSize: 11)),
+                    const Text('🪙', style: TextStyle(fontSize: 11)),
                     const SizedBox(width: 3),
                     Text(
                       '${gift.coins}',
@@ -1009,6 +1124,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 4),
               ],
             ),
           ),

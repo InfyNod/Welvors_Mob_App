@@ -103,6 +103,24 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
   String? _selectedGiftName;
   String? _selectedGiftEmoji;
 
+  int _commentsBalance = 0;
+  int _rosesBalance = 0;
+  String _walletBalance = '₹0';
+  bool _balancesLoading = true;
+
+  // ==========================================================
+  // INLINE ERROR MESSAGE STATE
+  // ==========================================================
+  // Why: this widget lives INSIDE a modal bottom sheet. Calling
+  // ScaffoldMessenger.of(context).showSnackBar(...) from here attaches
+  // the SnackBar to the underlying page's Scaffold, but visually the
+  // bottom sheet sits ABOVE it in the overlay stack — so the SnackBar
+  // gets rendered behind the sheet and the user never sees it until
+  // the sheet is dismissed. Showing the error as part of the sheet's
+  // own layout instead guarantees it's always visible.
+  String? _errorMessage;
+  bool _isSending = false;
+
   final Color _primaryColor = const Color(0xFFE43A6A);
   final Color _softGrey = const Color(0xFFF5F5F5);
   final Color _borderGrey = const Color(0xFFEBEBEB);
@@ -110,12 +128,51 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
   @override
   void initState() {
     super.initState();
+    _loadMyBalances();
     _textController.addListener(() {
       setState(() {});
     });
     _focusNode.addListener(() {
       setState(() {});
     });
+  }
+
+  Future<void> _loadMyBalances() async {
+    if (mounted) {
+      setState(() => _balancesLoading = true);
+    }
+
+    final response = await ApiService.getMyBalances();
+    if (!mounted) return;
+
+    if (response['success'] == true) {
+      final data = response['data'];
+      if (data is Map) {
+        final compliments = data['compliments'];
+        final roses = data['roses'];
+        final wallet = data['wallet'];
+
+        setState(() {
+          _commentsBalance =
+              (compliments is Map ? compliments['balance'] : 0) is num
+              ? ((compliments['balance'] as num?)?.toInt() ?? 0)
+              : 0;
+          _rosesBalance = (roses is Map ? roses['balance'] : 0) is num
+              ? ((roses['balance'] as num?)?.toInt() ?? 0)
+              : 0;
+          _walletBalance = wallet is Map
+              ? (wallet['formattedBalance']?.toString() ??
+                    '₹${wallet['balance'] ?? 0}')
+              : '₹0';
+          _balancesLoading = false;
+        });
+      } else {
+        setState(() => _balancesLoading = false);
+      }
+    } else {
+      debugPrint('❌ MY BALANCES FAILED: ${response['message']}');
+      setState(() => _balancesLoading = false);
+    }
   }
 
   @override
@@ -155,758 +212,24 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         _giftSelected;
   }
 
-  // Future<void> _sendProfileAction() async {
-  //   final receiverId = widget.profile?.id.trim() ?? '';
-  //   final message = _textController.text.trim();
-  //   final rawType = widget.complimentingType.trim().toUpperCase();
-  //   final targetType =
-  //       (rawType == 'PROFILE' || rawType == 'ENTIRE PROFILE' || rawType.isEmpty)
-  //       ? null
-  //       : rawType;
-  //   if (receiverId.isEmpty) {
-  //     debugPrint('❌ receiverId missing');
-  //     return;
-  //   }
-  //   debugPrint(
-  //     '🚀 PROFILE ACTION receiverId=$receiverId type=$targetType rose=$_roseSelected gift=$_giftSelected message=$message',
-  //   );
-
-  //   final chatBloc = context.read<ChatBloc>();
-
-  //   // ==========================================================
-  //   // LOOK UP THE EXISTING CONVERSATION *BEFORE* SENDING
-  //   // ==========================================================
-  //   // If this user already has a real conversation (with old message
-  //   // history) with the receiver, capture its conversationId now.
-  //   // We do this BEFORE calling sendCompliment/sendRose/sendGift
-  //   // because those calls can themselves create/refresh a conversation
-  //   // record on the backend — re-searching the chat list only AFTER
-  //   // sending risks matching a newly (re)created/duplicate entry
-  //   // instead of the real one, which is why old messages were
-  //   // disappearing.
-  //   ChatUser? preExistingTarget;
-  //   try {
-  //     chatBloc.add(const LoadChatsEvent());
-  //     final loadedState = await chatBloc.stream
-  //         .firstWhere(
-  //           (state) => state.allChats.any(
-  //             (u) => u.userId == receiverId || u.conversationId == receiverId,
-  //           ),
-  //         )
-  //         .timeout(const Duration(seconds: 5));
-  //     for (final u in loadedState.allChats) {
-  //       if ((u.userId == receiverId || u.conversationId == receiverId) &&
-  //           (u.conversationId ?? '').trim().isNotEmpty) {
-  //         preExistingTarget = u;
-  //         break;
-  //       }
-  //     }
-  //   } catch (_) {
-  //     for (final u in chatBloc.state.allChats) {
-  //       if ((u.userId == receiverId || u.conversationId == receiverId) &&
-  //           (u.conversationId ?? '').trim().isNotEmpty) {
-  //         preExistingTarget = u;
-  //         break;
-  //       }
-  //     }
-  //   }
-  //   debugPrint(
-  //     '🔎 PRE-SEND CONVERSATION LOOKUP: '
-  //     '${preExistingTarget != null ? "found ${preExistingTarget.conversationId}" : "none (new conversation expected)"}',
-  //   );
-
-  //   try {
-  //     final hasMessage = message.isNotEmpty;
-  //     final hasRose = _roseSelected;
-  //     final hasGift = _giftSelected;
-  //     final selectedCount =
-  //         (hasMessage ? 1 : 0) + (hasRose ? 1 : 0) + (hasGift ? 1 : 0);
-
-  //     if (selectedCount >= 2) {
-  //       // ==========================================================
-  //       // NEW COMBINED API — ONLY used when 2+ items are selected
-  //       // together. POST https://api.welvors.com/api/user/engagement/send
-  //       //
-  //       //   Send (Rose + compliment + Gift)  -> hasRose && hasMessage && hasGift
-  //       //   Send (Rose + Gift)               -> hasRose && hasGift
-  //       //   Send (Rose + compliment)         -> hasRose && hasMessage
-  //       //   Send (compliment + Gift)         -> hasMessage && hasGift
-  //       //
-  //       // Single-item cases NEVER reach this branch — see the `else`
-  //       // block below, which still uses the old individual APIs.
-  //       // ==========================================================
-  //       final r = await ApiService.sendEngagement(
-  //         receiverId: receiverId,
-  //         targetType: targetType,
-  //         targetId: null,
-  //         includeRose: hasRose,
-  //         complimentMessage: hasMessage ? message : null,
-  //         giftId: hasGift ? 1 : null,
-  //         giftMessage: "GIFTMESSAGE",
-  //       );
-  //       debugPrint('✨ ENGAGEMENT RESULT: $r');
-  //       if (r['success'] != true) {
-  //         throw Exception(r['message'] ?? 'Engagement send failed');
-  //       }
-  //     } else {
-  //       // ==========================================================
-  //       // OLD SINGLE-ITEM APIs — used ONLY when exactly one item is
-  //       // selected. The combined engagement API above is skipped
-  //       // entirely in this case.
-  //       //
-  //       //   Send (compliment only) -> POST /user/compliments/send
-  //       //   Send (Rose only)       -> POST /user/rose/send
-  //       //   Send (Gift only)       -> POST /user/gift/send
-  //       // ==========================================================
-  //       if (hasMessage) {
-  //         final r = await ApiService.sendCompliment(
-  //           receiverId: receiverId,
-  //           message: message,
-  //           targetType: targetType,
-  //           targetId: null,
-  //         );
-  //         debugPrint('💬 COMPLIMENT RESULT: $r');
-  //         if (r['success'] != true) {
-  //           throw Exception(r['message'] ?? 'Compliment failed');
-  //         }
-  //       }
-  //       if (hasRose) {
-  //         final r = await ApiService.sendRose(
-  //           receiverId: receiverId,
-  //           giftId: 2,
-  //           message: message.isEmpty ? null : message,
-  //           targetType: "PHOTO",
-  //           targetId: null,
-  //         );
-  //         debugPrint('🌹 ROSE RESULT: $r');
-  //         if (r['success'] != true) {
-  //           throw Exception(r['message'] ?? 'Rose failed');
-  //         }
-  //       }
-  //       if (hasGift) {
-  //         final r = await ApiService.sendGift(
-  //           receiverId: receiverId,
-  //           giftId: 2,
-  //           message: message.isEmpty ? null : message,
-  //           targetType: targetType,
-  //           targetId: null,
-  //         );
-  //         debugPrint('🎁 GIFT RESULT: $r');
-  //         if (r['success'] != true) {
-  //           throw Exception(r['message'] ?? 'Gift failed');
-  //         }
-  //       }
-  //     }
-
-  //     ChatUser? target = preExistingTarget;
-
-  //     // Only re-scan the chat list if we didn't already know about an
-  //     // existing conversation. This is the "brand new conversation"
-  //     // case, where a fresh lookup after sending is actually correct.
-  //     if (target == null) {
-  //       chatBloc.add(const LoadChatsEvent());
-  //       try {
-  //         final state = await chatBloc.stream
-  //             .firstWhere(
-  //               (state) => state.allChats.any(
-  //                 (u) =>
-  //                     u.userId == receiverId || u.conversationId == receiverId,
-  //               ),
-  //             )
-  //             .timeout(const Duration(seconds: 8));
-  //         for (final u in state.allChats) {
-  //           if (u.userId == receiverId || u.conversationId == receiverId) {
-  //             target = u;
-  //             break;
-  //           }
-  //         }
-  //       } catch (_) {
-  //         for (final u in chatBloc.state.allChats) {
-  //           if (u.userId == receiverId || u.conversationId == receiverId) {
-  //             target = u;
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     if (!mounted) return;
-  //     if (target == null ||
-  //         target.conversationId == null ||
-  //         target.conversationId!.isEmpty) {
-  //       throw Exception('Conversation not found for receiverId=$receiverId');
-  //     }
-  //     final user = target;
-  //     final conversationId = user.conversationId!;
-  //     chatBloc.joinConversation(conversationId);
-  //     debugPrint(
-  //       '🟢 DIRECT DETAIL OPEN receiver=$receiverId conversation=$conversationId',
-  //     );
-
-  //     // ==========================================================
-  //     // SHOW THE SENT COMPLIMENT / ROSE / GIFT INSIDE CHAT DETAIL
-  //     // ==========================================================
-  //     // The API calls above (sendCompliment / sendRose / sendGift) only
-  //     // notify the backend. So that the user actually SEES what they
-  //     // just sent as soon as Chat Detail Screen opens, we also add a
-  //     // local chat message mirroring the same pattern used inside
-  //     // ChatDetailScreen's own _sendGift()/_sendRose()/_sendCompliment().
-  //     if (message.isNotEmpty) {
-  //       chatBloc.add(
-  //         SendMessageEvent(
-  //           chatId: user.id,
-  //           conversationId: conversationId,
-  //           type: ChatMessageType.compliment,
-  //           message: message,
-  //           coinAmount: '30',
-  //           seen: false,
-  //           locationLabel: 'On your profile',
-  //           typemsg: "",
-  //         ),
-  //       );
-  //     }
-  //     if (_roseSelected) {
-  //       chatBloc.add(
-  //         SendMessageEvent(
-  //           chatId: user.id,
-  //           conversationId: conversationId,
-  //           type: ChatMessageType.rose,
-  //           message: message.isEmpty ? 'Sent you a rose 🌹' : message,
-  //           coinAmount: '10',
-  //           hintLine: 'Rose sent successfully.',
-  //           typemsg: "",
-  //         ),
-  //       );
-  //     }
-  //     if (_giftSelected) {
-  //       chatBloc.add(
-  //         SendMessageEvent(
-  //           chatId: user.id,
-  //           conversationId: conversationId,
-  //           type: ChatMessageType.gift,
-  //           message: message.isEmpty
-  //               ? 'A little something for you 💝'
-  //               : message,
-  //           giftId: 'gift_${DateTime.now().millisecondsSinceEpoch}',
-  //           giftName: 'Gift',
-  //           giftEmoji: '🎁',
-  //           giftCoins: '+0 Coins',
-  //           giftClaimed: false,
-  //           typemsg: "",
-  //         ),
-  //       );
-  //     }
-
-  //     Navigator.of(context).pop();
-  //     final nav = Navigator.of(context);
-
-  //     // ==========================================================
-  //     // BASE SCREEN = CHAT LIST (WITH BOTTOM TAB BAR)
-  //     // ==========================================================
-  //     // Push the real app shell (TopAndBottomNavScreen) opened directly
-  //     // on the Chat tab (index 3), so the bottom navigation bar is
-  //     // visible — same "Chat List" screen the user sees from the tab
-  //     // bar. This is what Back from Chat Detail should land on.
-  //     // nav.push(
-  //     //   MaterialPageRoute(
-  //     //     builder: (_) => const TopAndBottomNavScreen(initialIndex: 3),
-  //     //   ),
-  //     // );
-
-  //     // ==========================================================
-  //     // TOP SCREEN = CHAT DETAIL
-  //     // ==========================================================
-  //     // Pushed the same way ChatScreen_'s own _openChat() does it
-  //     // (standard MaterialPageRoute, same ChatBloc instance), so the
-  //     // conversation messages — including the gift/rose/compliment we
-  //     // just added locally above — render correctly.
-  //     nav.push(
-  //       MaterialPageRoute(
-  //         builder: (_) => BlocProvider.value(
-  //           value: chatBloc,
-  //           child: ChatDetailScreen(user: user),
-  //         ),
-  //       ),
-  //     );
-  //   } catch (e, st) {
-  //     debugPrint('❌ PROFILE ACTION FAILED receiverId=$receiverId error=$e');
-  //     debugPrint('$st');
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(
-  //         context,
-  //       ).showSnackBar(SnackBar(content: Text('Send failed: $e')));
-  //     }
-  //   }
-  // }
-  // Future<void> _sendProfileAction() async {
-  //   final receiverId = widget.profile?.id.trim() ?? '';
-  //   final message = _textController.text.trim();
-
-  //   final rawType = widget.complimentingType.trim().toUpperCase();
-
-  //   final targetType =
-  //       (rawType == 'PROFILE' || rawType == 'ENTIRE PROFILE' || rawType.isEmpty)
-  //       ? null
-  //       : rawType;
-
-  //   if (receiverId.isEmpty) {
-  //     debugPrint('❌ receiverId missing');
-  //     return;
-  //   }
-
-  //   // ==========================================================
-  //   // SELECTED ITEMS
-  //   // ==========================================================
-
-  //   final hasMessage = message.isNotEmpty;
-  //   final hasRose = _roseSelected;
-  //   final hasGift = _giftSelected;
-
-  //   final selectedCount =
-  //       (hasMessage ? 1 : 0) + (hasRose ? 1 : 0) + (hasGift ? 1 : 0);
-
-  //   debugPrint('');
-  //   debugPrint('==============================================');
-  //   debugPrint('🚀 PROFILE ACTION');
-  //   debugPrint('==============================================');
-  //   debugPrint('receiverId = $receiverId');
-  //   debugPrint('targetType = $targetType');
-  //   debugPrint('message    = $message');
-  //   debugPrint('compliment = $hasMessage');
-  //   debugPrint('rose       = $hasRose');
-  //   debugPrint('gift       = $hasGift');
-  //   debugPrint('count      = $selectedCount');
-  //   debugPrint('==============================================');
-
-  //   if (selectedCount == 0) {
-  //     debugPrint('❌ Nothing selected');
-
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('Please select compliment, rose or gift'),
-  //         ),
-  //       );
-  //     }
-
-  //     return;
-  //   }
-
-  //   final chatBloc = context.read<ChatBloc>();
-
-  //   // ==========================================================
-  //   // FIND EXISTING CONVERSATION BEFORE SEND
-  //   // ==========================================================
-
-  //   ChatUser? preExistingTarget;
-
-  //   try {
-  //     debugPrint('🔎 Looking for existing conversation before send...');
-
-  //     chatBloc.add(const LoadChatsEvent());
-
-  //     final loadedState = await chatBloc.stream
-  //         .firstWhere(
-  //           (state) => state.allChats.any(
-  //             (u) => u.userId == receiverId || u.conversationId == receiverId,
-  //           ),
-  //         )
-  //         .timeout(const Duration(seconds: 5));
-
-  //     for (final u in loadedState.allChats) {
-  //       if ((u.userId == receiverId || u.conversationId == receiverId) &&
-  //           (u.conversationId ?? '').trim().isNotEmpty) {
-  //         preExistingTarget = u;
-  //         break;
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('⚠️ Pre-send conversation lookup failed: $e');
-
-  //     for (final u in chatBloc.state.allChats) {
-  //       if ((u.userId == receiverId || u.conversationId == receiverId) &&
-  //           (u.conversationId ?? '').trim().isNotEmpty) {
-  //         preExistingTarget = u;
-  //         break;
-  //       }
-  //     }
-  //   }
-
-  //   debugPrint(
-  //     '🔎 PRE-SEND CONVERSATION = '
-  //     '${preExistingTarget?.conversationId ?? "NONE"}',
-  //   );
-
-  //   try {
-  //     // ==========================================================
-  //     // ==========================================================
-  //     // API SEND LOGIC
-  //     // ==========================================================
-  //     //
-  //     // SINGLE:
-  //     //
-  //     // compliment -> sendCompliment()
-  //     // rose       -> sendRose()
-  //     // gift       -> sendGift()
-  //     //
-  //     // COMBINATION:
-  //     //
-  //     // compliment + gift
-  //     // rose + compliment
-  //     // rose + gift
-  //     // rose + compliment + gift
-  //     //
-  //     //                 ↓
-  //     //
-  //     // ONLY sendEngagement()
-  //     //
-  //     // IMPORTANT:
-  //     // Combination ke case mein individual APIs nahi chalengi.
-  //     // ==========================================================
-
-  //     if (selectedCount >= 2) {
-  //       // ========================================================
-  //       // COMBINATION API
-  //       // ========================================================
-
-  //       debugPrint('');
-  //       debugPrint('==============================================');
-  //       debugPrint('🚀 COMBINATION SEND');
-  //       debugPrint('==============================================');
-  //       debugPrint('Using ONLY /engagement/send');
-  //       debugPrint('❌ sendCompliment()');
-  //       debugPrint('❌ sendRose()');
-  //       debugPrint('❌ sendGift()');
-  //       debugPrint('==============================================');
-
-  //       final r = await ApiService.sendEngagement(
-  //         receiverId: receiverId,
-  //         targetType: targetType,
-  //         targetId: null,
-
-  //         includeRose: hasRose,
-
-  //         complimentMessage: hasMessage ? message : null,
-
-  //         giftId: hasGift ? 1 : null,
-
-  //         giftMessage: hasGift ? message : null,
-  //       );
-
-  //       debugPrint('');
-  //       debugPrint('==============================================');
-  //       debugPrint('✨ ENGAGEMENT RESPONSE');
-  //       debugPrint('$r');
-  //       debugPrint('==============================================');
-
-  //       if (r['success'] != true) {
-  //         throw Exception(r['message'] ?? 'Engagement send failed');
-  //       }
-
-  //       debugPrint('✅ COMBINATION API SUCCESS');
-
-  //       // ========================================================
-  //       // VERY IMPORTANT
-  //       //
-  //       // COMBINATION KE CASE MEIN:
-  //       //
-  //       // ❌ NO SendMessageEvent
-  //       //
-  //       // API ne already complete combination bhej diya hai.
-  //       // Isliye neeche local single messages nahi bhejne.
-  //       // ========================================================
-  //     } else {
-  //       // ========================================================
-  //       // SINGLE ITEM
-  //       // ========================================================
-
-  //       if (hasMessage) {
-  //         // ======================================================
-  //         // 💬 SINGLE COMPLIMENT
-  //         // ======================================================
-
-  //         debugPrint('');
-  //         debugPrint('==============================================');
-  //         debugPrint('💬 SINGLE COMPLIMENT');
-  //         debugPrint('➡️ sendCompliment()');
-  //         debugPrint('==============================================');
-
-  //         final r = await ApiService.sendCompliment(
-  //           receiverId: receiverId,
-  //           message: message,
-  //           targetType: targetType,
-  //           targetId: null,
-  //         );
-
-  //         debugPrint('💬 COMPLIMENT RESPONSE = $r');
-
-  //         if (r['success'] != true) {
-  //           throw Exception(r['message'] ?? 'Compliment failed');
-  //         }
-
-  //         debugPrint('✅ SINGLE COMPLIMENT SUCCESS');
-
-  //         // ------------------------------------------------------
-  //         // ONLY SINGLE -> LOCAL MESSAGE
-  //         // ------------------------------------------------------
-
-  //         chatBloc.add(
-  //           SendMessageEvent(
-  //             chatId: preExistingTarget?.id ?? receiverId,
-  //             conversationId: preExistingTarget?.conversationId ?? '',
-  //             type: ChatMessageType.compliment,
-  //             message: message,
-  //             coinAmount: '30',
-  //             seen: false,
-  //             locationLabel: 'On your profile',
-  //             typemsg: "",
-  //           ),
-  //         );
-  //       } else if (hasRose) {
-  //         // ======================================================
-  //         // 🌹 SINGLE ROSE
-  //         // ======================================================
-
-  //         debugPrint('');
-  //         debugPrint('==============================================');
-  //         debugPrint('🌹 SINGLE ROSE');
-  //         debugPrint('➡️ sendRose()');
-  //         debugPrint('==============================================');
-
-  //         final r = await ApiService.sendRose(
-  //           receiverId: receiverId,
-  //           giftId: 2,
-  //           message: null,
-  //           targetType: "PHOTO",
-  //           targetId: null,
-  //         );
-
-  //         debugPrint('🌹 ROSE RESPONSE = $r');
-
-  //         if (r['success'] != true) {
-  //           throw Exception(r['message'] ?? 'Rose failed');
-  //         }
-
-  //         debugPrint('✅ SINGLE ROSE SUCCESS');
-
-  //         // ------------------------------------------------------
-  //         // ONLY SINGLE -> LOCAL MESSAGE
-  //         // ------------------------------------------------------
-
-  //         chatBloc.add(
-  //           SendMessageEvent(
-  //             chatId: preExistingTarget?.id ?? receiverId,
-  //             conversationId: preExistingTarget?.conversationId ?? '',
-  //             type: ChatMessageType.rose,
-  //             message: 'Sent you a rose 🌹',
-  //             coinAmount: '10',
-  //             hintLine: 'Rose sent successfully.',
-  //             typemsg: "",
-  //           ),
-  //         );
-  //       } else if (hasGift) {
-  //         // ======================================================
-  //         // 🎁 SINGLE GIFT
-  //         // ======================================================
-
-  //         debugPrint('');
-  //         debugPrint('==============================================');
-  //         debugPrint('🎁 SINGLE GIFT');
-  //         debugPrint('➡️ sendGift()');
-  //         debugPrint('==============================================');
-
-  //         final r = await ApiService.sendGift(
-  //           receiverId: receiverId,
-  //           giftId: 2,
-  //           message: null,
-  //           targetType: targetType,
-  //           targetId: null,
-  //         );
-
-  //         debugPrint('🎁 GIFT RESPONSE = $r');
-
-  //         if (r['success'] != true) {
-  //           throw Exception(r['message'] ?? 'Gift failed');
-  //         }
-
-  //         debugPrint('✅ SINGLE GIFT SUCCESS');
-
-  //         // ------------------------------------------------------
-  //         // ONLY SINGLE -> LOCAL MESSAGE
-  //         // ------------------------------------------------------
-
-  //         chatBloc.add(
-  //           SendMessageEvent(
-  //             chatId: preExistingTarget?.id ?? receiverId,
-  //             conversationId: preExistingTarget?.conversationId ?? '',
-  //             type: ChatMessageType.gift,
-  //             message: 'A little something for you 💝',
-  //             giftId: 'gift_${DateTime.now().millisecondsSinceEpoch}',
-  //             giftName: 'Gift',
-  //             giftEmoji: '🎁',
-  //             giftCoins: '+0 Coins',
-  //             giftClaimed: false,
-  //             typemsg: "",
-  //           ),
-  //         );
-  //       }
-  //     }
-
-  //     // ==========================================================
-  //     // FIND CONVERSATION
-  //     // ==========================================================
-
-  //     ChatUser? target = preExistingTarget;
-
-  //     // ==========================================================
-  //     // NEW CONVERSATION
-  //     // ==========================================================
-
-  //     if (target == null) {
-  //       debugPrint('🆕 Existing conversation not found.');
-
-  //       debugPrint('🔄 Loading chats after send...');
-
-  //       chatBloc.add(const LoadChatsEvent());
-
-  //       try {
-  //         final state = await chatBloc.stream
-  //             .firstWhere(
-  //               (state) => state.allChats.any(
-  //                 (u) =>
-  //                     u.userId == receiverId || u.conversationId == receiverId,
-  //               ),
-  //             )
-  //             .timeout(const Duration(seconds: 8));
-
-  //         for (final u in state.allChats) {
-  //           if (u.userId == receiverId || u.conversationId == receiverId) {
-  //             target = u;
-  //             break;
-  //           }
-  //         }
-  //       } catch (e) {
-  //         debugPrint('⚠️ Post-send lookup failed: $e');
-
-  //         for (final u in chatBloc.state.allChats) {
-  //           if (u.userId == receiverId || u.conversationId == receiverId) {
-  //             target = u;
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     // ==========================================================
-  //     // CHECK TARGET
-  //     // ==========================================================
-
-  //     if (!mounted) {
-  //       return;
-  //     }
-
-  //     if (target == null) {
-  //       throw Exception('Conversation not found for receiverId=$receiverId');
-  //     }
-
-  //     if (target!.conversationId == null ||
-  //         target!.conversationId!.trim().isEmpty) {
-  //       throw Exception('Conversation ID missing for receiverId=$receiverId');
-  //     }
-
-  //     final user = target!;
-
-  //     final conversationId = user.conversationId!.trim();
-
-  //     // ==========================================================
-  //     // JOIN CONVERSATION
-  //     // ==========================================================
-
-  //     chatBloc.joinConversation(conversationId);
-
-  //     debugPrint('');
-  //     debugPrint('==============================================');
-  //     debugPrint('🟢 DIRECT CHAT DETAIL');
-  //     debugPrint('==============================================');
-  //     debugPrint('Receiver ID : $receiverId');
-  //     debugPrint('User ID     : ${user.userId}');
-  //     debugPrint('Chat ID     : ${user.id}');
-  //     debugPrint('Conversation : $conversationId');
-  //     debugPrint('==============================================');
-
-  //     // ==========================================================
-  //     // IMPORTANT:
-  //     //
-  //     // Yahan combination ke liye KABHI bhi
-  //     // SendMessageEvent nahi lagana.
-  //     //
-  //     // Single ke case mein upar hi local event add ho chuka hai.
-  //     //
-  //     // Combination ke case mein:
-  //     //
-  //     // sendEngagement()
-  //     //       ↓
-  //     // NO LOCAL SendMessageEvent
-  //     //       ↓
-  //     // ChatDetail
-  //     //
-  //     // ==========================================================
-
-  //     // ==========================================================
-  //     // CLOSE CURRENT PROFILE ACTION
-  //     // ==========================================================
-
-  //     Navigator.of(context).pop();
-
-  //     if (!mounted) {
-  //       return;
-  //     }
-
-  //     final nav = Navigator.of(context);
-
-  //     // ==========================================================
-  //     // DIRECT CHAT DETAIL
-  //     // ==========================================================
-
-  //     nav.push(
-  //       MaterialPageRoute(
-  //         builder: (_) => BlocProvider.value(
-  //           value: chatBloc,
-  //           child: ChatDetailScreen(user: user),
-  //         ),
-  //       ),
-  //     );
-
-  //     debugPrint('✅ ChatDetailScreen opened directly');
-  //   } catch (e, st) {
-  //     debugPrint('');
-  //     debugPrint('==============================================');
-  //     debugPrint('❌ PROFILE ACTION FAILED');
-  //     debugPrint('==============================================');
-  //     debugPrint('receiverId = $receiverId');
-  //     debugPrint('targetType = $targetType');
-  //     debugPrint('message    = $message');
-  //     debugPrint('compliment = $hasMessage');
-  //     debugPrint('rose       = $hasRose');
-  //     debugPrint('gift       = $hasGift');
-  //     debugPrint('count      = $selectedCount');
-  //     debugPrint('ERROR      = $e');
-  //     debugPrint('STACK      = $st');
-  //     debugPrint('==============================================');
-
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(
-  //         context,
-  //       ).showSnackBar(SnackBar(content: Text('Send failed: $e')));
-  //     }
-  //   }
-  // }
   Future<void> _sendProfileAction() async {
+    // Clear any previous error every time a new attempt starts, and
+    // guard against double-taps while a request is already in flight.
+    if (_isSending) return;
+    setState(() {
+      _errorMessage = null;
+      _isSending = true;
+    });
+
     final receiverId = widget.profile?.id.trim() ?? '';
     final message = _textController.text.trim();
 
-    final rawType = widget.complimentingType?.trim().toUpperCase() ?? '';
+    final rawType = widget.complimentingType.trim().toUpperCase();
     String? targetType;
-    if (rawType == 'PROFILE' || rawType == 'ENTIRE PROFILE' || rawType == 'MATCH' || rawType.isEmpty) {
+    if (rawType == 'PROFILE' ||
+        rawType == 'ENTIRE PROFILE' ||
+        rawType == 'MATCH' ||
+        rawType.isEmpty) {
       targetType = null;
     } else if (rawType == 'VIDEO INTRO' || rawType == 'VIDEO') {
       targetType = 'VIDEO';
@@ -918,18 +241,24 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       targetType = rawType;
     }
     final complimentingID = widget.complimentingID;
-    
+
     // Safety check: Backend requires targetId for PHOTO/PROMPT.
     // If we don't have it, fallback to Entire Profile.
     if (complimentingID == null || complimentingID.trim().isEmpty) {
       targetType = null;
     }
-    
+
     debugPrint(
       '🚀 PROFILE ACTION receiverId=$receiverId type=$targetType rose=$_roseSelected gift=$_giftSelected message=$message',
     );
     if (receiverId.isEmpty) {
       debugPrint('❌ receiverId missing');
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Something went wrong. Please try again.';
+          _isSending = false;
+        });
+      }
       return;
     }
 
@@ -948,26 +277,24 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     debugPrint('==============================================');
     debugPrint('🚀 PROFILE ACTION');
     debugPrint('==============================================');
-    debugPrint('receiverId = $receiverId');
-    debugPrint('targetType = $targetType');
-    debugPrint('message    = $message');
-    debugPrint('compliment = $hasMessage');
-    debugPrint('rose       = $hasRose');
-    debugPrint('gift       = $hasGift');
-    debugPrint('count      = $selectedCount');
+    debugPrint('receiverId       = $receiverId');
+    debugPrint('targetType       = $targetType');
+    debugPrint('targetId         = $complimentingID');
+    debugPrint('message          = $message');
+    debugPrint('hasMessage       = $hasMessage');
+    debugPrint('hasRose          = $hasRose');
+    debugPrint('hasGift          = $hasGift');
+    debugPrint('selectedCount    = $selectedCount');
     debugPrint('==============================================');
 
     if (selectedCount == 0) {
       debugPrint('❌ Nothing selected');
-
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select compliment, rose or gift'),
-          ),
-        );
+        setState(() {
+          _errorMessage = 'Please select compliment, rose or gift';
+          _isSending = false;
+        });
       }
-
       return;
     }
 
@@ -1066,6 +393,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       }
 
       debugPrint('✅ ENGAGEMENT API SUCCESS');
+      await _loadMyBalances();
 
       // ==========================================================
       // FIND CONVERSATION
@@ -1139,8 +467,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 .timeout(const Duration(seconds: 6));
 
             for (final u in retryState.allChats) {
-              if ((u.userId == receiverId ||
-                      u.conversationId == receiverId) &&
+              if ((u.userId == receiverId || u.conversationId == receiverId) &&
                   (u.conversationId ?? '').trim().isNotEmpty) {
                 target = u;
                 break;
@@ -1150,8 +477,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
             debugPrint('⚠️ Retry lookup failed: $e');
 
             for (final u in chatBloc.state.allChats) {
-              if ((u.userId == receiverId ||
-                      u.conversationId == receiverId) &&
+              if ((u.userId == receiverId || u.conversationId == receiverId) &&
                   (u.conversationId ?? '').trim().isNotEmpty) {
                 target = u;
                 break;
@@ -1170,16 +496,19 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       }
 
       if (target == null) {
-        final newConvId = r['data']?['conversationId']?.toString() ?? 
-                          r['conversationId']?.toString() ?? 
-                          receiverId;
+        final newConvId =
+            r['data']?['conversationId']?.toString() ??
+            r['conversationId']?.toString() ??
+            receiverId;
         target = ChatUser(
           id: receiverId,
           userId: receiverId,
           conversationId: newConvId,
           name: widget.profile?.name ?? 'Match',
           age: widget.profile?.age ?? 25,
-          image: widget.profile?.images.isNotEmpty == true ? widget.profile!.images.first : '',
+          image: widget.profile?.images.isNotEmpty == true
+              ? widget.profile!.images.first
+              : '',
           preview: message.isNotEmpty ? message : 'Interaction sent',
           time: 'Just now',
           match: widget.profile?.matchPercentage ?? '0%',
@@ -1188,6 +517,13 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
           unread: 0,
           progress: '0/1',
           reward: 'Gift',
+          progressCurrent: 0,
+          progressTarget: 0,
+          progressPercentage: 0,
+          progressLabel: '',
+          progressType: '',
+          giftName: '',
+          progressExpiresAt: DateTime.parse('2026-09-14T09:30:53.592Z'),
         );
       }
 
@@ -1196,7 +532,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         throw Exception('Conversation ID missing for receiverId=$receiverId');
       }
 
-      final user = target!;
+      final user = target;
       final conversationId = user.conversationId!.trim();
 
       // ==========================================================
@@ -1278,9 +614,13 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       debugPrint('==============================================');
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Send failed: $e')));
+        setState(() {
+          _errorMessage = 'Send failed: $e';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSending = false);
       }
     }
   }
@@ -1393,11 +733,26 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                   clipBehavior: Clip.none,
                   child: Row(
                     children: [
-                      _buildStatPill(emoji: '💬', text: '3 comments'),
+                      _buildStatPill(
+                        emoji: '💬',
+                        text: _balancesLoading
+                            ? '... comments'
+                            : '$_commentsBalance comments',
+                      ),
                       const SizedBox(width: 8),
-                      _buildStatPill(emoji: '🌹', text: '2 roses'),
+                      _buildStatPill(
+                        emoji: '🌹',
+                        text: _balancesLoading
+                            ? '... roses'
+                            : '$_rosesBalance roses',
+                      ),
                       const SizedBox(width: 8),
-                      _buildStatPill(emoji: '🪙', text: '5,258 balance'),
+                      _buildStatPill(
+                        emoji: '🪙',
+                        text: _balancesLoading
+                            ? '... balance'
+                            : '$_walletBalance balance',
+                      ),
                     ],
                   ),
                 ),
@@ -1573,35 +928,100 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                 ),
                 const SizedBox(height: 8),
 
+                // ==========================================================
+                // INLINE ERROR MESSAGE
+                // ==========================================================
+                // Rendered as part of the sheet's own layout so it's always
+                // visible — never hidden behind the modal overlay the way a
+                // ScaffoldMessenger SnackBar would be from inside a bottom
+                // sheet context.
+                if (_errorMessage != null) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.red.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 16,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _errorMessage!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => setState(() => _errorMessage = null),
+                          child: const Icon(
+                            Icons.close,
+                            size: 16,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 // Bottom Actions
-                  Row(
-                    children: [
-                      // Send Button
+                Row(
+                  children: [
+                    // Send Button
                     Expanded(
                       child: GestureDetector(
-                        onTap: _canSend ? _sendProfileAction : null,
+                        onTap: (_canSend && !_isSending)
+                            ? _sendProfileAction
+                            : null,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           height: 50,
                           decoration: BoxDecoration(
-                            color: _canSend
+                            color: (_canSend && !_isSending)
                                 ? _primaryColor
                                 : _primaryColor.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Center(
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 200),
-                              child: Text(
-                                _buttonText,
-                                key: ValueKey(_buttonText),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                            child: _isSending
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 200),
+                                    child: Text(
+                                      _buttonText,
+                                      key: ValueKey(_buttonText),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
                       ),

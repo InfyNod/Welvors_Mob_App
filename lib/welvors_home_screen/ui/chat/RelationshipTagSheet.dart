@@ -3,7 +3,7 @@ import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
 
 class RelationshipTagSheet extends StatefulWidget {
-  final ValueChanged<String> onSend;
+  final void Function(String tag, String message) onSend;
 
   const RelationshipTagSheet({super.key, required this.onSend});
 
@@ -15,10 +15,30 @@ class _RelationshipTagSheetState extends State<RelationshipTagSheet> {
   int _selected = 0;
 
   static const _tags = [
-    ('In a Relationship', 'Committed and official'),
-    ('Open Relationship', 'Exploring with transparency'),
-    ('Engaged', 'Planning for a future together'),
-    ('Date to Marry', 'Committed to a future marriage'),
+    (
+      'In a Relationship',
+      'Committed and official',
+      'IN_RELATIONSHIP',
+      'Committed and official.',
+    ),
+    (
+      'Open Relationship',
+      'Exploring with transparency',
+      'OPEN_RELATIONSHIP',
+      'Explore with transparency.',
+    ),
+    (
+      'Engaged',
+      'Planning for a future together',
+      'ENGAGED',
+      'Planning for a future together.',
+    ),
+    (
+      'Date to Marry',
+      'Committed to a future marriage',
+      'DATE_TO_MARRY',
+      'Committed to a future marriage.',
+    ),
   ];
 
   @override
@@ -176,7 +196,7 @@ class _RelationshipTagSheetState extends State<RelationshipTagSheet> {
                   height: 54,
                   child: ElevatedButton(
                     onPressed: () {
-                      widget.onSend(_tags[_selected].$1);
+                      widget.onSend(_tags[_selected].$3, _tags[_selected].$4);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
