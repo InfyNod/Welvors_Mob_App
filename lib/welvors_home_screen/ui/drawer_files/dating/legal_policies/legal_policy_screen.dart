@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'all_page_legal/18+_age_policy.dart';
 import 'all_page_legal/child_safety.dart';
 import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/cookie_policy.dart';
@@ -206,7 +207,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.red.shade50,
                 title: '18+ Age Policy',
                 subtitle: 'Age gate & verification',
-                onTap: _showComingSoon,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AgePolicyScreen(),
+                    ),
+                  );
+                },
               ),
               _buildDivider(),
               _buildPolicyItem(
