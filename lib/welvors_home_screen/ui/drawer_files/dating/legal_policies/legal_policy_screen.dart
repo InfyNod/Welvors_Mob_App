@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'all_page_legal/18+_age_policy.dart';
 import 'all_page_legal/child_safety.dart';
 import 'all_page_legal/content_moderation_law.dart';
+import 'all_page_legal/delete_your_account.dart';
 import 'all_page_legal/community_guidelines.dart';
 import 'all_page_legal/cookie_policy.dart';
 import 'all_page_legal/data_rights.dart';
@@ -340,7 +341,14 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 iconBgColor: Colors.red.shade50,
                 title: 'Delete Your Account & Data',
                 subtitle: 'How to request erasure',
-                onTap: _showComingSoon,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DeleteYourAccountScreen(),
+                    ),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 32),
