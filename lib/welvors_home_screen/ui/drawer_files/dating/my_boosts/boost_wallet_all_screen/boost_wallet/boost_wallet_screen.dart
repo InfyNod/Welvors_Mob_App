@@ -25,80 +25,86 @@ class _BoostWalletScreenState extends State<BoostWalletScreen> {
     return BlocBuilder<BoostBloc, BoostState>(
       builder: (context, state) {
         if (state.isLoading) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)));
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+          );
         }
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBalanceCard(state),
-          const SizedBox(height: 24),
-          const Text(
-            'Ready to Shine?',
-            style: TextStyle(
-              color: Color(0xFFE43A6A),
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Activate a 1 hour spotlight to put your profile in front of your most compatible matches instantly.',
-            style: TextStyle(color: Colors.black54, fontSize: 13, height: 1.4),
-          ),
-          const SizedBox(height: 20),
-          _buildActionCard(
-            icon: Icons.timer_outlined,
-            title: '1 hour Spotlight',
-            buttonText: 'Activate',
-            isBordered: true,
-            onTap: () => showActivateBoostDrawer(context),
-          ),
-          const SizedBox(height: 12),
-          const LiveBoostCardWidget(),
-          if (!state.isActive && state.boostBalance == 0)
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(top: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF0F5),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFFFB6C1)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildBalanceCard(state),
+              const SizedBox(height: 24),
+              const Text(
+                'Ready to Shine?',
+                style: TextStyle(
+                  color: Color(0xFFE43A6A),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              child: const Row(
-                children: [
-                  Icon(Icons.info_outline, color: Color(0xFFE43A6A)),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'You have 0 Spotlights. Get more from the Boost shop to shine again!',
-                      style: TextStyle(
-                        color: Color(0xFFE43A6A),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+              const SizedBox(height: 8),
+              const Text(
+                'Activate a 1 hour spotlight to put your profile in front of your most compatible matches instantly.',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildActionCard(
+                icon: Icons.timer_outlined,
+                title: '1 hour Spotlight',
+                buttonText: 'Activate',
+                isBordered: true,
+                onTap: () => showActivateBoostDrawer(context),
+              ),
+              const SizedBox(height: 12),
+              const LiveBoostCardWidget(),
+              if (!state.isActive && state.boostBalance == 0)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF0F5),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFFFB6C1)),
                   ),
-                ],
+                  child: const Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Color(0xFFE43A6A)),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'You have 0 Spotlights. Get more from the Boost shop to shine again!',
+                          style: TextStyle(
+                            color: Color(0xFFE43A6A),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 10),
+              const Text(
+                'Boost Benefits',
+                style: TextStyle(
+                  color: Color(0xFFE43A6A),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          const SizedBox(height: 10),
-          const Text(
-            'Boost Benefits',
-            style: TextStyle(
-              color: Color(0xFFE43A6A),
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+              const SizedBox(height: 16),
+              _buildBenefitsRow(state.benefits),
+              const SizedBox(height: 32), // Bottom padding
+            ],
           ),
-          const SizedBox(height: 16),
-          _buildBenefitsRow(state.benefits),
-          const SizedBox(height: 32), // Bottom padding
-        ],
-      ),
-    );
+        );
       },
     );
   }
@@ -106,96 +112,96 @@ class _BoostWalletScreenState extends State<BoostWalletScreen> {
   Widget _buildBalanceCard(BoostState state) {
     return Container(
       width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFF16584), Color.fromRGBO(242, 142, 166, 1)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF16584), Color.fromRGBO(242, 142, 166, 1)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            Positioned(
+              right: 30,
+              top: -20,
+              child: Icon(
+                Icons.bolt,
+                size: 70,
+                color: Colors.white.withOpacity(0.15),
+              ),
             ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Stack(
-              children: [
-                Positioned(
-                  right: 30,
-                  top: -20,
-                  child: Icon(
-                    Icons.bolt,
-                    size: 70,
-                    color: Colors.white.withOpacity(0.15),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'CURRENT BALANCE',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text(
-                        'CURRENT BALANCE',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-                            children: [
-                              Text(
-                                '${state.boostBalance}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                'Spotlights',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            '${state.boostBalance}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Text(
-                              'Active',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Spotlights',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Active',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildActionCard({

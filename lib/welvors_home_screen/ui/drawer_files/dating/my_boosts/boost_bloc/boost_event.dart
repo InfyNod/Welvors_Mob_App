@@ -32,3 +32,21 @@ class ConsumeSuperBoostEvent extends BoostEvent {}
 class FetchBoostWalletEvent extends BoostEvent {}
 
 class FetchSuperBoostWalletEvent extends BoostEvent {}
+
+class ActivateBoostEvent extends BoostEvent {
+  final String userBoostId;
+
+  const ActivateBoostEvent(this.userBoostId);
+
+  @override
+  List<Object> get props => [userBoostId];
+}
+
+class ActivateSuperBoostEvent extends BoostEvent {
+  final String userBoostId;
+
+  const ActivateSuperBoostEvent(this.userBoostId);
+
+  @override
+  List<Object> get props => [userBoostId];
+}

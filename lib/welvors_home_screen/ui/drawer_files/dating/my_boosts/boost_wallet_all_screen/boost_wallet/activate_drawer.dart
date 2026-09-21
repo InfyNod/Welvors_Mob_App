@@ -206,9 +206,15 @@ class _ActivateBoostDrawer extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: state.boostBalance > 0
                       ? () {
-                          context.read<BoostBloc>().add(ConsumeBoostEvent());
-                          Navigator.pop(context); // Close drawer
-                          showGoingLiveOverlay(context, isSuperBoost: false); // Show loading overlay
+                          if (state.userBoostId != null) {
+                            context.read<BoostBloc>().add(ActivateBoostEvent(state.userBoostId!));
+                            Navigator.pop(context); // Close drawer
+                            showGoingLiveOverlay(context, isSuperBoost: false); // Show loading overlay
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Error: Boost ID not found')),
+                            );
+                          }
                         }
                       : () {
                           Navigator.pop(context); // Close drawer

@@ -20,7 +20,15 @@ class BoostHistoryItem extends Equatable {
   });
 
   @override
-  List<Object> get props => [title, date, reach, likes, interests, duration, isSuperBoost];
+  List<Object> get props => [
+    title,
+    date,
+    reach,
+    likes,
+    interests,
+    duration,
+    isSuperBoost,
+  ];
 }
 
 class BoostState extends Equatable {
@@ -31,11 +39,13 @@ class BoostState extends Equatable {
   final bool isActive;
   final DateTime? expiresAt;
   final List<Map<String, dynamic>> benefits;
+  final String? userBoostId;
 
   // Super Boost properties
   final bool superIsActive;
   final DateTime? superExpiresAt;
   final List<Map<String, dynamic>> superBenefits;
+  final String? superUserBoostId;
 
   const BoostState({
     required this.boostBalance,
@@ -45,9 +55,11 @@ class BoostState extends Equatable {
     this.isActive = false,
     this.expiresAt,
     this.benefits = const [],
+    this.userBoostId,
     this.superIsActive = false,
     this.superExpiresAt,
     this.superBenefits = const [],
+    this.superUserBoostId,
   });
 
   bool get isAnyBoostActive {
@@ -58,8 +70,8 @@ class BoostState extends Equatable {
     }
     if (history.isEmpty) return false;
     final latest = history.first;
-    final totalDuration = latest.isSuperBoost 
-        ? const Duration(hours: 3) 
+    final totalDuration = latest.isSuperBoost
+        ? const Duration(hours: 3)
         : const Duration(hours: 1);
     return DateTime.now().difference(latest.date) < totalDuration;
   }
@@ -72,8 +84,10 @@ class BoostState extends Equatable {
       isLoading: false,
       isActive: false,
       benefits: [],
+      userBoostId: null,
       superIsActive: false,
       superBenefits: [],
+      superUserBoostId: null,
     );
   }
 
@@ -85,9 +99,11 @@ class BoostState extends Equatable {
     bool? isActive,
     DateTime? expiresAt,
     List<Map<String, dynamic>>? benefits,
+    String? userBoostId,
     bool? superIsActive,
     DateTime? superExpiresAt,
     List<Map<String, dynamic>>? superBenefits,
+    String? superUserBoostId,
   }) {
     return BoostState(
       boostBalance: boostBalance ?? this.boostBalance,
@@ -97,23 +113,27 @@ class BoostState extends Equatable {
       isActive: isActive ?? this.isActive,
       expiresAt: expiresAt ?? this.expiresAt,
       benefits: benefits ?? this.benefits,
+      userBoostId: userBoostId ?? this.userBoostId,
       superIsActive: superIsActive ?? this.superIsActive,
       superExpiresAt: superExpiresAt ?? this.superExpiresAt,
       superBenefits: superBenefits ?? this.superBenefits,
+      superUserBoostId: superUserBoostId ?? this.superUserBoostId,
     );
   }
 
   @override
   List<Object?> get props => [
-        boostBalance,
-        superBoostBalance,
-        history,
-        isLoading,
-        isActive,
-        expiresAt,
-        benefits,
-        superIsActive,
-        superExpiresAt,
-        superBenefits,
-      ];
+    boostBalance,
+    superBoostBalance,
+    history,
+    isLoading,
+    isActive,
+    expiresAt,
+    benefits,
+    userBoostId,
+    superIsActive,
+    superExpiresAt,
+    superBenefits,
+    superUserBoostId,
+  ];
 }

@@ -72,12 +72,15 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
           benefitsList = List<Map<String, dynamic>>.from(data['benefits']);
         }
         
+        final userBoostId = data['user_boost_id']?.toString();
+
         emit(state.copyWith(
           isLoading: false,
           boostBalance: remainingBoosts,
           isActive: isActive,
           expiresAt: expiresAt,
           benefits: benefitsList,
+          userBoostId: userBoostId,
         ));
       } else {
         emit(state.copyWith(isLoading: false));
@@ -101,13 +104,62 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
           benefitsList = List<Map<String, dynamic>>.from(data['benefits']);
         }
         
+        final superUserBoostId = data['user_boost_id']?.toString();
+
         emit(state.copyWith(
           isLoading: false,
           superBoostBalance: remainingBoosts,
           superIsActive: isActive,
           superExpiresAt: expiresAt,
           superBenefits: benefitsList,
+          superUserBoostId: superUserBoostId,
         ));
+      } else {
+        emit(state.copyWith(isLoading: false));
+      }
+    });
+
+    on<ActivateBoostEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final service = BoostApiService();
+      final success = await service.activateBoost(event.userBoostId);
+      if (success) {
+        final newItem = BoostHistoryItem(
+          title: 'Boost',
+          date: DateTime.now(),
+          reach: 0,
+          likes: 0,
+          interests: 0,
+          duration: '1h',
+          isSuperBoost: false,
+        );
+        emit(state.copyWith(
+          history: [newItem, ...state.history],
+        ));
+        add(FetchBoostWalletEvent());
+      } else {
+        emit(state.copyWith(isLoading: false));
+      }
+    });
+
+    on<ActivateSuperBoostEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final service = BoostApiService(); // Both use the same API structure with their respective IDs
+      final success = await service.activateBoost(event.userBoostId);
+      if (success) {
+        final newItem = BoostHistoryItem(
+          title: 'Super Boost',
+          date: DateTime.now(),
+          reach: 0,
+          likes: 0,
+          interests: 0,
+          duration: '3h',
+          isSuperBoost: true,
+        );
+        emit(state.copyWith(
+          history: [newItem, ...state.history],
+        ));
+        add(FetchSuperBoostWalletEvent());
       } else {
         emit(state.copyWith(isLoading: false));
       }

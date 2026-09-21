@@ -53,4 +53,28 @@ class BoostApiService {
       return null;
     }
   }
+
+  Future<bool> activateBoost(String userBoostId) async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.post(
+        Uri.parse('https://api.welvors.com/api/user/date-plan-boost/$userBoostId/activate'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error activating boost: $e');
+      return false;
+    }
+  }
 }

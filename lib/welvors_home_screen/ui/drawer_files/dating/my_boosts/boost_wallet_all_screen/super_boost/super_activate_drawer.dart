@@ -206,9 +206,15 @@ class _SuperActivateBoostDrawer extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: state.superBoostBalance > 0
                       ? () {
-                          context.read<BoostBloc>().add(ConsumeSuperBoostEvent());
-                          Navigator.pop(context); // Close drawer
-                          showGoingLiveOverlay(context, isSuperBoost: true); // Show loading overlay for super boost
+                          if (state.superUserBoostId != null) {
+                            context.read<BoostBloc>().add(ActivateSuperBoostEvent(state.superUserBoostId!));
+                            Navigator.pop(context); // Close drawer
+                            showGoingLiveOverlay(context, isSuperBoost: true); // Show loading overlay for super boost
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Error: Super Boost ID not found')),
+                            );
+                          }
                         }
                       : () {
                           Navigator.pop(context); // Close drawer

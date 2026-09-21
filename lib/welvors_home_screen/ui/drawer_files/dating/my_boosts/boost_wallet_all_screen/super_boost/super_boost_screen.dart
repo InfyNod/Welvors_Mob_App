@@ -26,88 +26,94 @@ class _SuperBoostWalletScreenState extends State<SuperBoostWalletScreen> {
     return BlocBuilder<BoostBloc, BoostState>(
       builder: (context, state) {
         if (state.isLoading) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF2C2C2C)));
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF2C2C2C)),
+          );
         }
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBalanceCard(),
-          const SizedBox(height: 24),
-          const Text(
-            'Ready to Shine?',
-            style: TextStyle(
-              color: Color(0xFF2C2C2C), // Faint Black
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Activate a 3 hour Super Boost for maximum visibility to all compatible matches in your city.',
-            style: TextStyle(color: Colors.black54, fontSize: 13, height: 1.4),
-          ),
-          const SizedBox(height: 20),
-          _buildActionCard(
-            icon: Icons.timer_outlined,
-            title: '3 hour Super Boost',
-            buttonText: 'Activate',
-            isBordered: true,
-            onTap: () => showSuperActivateBoostDrawer(context),
-          ),
-          const SizedBox(height: 12),
-          const LiveBoostCardWidget(),
-          BlocBuilder<BoostBloc, BoostState>(
-            builder: (context, state) {
-              if (state.superBoostBalance == 0) {
-                return Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(top: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF8E1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: const Color(0xFFFFC107).withOpacity(0.5),
-                    ),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.info_outline, color: Color(0xFFD99026)),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'You have 0 Super Boosts. Get more from the Boost shop for maximum visibility!',
-                          style: TextStyle(
-                            color: Color(0xFFD99026),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildBalanceCard(),
+              const SizedBox(height: 24),
+              const Text(
+                'Ready to Shine?',
+                style: TextStyle(
+                  color: Color(0xFF2C2C2C), // Faint Black
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Activate a 3 hour Super Boost for maximum visibility to all compatible matches in your city.',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildActionCard(
+                icon: Icons.timer_outlined,
+                title: '3 hour Super Boost',
+                buttonText: 'Activate',
+                isBordered: true,
+                onTap: () => showSuperActivateBoostDrawer(context),
+              ),
+              const SizedBox(height: 12),
+              const LiveBoostCardWidget(),
+              BlocBuilder<BoostBloc, BoostState>(
+                builder: (context, state) {
+                  if (state.superBoostBalance == 0) {
+                    return Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(top: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF8E1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFFFC107).withOpacity(0.5),
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
+                      child: const Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Color(0xFFD99026)),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'You have 0 Super Boosts. Get more from the Boost shop for maximum visibility!',
+                              style: TextStyle(
+                                color: Color(0xFFD99026),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Super Boost Benefits',
+                style: TextStyle(
+                  color: Color(0xFF2C2C2C),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildBenefitsRow(state.superBenefits),
+              const SizedBox(height: 32), // Bottom padding
+            ],
           ),
-          const SizedBox(height: 10),
-          const Text(
-            'Super Boost Benefits',
-            style: TextStyle(
-              color: Color(0xFF2C2C2C),
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildBenefitsRow(state.superBenefits),
-          const SizedBox(height: 32), // Bottom padding
-        ],
-      ),
-    );
+        );
       },
     );
   }

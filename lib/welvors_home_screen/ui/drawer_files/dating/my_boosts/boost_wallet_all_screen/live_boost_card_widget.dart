@@ -43,7 +43,7 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
     return BlocBuilder<BoostBloc, BoostState>(
       builder: (context, state) {
         if (!state.isAnyBoostActive) return const SizedBox.shrink();
-        
+
         Duration remaining = Duration.zero;
         bool isSuperBoost = false;
         BoostHistoryItem? latestItem;
@@ -54,8 +54,8 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
         } else if (state.history.isNotEmpty) {
           latestItem = state.history.first;
           isSuperBoost = latestItem.isSuperBoost;
-          final totalDuration = isSuperBoost 
-              ? const Duration(hours: 3) 
+          final totalDuration = isSuperBoost
+              ? const Duration(hours: 3)
               : const Duration(hours: 1);
           final elapsed = DateTime.now().difference(latestItem.date);
           remaining = totalDuration - elapsed;
@@ -63,12 +63,18 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
 
         if (remaining.isNegative) return const SizedBox.shrink();
 
-        final bgColor = isSuperBoost ? const Color(0xFF2C2C2C) : const Color(0xFFFFF0F5);
-        final iconBgColor = isSuperBoost ? const Color(0xFFFFC107).withOpacity(0.15) : const Color(0xFFE43A6A);
+        final bgColor = isSuperBoost
+            ? const Color(0xFF2C2C2C)
+            : const Color(0xFFFFF0F5);
+        final iconBgColor = isSuperBoost
+            ? const Color(0xFFFFC107).withOpacity(0.15)
+            : const Color(0xFFE43A6A);
         final iconColor = isSuperBoost ? const Color(0xFFFFC107) : Colors.white;
         final textColor = isSuperBoost ? Colors.white : Colors.black87;
         final subTextColor = isSuperBoost ? Colors.white70 : Colors.black54;
-        final chevronColor = isSuperBoost ? const Color(0xFFFFC107) : const Color(0xFFE43A6A);
+        final chevronColor = isSuperBoost
+            ? const Color(0xFFFFC107)
+            : const Color(0xFFE43A6A);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -105,7 +111,9 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isSuperBoost ? 'Super Boost is live now' : 'Boost is live now',
+                          isSuperBoost
+                              ? 'Super Boost is live now'
+                              : 'Boost is live now',
                           style: TextStyle(
                             color: textColor,
                             fontSize: 15,
@@ -126,7 +134,10 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
                             const SizedBox(width: 6),
                             Text(
                               '${_formatDuration(remaining)} remaining · View performance',
-                              style: TextStyle(color: subTextColor, fontSize: 11),
+                              style: TextStyle(
+                                color: subTextColor,
+                                fontSize: 11,
+                              ),
                             ),
                           ],
                         ),
