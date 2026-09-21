@@ -15,7 +15,8 @@ class CareerScreen extends StatefulWidget {
   State<CareerScreen> createState() => _CareerScreenState();
 }
 
-class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClientMixin  {
+class _CareerScreenState extends State<CareerScreen>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _collegeController = TextEditingController();
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _gradYearController = TextEditingController();
@@ -150,7 +151,8 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
             'PhD',
             'Post-Doctorate',
           ]) {
-            if (opt.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_') == eduCode) {
+            if (opt.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_') ==
+                eduCode) {
               matchingEdu = opt;
               break;
             }
@@ -160,7 +162,7 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
             userData.education = matchingEdu;
           }
         }
-        
+
         if (data['degree'] != null) {
           _degreeController.text = data['degree'];
           userData.degree = data['degree'];
@@ -173,7 +175,7 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
           _gradYearController.text = data['graduationYear'].toString();
           userData.gradYear = data['graduationYear'].toString();
         }
-        
+
         if (data['profession'] != null && data['profession']['name'] != null) {
           _profession = data['profession']['name'];
           userData.profession = _profession!;
@@ -182,7 +184,8 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
           _companyController.text = data['companyName'];
           userData.company = data['companyName'];
         }
-        if (data['employmentType'] != null && data['employmentType']['name'] != null) {
+        if (data['employmentType'] != null &&
+            data['employmentType']['name'] != null) {
           _employmentType = data['employmentType']['name'];
           userData.employmentType = _employmentType!;
         }
@@ -190,12 +193,13 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
           _experience = data['experience']['title'];
           userData.experience = _experience!;
         }
-        
+
         if (data['ambition'] != null && data['ambition']['title'] != null) {
           _ambitionLevel = data['ambition']['title'];
           userData.ambitionLevel = _ambitionLevel!;
         }
-        if (data['salaryRange'] != null && data['salaryRange']['title'] != null) {
+        if (data['salaryRange'] != null &&
+            data['salaryRange']['title'] != null) {
           _salaryRange = data['salaryRange']['title'];
           userData.salaryRange = _salaryRange!;
         }
@@ -421,7 +425,7 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
     );
   }
 
-    @override
+  @override
   bool get wantKeepAlive => true;
 
   @override
@@ -656,7 +660,7 @@ class _CareerScreenState extends State<CareerScreen> with AutomaticKeepAliveClie
                 TextField(
                   controller: _dreamsController,
                   maxLines: 4,
-                  maxLength: 120,
+                  maxLength: 100,
                   cursorColor: AppColors.pinkDeep,
                   decoration: InputDecoration(
                     filled: true,
