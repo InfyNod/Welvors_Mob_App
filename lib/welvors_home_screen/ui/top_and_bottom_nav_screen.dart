@@ -50,7 +50,9 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
       providers: [
         // HomeBloc is now provided globally in main.dart and pre-fetched in splash_screen.dart
         BlocProvider(create: (context) => FilterBloc()),
-        BlocProvider(create: (context) => AdmirersBloc()..add(LoadAdmirersData())),
+        BlocProvider(
+          create: (context) => AdmirersBloc()..add(LoadAdmirersData()),
+        ),
       ],
       child: _TopAndBottomNavView(
         isPreview: widget.isPreview,
@@ -211,11 +213,14 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                           } else {
                             // Implement send rose logic
                             final homeState = context.read<HomeBloc>().state;
-                            if (homeState is HomeLoaded && homeState.profiles.isNotEmpty) {
+                            if (homeState is HomeLoaded &&
+                                homeState.profiles.isNotEmpty) {
                               final profile = homeState.profiles.first;
                               final name = profile.name;
-                              final imageUrl = profile.images.isNotEmpty ? profile.images.first : null;
-                              
+                              final imageUrl = profile.images.isNotEmpty
+                                  ? profile.images.first
+                                  : null;
+
                               ComplimentingBottomSheet.show(
                                 context,
                                 type: 'Profile',
@@ -678,7 +683,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                       ),
                       _buildNavItem(
                         Icons.play_circle_outline,
-                        'Date Now',
+                        'Date Plans',
                         1,
                         (!_isDrawerOpen && 1 == _selectedIndex)
                             ? activeWidth
