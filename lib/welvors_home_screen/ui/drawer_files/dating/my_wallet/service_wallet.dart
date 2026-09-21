@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class WalletApiService {
-  static const String _baseUrl = 'https://api.welvors.com/api/user/my-wallet';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/my-wallet';
 
   Future<Map<String, dynamic>?> getWalletData({
     String filter = 'ALL',
@@ -38,7 +40,7 @@ class WalletApiService {
   Future<Map<String, dynamic>?> getMyBalances() async {
     try {
       final token = await TokenHelper.getToken() ?? "";
-      final uri = Uri.parse('https://api.welvors.com/api/user/my-balances');
+      final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/my-balances');
       
       final response = await http.get(
         uri,

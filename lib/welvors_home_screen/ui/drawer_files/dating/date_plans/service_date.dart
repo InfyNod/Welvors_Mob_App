@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class DatePlanApiService {
-  static const String _baseUrl = 'https://api.welvors.com/api/user/date-now/date-plan-packages/get-all';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/date-now/date-plan-packages/get-all';
 
   Future<Map<String, dynamic>?> getDatePlansData() async {
     try {

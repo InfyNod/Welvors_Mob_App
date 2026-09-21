@@ -7,6 +7,7 @@ import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import 'package:velvors/welvors_home_screen/services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
 // Mock HomeBloc to feed the current user's data to HomeScreen without changing its code!
 class PreviewHomeBloc extends Bloc<HomeEvent, HomeState> implements HomeBloc {
   PreviewHomeBloc(ProfileModel profile)
@@ -44,7 +45,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
       // 1. First get the userId from onboarding-details
       final onboardingUrl = Uri.parse(
-        'https://api.welvors.com/api/user/onboarding-details',
+        '${EnvConfig.apiBaseUrl}/user/onboarding-details',
       );
       final onboardingRes = await http.get(
         onboardingUrl,
@@ -81,7 +82,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
       }
 
       // 2. Now fetch the full profile using the same API as ProfileDetailScreen
-      final url = Uri.parse('https://api.welvors.com/api/user/details/$userId');
+      final url = Uri.parse('${EnvConfig.apiBaseUrl}/user/details/$userId');
 
       final response = await http.get(
         url,

@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class NotificationRepository {
-  static const String baseUrl = 'https://api.welvors.com';
+  static String get baseUrl => EnvConfig.baseUrl;
 
   /// ============================================================
   /// GET NOTIFICATIONS

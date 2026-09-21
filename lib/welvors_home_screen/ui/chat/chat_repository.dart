@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'chat_bloc/chat_state.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class ChatMessagesPage {
   final List<ChatMessage> messages;
   final bool hasMore;
@@ -25,7 +27,7 @@ class ChatRepository {
     required String message,
   }) async {
     await _relationshipTagRequest(
-      'https://api.welvors.com/api/user/relationship-tags/create-proposals',
+      '${EnvConfig.apiBaseUrl}/user/relationship-tags/create-proposals',
       {
         'receiverId': receiverId.trim(),
         'tag': tag.trim(),
@@ -36,14 +38,14 @@ class ChatRepository {
 
   Future<void> acceptRelationshipTagProposal(String proposalId) async {
     await _relationshipTagRequest(
-      'https://api.welvors.com/api/user/relationship-tags/proposals/${proposalId.trim()}/accept',
+      '${EnvConfig.apiBaseUrl}/user/relationship-tags/proposals/${proposalId.trim()}/accept',
       {},
     );
   }
 
   Future<void> rejectRelationshipTagProposal(String proposalId) async {
     await _relationshipTagRequest(
-      'https://api.welvors.com/api/user/relationship-tags/proposals/${proposalId.trim()}/reject',
+      '${EnvConfig.apiBaseUrl}/user/relationship-tags/proposals/${proposalId.trim()}/reject',
       {},
     );
   }
@@ -111,7 +113,7 @@ class ChatRepository {
         ? rawToken
         : 'Bearer $rawToken';
 
-    final uri = Uri.parse('https://api.welvors.com/api/user/block');
+    final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/block');
     final body = jsonEncode(<String, dynamic>{'blockedId': cleanId});
 
     debugPrint('METHOD: POST');
@@ -175,7 +177,7 @@ class ChatRepository {
         ? rawToken
         : 'Bearer $rawToken';
 
-    final uri = Uri.parse('https://api.welvors.com/api/user/reports');
+    final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/reports');
     final body = jsonEncode(<String, dynamic>{
       'reportedId': cleanReportedId,
       'reason': cleanReason,
@@ -243,7 +245,7 @@ class ChatRepository {
         ? rawToken
         : 'Bearer $rawToken';
 
-    final uri = Uri.parse('https://api.welvors.com/api/user/unblock/$cleanId');
+    final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/unblock/$cleanId');
     // final body = jsonEncode(<String, dynamic>{'blockedId': cleanId});
 
     debugPrint('METHOD: POST');
@@ -342,7 +344,7 @@ class ChatRepository {
     debugPrint("token>>>>>>>>$token");
     debugPrint("messageId>>>>>>>>$messageId");
     final response = await http.delete(
-      Uri.parse('https://api.welvors.com/api/user/chat/messages/$cleanId'),
+      Uri.parse('${EnvConfig.apiBaseUrl}/user/chat/messages/$cleanId'),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -964,7 +966,7 @@ class ChatRepository {
         ? rawToken
         : 'Bearer $rawToken';
 
-    final url = 'https://api.welvors.com/api/user/chat/conversations/$id';
+    final url = '${EnvConfig.apiBaseUrl}/user/chat/conversations/$id';
 
     debugPrint('========== DELETE CONVERSATION API ==========');
     debugPrint('URL: DELETE $url');
@@ -1019,7 +1021,7 @@ class ChatRepository {
     final token = prefs.getString("auth_token");
     final response = await http.delete(
       Uri.parse(
-        'https://api.welvors.com/api/user/chat/conversations/$id/clear',
+        '${EnvConfig.apiBaseUrl}/user/chat/conversations/$id/clear',
       ),
       headers: {
         'Accept': 'application/json',
@@ -1070,7 +1072,7 @@ class ChatRepository {
   //     // of whoever is actually logged in.
   //     final token = await _chatAuthToken();
   //     final response = await http.get(
-  //       Uri.parse('https://api.welvors.com/api/user/chat/conversations'),
+  //       Uri.parse('${EnvConfig.apiBaseUrl}/user/chat/conversations'),
   //       // Uri.parse(
   //       //   'https://dating-app-backend-plum.vercel.app/api/user/chat/conversations',
   //       // ),
@@ -1140,7 +1142,7 @@ class ChatRepository {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("auth_token");
       final uri = Uri.parse(
-        'https://api.welvors.com/api/user/chat/conversations',
+        '${EnvConfig.apiBaseUrl}/user/chat/conversations',
         // "https://dating-app-backend-plum.vercel.app/api/user/chat/conversations",
       ).replace(queryParameters: {'type': type});
 
@@ -1236,7 +1238,7 @@ class ChatRepository {
     final token = prefs.getString('auth_token');
 
     final uri = Uri.parse(
-      'https://api.welvors.com/api/user/chat/$cleanId/details',
+      '${EnvConfig.apiBaseUrl}/user/chat/$cleanId/details',
     );
 
     debugPrint('👤 Conversation user details API => $uri');
@@ -1342,7 +1344,7 @@ class ChatRepository {
     };
 
     final uri = Uri.parse(
-      'https://api.welvors.com/api/user/chat/conversations/$id/messages',
+      '${EnvConfig.apiBaseUrl}/user/chat/conversations/$id/messages',
     ).replace(queryParameters: query);
 
     debugPrint('Chat messages GET: $uri');
@@ -1448,7 +1450,7 @@ class ChatRepository {
         : 'Bearer $rawToken';
 
     final uri = Uri.parse(
-      'https://api.welvors.com/api/user/unmatch/$cleanOtherUserId',
+      '${EnvConfig.apiBaseUrl}/user/unmatch/$cleanOtherUserId',
     );
 
     final body = <String, dynamic>{

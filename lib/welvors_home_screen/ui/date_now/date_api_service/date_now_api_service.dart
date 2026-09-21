@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class DateNowApiService {
-  static const String baseUrl = 'https://api.welvors.com/api';
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
   // Hardcoded token for now as per home_api_service.dart pattern
   static Future<Map<String, dynamic>?> inviteToDatePlan(

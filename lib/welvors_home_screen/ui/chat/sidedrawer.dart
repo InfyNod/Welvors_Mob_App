@@ -18,6 +18,7 @@ import 'package:velvors/welvors_home_screen/ui/chat/chat_media_links_docs_screen
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 
+import 'package:velvors/config/env_config.dart';
 // ============================================================
 // SIDEDRAWER
 // ============================================================
@@ -219,7 +220,7 @@ class Sidedrawer {
             }
 
             final response = await http.get(
-              Uri.parse('https://api.welvors.com/api/user/notification/mute'),
+              Uri.parse('${EnvConfig.apiBaseUrl}/user/notification/mute'),
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer $token',
@@ -298,7 +299,7 @@ class Sidedrawer {
             }
 
             final response = await http.patch(
-              Uri.parse('https://api.welvors.com/api/user/notification/mute'),
+              Uri.parse('${EnvConfig.apiBaseUrl}/user/notification/mute'),
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer $token',

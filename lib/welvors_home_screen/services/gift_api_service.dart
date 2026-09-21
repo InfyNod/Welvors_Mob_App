@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class GiftCategory {
   final int id;
   final String name;
@@ -54,7 +56,7 @@ class ApiGift {
 }
 
 class GiftApiService {
-  static const String baseUrl = 'https://api.welvors.com/api';
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
   static Future<Map<String, String>> _headers() async {
     final prefs = await SharedPreferences.getInstance();

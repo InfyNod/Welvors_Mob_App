@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class CommitmentApiService {
-  static const String _baseUrl = 'https://api.welvors.com/api/user/relationship-tags/commitment-management';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/relationship-tags/commitment-management';
 
   Future<Map<String, dynamic>?> getCommitmentData() async {
     try {
@@ -32,7 +34,7 @@ class CommitmentApiService {
   Future<String> endCommitment(String relationshipId) async {
     try {
       final token = await TokenHelper.getToken() ?? "";
-      final url = 'https://api.welvors.com/api/user/relationship-tags/$relationshipId/end';
+      final url = '${EnvConfig.apiBaseUrl}/user/relationship-tags/$relationshipId/end';
       
       final response = await http.patch(
         Uri.parse(url),
@@ -59,7 +61,7 @@ class CommitmentApiService {
   Future<List<dynamic>?> getReceivedProposals() async {
     try {
       final token = await TokenHelper.getToken() ?? "";
-      const url = 'https://api.welvors.com/api/user/relationship-tags/received-proposals';
+      final url = '${EnvConfig.apiBaseUrl}/user/relationship-tags/received-proposals';
       
       final response = await http.get(
         Uri.parse(url),
@@ -86,7 +88,7 @@ class CommitmentApiService {
     try {
       final token = await TokenHelper.getToken() ?? "";
       final action = accept ? 'accept' : 'reject';
-      final url = 'https://api.welvors.com/api/user/relationship-tags/proposals/$proposalId/$action';
+      final url = '${EnvConfig.apiBaseUrl}/user/relationship-tags/proposals/$proposalId/$action';
       
       final response = await http.post(
         Uri.parse(url),

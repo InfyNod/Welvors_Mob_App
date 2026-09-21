@@ -13,6 +13,8 @@ import '../../../../../../onbording_allpage/widgets/primary_button.dart';
 
 import 'splash_logout.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class LogoutScreen extends StatelessWidget {
   const LogoutScreen({super.key});
 
@@ -26,7 +28,7 @@ class LogoutScreen extends StatelessWidget {
     try {
       final token = await TokenHelper.getToken() ?? "";
       final response = await http.post(
-        Uri.parse('https://api.welvors.com/api/user/logout'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/user/logout'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

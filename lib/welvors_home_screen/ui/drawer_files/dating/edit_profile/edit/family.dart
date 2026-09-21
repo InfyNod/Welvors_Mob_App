@@ -8,6 +8,8 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class FamilySection extends StatefulWidget {
   const FamilySection({super.key});
 
@@ -49,7 +51,7 @@ class _FamilySectionState extends State<FamilySection> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      final url = Uri.parse('https://api.welvors.com/api/admin/family/options?type=$type');
+      final url = Uri.parse('${EnvConfig.apiBaseUrl}/admin/family/options?type=$type');
       final response = await http.get(
         url,
         headers: {
@@ -80,7 +82,7 @@ class _FamilySectionState extends State<FamilySection> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
       final response = await http.patch(
-        Uri.parse('https://api.welvors.com/api/user/profile/family'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/user/profile/family'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -823,7 +825,7 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      final url = Uri.parse('https://api.welvors.com/api/admin/family/options?type=$type');
+      final url = Uri.parse('${EnvConfig.apiBaseUrl}/admin/family/options?type=$type');
       final response = await http.get(
         url,
         headers: {

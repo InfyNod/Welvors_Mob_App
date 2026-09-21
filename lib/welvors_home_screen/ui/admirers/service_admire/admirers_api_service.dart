@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import '../../../services/token_helper.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:velvors/config/env_config.dart';
+
 class AdmirersApiService {
-  static const String baseUrl = 'https://api.welvors.com/api/user/admirers';
+  static String get baseUrl => '${EnvConfig.apiBaseUrl}/user/admirers';
 
   /// Fetches Received Likes
   Future<Map<String, dynamic>> getReceivedLikes({int page = 1, int limit = 10}) async {
@@ -100,7 +102,7 @@ class AdmirersApiService {
 
   /// Swipes on a user (LIKE or PASS)
   Future<Map<String, dynamic>> swipeUser({required String targetUserId, required String action}) async {
-    final url = Uri.parse('https://api.welvors.com/api/user/swipe');
+    final url = Uri.parse('${EnvConfig.apiBaseUrl}/user/swipe');
     
     try {
       final response = await http.post(
@@ -127,7 +129,7 @@ class AdmirersApiService {
 
   /// Sends a Rose to a user
   Future<Map<String, dynamic>> sendRose({required String receiverId}) async {
-    final url = Uri.parse('https://api.welvors.com/api/user/rose/send');
+    final url = Uri.parse('${EnvConfig.apiBaseUrl}/user/rose/send');
     
     try {
       final response = await http.post(

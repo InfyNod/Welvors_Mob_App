@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import 'package:velvors/config/env_config.dart';
+
 class SocketService {
   static final SocketService _instance = SocketService._internal();
 
@@ -11,7 +13,7 @@ class SocketService {
 
   SocketService._internal();
 
-  static const String _baseUrl = 'https://api.welvors.com';
+  static String get _baseUrl => EnvConfig.baseUrl;
   static const Duration _heartbeatInterval = Duration(seconds: 75);
 
   IO.Socket? socket;

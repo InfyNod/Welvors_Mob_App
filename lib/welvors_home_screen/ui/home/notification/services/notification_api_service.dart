@@ -8,9 +8,10 @@ import 'package:velvors/main.dart';
 
 import '../model/notification_model.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class NotificationApiService {
-  static const String _baseUrl =
-      'https://api.welvors.com/api/user/notification';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/notification';
 
   static Future<Map<String, String>> _headers() async {
     final prefs = await SharedPreferences.getInstance();
