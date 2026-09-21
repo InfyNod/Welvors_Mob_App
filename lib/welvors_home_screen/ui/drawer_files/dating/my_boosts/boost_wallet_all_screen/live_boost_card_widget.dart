@@ -48,17 +48,23 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
         bool isSuperBoost = false;
         BoostHistoryItem? latestItem;
 
-        if (state.isActive && state.expiresAt != null) {
-          remaining = state.expiresAt!.difference(DateTime.now());
-          latestItem = state.history.isNotEmpty ? state.history.first : null;
-        } else if (state.history.isNotEmpty) {
+        if (state.history.isNotEmpty) {
           latestItem = state.history.first;
           isSuperBoost = latestItem.isSuperBoost;
-          final totalDuration = isSuperBoost
-              ? const Duration(hours: 3)
-              : const Duration(hours: 1);
-          final elapsed = DateTime.now().difference(latestItem.date);
-          remaining = totalDuration - elapsed;
+          
+          if ((latestItem.status == 'ACTIVE' || state.isActive) && latestItem.expectedEndAt != null) {
+            remaining = latestItem.expectedEndAt!.difference(DateTime.now());
+          } else if (state.isActive && state.expiresAt != null) {
+            remaining = state.expiresAt!.difference(DateTime.now());
+          } else {
+            final totalDuration = isSuperBoost
+                ? const Duration(hours: 3)
+                : const Duration(hours: 1);
+            final elapsed = DateTime.now().difference(latestItem.date);
+            remaining = totalDuration - elapsed;
+          }
+        } else if (state.isActive && state.expiresAt != null) {
+          remaining = state.expiresAt!.difference(DateTime.now());
         }
 
         if (remaining.isNegative) return const SizedBox.shrink();

@@ -18,6 +18,8 @@ class _BoostWalletScreenState extends State<BoostWalletScreen> {
   void initState() {
     super.initState();
     context.read<BoostBloc>().add(FetchBoostWalletEvent());
+    // Fetch history in the background to get expectedEndAt for the LiveBoostCardWidget
+    context.read<BoostBloc>().add(FetchBoostHistoryEvent());
   }
 
   @override
