@@ -5,13 +5,31 @@ import '../../boost_bloc/boost_state.dart';
 import '../live_boost_card_widget.dart';
 import 'super_activate_drawer.dart';
 
-class SuperBoostWalletScreen extends StatelessWidget {
+import '../../boost_bloc/boost_event.dart';
+
+class SuperBoostWalletScreen extends StatefulWidget {
   const SuperBoostWalletScreen({super.key});
 
   @override
+  State<SuperBoostWalletScreen> createState() => _SuperBoostWalletScreenState();
+}
+
+class _SuperBoostWalletScreenState extends State<SuperBoostWalletScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<BoostBloc>().add(FetchSuperBoostWalletEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+    return BlocBuilder<BoostBloc, BoostState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF2C2C2C)));
+        }
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -85,10 +103,12 @@ class SuperBoostWalletScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildBenefitsRow(),
+          _buildBenefitsRow(state.superBenefits),
           const SizedBox(height: 32), // Bottom padding
         ],
       ),
+    );
+      },
     );
   }
 
@@ -251,57 +271,52 @@ class SuperBoostWalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBenefitsRow() {
-    return Column(
-      children: [
+  Widget _buildBenefitsRow(List<Map<String, dynamic>> benefits) {
+    if (benefits.isEmpty) return const SizedBox.shrink();
+
+    final icons = [
+      Icons.trending_up,
+      Icons.arrow_upward,
+      Icons.chat_bubble_outline,
+      Icons.track_changes,
+      Icons.star,
+      Icons.favorite,
+    ];
+
+    List<Widget> rows = [];
+    for (int i = 0; i < benefits.length; i += 2) {
+      rows.add(
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: _buildBenefitCard(
-                  icon: Icons.trending_up,
-                  title: '10x More Views',
-                  subtitle:
-                      'Super Boost gives your profile maximum visibility.',
+                  icon: icons[i % icons.length],
+                  title: benefits[i]['title'] ?? '',
+                  subtitle: benefits[i]['description'] ?? '',
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: _buildBenefitCard(
-                  icon: Icons.arrow_upward,
-                  title: 'Always on Top',
-                  subtitle: 'Stay at the top of search results for longer.',
-                ),
-              ),
+              if (i + 1 < benefits.length)
+                Expanded(
+                  child: _buildBenefitCard(
+                    icon: icons[(i + 1) % icons.length],
+                    title: benefits[i + 1]['title'] ?? '',
+                    subtitle: benefits[i + 1]['description'] ?? '',
+                  ),
+                )
+              else
+                const Expanded(child: SizedBox.shrink()),
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _buildBenefitCard(
-                  icon: Icons.chat_bubble_outline,
-                  title: 'More Conversations',
-                  subtitle: '5× higher reply rate from matches during boost.',
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildBenefitCard(
-                  icon: Icons.track_changes,
-                  title: 'Smart Targeting',
-                  subtitle: 'Reach your most compatible matches in your area.',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+      );
+      if (i + 2 < benefits.length) {
+        rows.add(const SizedBox(height: 12));
+      }
+    }
+    return Column(children: rows);
   }
 
   Widget _buildBenefitCard({

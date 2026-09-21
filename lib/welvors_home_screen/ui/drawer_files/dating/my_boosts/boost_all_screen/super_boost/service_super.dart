@@ -29,4 +29,28 @@ class SuperBoostApiService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> getSuperBoostWalletDetails() async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.get(
+        Uri.parse('https://api.welvors.com/api/admin/my-boost/boost_wallet?type=SUPER'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching super boost wallet details: $e');
+      return null;
+    }
+  }
 }

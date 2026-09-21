@@ -1,21 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../boost_bloc/boost_bloc.dart';
+import '../../boost_bloc/boost_event.dart';
 import '../../boost_bloc/boost_state.dart';
 import '../live_boost_card_widget.dart';
 import 'activate_drawer.dart';
 
-class BoostWalletScreen extends StatelessWidget {
+class BoostWalletScreen extends StatefulWidget {
   const BoostWalletScreen({super.key});
 
   @override
+  State<BoostWalletScreen> createState() => _BoostWalletScreenState();
+}
+
+class _BoostWalletScreenState extends State<BoostWalletScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<BoostBloc>().add(FetchBoostWalletEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+    return BlocBuilder<BoostBloc, BoostState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)));
+        }
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBalanceCard(),
+          _buildBalanceCard(state),
           const SizedBox(height: 24),
           const Text(
             'Ready to Shine?',
@@ -40,39 +57,33 @@ class BoostWalletScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const LiveBoostCardWidget(),
-          BlocBuilder<BoostBloc, BoostState>(
-            builder: (context, state) {
-              if (state.boostBalance == 0) {
-                return Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(top: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF0F5),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFFFB6C1)),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.info_outline, color: Color(0xFFE43A6A)),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'You have 0 Spotlights. Get more from the Boost shop to shine again!',
-                          style: TextStyle(
-                            color: Color(0xFFE43A6A),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+          if (!state.isActive && state.boostBalance == 0)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF0F5),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFFFB6C1)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Color(0xFFE43A6A)),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'You have 0 Spotlights. Get more from the Boost shop to shine again!',
+                      style: TextStyle(
+                        color: Color(0xFFE43A6A),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
+                    ),
                   ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
+                ],
+              ),
+            ),
           const SizedBox(height: 10),
           const Text(
             'Boost Benefits',
@@ -83,18 +94,18 @@ class BoostWalletScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildBenefitsRow(),
+          _buildBenefitsRow(state.benefits),
           const SizedBox(height: 32), // Bottom padding
         ],
       ),
     );
+      },
+    );
   }
 
-  Widget _buildBalanceCard() {
-    return BlocBuilder<BoostBloc, BoostState>(
-      builder: (context, state) {
-        return Container(
-          width: double.infinity,
+  Widget _buildBalanceCard(BoostState state) {
+    return Container(
+      width: double.infinity,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFFF16584), Color.fromRGBO(242, 142, 166, 1)],
@@ -185,8 +196,6 @@ class BoostWalletScreen extends StatelessWidget {
             ),
           ),
         );
-      },
-    );
   }
 
   Widget _buildActionCard({
@@ -243,58 +252,52 @@ class BoostWalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBenefitsRow() {
-    return Column(
-      children: [
+  Widget _buildBenefitsRow(List<Map<String, dynamic>> benefits) {
+    if (benefits.isEmpty) return const SizedBox.shrink();
+
+    final icons = [
+      Icons.trending_up,
+      Icons.arrow_upward,
+      Icons.chat_bubble_outline,
+      Icons.track_changes,
+      Icons.star,
+      Icons.favorite,
+    ];
+
+    List<Widget> rows = [];
+    for (int i = 0; i < benefits.length; i += 2) {
+      rows.add(
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: _buildBenefitCard(
-                  icon: Icons.trending_up,
-                  title: '5x More Views',
-                  subtitle:
-                      'Be seen by 5 times more potential matches instantly.',
+                  icon: icons[i % icons.length],
+                  title: benefits[i]['title'] ?? '',
+                  subtitle: benefits[i]['description'] ?? '',
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: _buildBenefitCard(
-                  icon: Icons.arrow_upward,
-                  title: 'Top of Search',
-                  subtitle:
-                      'Appear at the very top of the discovery feed for 30 mins.',
-                ),
-              ),
+              if (i + 1 < benefits.length)
+                Expanded(
+                  child: _buildBenefitCard(
+                    icon: icons[(i + 1) % icons.length],
+                    title: benefits[i + 1]['title'] ?? '',
+                    subtitle: benefits[i + 1]['description'] ?? '',
+                  ),
+                )
+              else
+                const Expanded(child: SizedBox.shrink()),
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _buildBenefitCard(
-                  icon: Icons.chat_bubble_outline,
-                  title: 'More Conversations',
-                  subtitle: '3× higher reply rate from matches during boost.',
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildBenefitCard(
-                  icon: Icons.track_changes,
-                  title: 'Smart Targeting',
-                  subtitle: 'Reach your most compatible matches in your area.',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+      );
+      if (i + 2 < benefits.length) {
+        rows.add(const SizedBox(height: 12));
+      }
+    }
+    return Column(children: rows);
   }
 
   Widget _buildBenefitCard({

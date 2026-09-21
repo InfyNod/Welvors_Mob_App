@@ -28,3 +28,7 @@ class AddSuperBoostEvent extends BoostEvent {
 class ConsumeBoostEvent extends BoostEvent {}
 
 class ConsumeSuperBoostEvent extends BoostEvent {}
+
+class FetchBoostWalletEvent extends BoostEvent {}
+
+class FetchSuperBoostWalletEvent extends BoostEvent {}

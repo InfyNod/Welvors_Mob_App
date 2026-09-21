@@ -44,13 +44,22 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
       builder: (context, state) {
         if (!state.isAnyBoostActive) return const SizedBox.shrink();
         
-        final latest = state.history.first;
-        final isSuperBoost = latest.isSuperBoost;
-        final totalDuration = isSuperBoost 
-            ? const Duration(hours: 3) 
-            : const Duration(hours: 1);
-        final elapsed = DateTime.now().difference(latest.date);
-        final remaining = totalDuration - elapsed;
+        Duration remaining = Duration.zero;
+        bool isSuperBoost = false;
+        BoostHistoryItem? latestItem;
+
+        if (state.isActive && state.expiresAt != null) {
+          remaining = state.expiresAt!.difference(DateTime.now());
+          latestItem = state.history.isNotEmpty ? state.history.first : null;
+        } else if (state.history.isNotEmpty) {
+          latestItem = state.history.first;
+          isSuperBoost = latestItem.isSuperBoost;
+          final totalDuration = isSuperBoost 
+              ? const Duration(hours: 3) 
+              : const Duration(hours: 1);
+          final elapsed = DateTime.now().difference(latestItem.date);
+          remaining = totalDuration - elapsed;
+        }
 
         if (remaining.isNegative) return const SizedBox.shrink();
 
@@ -65,11 +74,13 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
           padding: const EdgeInsets.only(bottom: 12),
           child: GestureDetector(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PerformanceScreen(item: latest),
-                ),
-              );
+              if (latestItem != null) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PerformanceScreen(item: latestItem!),
+                  ),
+                );
+              }
             },
             child: Container(
               padding: const EdgeInsets.all(16),

@@ -2,7 +2,8 @@ import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'boost_event.dart';
 import 'boost_state.dart';
-
+import '../boost_all_screen/boost/service_boost.dart';
+import '../boost_all_screen/super_boost/service_super.dart';
 class BoostBloc extends Bloc<BoostEvent, BoostState> {
   BoostBloc() : super(BoostState.initial()) {
     on<AddBoostEvent>((event, emit) {
@@ -50,6 +51,65 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
           superBoostBalance: state.superBoostBalance - 1,
           history: [newItem, ...state.history],
         ));
+      }
+    });
+
+    on<FetchBoostWalletEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final service = BoostApiService();
+      final data = await service.getBoostWalletDetails();
+      
+      if (data != null) {
+        final remainingBoosts = data['remaining_boosts'] as int? ?? 0;
+        final isActive = data['is_active'] as bool? ?? false;
+        DateTime? expiresAt;
+        if (data['expires_at'] != null) {
+          expiresAt = DateTime.tryParse(data['expires_at'].toString())?.toLocal();
+        }
+        
+        List<Map<String, dynamic>> benefitsList = [];
+        if (data['benefits'] != null) {
+          benefitsList = List<Map<String, dynamic>>.from(data['benefits']);
+        }
+        
+        emit(state.copyWith(
+          isLoading: false,
+          boostBalance: remainingBoosts,
+          isActive: isActive,
+          expiresAt: expiresAt,
+          benefits: benefitsList,
+        ));
+      } else {
+        emit(state.copyWith(isLoading: false));
+      }
+    });
+    on<FetchSuperBoostWalletEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final service = SuperBoostApiService();
+      final data = await service.getSuperBoostWalletDetails();
+      
+      if (data != null) {
+        final remainingBoosts = data['remaining_boosts'] as int? ?? 0;
+        final isActive = data['is_active'] as bool? ?? false;
+        DateTime? expiresAt;
+        if (data['expires_at'] != null) {
+          expiresAt = DateTime.tryParse(data['expires_at'].toString())?.toLocal();
+        }
+        
+        List<Map<String, dynamic>> benefitsList = [];
+        if (data['benefits'] != null) {
+          benefitsList = List<Map<String, dynamic>>.from(data['benefits']);
+        }
+        
+        emit(state.copyWith(
+          isLoading: false,
+          superBoostBalance: remainingBoosts,
+          superIsActive: isActive,
+          superExpiresAt: expiresAt,
+          superBenefits: benefitsList,
+        ));
+      } else {
+        emit(state.copyWith(isLoading: false));
       }
     });
   }

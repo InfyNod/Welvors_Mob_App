@@ -29,4 +29,28 @@ class BoostApiService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> getBoostWalletDetails() async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.get(
+        Uri.parse('https://api.welvors.com/api/admin/my-boost/boost_wallet?type=BOOST'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching boost wallet details: $e');
+      return null;
+    }
+  }
 }

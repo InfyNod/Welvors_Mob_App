@@ -975,6 +975,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                         height: 65,
                         width: 65,
                         fit: BoxFit.contain,
+                        repeat: false,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
