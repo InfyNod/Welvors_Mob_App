@@ -4,6 +4,7 @@ import '../../../../top_and_bottom_nav_screen.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
+import '../service_all_flow.dart';
 
 class PerformanceScreen extends StatefulWidget {
   final BoostHistoryItem item;
@@ -19,33 +20,54 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   late Duration _totalDuration;
   bool _isCompleted = false;
   Duration _remaining = Duration.zero;
+  bool _isLoading = true;
+  Map<String, dynamic>? _performanceData;
 
   @override
   void initState() {
     super.initState();
-    _totalDuration = widget.item.isSuperBoost
-        ? const Duration(hours: 3)
-        : const Duration(hours: 1);
-    _updateStatus();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateStatus());
+    _fetchPerformanceData();
   }
 
-  void _updateStatus() {
-    final diff = DateTime.now().difference(widget.item.date);
-    if (diff >= _totalDuration) {
-      if (!_isCompleted) {
-        setState(() {
-          _isCompleted = true;
-          _remaining = Duration.zero;
-        });
-        _timer?.cancel();
-      }
-    } else {
+  Future<void> _fetchPerformanceData() async {
+    if (widget.item.id == null) {
+      setState(() => _isLoading = false);
+      return;
+    }
+    final data = await BoostAllApiService().getBoostPerformance(widget.item.id!);
+    if (mounted) {
       setState(() {
-        _isCompleted = false;
-        _remaining = _totalDuration - diff;
+        _performanceData = data;
+        _isLoading = false;
+        
+        // Use backend's remainingSeconds if available
+        if (data != null && data['remainingSeconds'] != null) {
+          final int rem = data['remainingSeconds'];
+          if (rem > 0) {
+            _remaining = Duration(seconds: rem);
+            _isCompleted = false;
+            _timer?.cancel();
+            _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tickTimer());
+          } else {
+            _remaining = Duration.zero;
+            _isCompleted = true;
+          }
+        } else {
+          _isCompleted = true; // Fallback if no remaining time
+        }
       });
     }
+  }
+
+  void _tickTimer() {
+    setState(() {
+      if (_remaining.inSeconds > 0) {
+        _remaining -= const Duration(seconds: 1);
+      } else {
+        _isCompleted = true;
+        _timer?.cancel();
+      }
+    });
   }
 
   @override
@@ -110,9 +132,14 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _buildStatusCard(),
+              child: _isLoading
+                  ? const Center(child: Padding(
+                      padding: EdgeInsets.all(40.0),
+                      child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+                    ))
+                  : Column(
+                      children: [
+                        _buildStatusCard(),
                   const SizedBox(height: 12),
                   _buildMetricsGrid(),
                   const SizedBox(height: 12),
@@ -326,6 +353,17 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   }
 
   Widget _buildMetricsGrid() {
+    final perf = _performanceData?['performance'] ?? {};
+    final reachTotal = perf['reach']?['total'] ?? widget.item.reach;
+    final reachInc = perf['reach']?['increasePercentage'] ?? 0;
+    
+    final viewsTotal = perf['views']?['total'] ?? (widget.item.reach ~/ 40); // fallback mock
+    
+    final interestsTotal = perf['interests']?['total'] ?? widget.item.interests;
+    final interestsInc = perf['interests']?['increasePercentage'] ?? 0;
+    
+    final likesTotal = perf['likes']?['total'] ?? widget.item.likes;
+
     return Row(
       children: [
         Expanded(
@@ -335,8 +373,8 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 icon: Icons.rocket_launch,
                 iconColor: const Color(0xFFE43A6A),
                 label: 'REACH',
-                value: _formatReach(widget.item.reach),
-                badgeText: '+245%',
+                value: _formatReach(reachTotal),
+                badgeText: '+$reachInc%',
                 badgeColor: const Color(0xFFFDE4A3),
                 badgeTextColor: const Color(0xFFD99026),
               ),
@@ -345,7 +383,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 icon: Icons.visibility,
                 iconColor: const Color(0xFFE43A6A),
                 label: 'VIEWS',
-                value: (widget.item.reach ~/ 40).toString(), // mock calculation
+                value: viewsTotal.toString(),
                 badgeText: 'Peak',
                 badgeColor: const Color(0xFFFDE4A3),
                 badgeTextColor: const Color(0xFFD99026),
@@ -361,8 +399,8 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 icon: Icons.chat_bubble,
                 iconColor: const Color(0xFF57D38C),
                 label: 'INTERESTS',
-                value: widget.item.interests.toString(),
-                badgeText: '+12',
+                value: interestsTotal.toString(),
+                badgeText: '+$interestsInc%',
                 badgeColor: const Color(0xFFE8F9F0),
                 badgeTextColor: const Color(0xFF57D38C),
               ),
@@ -371,7 +409,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 icon: Icons.favorite,
                 iconColor: const Color(0xFFE43A6A),
                 label: 'LIKES',
-                value: widget.item.likes.toString(),
+                value: likesTotal.toString(),
                 badgeText: 'Hot',
                 badgeColor: const Color(0xFFFFF0F5),
                 badgeTextColor: const Color(0xFFE43A6A),
@@ -619,6 +657,41 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   }
 
   Widget _buildDemographicsSection() {
+    final demos = _performanceData?['demographics'] ?? {};
+
+    String getTopName(String key, String fallback) {
+      final top = demos[key]?['top'];
+      if (top is Map) return top['name']?.toString() ?? fallback;
+      if (top is String) return top;
+      return fallback;
+    }
+
+    double getTopPercentage(String key) {
+      final total = (demos[key]?['total'] as num?)?.toDouble() ?? 0.0;
+      if (total <= 0) return 0.0;
+      final top = demos[key]?['top'];
+      final count = (top is Map ? (top['count'] as num?) : 0)?.toDouble() ?? 0.0;
+      return count / total;
+    }
+    
+    final locName = getTopName('location', 'N/A');
+    final locPct = getTopPercentage('location');
+
+    final profName = getTopName('profession', 'N/A');
+    final profPct = getTopPercentage('profession');
+
+    final ageName = getTopName('age_group', 'N/A');
+    final agePct = getTopPercentage('age_group');
+
+    final verifiedName = getTopName('verified', 'N/A');
+    final verifiedPct = getTopPercentage('verified');
+    
+    final religionName = getTopName('religion', 'N/A');
+    final religionPct = getTopPercentage('religion');
+
+    final communityName = getTopName('community', 'N/A');
+    final communityPct = getTopPercentage('community');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -640,9 +713,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               child: _buildIndividualDemoCard(
                 icon: Icons.location_on,
                 title: 'Location',
-                label: 'Mumbai',
-                percentage: '42%',
-                progress: 0.42,
+                label: locName,
+                percentage: '${(locPct * 100).toInt()}%',
+                progress: locPct,
                 color: const Color(0xFFE43A6A),
               ),
             ),
@@ -651,9 +724,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               child: _buildIndividualDemoCard(
                 icon: Icons.work,
                 title: 'Profession',
-                label: 'Tech',
-                percentage: '56%',
-                progress: 0.56,
+                label: profName,
+                percentage: '${(profPct * 100).toInt()}%',
+                progress: profPct,
                 color: const Color(0xFFE43A6A),
               ),
             ),
@@ -696,9 +769,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              _buildProgressBar('Hindu', '45%', 0.45, const Color(0xFFE43A6A)),
+              _buildProgressBar(religionName, '${(religionPct * 100).toInt()}%', religionPct, const Color(0xFFE43A6A)),
               const SizedBox(height: 12),
-              _buildProgressBar('Muslim', '20%', 0.20, const Color(0xFFF5C5AE)),
+              _buildProgressBar(communityName, '${(communityPct * 100).toInt()}%', communityPct, const Color(0xFFF5C5AE)),
             ],
           ),
         ),
@@ -709,9 +782,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               child: _buildIndividualDemoCard(
                 icon: Icons.person,
                 title: 'Age',
-                label: '24-32',
-                percentage: '68%',
-                progress: 0.68,
+                label: ageName,
+                percentage: '${(agePct * 100).toInt()}%',
+                progress: agePct,
                 color: const Color(0xFFE43A6A),
               ),
             ),
@@ -720,9 +793,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
               child: _buildIndividualDemoCard(
                 icon: Icons.check_circle,
                 title: 'Verified',
-                label: 'High intent',
-                percentage: '73%',
-                progress: 0.73,
+                label: verifiedName,
+                percentage: '${(verifiedPct * 100).toInt()}%',
+                progress: verifiedPct,
                 color: const Color(0xFFE43A6A),
               ),
             ),

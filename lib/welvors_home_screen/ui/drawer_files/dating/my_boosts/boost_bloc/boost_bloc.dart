@@ -2,8 +2,7 @@ import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'boost_event.dart';
 import 'boost_state.dart';
-import '../boost_all_screen/boost/service_boost.dart';
-import '../boost_all_screen/super_boost/service_super.dart';
+import '../service_all_flow.dart';
 class BoostBloc extends Bloc<BoostEvent, BoostState> {
   BoostBloc() : super(BoostState.initial()) {
     on<AddBoostEvent>((event, emit) {
@@ -54,9 +53,37 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
       }
     });
 
+    on<FetchBoostsDataEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final service = BoostAllApiService();
+      final data = await service.getBoostsData();
+      
+      if (data != null) {
+        emit(state.copyWith(
+          isLoading: false,
+        ));
+      } else {
+        emit(state.copyWith(isLoading: false));
+      }
+    });
+
+    on<FetchSuperBoostsDataEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final service = BoostAllApiService();
+      final data = await service.getSuperBoostsData();
+      
+      if (data != null) {
+        emit(state.copyWith(
+          isLoading: false,
+        ));
+      } else {
+        emit(state.copyWith(isLoading: false));
+      }
+    });
+
     on<FetchBoostWalletEvent>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      final service = BoostApiService();
+      final service = BoostAllApiService();
       final data = await service.getBoostWalletDetails();
       
       if (data != null) {
@@ -86,9 +113,10 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
         emit(state.copyWith(isLoading: false));
       }
     });
+
     on<FetchSuperBoostWalletEvent>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      final service = SuperBoostApiService();
+      final service = BoostAllApiService();
       final data = await service.getSuperBoostWalletDetails();
       
       if (data != null) {
@@ -121,10 +149,11 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
 
     on<ActivateBoostEvent>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      final service = BoostApiService();
-      final success = await service.activateBoost(event.userBoostId);
-      if (success) {
+      final service = BoostAllApiService();
+      final usageId = await service.activateBoost(event.userBoostId);
+      if (usageId != null) {
         final newItem = BoostHistoryItem(
+          id: usageId.isNotEmpty ? usageId : null,
           title: 'Boost',
           date: DateTime.now(),
           reach: 0,
@@ -144,10 +173,11 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
 
     on<ActivateSuperBoostEvent>((event, emit) async {
       emit(state.copyWith(isLoading: true));
-      final service = BoostApiService(); // Both use the same API structure with their respective IDs
-      final success = await service.activateBoost(event.userBoostId);
-      if (success) {
+      final service = BoostAllApiService(); // Both use the same API structure with their respective IDs
+      final usageId = await service.activateBoost(event.userBoostId, type: 'SUPER');
+      if (usageId != null) {
         final newItem = BoostHistoryItem(
+          id: usageId.isNotEmpty ? usageId : null,
           title: 'Super Boost',
           date: DateTime.now(),
           reach: 0,
@@ -160,6 +190,57 @@ class BoostBloc extends Bloc<BoostEvent, BoostState> {
           history: [newItem, ...state.history],
         ));
         add(FetchSuperBoostWalletEvent());
+      } else {
+        emit(state.copyWith(isLoading: false));
+      }
+    });
+
+    on<FetchBoostHistoryEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+      final service = BoostAllApiService();
+      final data = await service.getBoostHistory();
+      
+      if (data != null) {
+        final lifetimeImpact = data['lifetimeImpact'] as Map<String, dynamic>?;
+        
+        int totalReach = 0, newLikes = 0, interests = 0, views = 0, matches = 0;
+        
+        if (lifetimeImpact != null) {
+          totalReach = lifetimeImpact['totalReach'] as int? ?? 0;
+          newLikes = lifetimeImpact['newLikes'] as int? ?? 0;
+          interests = lifetimeImpact['interests'] as int? ?? 0;
+          views = lifetimeImpact['views'] as int? ?? 0;
+          matches = lifetimeImpact['matches'] as int? ?? 0;
+        }
+
+        final recentEvents = data['recentBoostEvents'] as List<dynamic>? ?? [];
+        List<BoostHistoryItem> parsedHistory = [];
+        for (var event in recentEvents) {
+          final isSuper = event['boostType'] == 'SUPER' || event['title'] == 'Super Boost';
+          // Fallback parsing just in case
+          parsedHistory.add(BoostHistoryItem(
+            id: event['id']?.toString(),
+            title: isSuper ? 'Super Boost' : 'Boost',
+            date: event['startedAt'] != null ? DateTime.parse(event['startedAt']).toLocal() : (event['created_at'] != null ? DateTime.parse(event['created_at']).toLocal() : DateTime.now()),
+            reach: event['reach'] ?? 0,
+            likes: event['likes'] ?? 0,
+            interests: event['interests'] ?? 0,
+            duration: '${event['duration'] ?? (isSuper ? 180 : 30)}m',
+            isSuperBoost: isSuper,
+            status: event['status'],
+            expectedEndAt: event['expectedEndAt'] != null ? DateTime.parse(event['expectedEndAt']).toLocal() : null,
+          ));
+        }
+
+        emit(state.copyWith(
+          isLoading: false,
+          totalReach: totalReach,
+          newLikes: newLikes,
+          interests: interests,
+          views: views,
+          matches: matches,
+          history: parsedHistory.isNotEmpty ? parsedHistory : state.history,
+        ));
       } else {
         emit(state.copyWith(isLoading: false));
       }

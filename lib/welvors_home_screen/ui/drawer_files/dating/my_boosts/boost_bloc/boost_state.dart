@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class BoostHistoryItem extends Equatable {
+  final String? id;
   final String title;
   final DateTime date;
   final int reach;
@@ -8,8 +9,11 @@ class BoostHistoryItem extends Equatable {
   final int interests;
   final String duration;
   final bool isSuperBoost;
+  final String? status;
+  final DateTime? expectedEndAt;
 
   const BoostHistoryItem({
+    this.id,
     required this.title,
     required this.date,
     required this.reach,
@@ -17,10 +21,13 @@ class BoostHistoryItem extends Equatable {
     required this.interests,
     required this.duration,
     this.isSuperBoost = false,
+    this.status,
+    this.expectedEndAt,
   });
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
+    id,
     title,
     date,
     reach,
@@ -28,6 +35,8 @@ class BoostHistoryItem extends Equatable {
     interests,
     duration,
     isSuperBoost,
+    status,
+    expectedEndAt,
   ];
 }
 
@@ -47,6 +56,13 @@ class BoostState extends Equatable {
   final List<Map<String, dynamic>> superBenefits;
   final String? superUserBoostId;
 
+  // Lifetime Impact properties
+  final int totalReach;
+  final int newLikes;
+  final int interests;
+  final int views;
+  final int matches;
+
   const BoostState({
     required this.boostBalance,
     required this.superBoostBalance,
@@ -60,6 +76,11 @@ class BoostState extends Equatable {
     this.superExpiresAt,
     this.superBenefits = const [],
     this.superUserBoostId,
+    this.totalReach = 0,
+    this.newLikes = 0,
+    this.interests = 0,
+    this.views = 0,
+    this.matches = 0,
   });
 
   bool get isAnyBoostActive {
@@ -104,6 +125,11 @@ class BoostState extends Equatable {
     DateTime? superExpiresAt,
     List<Map<String, dynamic>>? superBenefits,
     String? superUserBoostId,
+    int? totalReach,
+    int? newLikes,
+    int? interests,
+    int? views,
+    int? matches,
   }) {
     return BoostState(
       boostBalance: boostBalance ?? this.boostBalance,
@@ -118,6 +144,11 @@ class BoostState extends Equatable {
       superExpiresAt: superExpiresAt ?? this.superExpiresAt,
       superBenefits: superBenefits ?? this.superBenefits,
       superUserBoostId: superUserBoostId ?? this.superUserBoostId,
+      totalReach: totalReach ?? this.totalReach,
+      newLikes: newLikes ?? this.newLikes,
+      interests: interests ?? this.interests,
+      views: views ?? this.views,
+      matches: matches ?? this.matches,
     );
   }
 
@@ -135,5 +166,10 @@ class BoostState extends Equatable {
     superExpiresAt,
     superBenefits,
     superUserBoostId,
+    totalReach,
+    newLikes,
+    interests,
+    views,
+    matches,
   ];
 }

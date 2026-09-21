@@ -50,3 +50,9 @@ class ActivateSuperBoostEvent extends BoostEvent {
   @override
   List<Object> get props => [userBoostId];
 }
+
+class FetchBoostsDataEvent extends BoostEvent {}
+
+class FetchSuperBoostsDataEvent extends BoostEvent {}
+
+class FetchBoostHistoryEvent extends BoostEvent {}

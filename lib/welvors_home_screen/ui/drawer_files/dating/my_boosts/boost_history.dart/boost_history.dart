@@ -1,12 +1,24 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../boost_bloc/boost_event.dart';
 import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
 import 'performance_screen.dart';
 
-class BoostHistoryScreen extends StatelessWidget {
+class BoostHistoryScreen extends StatefulWidget {
   const BoostHistoryScreen({super.key});
+
+  @override
+  State<BoostHistoryScreen> createState() => _BoostHistoryScreenState();
+}
+
+class _BoostHistoryScreenState extends State<BoostHistoryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<BoostBloc>().add(FetchBoostHistoryEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,15 +66,6 @@ class BoostHistoryScreen extends StatelessWidget {
       ),
       body: BlocBuilder<BoostBloc, BoostState>(
         builder: (context, state) {
-          int totalReach = 0;
-          int totalLikes = 0;
-          int totalInterests = 0;
-          for (final item in state.history) {
-            totalReach += item.reach;
-            totalLikes += item.likes;
-            totalInterests += item.interests;
-          }
-
           String formatReach(int value) {
             if (value >= 1000) {
               return '${(value / 1000).toStringAsFixed(1)}k';
@@ -77,15 +80,19 @@ class BoostHistoryScreen extends StatelessWidget {
             return '$day $month, ${date.year}';
           }
 
+          if (state.isLoading && state.history.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A)));
+          }
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildLifetimeImpactCard(
-                  totalReach: formatReach(totalReach),
-                  totalLikes: totalLikes.toString(),
-                  totalInterests: totalInterests.toString(),
+                  totalReach: formatReach(state.totalReach),
+                  totalLikes: state.newLikes.toString(),
+                  totalInterests: state.interests.toString(),
                 ),
                 const SizedBox(height: 24),
                 const Text(
@@ -250,7 +257,7 @@ class BoostHistoryScreen extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              _BoostStatusBadge(dateObj: item.date, isSuperBoost: isSuperBoost),
+              _BoostStatusBadge(item: item),
             ],
           ),
           const SizedBox(height: 4),
@@ -465,10 +472,9 @@ class BoostHistoryScreen extends StatelessWidget {
 }
 
 class _BoostStatusBadge extends StatefulWidget {
-  final DateTime dateObj;
-  final bool isSuperBoost;
+  final BoostHistoryItem item;
 
-  const _BoostStatusBadge({required this.dateObj, required this.isSuperBoost});
+  const _BoostStatusBadge({required this.item});
 
   @override
   State<_BoostStatusBadge> createState() => _BoostStatusBadgeState();
@@ -476,30 +482,44 @@ class _BoostStatusBadge extends StatefulWidget {
 
 class _BoostStatusBadgeState extends State<_BoostStatusBadge> {
   Timer? _timer;
-  late Duration _totalDuration;
-  bool _isCompleted = false;
   Duration _remaining = Duration.zero;
+  late bool _isCompleted;
 
   @override
   void initState() {
     super.initState();
-    _totalDuration = widget.isSuperBoost ? const Duration(hours: 3) : const Duration(hours: 1);
+    _isCompleted = widget.item.status == 'COMPLETED' || widget.item.status == 'INACTIVE';
     _updateStatus();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateStatus());
+    if (!_isCompleted) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateStatus());
+    }
   }
 
   void _updateStatus() {
-    final diff = DateTime.now().difference(widget.dateObj);
-    if (diff >= _totalDuration) {
-      if (!_isCompleted) {
+    if (_isCompleted) return;
+
+    if (widget.item.expectedEndAt != null) {
+      final diff = widget.item.expectedEndAt!.difference(DateTime.now());
+      if (diff.inSeconds <= 0) {
         setState(() => _isCompleted = true);
         _timer?.cancel();
+      } else {
+        setState(() {
+          _remaining = diff;
+        });
       }
     } else {
-      setState(() {
-        _isCompleted = false;
-        _remaining = _totalDuration - diff;
-      });
+      // Fallback if no expectedEndAt is provided but status is active
+      final totalDuration = widget.item.isSuperBoost ? const Duration(hours: 3) : const Duration(hours: 1);
+      final diff = DateTime.now().difference(widget.item.date);
+      if (diff >= totalDuration) {
+        setState(() => _isCompleted = true);
+        _timer?.cancel();
+      } else {
+        setState(() {
+          _remaining = totalDuration - diff;
+        });
+      }
     }
   }
 

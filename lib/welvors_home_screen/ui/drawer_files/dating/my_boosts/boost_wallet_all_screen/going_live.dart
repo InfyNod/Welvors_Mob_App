@@ -34,12 +34,20 @@ class _GoingLiveScreenState extends State<_GoingLiveScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.of(context).pop(); // Close overlay
-        final item = context.read<BoostBloc>().state.history.first;
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PerformanceScreen(item: item),
-          ),
-        );
+        final history = context.read<BoostBloc>().state.history;
+        if (history.isNotEmpty) {
+          final item = history.first;
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PerformanceScreen(item: item),
+            ),
+          );
+        } else {
+          // Activation failed or history is empty, show snackbar instead
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to activate boost. Please try again.')),
+          );
+        }
       }
     });
   }
