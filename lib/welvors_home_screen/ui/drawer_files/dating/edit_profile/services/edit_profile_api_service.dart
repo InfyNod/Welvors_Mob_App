@@ -4,9 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class EditProfileApiService {
   // Update this baseUrl if it differs for your environment
-  static const String baseUrl = 'https://api.welvors.com/api';
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
   /// Fetches family options (e.g. familyType)
   static Future<List<String>> getFamilyOptions(String type) async {

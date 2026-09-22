@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class ComplimentApiService {
-  static const String _baseUrl = 'https://api.welvors.com/api/admin/purchase-store/data/COMPLIMENT';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/admin/purchase-store/data/COMPLIMENT';
 
   Future<Map<String, dynamic>?> getComplimentsData() async {
     try {

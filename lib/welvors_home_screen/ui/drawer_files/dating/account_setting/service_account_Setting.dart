@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import '../../../../services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class AccountSettingService {
-  static const String baseUrl = 'https://api.welvors.com/api';
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
   static Future<Map<String, String>> get _headers async {
     final token = await TokenHelper.getToken();

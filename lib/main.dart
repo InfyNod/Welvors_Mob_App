@@ -1,53 +1,4 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:velvors/onbording_allpage/features/onboarding/completion_screen.dart';
-// import 'package:velvors/onbording_allpage/features/onboarding/landing_screen.dart';
-// import 'onbording_allpage/theme/app_theme.dart';
-// import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
-// import 'welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
-// import 'welvors_home_screen/home_bloc/home_bloc.dart';
-// import 'welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
-// import 'welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
-// import 'welvors_home_screen/ui/event/events_bloc/events_bloc.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-
-//   // Set the test token provided by the backend team for testing
-//   final prefs = await SharedPreferences.getInstance();
-//   await prefs.setString(
-//     'auth_token',
-//     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmQzZjA5Ny0yODI1LTRhNDEtYWRjNS04NzQ3ZTNiMDdmMmIiLCJpYXQiOjE3ODY3MDI5MDEsImV4cCI6MTc4OTI5NDkwMX0.boqFsoOvwHgOk_iC-ijAnXv1uFH75Gx5uAdFi7FSpvs',
-//   );
-
-//   runApp(const WelvorsApp());
-// }
-
-// class WelvorsApp extends StatelessWidget {
-//   const WelvorsApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiBlocProvider(
-//       providers: [
-//         BlocProvider<OnboardingBloc>(create: (context) => OnboardingBloc()),
-//         BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
-//         BlocProvider<BoostBloc>(create: (context) => BoostBloc()),
-//         BlocProvider<ProfileEditCubit>(create: (context) => ProfileEditCubit()),
-//         BlocProvider<EventsBloc>(create: (context) => EventsBloc()),
-//       ],
-//       child: MaterialApp(
-//         title: 'Welvors',
-//         theme: buildTheme(),
-//         debugShowCheckedModeBanner: false,
-//         home: const TopAndBottomNavScreen(),
-//         // home: const LandingScreen(),
-//         // home: const CompletionScreen(),
-//       ),
-//     );
-//   }
-// }
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,8 +14,18 @@ import 'welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edi
 import 'welvors_home_screen/ui/event/events_bloc/events_bloc.dart';
 import 'package:flutter/services.dart';
 
-void main() {
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:velvors/config/env_config.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: '.env');
+  if (EnvConfig.baseUrl.isEmpty || EnvConfig.apiBaseUrl.isEmpty) {
+    throw StateError(
+      'BASE_URL and API_BASE_URL must be set in the .env file.',
+    );
+  }
 
   // Remove grey shadow from Android status bar and make it transparent with dark icons
   SystemChrome.setSystemUIOverlayStyle(

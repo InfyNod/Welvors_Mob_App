@@ -5,8 +5,10 @@ import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/main.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class ApiService {
-  static const String baseUrl = 'https://api.welvors.com/api';
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
   /// Fetch current user's compliments, roses and wallet balance.
   static Future<Map<String, dynamic>> getMyBalances() async {

@@ -8,6 +8,8 @@ import '../../date_api_service/date_now_api_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:velvors/config/env_config.dart';
+
 class RequestsSentScreen extends StatefulWidget {
   final int initialTabIndex;
   const RequestsSentScreen({super.key, this.initialTabIndex = 0});
@@ -53,7 +55,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
 
     try {
       final url = Uri.parse(
-        'https://api.welvors.com/api/user/my-date-plan-requests',
+        '${EnvConfig.apiBaseUrl}/user/my-date-plan-requests',
       );
       final response = await http.get(
         url,
@@ -1254,7 +1256,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
 
                     final planId = plan['planId'];
                     final url = Uri.parse(
-                      'https://api.welvors.com/api/user/date-plans/$planId/cancel-request',
+                      '${EnvConfig.apiBaseUrl}/user/date-plans/$planId/cancel-request',
                     );
 
                     try {

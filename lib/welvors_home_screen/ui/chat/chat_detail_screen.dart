@@ -46,6 +46,8 @@ import 'location_map_screen.dart';
 import 'chat_image_pdf_viewer_screen.dart';
 import 'chat_media_links_docs_screen.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
 
@@ -7706,7 +7708,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://api.welvors.com/api/chat/media/upload'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/chat/media/upload'),
       );
 
       request.headers.addAll({
@@ -7733,7 +7735,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       debugPrint(
         '📤 UPLOAD URL => '
-        'https://api.welvors.com/api/chat/media/upload',
+        '${EnvConfig.apiBaseUrl}/chat/media/upload',
       );
 
       debugPrint('📤 CONVERSATION ID => $conversationId');
@@ -8068,7 +8070,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://api.welvors.com/api/chat/media/upload'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/chat/media/upload'),
       );
       request.headers['Accept'] = 'application/json';
       if (token.isNotEmpty) {
@@ -8190,7 +8192,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       final token = prefs.getString('auth_token') ?? '';
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://api.welvors.com/api/chat/media/upload'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/chat/media/upload'),
       );
       request.headers['Accept'] = 'application/json';
       if (token.isNotEmpty) {
@@ -9982,7 +9984,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       }
 
       final response = await http.get(
-        Uri.parse('https://api.welvors.com/api/user/notification/mute'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/user/notification/mute'),
         headers: {
           'Accept': 'application/json',
           'Authorization': token.toLowerCase().startsWith('bearer ')
@@ -10024,7 +10026,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       }
 
       final response = await http.patch(
-        Uri.parse('https://api.welvors.com/api/user/notification/mute'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/user/notification/mute'),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',

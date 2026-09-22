@@ -9,6 +9,7 @@ import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/send_request_drawer.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 
+import 'package:velvors/config/env_config.dart';
 // Mock HomeBloc to feed the single fetched profile to the HomeScreen.
 class ProfileDetailHomeBloc extends Bloc<HomeEvent, HomeState>
     implements HomeBloc {
@@ -62,7 +63,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
       final token = (await TokenHelper.getToken() ?? "");
 
       final url = Uri.parse(
-        'https://api.welvors.com/api/user/details/${widget.userId}',
+        '${EnvConfig.apiBaseUrl}/user/details/${widget.userId}',
       );
 
       final response = await http.get(

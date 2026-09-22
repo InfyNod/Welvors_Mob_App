@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../../../services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class SuperBoostApiService {
-  static const String _baseUrl =
-      'https://api.welvors.com/api/admin/boost/get-all?type=SUPER';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/admin/boost/get-all?type=SUPER';
 
   Future<Map<String, dynamic>?> getSuperBoostsData() async {
     try {
@@ -34,7 +35,7 @@ class SuperBoostApiService {
     try {
       final token = await TokenHelper.getToken() ?? "";
       final response = await http.get(
-        Uri.parse('https://api.welvors.com/api/admin/my-boost/boost_wallet?type=SUPER'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/admin/my-boost/boost_wallet?type=SUPER'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

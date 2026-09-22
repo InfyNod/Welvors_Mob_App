@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class RoseApiService {
-  static const String _baseUrl = 'https://api.welvors.com/api/admin/purchase-store/data/ROSE';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/admin/purchase-store/data/ROSE';
 
   Future<Map<String, dynamic>?> getRosesData() async {
     try {

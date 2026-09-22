@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
+import 'package:velvors/config/env_config.dart';
+
 class ServiceFilter {
-  static const String baseUrl = 'https://api.welvors.com/api';
+  static String get baseUrl => EnvConfig.apiBaseUrl;
   /// Fetches options for the "Looking For" filter
   static Future<Map<String, dynamic>?> fetchLookingForOptions() async {
     try {

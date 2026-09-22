@@ -2,8 +2,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class LegalApiService {
-  static const String _baseUrl = 'https://api.welvors.com/api/legal/legal-pages';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/legal/legal-pages';
 
   Future<Map<String, dynamic>?> getLegalPage(String pageType) async {
     try {

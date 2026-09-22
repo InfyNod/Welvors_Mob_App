@@ -6,9 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'shared_item_model.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class SharedItemRepository {
-  static const String _baseUrl =
-      'https://api.welvors.com/api/user/chat/shareditem';
+  static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/chat/shareditem';
 
   Future<SharedItemsBundle> getSharedItems(String conversationId) async {
     if (conversationId.trim().isEmpty) {

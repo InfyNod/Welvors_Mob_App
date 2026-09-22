@@ -13,6 +13,8 @@ import '../../date_now/date_api_service/date_now_api_service.dart';
 import 'logout/logout_screen.dart';
 import 'account_setting/account_setting._screen.dart';
 
+import 'package:velvors/config/env_config.dart';
+
 class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
 
@@ -42,7 +44,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
     // Fetch sent requests
     try {
       const String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
-      final url = Uri.parse('https://api.welvors.com/api/user/my-date-plan-requests');
+      final url = Uri.parse('${EnvConfig.apiBaseUrl}/user/my-date-plan-requests');
       final response = await http.get(url, headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
