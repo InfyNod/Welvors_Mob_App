@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/config/app_cached_image.dart';
 import 'vip_send.dart';
 
 class VipReceivedScreen extends StatefulWidget {
@@ -429,14 +430,12 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(32),
-                child: Image.network(
-                  imageUrl,
-                  width: 64,
-                  height: 64,
-                  fit: BoxFit.cover,
-                ),
+              AppCachedImage(
+                imageUrl: imageUrl,
+                width: 64,
+                height: 64,
+                borderRadius: 32,
+                fit: BoxFit.cover,
               ),
               const SizedBox(width: 12),
               Expanded(

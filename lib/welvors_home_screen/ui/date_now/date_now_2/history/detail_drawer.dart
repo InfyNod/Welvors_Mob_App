@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../date_api_service/date_now_api_service.dart';
 
 void showHistoryDetailDrawer(BuildContext context, Map<String, dynamic> plan) {
@@ -154,11 +155,22 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          plan['image'],
+                        child: CachedNetworkImage(
+                          imageUrl: plan['image'] ?? '',
                           width: double.infinity,
                           height: 180,
                           fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            width: double.infinity,
+                            height: 180,
+                            color: Colors.grey.shade300,
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            width: double.infinity,
+                            height: 180,
+                            color: Colors.grey.shade300,
+                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                          ),
                         ),
                       ),
                       Positioned(
@@ -267,9 +279,12 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                       child: Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              plan['partnerAvatar'],
-                            ),
+                            backgroundImage: plan['partnerAvatar'] != null &&
+                                    plan['partnerAvatar'].toString().isNotEmpty
+                                ? CachedNetworkImageProvider(
+                                    plan['partnerAvatar'],
+                                  )
+                                : null,
                             radius: 20,
                           ),
                           const SizedBox(width: 12),

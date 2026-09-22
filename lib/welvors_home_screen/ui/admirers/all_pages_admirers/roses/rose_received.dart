@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/config/app_cached_image.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
@@ -365,14 +366,12 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
             // Profile Image with Rose Icon
             Column(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    imageUrl,
-                    width: 72,
-                    height: 75,
-                    fit: BoxFit.cover,
-                  ),
+                AppCachedImage(
+                  imageUrl: imageUrl,
+                  width: 72,
+                  height: 75,
+                  borderRadius: 12,
+                  fit: BoxFit.cover,
                 ),
                 const SizedBox(height: 20),
                 Container(

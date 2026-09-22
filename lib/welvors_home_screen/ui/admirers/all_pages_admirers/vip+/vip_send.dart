@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class VipSendScreen extends StatelessWidget {
   const VipSendScreen({super.key});
@@ -91,14 +92,12 @@ class VipSendScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: Image.network(
-              imageUrl,
-              width: 48,
-              height: 48,
-              fit: BoxFit.cover,
-            ),
+          AppCachedImage(
+            imageUrl: imageUrl,
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            fit: BoxFit.cover,
           ),
           const SizedBox(width: 12),
           Expanded(
