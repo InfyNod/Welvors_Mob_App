@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:velvors/config/env_config.dart';
 
+import '../../../../services/logger_service.dart';
+
 class NotificationRepository {
   static String get baseUrl => EnvConfig.baseUrl;
 
@@ -27,9 +29,11 @@ class NotificationRepository {
       },
     );
 
-    print('🔔 Notification URL: $uri');
-    print('🔔 Notification Status: ${response.statusCode}');
-    print('🔔 Notification Response: ${response.body}');
+    AppLogger.apiResponse(
+      'NotificationRepository',
+      statusCode: response.statusCode,
+      body: response.body,
+    );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);
@@ -63,8 +67,11 @@ class NotificationRepository {
 
     final uri = Uri.parse('$baseUrl/api/notification/$notificationId/read');
 
-    print('🔔 MARK READ');
-    print('PATCH: $uri');
+    AppLogger.apiRequest(
+      'NotificationRepository',
+      method: 'PATCH',
+      url: uri.toString(),
+    );
 
     final response = await http.patch(
       uri,
@@ -74,8 +81,11 @@ class NotificationRepository {
       },
     );
 
-    print('🔔 Mark read status: ${response.statusCode}');
-    print('🔔 Mark read response: ${response.body}');
+    AppLogger.apiResponse(
+      'NotificationRepository',
+      statusCode: response.statusCode,
+      body: response.body,
+    );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return;
@@ -103,8 +113,11 @@ class NotificationRepository {
     */
 
     final uri = Uri.parse('$baseUrl/api/user/notification/read-all');
-    print('🔔 MARK ALL READ');
-    print('PATCH: $uri');
+    AppLogger.apiRequest(
+      'NotificationRepository',
+      method: 'PATCH',
+      url: uri.toString(),
+    );
 
     final response = await http.patch(
       uri,
@@ -114,8 +127,11 @@ class NotificationRepository {
       },
     );
 
-    print('🔔 Mark all status: ${response.statusCode}');
-    print('🔔 Mark all response: ${response.body}');
+    AppLogger.apiResponse(
+      'NotificationRepository',
+      statusCode: response.statusCode,
+      body: response.body,
+    );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return;
@@ -139,8 +155,11 @@ class NotificationRepository {
 
     final uri = Uri.parse('$baseUrl/api/user/notification/unread-count');
 
-    print('🔔 GET UNREAD NOTIFICATION COUNT');
-    print('GET: $uri');
+    AppLogger.apiRequest(
+      'NotificationRepository',
+      method: 'GET',
+      url: uri.toString(),
+    );
 
     final response = await http.get(
       uri,
@@ -150,8 +169,11 @@ class NotificationRepository {
       },
     );
 
-    print('🔔 Unread count status: ${response.statusCode}');
-    print('🔔 Unread count response: ${response.body}');
+    AppLogger.apiResponse(
+      'NotificationRepository',
+      statusCode: response.statusCode,
+      body: response.body,
+    );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final decoded = jsonDecode(response.body);

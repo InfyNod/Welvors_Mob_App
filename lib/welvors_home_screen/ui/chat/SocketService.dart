@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'package:velvors/config/env_config.dart';
+
+import '../../services/logger_service.dart';
 
 class SocketService {
   static final SocketService _instance = SocketService._internal();
@@ -55,7 +56,7 @@ class SocketService {
         : savedToken;
 
     if (rawToken.isEmpty) {
-      debugPrint('❌ SOCKET: auth_token missing');
+      AppLogger.e('SocketService', 'auth_token missing');
       return;
     }
 
@@ -74,8 +75,8 @@ class SocketService {
       socket = null;
     }
 
-    debugPrint('🔵 SOCKET: creating connection');
-    debugPrint('🌐 SOCKET URL: $_baseUrl');
+    AppLogger.i('SocketService', 'Creating connection');
+    AppLogger.i('SocketService', 'SOCKET URL: $_baseUrl');
 
     final bearerr = '$rawToken';
 
@@ -105,13 +106,13 @@ class SocketService {
 
     _connectionCompleter = Completer<void>();
 
-    debugPrint('🔌 SOCKET: calling connect()');
+    AppLogger.d('SocketService', 'Calling connect()');
     socket!.connect();
 
     try {
       await _connectionCompleter!.future.timeout(const Duration(seconds: 15));
     } on TimeoutException {
-      debugPrint('⏱️ SOCKET: connection timeout');
+      AppLogger.w('SocketService', 'Connection timeout');
     } finally {
       _connectionCompleter = null;
     }
@@ -123,12 +124,12 @@ class SocketService {
         : token.trim();
 
     if (rawToken.isEmpty) {
-      debugPrint('❌ SOCKET: connect called with empty token');
+      AppLogger.e('SocketService', 'Connect called with empty token');
       return;
     }
 
     if (socket?.connected == true) {
-      debugPrint('🟢 SOCKET ALREADY CONNECTED');
+      AppLogger.d('SocketService', 'Socket already connected');
       return;
     }
 
@@ -142,8 +143,7 @@ class SocketService {
     if (s == null) return;
 
     s.onConnect((_) {
-      debugPrint('🟢 SOCKET CONNECTED');
-      debugPrint('🆔 SOCKET ID: ${s.id}');
+      AppLogger.i('SocketService', 'Socket connected (ID: ${s.id})');
 
       _manualReconnectTimer?.cancel();
       _connectionCompleter?.complete();
@@ -155,7 +155,7 @@ class SocketService {
     });
 
     s.onDisconnect((reason) {
-      debugPrint('🔴 SOCKET DISCONNECTED: $reason');
+      AppLogger.w('SocketService', 'Socket disconnected: $reason');
       _presenceHeartbeatTimer?.cancel();
       _presenceHeartbeatTimer = null;
 
@@ -165,21 +165,21 @@ class SocketService {
     });
 
     s.onConnectError((error) {
-      debugPrint('❌ SOCKET CONNECT ERROR: $error');
+      AppLogger.e('SocketService', 'Socket connect error: $error', error: error);
       if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
         _connectionCompleter!.completeError(error);
       }
     });
 
     s.onError((error) {
-      debugPrint('❌ SOCKET ERROR: $error');
+      AppLogger.e('SocketService', 'Socket error: $error', error: error);
     });
 
     s.on('user:online', _handleUserOnline);
     s.on('user:offline', _handleUserOffline);
 
     s.onAny((event, data) {
-      debugPrint('📡 SOCKET EVENT <= $event | $data');
+      AppLogger.d('SocketService', 'Event <= $event | $data');
     });
   }
 
@@ -205,7 +205,7 @@ class SocketService {
 
     _manualReconnectTimer = Timer(const Duration(seconds: 5), () {
       if (socket?.connected == true) return;
-      debugPrint('🔁 SOCKET: manual reconnect attempt');
+      AppLogger.i('SocketService', 'Manual reconnect attempt');
       socket?.connect();
     });
   }
@@ -219,17 +219,17 @@ class SocketService {
     _presenceHeartbeatTimer = Timer.periodic(_heartbeatInterval, (_) {
       _emitPresenceHeartbeat();
     });
-    debugPrint('💓 SOCKET: presence heartbeat timer started (75s)');
+    AppLogger.d('SocketService', 'Presence heartbeat timer started (75s)');
   }
 
   void _emitPresenceHeartbeat() {
     final s = socket;
     if (s?.connected != true) {
-      debugPrint('💓 SOCKET: heartbeat skipped - not connected');
+      AppLogger.d('SocketService', 'Heartbeat skipped - not connected');
       return;
     }
 
-    debugPrint('💓 SOCKET EVENT OUT => presence:heartbeat');
+    AppLogger.d('SocketService', 'Event OUT => presence:heartbeat');
     s!.emit('presence:heartbeat');
   }
 
@@ -264,14 +264,14 @@ class SocketService {
     final userId = _extractUserId(payload);
     if (userId == null) return;
     _onlineUsers.add(userId);
-    debugPrint('🟢 PRESENCE ONLINE => $userId');
+    AppLogger.d('SocketService', 'Presence online => $userId');
   }
 
   void _handleUserOffline(dynamic payload) {
     final userId = _extractUserId(payload);
     if (userId == null) return;
     _onlineUsers.remove(userId);
-    debugPrint('🔴 PRESENCE OFFLINE => $userId');
+    AppLogger.d('SocketService', 'Presence offline => $userId');
   }
 
   // ============================================================
@@ -282,7 +282,7 @@ class SocketService {
     final id = messageId.trim();
     if (id.isEmpty) return;
 
-    debugPrint('📖 MESSAGE READ => $id');
+    AppLogger.d('SocketService', 'Message read => $id');
     emitWhenConnected('message:read', {'messageId': id});
   }
 
@@ -293,13 +293,13 @@ class SocketService {
   void emit(String event, [dynamic data]) {
     final s = socket;
     if (s == null || s.connected != true) {
-      debugPrint('⏳ SOCKET: $event queued until connection');
+      AppLogger.d('SocketService', '$event queued until connection');
       emitWhenConnected(event, data);
       return;
     }
 
-    debugPrint('📤 SOCKET EVENT OUT => $event');
-    if (data != null) debugPrint('📦 SOCKET DATA => $data');
+    AppLogger.d('SocketService', 'Event OUT => $event');
+    if (data != null) AppLogger.d('SocketService', 'Data => $data');
     data == null ? s.emit(event) : s.emit(event, data);
   }
 
@@ -311,23 +311,23 @@ class SocketService {
         if (socket?.connected == true) {
           emitWhenConnected(event, data);
         } else {
-          debugPrint('❌ SOCKET: unable to send $event - no connection');
+          AppLogger.e('SocketService', 'Unable to send $event - no connection');
         }
       });
       return;
     }
 
     if (s.connected) {
-      debugPrint('📤 SOCKET EVENT OUT => $event');
-      if (data != null) debugPrint('📦 SOCKET DATA => $data');
+      AppLogger.d('SocketService', 'Event OUT => $event');
+      if (data != null) AppLogger.d('SocketService', 'Data => $data');
       data == null ? s.emit(event) : s.emit(event, data);
       return;
     }
 
-    debugPrint('⏳ SOCKET: waiting for connect => $event');
+    AppLogger.d('SocketService', 'Waiting for connect => $event');
     s.once('connect', (_) {
       if (socket?.connected != true) return;
-      debugPrint('🟢 SOCKET CONNECTED -> sending queued event $event');
+      AppLogger.i('SocketService', 'Connected -> sending queued event $event');
       data == null ? socket!.emit(event) : socket!.emit(event, data);
     });
 
@@ -346,12 +346,12 @@ class SocketService {
         () => <Function(dynamic)>[],
       );
       if (!callbacks.contains(callback)) callbacks.add(callback);
-      debugPrint('⏳ SOCKET: queued listener => $event');
+      AppLogger.d('SocketService', 'Queued listener => $event');
       ensureConnected();
       return;
     }
 
-    debugPrint('👂 SOCKET LISTENER => $event');
+    AppLogger.d('SocketService', 'Listener => $event');
     s.on(event, callback);
 
     // Replay cached online presence for screens that open after the event was

@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:velvors/config/env_config.dart';
+
+import 'logger_service.dart';
 
 class HomeApiService {
   static String get baseUrl => EnvConfig.apiBaseUrl;
@@ -36,17 +37,22 @@ class HomeApiService {
         request.body = jsonEncode({'filters': filters});
       }
 
-      print('====== [API SERVICE] SENDING GET REQUEST ======');
-      print('URL: $urlStr');
-      print('HEADERS: ${request.headers}');
-      print('BODY: ${request.body}');
+      AppLogger.apiRequest(
+        'HomeApiService',
+        method: 'GET',
+        url: urlStr,
+        headers: request.headers,
+        body: request.body.isNotEmpty ? request.body : null,
+      );
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      print('====== [API SERVICE] RESPONSE RECEIVED ======');
-      print('STATUS: ${response.statusCode}');
-      print('BODY: ${response.body}');
+      AppLogger.apiResponse(
+        'HomeApiService',
+        statusCode: response.statusCode,
+        body: response.body,
+      );
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -54,13 +60,14 @@ class HomeApiService {
           return decoded;
         }
       } else {
-        debugPrint(
+        AppLogger.e(
+          'HomeApiService',
           'Feed API failed with status ${response.statusCode}: ${response.body}',
         );
       }
       return null;
-    } catch (e) {
-      debugPrint('Error fetching feed: $e');
+    } catch (e, st) {
+      AppLogger.e('HomeApiService', 'Error fetching feed: $e', error: e, stackTrace: st);
       return null;
     }
   }
@@ -89,8 +96,8 @@ class HomeApiService {
         }
       }
       return null;
-    } catch (e) {
-      debugPrint('Error fetching user details: $e');
+    } catch (e, st) {
+      AppLogger.e('HomeApiService', 'Error fetching user details: $e', error: e, stackTrace: st);
       return null;
     }
   }

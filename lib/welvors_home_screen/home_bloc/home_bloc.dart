@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 
 import '../services/home_api_service.dart';
 
+import '../services/logger_service.dart';
+
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -23,8 +25,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     LoadHomeDataEvent event,
     Emitter<HomeState> emit,
   ) async {
-    print('====== [HOME BLOC] RECEIVED LOAD DATA EVENT ======');
-    print('Is Refresh: ${event.isRefresh}, Filters: ${event.filters}');
+    AppLogger.i(
+      'HomeBloc',
+      'Received load data event - isRefresh: ${event.isRefresh}, filters: ${event.filters}',
+    );
     if (event.isRefresh) {
       _swipedProfiles.clear();
       _isLoadingMore = false;
@@ -54,17 +58,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final List<dynamic> usersJson = response['users'];
       final String? nextCursor = response['nextCursor'];
 
-      print('====== [HOME BLOC] PARSING ${usersJson.length} PROFILES ======');
+      AppLogger.d('HomeBloc', 'Parsing ${usersJson.length} profiles');
       try {
         final List<ProfileModel> newProfiles = usersJson
             .map(
               (json) => ProfileModel.fromFeedJson(json as Map<String, dynamic>),
             )
             .toList();
-        print('====== [HOME BLOC] PARSED SUCCESSFULLY ======');
+        AppLogger.d('HomeBloc', 'Parsed profiles successfully');
         final updatedProfiles = [...currentProfiles, ...newProfiles];
-        print(
-          '====== [HOME BLOC] UPDATED PROFILES COUNT: ${updatedProfiles.length} ======',
+        AppLogger.d(
+          'HomeBloc',
+          'Updated profiles count: ${updatedProfiles.length}',
         );
 
         if (updatedProfiles.isEmpty) {
@@ -75,7 +80,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             ),
           );
         } else {
-          print('====== [HOME BLOC] EMITTING HOMELOADED ======');
+          AppLogger.d('HomeBloc', 'Emitting HomeLoaded');
           emit(
             HomeLoaded(
               profiles: updatedProfiles,
@@ -83,7 +88,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               cursor: nextCursor,
             ),
           );
-          print('====== [HOME BLOC] EMITTED HOMELOADED ======');
+          AppLogger.d('HomeBloc', 'Emitted HomeLoaded');
 
           // Auto-fetch details for the first few profiles if not loaded
           for (int i = 0; i < updatedProfiles.length && i < 3; i++) {
@@ -93,8 +98,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           }
         }
       } catch (e, st) {
-        print('====== [HOME BLOC] ERROR PARSING JSON: $e ======');
-        print(st);
+        AppLogger.e('HomeBloc', 'Error parsing JSON', error: e, stackTrace: st);
       }
     } else {
       if (currentProfiles.isEmpty) {

@@ -1,5 +1,6 @@
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/government_Id/upload_id/screens/upload_id_screen.dart';
 
+import '../../../../../../../../services/logger_service.dart';
 import '../../../export.dart';
 import 'aadhaarVerifiedScreen.dart';
 import 'common_bottom_button.dart';
@@ -118,7 +119,7 @@ class _InstantVerificationView extends StatelessWidget {
                             state.status == InstantVerificationStatus.loading,
                         onTap: state.consentAccepted
                             ? () {
-                                debugPrint('BUTTON CLICKED');
+                                AppLogger.i('InstantVerificationScreen', 'BUTTON CLICKED');
 
                                 bloc.add(const AllowAndVerify());
                               }
@@ -164,13 +165,13 @@ class _InstantVerificationView extends StatelessWidget {
                           listener: (context, state) {
                             if (state.status ==
                                 InstantVerificationStatus.loading) {
-                              debugPrint('OTP VERIFYING...');
+                              AppLogger.d('InstantVerificationScreen', 'OTP VERIFYING...');
                               return;
                             }
 
                             if (state.status ==
                                 InstantVerificationStatus.success) {
-                              debugPrint('OTP VALID');
+                              AppLogger.i('InstantVerificationScreen', 'OTP VALID');
 
                               // Yahan navigation karo
                               // Navigator.push(
@@ -185,7 +186,7 @@ class _InstantVerificationView extends StatelessWidget {
 
                             if (state.status ==
                                 InstantVerificationStatus.failure) {
-                              debugPrint('OTP INVALID: ${state.errorMessage}');
+                              AppLogger.w('InstantVerificationScreen', 'OTP INVALID: ${state.errorMessage}');
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -211,7 +212,8 @@ class _InstantVerificationView extends StatelessWidget {
                                   : 'Verify OTP →',
                               onTap: state.otp.length == 6 && !isLoading
                                   ? () {
-                                      debugPrint(
+                                      AppLogger.d(
+                                        'InstantVerificationScreen',
                                         '🔥 VERIFY BUTTON CLICKED: ${state.otp}',
                                       );
 

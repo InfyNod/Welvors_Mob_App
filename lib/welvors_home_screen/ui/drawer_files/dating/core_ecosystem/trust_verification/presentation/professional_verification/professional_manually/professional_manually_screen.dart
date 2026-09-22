@@ -1,3 +1,4 @@
+import '../../../../../../../../services/logger_service.dart';
 import '../../../export.dart';
 import '../../instant_verification/widget/aadhaarVerifiedScreen.dart';
 import 'bloc/professional_event.dart';
@@ -132,7 +133,7 @@ class _ProfessionalView extends StatelessWidget {
                           title: 'Submit for review',
                           onTap: state.isConfirmed
                               ? () {
-                                  debugPrint('Submit button clicked');
+                                  AppLogger.i('ProfessionalManuallyScreen', 'Submit button clicked');
 
                                   context.read<ProfessionalManuallyBloc>().add(
                                     const SubmitProfessional(),

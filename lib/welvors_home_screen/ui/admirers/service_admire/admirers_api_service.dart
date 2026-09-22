@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import '../../../services/logger_service.dart';
 import '../../../services/token_helper.dart';
 import 'package:http/http.dart' as http;
 
@@ -146,7 +146,10 @@ class AdmirersApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to send rose. Status: ${response.statusCode}, Body: ${response.body}');
+        AppLogger.e(
+          'AdmirersApiService',
+          'Failed to send rose. Status: ${response.statusCode}, Body: ${response.body}',
+        );
         throw Exception('Failed to send rose. Status code: ${response.statusCode}');
       }
     } catch (e) {

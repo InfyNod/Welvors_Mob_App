@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/welvors_home_screen/ui/home/notification/bloc/notification_repository.dart';
 
+import '../../../../services/logger_service.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
 
@@ -46,7 +46,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
       final response = await repository.fetchNotifications(category: 'ALL');
 
-      print('🔔 Notifications fetched');
+      AppLogger.i('NotificationBloc', '🔔 Notifications fetched');
 
       final rawNotifications = _extractNotifications(response);
 
@@ -71,9 +71,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       try {
         unreadCount = await repository.getUnreadNotificationCount();
 
-        print('🔔 SEPARATE UNREAD COUNT: $unreadCount');
-      } catch (e) {
-        print('❌ Unread count API error: $e');
+        AppLogger.d('NotificationBloc', '🔔 SEPARATE UNREAD COUNT: $unreadCount');
+      } catch (e, st) {
+        AppLogger.e('NotificationBloc', 'Unread count API error: $e', error: e, stackTrace: st);
 
         // Fallback to notification response
         unreadCount = _extractUnreadCount(response, mappedNotifications);
@@ -106,9 +106,12 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         ),
       );
     } catch (e, stackTrace) {
-      debugPrint('❌ Notification load error: $e');
-
-      debugPrint('$stackTrace');
+      AppLogger.e(
+        'NotificationBloc',
+        'Notification load error: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
 
       emit(
         state.copyWith(
@@ -176,8 +179,13 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           hasMore: currentPage < totalPages,
         ),
       );
-    } catch (e) {
-      debugPrint('❌ Notification pagination error: $e');
+    } catch (e, st) {
+      AppLogger.e(
+        'NotificationBloc',
+        'Notification pagination error: $e',
+        error: e,
+        stackTrace: st,
+      );
 
       emit(state.copyWith(status: NotificationStatus.loaded));
     }
@@ -250,8 +258,13 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     try {
       await repository.markNotificationAsRead(notificationId);
-    } catch (e) {
-      debugPrint('❌ Mark notification read API error: $e');
+    } catch (e, st) {
+      AppLogger.e(
+        'NotificationBloc',
+        'Mark notification read API error: $e',
+        error: e,
+        stackTrace: st,
+      );
 
       // UI stays read because optimistic update.
       // If backend fails, next refresh will restore actual state.
@@ -283,8 +296,13 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     try {
       await repository.markAllNotificationsAsRead();
-    } catch (e) {
-      debugPrint('❌ Mark all read API error: $e');
+    } catch (e, st) {
+      AppLogger.e(
+        'NotificationBloc',
+        'Mark all read API error: $e',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 

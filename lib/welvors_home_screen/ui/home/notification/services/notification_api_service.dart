@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/main.dart';
 
+import '../../../../services/logger_service.dart';
 import '../model/notification_model.dart';
 
 import 'package:velvors/config/env_config.dart';
@@ -35,7 +35,10 @@ class NotificationApiService {
   static Future<void> _handleAuth(int statusCode) async {
     if (statusCode != 401 && statusCode != 403) return;
 
-    debugPrint('🔐 Notification API token expired ($statusCode)');
+    AppLogger.w(
+      'NotificationApiService',
+      '🔐 Notification API token expired ($statusCode)',
+    );
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');

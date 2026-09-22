@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:velvors/config/env_config.dart';
+
+import 'logger_service.dart' show AppLogger;
 
 class GiftCategory {
   final int id;
@@ -74,7 +75,11 @@ class GiftApiService {
       headers: await _headers(),
     );
 
-    debugPrint('🎁 GIFT CATEGORY API ${response.statusCode}: ${response.body}');
+    AppLogger.apiResponse(
+      'GiftApiService',
+      statusCode: response.statusCode,
+      body: response.body,
+    );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Gift categories failed: ${response.statusCode}');
@@ -100,7 +105,11 @@ class GiftApiService {
     );
 
     final response = await http.get(uri, headers: await _headers());
-    debugPrint('🎁 GIFT LIST API ${response.statusCode}: ${response.body}');
+    AppLogger.apiResponse(
+      'GiftApiService',
+      statusCode: response.statusCode,
+      body: response.body,
+    );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Gift list failed: ${response.statusCode}');

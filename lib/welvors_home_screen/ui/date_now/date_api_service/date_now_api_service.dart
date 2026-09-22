@@ -1,7 +1,7 @@
+import '../../../services/logger_service.dart';
 import '../../../services/token_helper.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 
 import 'package:velvors/config/env_config.dart';
 
@@ -20,12 +20,13 @@ class DateNowApiService {
         body: jsonEncode({'receiverId': receiverId}),
       );
 
-      debugPrint(
+      AppLogger.i(
+        'DateNowApiService',
         'Date Plan Invite Status: ${response.statusCode} - ${response.body}',
       );
       return jsonDecode(response.body);
     } catch (e) {
-      debugPrint('Error inviting to date plan: $e');
+      AppLogger.e('DateNowApiService', 'Error inviting to date plan: $e', error: e);
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
@@ -50,13 +51,14 @@ class DateNowApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Error getting boosts: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Exception getting boosts: $e');
+      AppLogger.e('DateNowApiService', 'Exception getting boosts: $e', error: e);
       return null;
     }
   }
@@ -72,12 +74,13 @@ class DateNowApiService {
         body: jsonEncode({"boostOptionId": boostOptionId}),
       );
 
-      debugPrint(
+      AppLogger.i(
+        'DateNowApiService',
         'Activate Boost Status: ${response.statusCode} - ${response.body}',
       );
       return json.decode(response.body);
     } catch (e) {
-      debugPrint('Exception activating boost: $e');
+      AppLogger.e('DateNowApiService', 'Exception activating boost: $e', error: e);
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
@@ -91,7 +94,8 @@ class DateNowApiService {
         headers: await _headers,
       );
 
-      debugPrint(
+      AppLogger.i(
+        'DateNowApiService',
         'Get Active Boost Status: ${response.statusCode} - ${response.body}',
       );
       if (response.statusCode == 200) {
@@ -99,7 +103,7 @@ class DateNowApiService {
       }
       return null;
     } catch (e) {
-      debugPrint('Exception getting active boost: $e');
+      AppLogger.e('DateNowApiService', 'Exception getting active boost: $e', error: e);
       return null;
     }
   }
@@ -119,13 +123,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to post plan: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Error posting plan: $e');
+      AppLogger.e('DateNowApiService', 'Error posting plan: $e', error: e);
       return null;
     }
   }
@@ -146,13 +151,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to patch plan: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Error patching plan: $e');
+      AppLogger.e('DateNowApiService', 'Error patching plan: $e', error: e);
       return null;
     }
   }
@@ -173,13 +179,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to patch plan activity: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Error patching plan activity: $e');
+      AppLogger.e('DateNowApiService', 'Error patching plan activity: $e', error: e);
       return null;
     }
   }
@@ -193,13 +200,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to publish plan: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Error publishing plan: $e');
+      AppLogger.e('DateNowApiService', 'Error publishing plan: $e', error: e);
       return null;
     }
   }
@@ -218,7 +226,7 @@ class DateNowApiService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error getting options for $type: $e');
+      AppLogger.e('DateNowApiService', 'Error getting options for $type: $e', error: e);
       return null;
     }
   }
@@ -237,13 +245,14 @@ class DateNowApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to fetch history plans: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Error fetching history plans: $e');
+      AppLogger.e('DateNowApiService', 'Error fetching history plans: $e', error: e);
       return null;
     }
   }
@@ -263,13 +272,14 @@ class DateNowApiService {
         }
         return decoded;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to fetch history details: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Error fetching history details: $e');
+      AppLogger.e('DateNowApiService', 'Error fetching history details: $e', error: e);
       return null;
     }
   }
@@ -291,13 +301,14 @@ class DateNowApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to fetch my plans for $period: ${response.statusCode} - ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      debugPrint('Error fetching my plans: $e');
+      AppLogger.e('DateNowApiService', 'Error fetching my plans: $e', error: e);
       return null;
     }
   }
@@ -319,7 +330,8 @@ class DateNowApiService {
 
       final response = await http.get(url, headers: headers);
 
-      debugPrint(
+      AppLogger.i(
+        'DateNowApiService',
         'Discover API Response [${response.statusCode}]: ${response.body}',
       );
 
@@ -335,13 +347,14 @@ class DateNowApiService {
           return [];
         }
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to get discover plans: ${response.statusCode} - ${response.body}',
         );
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching discover plans: $e');
+      AppLogger.e('DateNowApiService', 'Error fetching discover plans: $e', error: e);
       return null;
     }
   }
@@ -361,13 +374,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to skip plan: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error skipping plan: $e');
+      AppLogger.e('DateNowApiService', 'Error skipping plan: $e', error: e);
       return false;
     }
   }
@@ -400,13 +414,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to request plan: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error requesting plan: $e');
+      AppLogger.e('DateNowApiService', 'Error requesting plan: $e', error: e);
       return false;
     }
   }
@@ -422,7 +437,8 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return {'success': true};
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to approve request: ${response.statusCode} - ${response.body}',
         );
         try {
@@ -442,7 +458,7 @@ class DateNowApiService {
         }
       }
     } catch (e) {
-      debugPrint('Error approving request: $e');
+      AppLogger.e('DateNowApiService', 'Error approving request: $e', error: e);
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
@@ -458,7 +474,8 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return {'success': true};
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to decline request: ${response.statusCode} - ${response.body}',
         );
         try {
@@ -472,7 +489,7 @@ class DateNowApiService {
         }
       }
     } catch (e) {
-      debugPrint('Error declining request: $e');
+      AppLogger.e('DateNowApiService', 'Error declining request: $e', error: e);
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
@@ -495,7 +512,7 @@ class DateNowApiService {
 
       // We assume it's PATCH based on the other endpoints, but fallback to POST/DELETE
       var response = await http.patch(url, headers: headers);
-      debugPrint('PATCH response: ${response.statusCode} - ${response.body}');
+      AppLogger.i('DateNowApiService', 'PATCH response: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) return true;
       if (response.body.contains('"success":') ||
           response.body.contains('not found'))
@@ -504,7 +521,7 @@ class DateNowApiService {
       // If 404 HTML, try POST on Vercel
       if (response.statusCode == 404) {
         response = await http.post(url, headers: headers);
-        debugPrint('POST response: ${response.statusCode} - ${response.body}');
+        AppLogger.i('DateNowApiService', 'POST response: ${response.statusCode} - ${response.body}');
         if (response.statusCode == 200 || response.statusCode == 201)
           return true;
         if (response.body.contains('"success":') ||
@@ -515,7 +532,8 @@ class DateNowApiService {
       // Try DELETE on Vercel
       if (response.statusCode == 404) {
         response = await http.delete(url, headers: headers);
-        debugPrint(
+        AppLogger.i(
+          'DateNowApiService',
           'DELETE response: ${response.statusCode} - ${response.body}',
         );
         if (response.statusCode == 200 || response.statusCode == 201)
@@ -527,7 +545,7 @@ class DateNowApiService {
 
       return false;
     } catch (e) {
-      debugPrint('Error withdrawing request: $e');
+      AppLogger.e('DateNowApiService', 'Error withdrawing request: $e', error: e);
       return false;
     }
   }
@@ -544,13 +562,14 @@ class DateNowApiService {
           return data['data'] as Map<String, dynamic>;
         }
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to fetch plan requests: ${response.statusCode} - ${response.body}',
         );
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching plan requests: $e');
+      AppLogger.e('DateNowApiService', 'Error fetching plan requests: $e', error: e);
       return null;
     }
   }
@@ -567,13 +586,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to submit feedback: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error submitting feedback is_meet: $e');
+      AppLogger.e('DateNowApiService', 'Error submitting feedback is_meet: $e', error: e);
       return false;
     }
   }
@@ -593,13 +613,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to submit feedback met-user: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error submitting feedback met-user: $e');
+      AppLogger.e('DateNowApiService', 'Error submitting feedback met-user: $e', error: e);
       return false;
     }
   }
@@ -627,13 +648,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to submit experience rating: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error submitting experience rating: $e');
+      AppLogger.e('DateNowApiService', 'Error submitting experience rating: $e', error: e);
       return false;
     }
   }
@@ -659,13 +681,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to submit no-show rating: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error submitting no-show rating: $e');
+      AppLogger.e('DateNowApiService', 'Error submitting no-show rating: $e', error: e);
       return false;
     }
   }
@@ -686,13 +709,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to submit report issue: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error submitting report issue: $e');
+      AppLogger.e('DateNowApiService', 'Error submitting report issue: $e', error: e);
       return false;
     }
   }
@@ -705,13 +729,14 @@ class DateNowApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        debugPrint(
+        AppLogger.e(
+          'DateNowApiService',
           'Failed to cancel date plan: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error canceling date plan: $e');
+      AppLogger.e('DateNowApiService', 'Error canceling date plan: $e', error: e);
       return false;
     }
   }
@@ -728,12 +753,13 @@ class DateNowApiService {
           return data['data'];
         }
       }
-      debugPrint(
+      AppLogger.e(
+        'DateNowApiService',
         'Failed to fetch activity options: ${response.statusCode} - ${response.body}',
       );
       return null;
     } catch (e) {
-      debugPrint('Error fetching activity options: $e');
+      AppLogger.e('DateNowApiService', 'Error fetching activity options: $e', error: e);
       return null;
     }
   }

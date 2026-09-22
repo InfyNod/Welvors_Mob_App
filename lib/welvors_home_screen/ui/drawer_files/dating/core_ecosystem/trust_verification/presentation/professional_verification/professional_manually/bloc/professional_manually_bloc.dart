@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../../../../services/logger_service.dart' show AppLogger;
 import '../../../../export.dart';
 import 'professional_event.dart';
 import 'professional_state.dart';
@@ -120,17 +121,10 @@ class ProfessionalManuallyBloc
     SubmitProfessional event,
     Emitter<ProfessionalManuallyState> emit,
   ) async {
-    debugPrint('========== SUBMIT PROFESSIONAL ==========');
-
-    debugPrint('Company: ${state.company}');
-
-    debugPrint('Designation: ${state.designation}');
-
-    debugPrint('Work Email: ${state.workEmail}');
-
-    debugPrint('File: ${state.file?.path}');
-
-    debugPrint('Confirmed: ${state.isConfirmed}');
+    AppLogger.d(
+      'ProfessionalManuallyBloc',
+      'Submit professional - Company: ${state.company}, Designation: ${state.designation}, Work Email: ${state.workEmail}, File: ${state.file?.path}, Confirmed: ${state.isConfirmed}',
+    );
 
     // =========================================================
     // VALIDATION
@@ -204,12 +198,12 @@ class ProfessionalManuallyBloc
       // API / REPOSITORY CALL
       // =======================================================
 
-      debugPrint('PROFESSIONAL API CALL START');
+      AppLogger.i('ProfessionalManuallyBloc', 'PROFESSIONAL API CALL START');
 
       // Temporary API simulation
       await Future.delayed(const Duration(seconds: 2));
 
-      debugPrint('PROFESSIONAL SUBMIT SUCCESS');
+      AppLogger.i('ProfessionalManuallyBloc', 'PROFESSIONAL SUBMIT SUCCESS');
 
       // =======================================================
       // SUCCESS
@@ -218,8 +212,8 @@ class ProfessionalManuallyBloc
       emit(
         state.copyWith(status: ProfessionalStatus.success, errorMessage: null),
       );
-    } catch (e) {
-      debugPrint('PROFESSIONAL SUBMIT ERROR: $e');
+    } catch (e, st) {
+      AppLogger.e('ProfessionalManuallyBloc', 'PROFESSIONAL SUBMIT ERROR', error: e, stackTrace: st);
 
       emit(
         state.copyWith(

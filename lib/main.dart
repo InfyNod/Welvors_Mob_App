@@ -16,28 +16,31 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() {
+  AppLogger.runLoggingApp(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: '.env');
-  if (EnvConfig.baseUrl.isEmpty || EnvConfig.apiBaseUrl.isEmpty) {
-    throw StateError(
-      'BASE_URL and API_BASE_URL must be set in the .env file.',
+    await dotenv.load(fileName: '.env');
+    if (EnvConfig.baseUrl.isEmpty || EnvConfig.apiBaseUrl.isEmpty) {
+      throw StateError(
+        'BASE_URL and API_BASE_URL must be set in the .env file.',
+      );
+    }
+
+    // Remove grey shadow from Android status bar and make it transparent with dark icons
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
     );
-  }
 
-  // Remove grey shadow from Android status bar and make it transparent with dark icons
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ),
-  );
-
-  runApp(const WelvorsApp(initialRoute: '/splash'));
+    runApp(const WelvorsApp(initialRoute: '/splash'));
+  });
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
