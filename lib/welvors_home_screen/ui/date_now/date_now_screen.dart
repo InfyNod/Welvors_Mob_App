@@ -220,7 +220,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                   style: TextStyle(color: Colors.black),
                 ),
                 TextSpan(
-                  text: 'Now',
+                  text: 'Plans',
                   style: TextStyle(color: Color(0xFFE43A6A)), // Pink
                 ),
               ],
