@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -1209,10 +1210,13 @@ class _ChatListViewState extends State<_ChatListView> {
                     ),
                     child: ClipOval(
                       child: match.image.isNotEmpty
-                          ? Image.network(
-                              match.image,
+                          ? CachedNetworkImage(
+                              imageUrl: match.image,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => Container(
+                              placeholder: (context, url) => Container(
+                                color: AppColors.line,
+                              ),
+                              errorWidget: (_, _, _) => Container(
                                 color: AppColors.line,
                                 child: const Icon(
                                   Icons.person,
@@ -1220,20 +1224,6 @@ class _ChatListViewState extends State<_ChatListView> {
                                   size: 32,
                                 ),
                               ),
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Container(
-                                  color: AppColors.line,
-                                  alignment: Alignment.center,
-                                  child: const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                );
-                              },
                             )
                           : Container(
                               color: AppColors.line,
@@ -1845,12 +1835,17 @@ class _ChatListViewState extends State<_ChatListView> {
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(12),
                             ),
-                            child: Image.network(
-                              url,
+                            child: CachedNetworkImage(
+                              imageUrl: url,
                               width: 400,
                               height: 400,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) {
+                              placeholder: (_, __) => const SizedBox(
+                                width: 400,
+                                height: 400,
+                                child: ColoredBox(color: AppColors.soft),
+                              ),
+                              errorWidget: (_, _, _) {
                                 return const SizedBox(
                                   width: 400,
                                   height: 400,
@@ -1858,9 +1853,8 @@ class _ChatListViewState extends State<_ChatListView> {
                                     color: AppColors.soft,
                                     child: Center(
                                       child: Icon(
-                                        Icons.person,
+                                        Icons.broken_image,
                                         color: AppColors.muted,
-                                        size: 80,
                                       ),
                                     ),
                                   ),
@@ -1930,12 +1924,16 @@ class _ChatListViewState extends State<_ChatListView> {
             color: AppColors.canvas,
           ),
           child: ClipOval(
-            child: Image.network(
-              url,
+            child: CachedNetworkImage(
+              imageUrl: url,
               width: size,
               height: size,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) {
+              placeholder: (_, __) => ColoredBox(
+                color: AppColors.soft,
+                child: SizedBox(width: size, height: size),
+              ),
+              errorWidget: (_, _, _) {
                 return const ColoredBox(
                   color: AppColors.soft,
                   child: Icon(Icons.person, color: AppColors.muted),

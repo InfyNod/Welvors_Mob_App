@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'details_2.dart';
 import 'location_3.dart';
@@ -515,16 +516,19 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                                     child: Stack(
                                       fit: StackFit.expand,
                                       children: [
-                                        Image.network(
-                                          act['icon'],
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Icon(
-                                                    Icons.error,
-                                                    color: Colors.grey,
-                                                  ),
-                                        ),
+                                         CachedNetworkImage(
+                                           imageUrl: act['icon'] ?? '',
+                                           fit: BoxFit.cover,
+                                           placeholder: (context, url) => Container(
+                                             color: Colors.grey.shade200,
+                                           ),
+                                           errorWidget:
+                                               (context, url, error) =>
+                                                   const Icon(
+                                                     Icons.error,
+                                                     color: Colors.grey,
+                                                   ),
+                                         ),
                                         if (isSelected)
                                           Container(
                                             color: const Color(

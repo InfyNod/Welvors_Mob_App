@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
 
 class FloatingRose extends StatefulWidget {
@@ -80,12 +81,17 @@ class _FloatingGiftState extends State<FloatingGift>
       child: widget.imageUrl != null && widget.imageUrl!.isNotEmpty
           ? ClipRRect(
               borderRadius: BorderRadius.circular(11),
-              child: Image.network(
-                widget.imageUrl!,
+              child: CachedNetworkImage(
+                imageUrl: widget.imageUrl!,
                 width: 64,
                 height: 64,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) {
+                placeholder: (_, __) => Container(
+                  width: 64,
+                  height: 64,
+                  color: Colors.grey.shade200,
+                ),
+                errorWidget: (_, __, ___) {
                   return const Center(
                     child: Text('🎁', style: TextStyle(fontSize: 38)),
                   );

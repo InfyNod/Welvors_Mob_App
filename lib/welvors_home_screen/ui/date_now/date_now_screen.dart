@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/token_helper.dart';
 import 'package:flutter/material.dart';
 import 'send_request_drawer.dart';
@@ -591,10 +592,13 @@ class _DateNowScreenState extends State<DateNowScreen>
                     topLeft: Radius.circular(24),
                     topRight: Radius.circular(24),
                   ),
-                  child: Image.network(
-                    plan['imageUrl'],
+                  child: CachedNetworkImage(
+                    imageUrl: plan['imageUrl'] ?? '',
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey.shade300,
+                    ),
+                    errorWidget: (context, url, error) => Container(
                       color: Colors.grey.shade300,
                       child: const Icon(
                         Icons.restaurant,
@@ -819,7 +823,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                         backgroundImage:
                             plan['avatarUrl'] != null &&
                                 plan['avatarUrl'].toString().isNotEmpty
-                            ? NetworkImage(plan['avatarUrl'])
+                            ? CachedNetworkImageProvider(plan['avatarUrl'])
                             : null,
                         child:
                             plan['avatarUrl'] == null ||

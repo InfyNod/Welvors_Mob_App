@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../post_a_plan/activity_1.dart';
 import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
@@ -599,11 +600,20 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(24),
                 ),
-                child: Image.network(
-                  plan['imageUrl'],
+                child: CachedNetworkImage(
+                  imageUrl: plan['imageUrl'] ?? '',
                   height: 100,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    height: 100,
+                    color: Colors.grey.shade300,
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 100,
+                    color: Colors.grey.shade300,
+                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                  ),
                 ),
               ),
               Container(
@@ -1072,7 +1082,10 @@ class _MyPlanScreenState extends State<MyPlanScreen>
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: NetworkImage(request['avatar']),
+                  backgroundImage: request['avatar'] != null &&
+                          request['avatar'].toString().isNotEmpty
+                      ? CachedNetworkImageProvider(request['avatar'])
+                      : null,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

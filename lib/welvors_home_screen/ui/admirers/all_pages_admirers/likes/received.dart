@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:velvors/config/app_cached_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
@@ -364,7 +365,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
           fit: StackFit.expand,
           children: [
             // Image
-            Image.network(imageUrl, fit: BoxFit.cover),
+            AppCachedImage(imageUrl: imageUrl, fit: BoxFit.cover),
 
             // Blur effect if needed
             if (isBlurred)

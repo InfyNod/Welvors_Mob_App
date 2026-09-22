@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../post_a_plan/activity_1.dart';
 import '../post_a_plan/bloc/post_plan_state.dart';
 import '../history/card_history.dart';
@@ -165,12 +166,17 @@ void showManageBottomSheet(
                 child: emoji.startsWith('http')
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          emoji,
+                        child: CachedNetworkImage(
+                          imageUrl: emoji,
                           width: 40,
                           height: 40,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
+                          placeholder: (_, __) => Container(
+                            width: 40,
+                            height: 40,
+                            color: Colors.grey.shade200,
+                          ),
+                          errorWidget: (context, error, stackTrace) =>
                               const Text('☕', style: TextStyle(fontSize: 32)),
                         ),
                       )
@@ -383,12 +389,17 @@ void showReviewBottomSheet(
                     child: emoji.startsWith('http')
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(16),
-                            child: Image.network(
-                              emoji,
+                            child: CachedNetworkImage(
+                              imageUrl: emoji,
                               width: 40,
                               height: 40,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
+                              placeholder: (_, __) => Container(
+                                width: 40,
+                                height: 40,
+                                color: Colors.grey.shade200,
+                              ),
+                              errorWidget: (context, error, stackTrace) =>
                                   const Text(
                                     '☕',
                                     style: TextStyle(fontSize: 32),
@@ -762,7 +773,10 @@ void showWhoCameBottomSheet(
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundImage: NetworkImage(attendee['avatar']),
+                              backgroundImage: attendee['avatar'] != null &&
+                                      attendee['avatar'].toString().isNotEmpty
+                                  ? CachedNetworkImageProvider(attendee['avatar'])
+                                  : null,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -1019,9 +1033,12 @@ void showFeedbackBottomSheet(
                                 children: [
                                   CircleAvatar(
                                     radius: 20,
-                                    backgroundImage: NetworkImage(
-                                      attendee['avatar'] ?? '',
-                                    ),
+                                    backgroundImage: attendee['avatar'] != null &&
+                                            attendee['avatar'].toString().isNotEmpty
+                                        ? CachedNetworkImageProvider(
+                                            attendee['avatar'],
+                                          )
+                                        : null,
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(

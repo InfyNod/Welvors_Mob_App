@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'detail_drawer.dart';
 
 class CardHistory extends StatelessWidget {
@@ -184,11 +185,22 @@ class CardHistory extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              plan['image'],
+                            child: CachedNetworkImage(
+                              imageUrl: plan['image'] ?? '',
                               width: 60,
                               height: 60,
                               fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                width: 60,
+                                height: 60,
+                                color: Colors.grey.shade300,
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                width: 60,
+                                height: 60,
+                                color: Colors.grey.shade300,
+                                child: const Icon(Icons.broken_image, size: 24, color: Colors.grey),
+                              ),
                             ),
                           ),
                           if (plan['boost'] != null && plan['boost'] != 'No') // Show rocket only if boosted
@@ -311,7 +323,7 @@ class CardHistory extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           backgroundImage: plan['partnerAvatar'] != null && plan['partnerAvatar'].toString().isNotEmpty
-                              ? NetworkImage(plan['partnerAvatar']) as ImageProvider
+                              ? CachedNetworkImageProvider(plan['partnerAvatar']) as ImageProvider
                               : const AssetImage('assets/dummyphoto.jpeg'),
                           radius: 18,
                         ),

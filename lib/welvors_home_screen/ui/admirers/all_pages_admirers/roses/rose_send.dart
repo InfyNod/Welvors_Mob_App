@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/config/app_cached_image.dart';
 import '../../../drawer_files/dating/roses/roses_screen.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_state.dart';
@@ -197,14 +198,12 @@ class _RoseSendScreenState extends State<RoseSendScreen> {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Image.network(
-                  imageUrl,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.cover,
-                ),
+              AppCachedImage(
+                imageUrl: imageUrl,
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                fit: BoxFit.cover,
               ),
               Positioned(
                 bottom: -4,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'chat_bloc/chat_state.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
@@ -139,10 +140,11 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
       ),
       child: ClipOval(
         child: widget.user.image.isNotEmpty
-            ? Image.network(
-                widget.user.image,
+            ? CachedNetworkImage(
+                imageUrl: widget.user.image,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => _fallbackAvatar(),
+                placeholder: (_, __) => _fallbackAvatar(),
+                errorWidget: (_, _, _) => _fallbackAvatar(),
               )
             : _fallbackAvatar(),
       ),
