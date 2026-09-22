@@ -188,9 +188,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
                 DateTime.now().toIso8601String())
             .toString();
 
-    final index = state.allChats.indexWhere(
-      (chat) => (chat.conversationId ?? '').trim() == conversationId,
-    );
+    final index = state.allChats.indexWhere((chat) {
+      final cId = (chat.conversationId ?? '').trim();
+      return (cId.isNotEmpty && cId == conversationId) ||
+          chat.id == conversationId;
+    });
     if (index == -1) {
       add(const LoadChatsEvent());
       return;
@@ -206,10 +208,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       unread: oldChat.unread,
     );
 
-    final updatedAll = <ChatUser>[
-      updatedChat,
-      ...state.allChats.where((c) => c.id != oldChat.id),
-    ];
+    final updatedAll = List<ChatUser>.from(state.allChats);
+    updatedAll.removeAt(index);
+    updatedAll.insert(0, updatedChat);
     var filtered = _applyFilter(List<ChatUser>.from(updatedAll), state.filter);
     final query = state.search.trim().toLowerCase();
     if (query.isNotEmpty) {
@@ -648,9 +649,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
 
     final current = state.allChats;
-    final index = current.indexWhere(
-      (chat) => chat.conversationId == conversationId,
-    );
+    final index = current.indexWhere((chat) {
+      final cId = (chat.conversationId ?? '').trim();
+      return (cId.isNotEmpty && cId == conversationId) ||
+          chat.id == conversationId;
+    });
 
     if (index == -1) {
       debugPrint('⚠️ conversation:update chat not found -> reloading list');
@@ -667,10 +670,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       unread: hasUnreadCount ? unread : oldChat.unread,
     );
 
-    final updatedAll = <ChatUser>[
-      updatedChat,
-      ...current.where((chat) => chat.conversationId != conversationId),
-    ];
+    final updatedAll = List<ChatUser>.from(current);
+    updatedAll.removeAt(index);
+    updatedAll.insert(0, updatedChat);
 
     var updatedFiltered = _applyFilter(
       List<ChatUser>.from(updatedAll),
@@ -958,15 +960,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   void clearConversationUnread(String conversationId) {
     if (conversationId.isEmpty) return;
 
+    final id = conversationId.trim();
     final updatedAllChats = state.allChats.map((chat) {
-      if (chat.conversationId == conversationId && chat.unread > 0) {
+      final cId = (chat.conversationId ?? '').trim();
+      if ((cId == id || chat.id == id) && chat.unread > 0) {
         return chat.copyWith(unread: 0);
       }
       return chat;
     }).toList();
 
     final updatedFilteredChats = state.filteredChats.map((chat) {
-      if (chat.conversationId == conversationId && chat.unread > 0) {
+      final cId = (chat.conversationId ?? '').trim();
+      if ((cId == id || chat.id == id) && chat.unread > 0) {
         return chat.copyWith(unread: 0);
       }
       return chat;
@@ -992,15 +997,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // The backend message:read contract is messageId-based; ChatDetailScreen
     // emits one message:read event for every unread incoming message.
 
+    final id = conversationId.trim();
     final updatedAllChats = state.allChats.map((chat) {
-      if (chat.conversationId == conversationId && chat.unread > 0) {
+      final cId = (chat.conversationId ?? '').trim();
+      if ((cId == id || chat.id == id) && chat.unread > 0) {
         return chat.copyWith(unread: 0);
       }
       return chat;
     }).toList();
 
     final updatedFilteredChats = state.filteredChats.map((chat) {
-      if (chat.conversationId == conversationId && chat.unread > 0) {
+      final cId = (chat.conversationId ?? '').trim();
+      if ((cId == id || chat.id == id) && chat.unread > 0) {
         return chat.copyWith(unread: 0);
       }
       return chat;
@@ -1498,9 +1506,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final conversationId = (event.conversationId ?? '').trim();
 
     final chatIndex = chatList.indexWhere((chat) {
+      final cId = (chat.conversationId ?? '').trim();
       return chat.id == event.chatId ||
           (conversationId.isNotEmpty &&
-              (chat.conversationId ?? '').trim() == conversationId);
+              (cId == conversationId || chat.id == conversationId));
     });
 
     if (chatIndex >= 0) {
