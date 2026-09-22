@@ -2155,11 +2155,12 @@ class ChatUser extends Equatable {
     // BASIC DATA
     // ==========================================================
 
-    final id = (json['id'] ?? '').toString();
+    final id = (json['id'] ?? json['_id'] ?? json['conversationId'] ?? '').toString();
 
-    final conversationId = (json['conversationId'] ?? '').toString();
+    final conversationId =
+        (json['conversationId'] ?? json['id'] ?? json['_id'] ?? '').toString();
 
-    final profileId = (user['id'] ?? '').toString();
+    final profileId = (user['id'] ?? user['_id'] ?? '').toString();
 
     final fullName = (user['fullName'] ?? 'Unknown').toString();
 
