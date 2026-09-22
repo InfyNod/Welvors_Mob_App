@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import '../../services/logger_service.dart';
 import 'send_compliment/complimenting.dart';
 import 'match/match_analysis_screen.dart';
 import 'trust_score/trust_screen.dart';
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await ScreenProtector.preventScreenshotOn();
       await ScreenProtector.protectDataLeakageWithBlur();
     } catch (e) {
-      debugPrint("Screen protection error: $e");
+      AppLogger.e('HomeScreen', 'Screen protection error: $e', error: e);
     }
   }
 
@@ -75,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await ScreenProtector.preventScreenshotOff();
       await ScreenProtector.protectDataLeakageWithBlurOff();
     } catch (e) {
-      debugPrint("Screen unprotection error: $e");
+      AppLogger.e('HomeScreen', 'Screen unprotection error: $e', error: e);
     }
   }
 
@@ -2755,7 +2756,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
           setState(() {});
         })
         .catchError((error) {
-          debugPrint("Video Init Error: $error");
+          AppLogger.e('HomeScreen', 'Video Init Error: $error', error: error);
           // We can just stop loading by calling setState
           if (mounted) {
             setState(() {});

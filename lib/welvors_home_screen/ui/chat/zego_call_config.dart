@@ -1,4 +1,4 @@
-// import 'package:flutter/foundation.dart';
+// import 'package:welvors_mob_app/welvors_home_screen/services/logger_service.dart';
 // import 'package:flutter/material.dart';
 // import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 // import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
@@ -47,7 +47,8 @@
 //     required String userName,
 //   }) async {
 //     if (!ZegoCallConfig.configured) {
-//       debugPrint(
+//       AppLogger.w(
+//         'ZegoCallService',
 //         'ZEGOCLOUD is not configured. Set ZEGO_APP_ID and ZEGO_APP_SIGN.',
 //       );
 //       return false;
@@ -79,7 +80,8 @@
 //     required bool isVideoCall,
 //   }) async {
 //     if (!ZegoCallConfig.configured) {
-//       debugPrint(
+//       AppLogger.w(
+//         'ZegoCallService',
 //         'ZEGOCLOUD is not configured. Set ZEGO_APP_ID and ZEGO_APP_SIGN.',
 //       );
 //       return false;

@@ -1,3 +1,4 @@
+import '../../../../../../../services/logger_service.dart';
 import '../../bloc/Education/education_bloc.dart';
 import '../../bloc/Education/education_state.dart';
 import '../../export.dart';
@@ -97,7 +98,7 @@ class EducationScreen extends StatelessWidget {
                       return EducationMethodCard(
                         method: data.methods[index],
                         onTap: () {
-                          debugPrint(data.methods[index].id);
+                          AppLogger.d('EducationScreen', data.methods[index].id);
                           if (data.methods[index].id.toString() == "Instant") {
                             Navigator.push(
                               context,

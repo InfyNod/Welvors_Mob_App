@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../services/logger_service.dart';
 import 'admirers_event.dart';
 import 'admirers_state.dart';
 
@@ -190,9 +191,9 @@ class AdmirersBloc extends Bloc<AdmirersEvent, AdmirersState> {
           activeTab: currentActiveTab,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
       // If API fails, fallback to mock data so UI doesn't break
-      print("API Fetch failed: $e");
+      AppLogger.e('AdmirersBloc', 'API Fetch failed: $e', error: e, stackTrace: st);
       emit(
         AdmirersLoaded(
           coins: 1280,

@@ -1,3 +1,4 @@
+import '../../../../../../../services/logger_service.dart';
 import '../../export.dart';
 import 'bloc/professional_verfication_bloc.dart';
 import 'bloc/professional_verfication_state.dart';
@@ -125,7 +126,7 @@ class ProfessionalVerficationScreen extends StatelessWidget {
                               return EducationMethodCard(
                                 method: method,
                                 onTap: () {
-                                  debugPrint(method.id);
+                                  AppLogger.d('ProfessionalVerficationScreen', method.id);
 
                                   if (method.id == "Professional_Instant") {
                                     Navigator.push(

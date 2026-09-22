@@ -19,6 +19,8 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosyste
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 
 import 'package:velvors/config/env_config.dart';
+
+import '../../services/logger_service.dart';
 // ============================================================
 // SIDEDRAWER
 // ============================================================
@@ -129,7 +131,10 @@ class Sidedrawer {
 
       bannerTimerStarted = true;
 
-      debugPrint('BANNER TIMER STARTED - INITIAL INDEX: $currentBannerIndex');
+      AppLogger.d(
+        'SideDrawer',
+        'Banner timer started - initial index: $currentBannerIndex',
+      );
 
       bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
         // ========================================================
@@ -137,7 +142,7 @@ class Sidedrawer {
         // ========================================================
 
         if (!sheetContext.mounted) {
-          debugPrint('BANNER TIMER CANCELLED - SHEET CLOSED');
+          AppLogger.d('SideDrawer', 'Banner timer cancelled - sheet closed');
 
           timer.cancel();
           bannerTimer = null;
@@ -154,11 +159,7 @@ class Sidedrawer {
           currentBannerIndex = currentBannerIndex == 0 ? 1 : 0;
         });
 
-        debugPrint('==============================================');
-
-        debugPrint('AUTO BANNER CHANGED: $currentBannerIndex');
-
-        debugPrint('==============================================');
+        AppLogger.d('SideDrawer', 'Auto banner changed: $currentBannerIndex');
       });
     }
 
@@ -201,13 +202,10 @@ class Sidedrawer {
 
             final token = prefs.getString('auth_token');
 
-            debugPrint('==============================================');
-
-            debugPrint('MUTE NOTIFICATION GET');
-
-            debugPrint('TOKEN EXISTS: ${token != null && token.isNotEmpty}');
-
-            debugPrint('==============================================');
+            AppLogger.d(
+              'SideDrawer',
+              'Mute notification get, token exists: ${token != null && token.isNotEmpty}',
+            );
 
             if (token == null || token.isEmpty) {
               if (sheetContext.mounted) {
@@ -227,9 +225,11 @@ class Sidedrawer {
               },
             );
 
-            debugPrint('MUTE GET STATUS: ${response.statusCode}');
-
-            debugPrint('MUTE GET RESPONSE: ${response.body}');
+            AppLogger.apiResponse(
+              'SideDrawer',
+              statusCode: response.statusCode,
+              body: response.body,
+            );
 
             if (response.statusCode >= 200 && response.statusCode < 300) {
               final Map<String, dynamic> responseData = jsonDecode(
@@ -262,9 +262,12 @@ class Sidedrawer {
               }
             }
           } catch (e, stackTrace) {
-            debugPrint('MUTE GET ERROR: $e');
-
-            debugPrint('$stackTrace');
+            AppLogger.e(
+              'SideDrawer',
+              'Mute get error',
+              error: e,
+              stackTrace: stackTrace,
+            );
 
             if (sheetContext.mounted) {
               setModalState(() {
@@ -284,16 +287,13 @@ class Sidedrawer {
 
             final token = prefs.getString('auth_token');
 
-            debugPrint('==============================================');
-
-            debugPrint('MUTE NOTIFICATION PATCH');
-
-            debugPrint('NEW VALUE: $newValue');
-
-            debugPrint('==============================================');
+            AppLogger.d(
+              'SideDrawer',
+              'Mute notification patch: newValue=$newValue',
+            );
 
             if (token == null || token.isEmpty) {
-              debugPrint('MUTE PATCH: AUTH TOKEN NOT FOUND');
+              AppLogger.w('SideDrawer', 'Mute patch: auth token not found');
 
               return false;
             }
@@ -307,9 +307,11 @@ class Sidedrawer {
               body: jsonEncode({'isEnabled': newValue}),
             );
 
-            debugPrint('MUTE PATCH STATUS: ${response.statusCode}');
-
-            debugPrint('MUTE PATCH RESPONSE: ${response.body}');
+            AppLogger.apiResponse(
+              'SideDrawer',
+              statusCode: response.statusCode,
+              body: response.body,
+            );
 
             if (response.statusCode >= 200 && response.statusCode < 300) {
               return true;
@@ -317,9 +319,12 @@ class Sidedrawer {
 
             return false;
           } catch (e, stackTrace) {
-            debugPrint('MUTE PATCH ERROR: $e');
-
-            debugPrint('$stackTrace');
+            AppLogger.e(
+              'SideDrawer',
+              'Mute patch error',
+              error: e,
+              stackTrace: stackTrace,
+            );
 
             return false;
           }
@@ -474,7 +479,10 @@ class Sidedrawer {
                                 muteUpdating = false;
                               });
 
-                              debugPrint('MUTE STATUS UPDATED: $newValue');
+                              AppLogger.i(
+                                'SideDrawer',
+                                'Mute status updated: $newValue',
+                              );
                             } else {
                               setModalState(() {
                                 muteEnabled = oldValue;
@@ -1041,7 +1049,10 @@ class Sidedrawer {
     // ============================================================
 
     if (bannerTimer != null) {
-      debugPrint('BANNER TIMER CANCELLED - PROFILE SHEET CLOSED');
+      AppLogger.d(
+        'SideDrawer',
+        'Banner timer cancelled - profile sheet closed',
+      );
 
       bannerTimer!.cancel();
       bannerTimer = null;

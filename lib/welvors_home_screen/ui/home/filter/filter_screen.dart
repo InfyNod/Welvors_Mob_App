@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../services/logger_service.dart';
 import 'all_screen/age.dart';
 import 'all_screen/distance.dart';
 import 'all_screen/show_me.dart';
@@ -1536,8 +1537,7 @@ class _FilterScreenState extends State<FilterScreen> {
               final payload = filterState.hasActiveFilters
                   ? filterState.toJson()
                   : null;
-              debugPrint('====== [FILTER SCREEN] DISPATCHING EVENT ======');
-              debugPrint('Filters: $payload');
+              AppLogger.i('FilterScreen', 'Dispatching event with filters: $payload');
               context.read<HomeBloc>().add(
                 LoadHomeDataEvent(isRefresh: true, filters: payload),
               );

@@ -1,3 +1,4 @@
+import '../../../../../../../services/logger_service.dart';
 import '../../export.dart';
 import 'upload_id/screens/upload_id_screen.dart';
 import '../instant_verification/widget/instant_verification_screen.dart';
@@ -101,7 +102,7 @@ class GovernmentVerificationScreen extends StatelessWidget {
                           return GovernmentMethodCard(
                             method: data.methods[index],
                             onTap: () {
-                              debugPrint(data.methods[index].id.toString());
+                              AppLogger.d('GovernmentVerificationScreen', data.methods[index].id.toString());
                               if (data.methods[index].id ==
                                   "instant_verification") {
                                 Navigator.push(

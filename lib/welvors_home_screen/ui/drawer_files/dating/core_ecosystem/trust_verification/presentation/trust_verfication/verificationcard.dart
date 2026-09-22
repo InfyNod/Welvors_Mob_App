@@ -1,3 +1,4 @@
+import '../../../../../../../services/logger_service.dart';
 import '../../bloc/Education/education_bloc.dart';
 import '../../bloc/Education/education_event.dart';
 import '../../data/education_repository.dart';
@@ -39,7 +40,7 @@ class VerificationCard extends StatelessWidget {
                 //     ? null
                 //     : () => onVerifyItem!(index),
                 onVerify: () {
-                  debugPrint("<<<<${items[index].buttonIds}>>>>");
+                  AppLogger.d('VerificationCard', '<<<<${items[index].buttonIds}>>>>');
                   if (items[index].buttonIds != null &&
                       items[index].buttonIds == 'government_id_verification') {
                     Navigator.push(

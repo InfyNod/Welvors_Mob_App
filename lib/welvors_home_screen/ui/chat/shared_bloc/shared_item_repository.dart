@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../services/logger_service.dart';
 import 'shared_item_model.dart';
 
 import 'package:velvors/config/env_config.dart';
@@ -16,7 +16,10 @@ class SharedItemRepository {
       throw Exception('Conversation ID is missing');
     }
 
-    debugPrint('📦 SHARED ITEMS conversationId: $conversationId');
+    AppLogger.d(
+      'SharedItemRepository',
+      'Conversation ID: $conversationId',
+    );
 
     final results = await Future.wait([
       _getItems(conversationId: conversationId, type: 'MEDIA'),
@@ -40,17 +43,22 @@ class SharedItemRepository {
       '?type=$type',
     );
 
-    debugPrint('📡 SHARED ITEM API');
-    debugPrint('➡️ TYPE: $type');
-    debugPrint('➡️ URL: $uri');
-
     final headers = await _headers();
+
+    AppLogger.apiRequest(
+      'SharedItemRepository',
+      method: 'GET',
+      url: uri.toString(),
+      headers: headers,
+    );
 
     final response = await http.get(uri, headers: headers);
 
-    debugPrint('⬅️ STATUS [$type]: ${response.statusCode}');
-
-    debugPrint('⬅️ RESPONSE [$type]: ${response.body}');
+    AppLogger.apiResponse(
+      'SharedItemRepository',
+      statusCode: response.statusCode,
+      body: response.body,
+    );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Unable to load $type (${response.statusCode})');

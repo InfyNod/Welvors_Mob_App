@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../../../services/logger_service.dart';
 import '../data/instant_verification_repository.dart';
 
 import 'instant_verification_event.dart';
@@ -175,7 +175,7 @@ class InstantVerificationBloc
     VerifyOtp event,
     Emitter<InstantVerificationState> emit,
   ) async {
-    debugPrint('🔥 VERIFY OTP CALLED: ${state.otp}');
+    AppLogger.d('InstantVerificationBloc', '🔥 VERIFY OTP CALLED: ${state.otp}');
 
     if (state.status == InstantVerificationStatus.loading) {
       return;
@@ -205,7 +205,7 @@ class InstantVerificationBloc
       );
 
       if (success) {
-        debugPrint('✅ REPOSITORY SUCCESS');
+        AppLogger.i('InstantVerificationBloc', '✅ REPOSITORY SUCCESS');
 
         emit(
           state.copyWith(
@@ -218,7 +218,7 @@ class InstantVerificationBloc
         return;
       }
 
-      debugPrint('❌ REPOSITORY FALSE');
+      AppLogger.w('InstantVerificationBloc', '❌ REPOSITORY FALSE');
 
       emit(
         state.copyWith(
@@ -226,7 +226,8 @@ class InstantVerificationBloc
           errorMessage: 'Invalid OTP',
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.e('InstantVerificationBloc', 'Error verifying OTP', error: e, stackTrace: st);
       emit(
         state.copyWith(
           status: InstantVerificationStatus.failure,
