@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:velvors/welvors_home_screen/services/token_helper.dart';
@@ -8,8 +8,8 @@ import 'package:lottie/lottie.dart';
 import '../../../../../../onbording_allpage/theme/app_colors.dart';
 import '../../../../../../onbording_allpage/theme/app_text.dart';
 import '../../../../../../onbording_allpage/widgets/primary_button.dart';
-// import '../edit_profile/bloc/profile_edit_cubit.dart';
-// import '../edit_profile/bloc/profile_edit_state.dart';
+import '../edit_profile/bloc/profile_edit_cubit.dart';
+import '../edit_profile/bloc/profile_edit_state.dart';
 
 import 'splash_logout.dart';
 
@@ -40,7 +40,11 @@ class LogoutScreen extends StatelessWidget {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
         if (data['success'] == true) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.clear();
+
           if (context.mounted) {
+            context.read<ProfileEditCubit>().reset();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const SplashLogout()),
