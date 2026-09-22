@@ -146,7 +146,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                         p['userId'])
                   : p['userId'],
               'verified': p['host'] != null && p['host']['isVerified'] == true,
-              'nameSubtitle': 'Host',
+              'nameSubtitle': 'Host, Organizer',
               'avatarUrl': p['host'] != null
                   ? (p['host']['profilePhoto'] ?? '')
                   : '',
@@ -221,7 +221,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                   style: TextStyle(color: Colors.black),
                 ),
                 TextSpan(
-                  text: 'Now',
+                  text: 'Plans',
                   style: TextStyle(color: Color(0xFFE43A6A)), // Pink
                 ),
               ],
@@ -612,8 +612,10 @@ class _DateNowScreenState extends State<DateNowScreen>
                 Positioned(
                   top: 16,
                   left: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  right: 56, // Leave space for the flag icon
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -625,6 +627,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
                               width: 6,
@@ -635,18 +638,21 @@ class _DateNowScreenState extends State<DateNowScreen>
                               ),
                             ),
                             const SizedBox(width: 6),
-                            Text(
-                              plan['location'],
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
+                            Flexible(
+                              child: Text(
+                                plan['location'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -657,10 +663,11 @@ class _DateNowScreenState extends State<DateNowScreen>
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(
                               Icons.location_on,
-                              color: Colors.white,
+                              color: Colors.redAccent,
                               size: 12,
                             ),
                             const SizedBox(width: 4),
@@ -682,51 +689,93 @@ class _DateNowScreenState extends State<DateNowScreen>
                 Positioned(
                   top: 16,
                   right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.flag_outlined,
-                      color: Colors.white,
-                      size: 16,
+                  child: GestureDetector(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Reported successfully',
+                            textAlign: TextAlign.center,
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 60,
+                            vertical: 20,
+                          ),
+                          duration: Duration(seconds: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.flag_outlined,
+                        color: Colors.white,
+                        size: 16,
+                      ),
                     ),
                   ),
                 ),
-                // Bottom Right Match %
+                // Bottom Center Match %
                 Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9), // Translucent white
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '💜 ${plan['match']} · 🛡️ 98% trust',
-                          style: const TextStyle(
-                            color: Color(0xFFE43A6A),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
+                  bottom: 12,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: '💜 ${plan['match']}',
+                                  style: const TextStyle(
+                                    color: Color(0xFF8B5CF6),
+                                  ), // Purple
+                                ),
+                                const TextSpan(
+                                  text: ' · ',
+                                  style: TextStyle(color: Colors.black54),
+                                ),
+                                const TextSpan(
+                                  text: '🛡️ 98% trust',
+                                  style: TextStyle(
+                                    color: Color(0xFF10B981),
+                                  ), // Green
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -748,24 +797,24 @@ class _DateNowScreenState extends State<DateNowScreen>
                   children: [
                     _buildInfoTag(
                       plan['date'],
-                      const Color(0xFFE43A6A),
-                      const Color(0xFFFCE4EC),
+                      Colors.white,
+                      const Color(0xFFE43A6A), // Brand Pink
                     ),
                     const SizedBox(width: 8),
                     _buildInfoTag(
                       plan['time'],
-                      const Color(0xFF5D3587),
-                      const Color(0xFFF3E5F5),
+                      Colors.white,
+                      const Color(0xFF1E293B), // Dark Slate
                     ),
                     const SizedBox(width: 8),
                     _buildInfoTag(
                       plan['type'],
-                      const Color(0xFF5D3587),
-                      const Color(0xFFF3E5F5),
+                      Colors.white,
+                      const Color(0xFF8B5CF6), // Violet
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
 
                 // Title
                 Text(
@@ -871,8 +920,8 @@ class _DateNowScreenState extends State<DateNowScreen>
                           ],
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
+                      GestureDetector(
+                        onTap: () {
                           if (plan['userId'] != null) {
                             Navigator.push(
                               context,
@@ -910,23 +959,45 @@ class _DateNowScreenState extends State<DateNowScreen>
                             );
                           }
                         },
-                        child: const Row(
-                          children: [
-                            Text(
-                              'Profile',
-                              style: TextStyle(
-                                color: Color(0xFFE43A6A),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFDE2957).withOpacity(0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
                               ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Color(0xFFE43A6A),
-                              size: 14,
-                            ),
-                          ],
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Profile',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              SizedBox(width: 4),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -1054,11 +1125,17 @@ class _DateNowScreenState extends State<DateNowScreen>
 
   Widget _buildInfoTag(String text, Color textColor, Color bgColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: bgColor.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: textColor.withOpacity(0.2), width: 1),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: bgColor.withOpacity(0.3),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Text(
         text,

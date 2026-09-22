@@ -1451,6 +1451,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
           liveAge: _liveAge,
           livePackageType: _livePackageType,
           isUserOnline: _isUserOnline,
+          onBackTap: () => Navigator.of(context).maybePop(),
           onMoreTap: () {
             Sidedrawer(
               context: context,

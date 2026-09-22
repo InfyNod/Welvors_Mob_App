@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 
 /// Top AppBar for ChatDetailScreen showing user details, online status, and actions.
 class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -38,15 +37,18 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleSpacing: 0,
       title: Row(
         children: [
-          wSized15,
-          _buildAvatar(
+          const SizedBox(width: 12),
+          _buildBackButton(context),
+          const SizedBox(width: 10),
+          _buildAvatarWithStatus(
             context,
             liveImage,
-            size: 48,
+            size: 44,
             name: liveName,
             age: liveAge.toString(),
+            isOnline: isUserOnline,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,6 +96,72 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: onMoreTap,
           icon: const Icon(Icons.more_vert, color: AppColors.ink),
         ),
+      ],
+    );
+  }
+
+  Widget  _buildBackButton(BuildContext context) {
+    return GestureDetector(
+      onTap: onBackTap ?? () => Navigator.of(context).maybePop(),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Icon(
+            Icons.arrow_back_ios_new,
+            size: 16,
+            color: AppColors.ink,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarWithStatus(
+    BuildContext context,
+    String url, {
+    double size = 44,
+    required String name,
+    required String age,
+    required bool isOnline,
+  }) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _buildAvatar(
+          context,
+          url,
+          size: size,
+          name: name,
+          age: age,
+        ),
+        if (isOnline)
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: AppColors.green,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+            ),
+          ),
       ],
     );
   }

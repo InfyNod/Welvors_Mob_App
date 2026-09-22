@@ -11,6 +11,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     loadProfile();
   }
 
+  void reset() {
+    emit(ProfileEditState.initial());
+  }
+
   Future<void> loadProfile() async {
     final response = await EditProfileApiService.getProfileDetails();
     if (response['error'] == null && response['data'] != null) {
