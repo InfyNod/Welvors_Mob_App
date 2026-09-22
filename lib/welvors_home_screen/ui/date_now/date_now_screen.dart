@@ -834,12 +834,16 @@ class _DateNowScreenState extends State<DateNowScreen>
                           children: [
                             Row(
                               children: [
-                                Text(
-                                  plan['name'],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.black87,
+                                Flexible(
+                                  child: Text(
+                                    plan['name'],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
                                 if (plan['verified']) ...[
