@@ -16,6 +16,7 @@ import '../../../onbording_allpage/theme/app_colors.dart';
 import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:screen_protector/screen_protector.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class SectionColor {
   final Color bg;
@@ -2212,9 +2213,12 @@ class _CardsStack extends StatelessWidget {
             );
           }
 
+          // Only render top 2 profiles (front draggable + next static) to prevent ghosting & performance waste
+          final visibleProfiles = state.profiles.take(2).toList();
+
           return Stack(
             clipBehavior: Clip.none,
-            children: state.profiles
+            children: visibleProfiles
                 .asMap()
                 .entries
                 .map((entry) {
@@ -2222,9 +2226,7 @@ class _CardsStack extends StatelessWidget {
                   final profile = entry.value;
                   final isFront = index == 0;
 
-                  final widgetKey = ValueKey(
-                    profile.id,
-                  ); // Stable key instead of images.first
+                  final widgetKey = ValueKey(profile.id);
 
                   return isFront && !isPreview
                       ? _DraggableCard(key: widgetKey, profile: profile)
@@ -2446,29 +2448,80 @@ class _ProfileCardUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasImages = profile.images.isNotEmpty;
+    final firstImage = hasImages ? profile.images.first : '';
+
     return Container(
       decoration: BoxDecoration(
+        color: const Color(0xFF18181B),
         borderRadius: BorderRadius.circular(24),
-        image: profile.images.isNotEmpty
-            ? DecorationImage(
-                image: profile.images.first.startsWith('http')
-                    ? NetworkImage(profile.images.first) as ImageProvider
-                    : FileImage(File(profile.images.first)),
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-              )
-            : null,
-        gradient: profile.images.isEmpty
-            ? LinearGradient(
-                colors: [const Color(0xFF2C2C32), const Color(0xFF18181B)],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Base solid dark gradient to guarantee opacity while image loads
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF2C2C32), Color(0xFF18181B)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-              )
-            : null,
-      ),
-      child: Stack(
-        children: [
-          if (profile.images.isEmpty)
+              ),
+            ),
+          ),
+
+          // Main Profile Image
+          if (hasImages && firstImage.isNotEmpty)
+            Positioned.fill(
+              child: firstImage.startsWith('http')
+                  ? CachedNetworkImage(
+                      imageUrl: firstImage,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.high,
+                      placeholder: (context, url) => Container(
+                        color: const Color(0xFF18181B),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.pink,
+                            strokeWidth: 2.5,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: const Color(0xFF18181B),
+                        child: const Center(
+                          child: Icon(
+                            Icons.person_rounded,
+                            size: 80,
+                            color: Colors.white24,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Image.file(
+                      File(firstImage),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: const Color(0xFF18181B),
+                        child: const Center(
+                          child: Icon(
+                            Icons.person_rounded,
+                            size: 80,
+                            color: Colors.white24,
+                          ),
+                        ),
+                      ),
+                    ),
+            )
+          else
             const Positioned.fill(
               child: Center(
                 child: Icon(

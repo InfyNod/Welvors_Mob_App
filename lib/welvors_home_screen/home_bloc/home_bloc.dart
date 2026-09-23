@@ -66,7 +66,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             )
             .toList();
         AppLogger.d('HomeBloc', 'Parsed profiles successfully');
-        final updatedProfiles = [...currentProfiles, ...newProfiles];
+        final allProfiles = [...currentProfiles, ...newProfiles];
+        final seenIds = <String>{};
+        final List<ProfileModel> updatedProfiles = [];
+        for (var p in allProfiles) {
+          if (p.id.isNotEmpty && seenIds.add(p.id)) {
+            updatedProfiles.add(p);
+          }
+        }
         AppLogger.d(
           'HomeBloc',
           'Updated profiles count: ${updatedProfiles.length}',
