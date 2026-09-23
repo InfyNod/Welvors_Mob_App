@@ -11,8 +11,10 @@ class AdmirersLoaded extends AdmirersState {
   final List<Map<String, dynamic>> roses;
   final List<Map<String, dynamic>> sentRoses; // newly added
   final String activeTab; // 'likes', 'roses', 'vip'
+  final bool isLocked;
+  final int? receivedLikesCount;
 
-  int get likesCount => likes.length;
+  int get likesCount => receivedLikesCount ?? likes.length;
   int get rosesCount => roses.length;
 
   AdmirersLoaded({
@@ -22,6 +24,8 @@ class AdmirersLoaded extends AdmirersState {
     required this.roses,
     required this.sentRoses,
     required this.activeTab,
+    this.isLocked = false,
+    this.receivedLikesCount,
   });
 
   AdmirersLoaded copyWith({
@@ -31,6 +35,8 @@ class AdmirersLoaded extends AdmirersState {
     List<Map<String, dynamic>>? roses,
     List<Map<String, dynamic>>? sentRoses,
     String? activeTab,
+    bool? isLocked,
+    int? receivedLikesCount,
   }) {
     return AdmirersLoaded(
       coins: coins ?? this.coins,
@@ -39,6 +45,8 @@ class AdmirersLoaded extends AdmirersState {
       roses: roses ?? this.roses,
       sentRoses: sentRoses ?? this.sentRoses,
       activeTab: activeTab ?? this.activeTab,
+      isLocked: isLocked ?? this.isLocked,
+      receivedLikesCount: receivedLikesCount ?? this.receivedLikesCount,
     );
   }
 }

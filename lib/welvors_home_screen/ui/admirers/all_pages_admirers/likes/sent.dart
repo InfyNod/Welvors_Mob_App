@@ -4,7 +4,6 @@ import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
-import 'reveal_drawer.dart';
 
 class SentLikesScreen extends StatefulWidget {
   const SentLikesScreen({super.key});
@@ -29,14 +28,16 @@ class _SentLikesScreenState extends State<SentLikesScreen> {
           final sentCards = allSentCards.where((c) => !_hiddenCardIds.contains(c['id']?.toString() ?? '')).toList();
 
           if (sentCards.isEmpty) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: Text(
-                  'No sent likes yet',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
+            return RefreshIndicator(
+              color: const Color(0xFFE43A6A),
+              onRefresh: () async {
+                setState(() {
+                  _hiddenCardIds.clear();
+                });
+                context.read<AdmirersBloc>().add(LoadAdmirersData());
+                await Future.delayed(const Duration(milliseconds: 1500));
+              },
+              child: _buildEmptyState(),
             );
           }
 
@@ -74,6 +75,65 @@ class _SentLikesScreenState extends State<SentLikesScreen> {
         }
         return const SizedBox();
       },
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 40.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 88,
+                    height: 88,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFE43A6A).withOpacity(0.08),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.send_rounded,
+                        size: 42,
+                        color: Color(0xFFE43A6A),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'No Sent Likes Yet',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1F1F1F),
+                      letterSpacing: -0.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Profiles you like will appear here so you can keep track of them.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.4,
+                      color: Colors.grey.shade600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

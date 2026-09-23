@@ -17,28 +17,13 @@ class ReceivedLikesScreen extends StatefulWidget {
 }
 
 class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
-  List<Map<String, dynamic>> _likeCards = [];
-  bool _isInitialized = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_isInitialized) {
-      final bloc = context.read<AdmirersBloc>();
-      if (bloc.state is AdmirersLoaded) {
-        _likeCards = List.from((bloc.state as AdmirersLoaded).likes);
-      }
-      _isInitialized = true;
-    }
-  }
+  final Set<dynamic> _removedCardIds = {};
 
   void _handleAction(dynamic id, String popupText) async {
-    final index = _likeCards.indexWhere((card) => card['id'] == id);
-    if (index >= 0) {
-      _likeCards.removeAt(index);
-      context.read<AdmirersBloc>().add(RemoveLike(id));
-      setState(() {});
-    }
+    setState(() {
+      _removedCardIds.add(id);
+    });
+    context.read<AdmirersBloc>().add(RemoveLike(id));
     
     // Pass the text to custom popup
     _showCustomPopup(context, popupText);
@@ -139,61 +124,109 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      color: const Color(0xFFE43A6A),
-      onRefresh: () async {
-        context.read<AdmirersBloc>().add(LoadAdmirersData());
-        await Future.delayed(const Duration(milliseconds: 1500));
-      },
-      child: _likeCards.isEmpty
-          ? const CustomScrollView(
-              physics: BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              slivers: [
-                SliverFillRemaining(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text(
-                        'No received likes yet',
-                        style: TextStyle(color: Colors.grey),
-                      ),
+    return BlocBuilder<AdmirersBloc, AdmirersState>(
+      builder: (context, state) {
+        if (state is AdmirersLoading || state is AdmirersInitial) {
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
+          );
+        } else if (state is AdmirersLoaded) {
+          final allCards = state.likes;
+          final likeCards = allCards
+              .where((c) => !_removedCardIds.contains(c['id']))
+              .toList();
+
+          return RefreshIndicator(
+            color: const Color(0xFFE43A6A),
+            onRefresh: () async {
+              setState(() {
+                _removedCardIds.clear();
+              });
+              context.read<AdmirersBloc>().add(LoadAdmirersData());
+              await Future.delayed(const Duration(milliseconds: 1500));
+            },
+            child: likeCards.isEmpty
+                ? _buildEmptyState()
+                : SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildReceivedGrid(likeCards),
+                        _buildPremiumBanner(),
+                        const SizedBox(height: 24), // Bottom padding for scrolling
+                      ],
                     ),
                   ),
-                ),
-              ],
-            )
-          : SingleChildScrollView(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  _buildReceivedGrid(),
-                  if (_likeCards.isNotEmpty) _buildPremiumBanner(),
-                  const SizedBox(height: 24), // Bottom padding for scrolling
-                ],
-              ),
-            ),
+          );
+        }
+        return const SizedBox();
+      },
     );
   }
 
-  Widget _buildReceivedGrid() {
-    if (_likeCards.isEmpty) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 80),
-        child: const Center(
-          child: Text(
-            'No received likes yet',
-            style: TextStyle(color: Colors.grey),
+  Widget _buildEmptyState() {
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 40.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 88,
+                    height: 88,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFE43A6A).withOpacity(0.08),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.favorite_border_rounded,
+                        size: 44,
+                        color: Color(0xFFE43A6A),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'No Received Likes Yet',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1F1F1F),
+                      letterSpacing: -0.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'When people like your profile, they will appear here.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.4,
+                      color: Colors.grey.shade600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-      );
-    }
+      ],
+    );
+  }
 
+  Widget _buildReceivedGrid(List<Map<String, dynamic>> likeCards) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -204,9 +237,9 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
         childAspectRatio: 0.74,
       ),
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      itemCount: _likeCards.length,
+      itemCount: likeCards.length,
       itemBuilder: (context, index) {
-        final card = _likeCards[index];
+        final card = likeCards[index];
         return _buildProfileCard(
           id: card['id'],
           name: card['isBlurred'] ? '' : card['name'],
