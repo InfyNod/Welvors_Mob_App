@@ -621,7 +621,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                         } else {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
                                   'Failed to create plan. Please try again.',
                                 ),

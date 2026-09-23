@@ -154,7 +154,10 @@ class _Location3ViewState extends State<Location3View> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update plan. Please try again.')));
+          final errorMessage = response?['message']?.toString() ??
+              response?['error']?.toString() ??
+              'Failed to update plan. Please try again.';
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
         }
       }
     } catch (e) {

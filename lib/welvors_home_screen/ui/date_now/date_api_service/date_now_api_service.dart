@@ -120,18 +120,43 @@ class DateNowApiService {
         body: json.encode(data),
       );
 
+      AppLogger.i(
+        'DateNowApiService',
+        'Post Plan Status: ${response.statusCode} - ${response.body}',
+      );
+
+      if (response.body.isNotEmpty) {
+        try {
+          final decoded = json.decode(response.body);
+          if (decoded is Map<String, dynamic>) {
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+              decoded.putIfAbsent('success', () => true);
+            } else {
+              decoded.putIfAbsent('success', () => false);
+            }
+            return decoded;
+          }
+        } catch (_) {}
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return json.decode(response.body);
+        return {'success': true};
       } else {
         AppLogger.e(
           'DateNowApiService',
           'Failed to post plan: ${response.statusCode} - ${response.body}',
         );
-        return null;
+        return {
+          'success': false,
+          'message': 'Failed to create plan (${response.statusCode})',
+        };
       }
     } catch (e) {
       AppLogger.e('DateNowApiService', 'Error posting plan: $e', error: e);
-      return null;
+      return {
+        'success': false,
+        'message': 'Network error occurred. Please try again.',
+      };
     }
   }
 
@@ -148,18 +173,43 @@ class DateNowApiService {
         body: json.encode(data),
       );
 
+      AppLogger.i(
+        'DateNowApiService',
+        'Patch Plan Status: ${response.statusCode} - ${response.body}',
+      );
+
+      if (response.body.isNotEmpty) {
+        try {
+          final decoded = json.decode(response.body);
+          if (decoded is Map<String, dynamic>) {
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+              decoded.putIfAbsent('success', () => true);
+            } else {
+              decoded.putIfAbsent('success', () => false);
+            }
+            return decoded;
+          }
+        } catch (_) {}
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return json.decode(response.body);
+        return {'success': true};
       } else {
         AppLogger.e(
           'DateNowApiService',
           'Failed to patch plan: ${response.statusCode} - ${response.body}',
         );
-        return null;
+        return {
+          'success': false,
+          'message': 'Failed to update plan (${response.statusCode})',
+        };
       }
     } catch (e) {
       AppLogger.e('DateNowApiService', 'Error patching plan: $e', error: e);
-      return null;
+      return {
+        'success': false,
+        'message': 'Network error occurred. Please try again.',
+      };
     }
   }
 
@@ -176,18 +226,43 @@ class DateNowApiService {
         body: json.encode(data),
       );
 
+      AppLogger.i(
+        'DateNowApiService',
+        'Patch Plan Activity Status: ${response.statusCode} - ${response.body}',
+      );
+
+      if (response.body.isNotEmpty) {
+        try {
+          final decoded = json.decode(response.body);
+          if (decoded is Map<String, dynamic>) {
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+              decoded.putIfAbsent('success', () => true);
+            } else {
+              decoded.putIfAbsent('success', () => false);
+            }
+            return decoded;
+          }
+        } catch (_) {}
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return json.decode(response.body);
+        return {'success': true};
       } else {
         AppLogger.e(
           'DateNowApiService',
           'Failed to patch plan activity: ${response.statusCode} - ${response.body}',
         );
-        return null;
+        return {
+          'success': false,
+          'message': 'Failed to update activity (${response.statusCode})',
+        };
       }
     } catch (e) {
       AppLogger.e('DateNowApiService', 'Error patching plan activity: $e', error: e);
-      return null;
+      return {
+        'success': false,
+        'message': 'Network error occurred. Please try again.',
+      };
     }
   }
 
@@ -197,18 +272,45 @@ class DateNowApiService {
       final url = Uri.parse('$baseUrl/user/date-plans/$planId/publish');
       final response = await http.post(url, headers: await _headers);
 
+      AppLogger.i(
+        'DateNowApiService',
+        'Publish Plan Status: ${response.statusCode} - ${response.body}',
+      );
+
+      if (response.body.isNotEmpty) {
+        try {
+          final decoded = json.decode(response.body);
+          if (decoded is Map<String, dynamic>) {
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+              decoded.putIfAbsent('success', () => true);
+            } else {
+              decoded.putIfAbsent('success', () => false);
+            }
+            return decoded;
+          }
+        } catch (e) {
+          AppLogger.e('DateNowApiService', 'Failed to decode publish response: $e');
+        }
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return json.decode(response.body);
+        return {'success': true};
       } else {
         AppLogger.e(
           'DateNowApiService',
           'Failed to publish plan: ${response.statusCode} - ${response.body}',
         );
-        return null;
+        return {
+          'success': false,
+          'message': 'Failed to publish plan (${response.statusCode})',
+        };
       }
     } catch (e) {
       AppLogger.e('DateNowApiService', 'Error publishing plan: $e', error: e);
-      return null;
+      return {
+        'success': false,
+        'message': 'Network error occurred. Please try again.',
+      };
     }
   }
 
