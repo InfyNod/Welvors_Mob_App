@@ -1022,6 +1022,28 @@ class ApiService {
     }
   }
 
+  static Map<String, dynamic> _handleApiResponse(http.Response response) {
+    final isSuccess = response.statusCode == 200 || response.statusCode == 201;
+    if (response.body.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map<String, dynamic>) {
+          if (!decoded.containsKey('success')) {
+            decoded['success'] = isSuccess;
+          }
+          if (decoded['message'] == null && decoded['error'] != null) {
+            decoded['message'] = decoded['error'].toString();
+          }
+          return decoded;
+        }
+      } catch (_) {}
+    }
+    return {
+      'success': isSuccess,
+      'message': 'Error: ${response.statusCode}',
+    };
+  }
+
   // --- Dummy API Methods added for merged chat/compliment code ---
 
   static Future<Map<String, dynamic>> sendEngagement({
@@ -1060,10 +1082,7 @@ class ApiService {
       );
       debugPrint('SEND ENGAGEMENT STATUS: ${response.statusCode}');
       debugPrint('SEND ENGAGEMENT BODY: ${response.body}');
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body);
-      }
-      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+      return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};
     }
@@ -1079,11 +1098,12 @@ class ApiService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
+      final authHeader = token != null && token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       final response = await http.post(
         Uri.parse('$baseUrl/user/compliment'),
         headers: {
           'Content-Type': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
+          if (token != null) 'Authorization': authHeader,
         },
         body: jsonEncode({
           'receiverId': receiverId,
@@ -1093,10 +1113,7 @@ class ApiService {
           'mediaUrl': mediaUrl,
         }),
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body);
-      }
-      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+      return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};
     }
@@ -1113,11 +1130,12 @@ class ApiService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
+      final authHeader = token != null && token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       final response = await http.post(
         Uri.parse('$baseUrl/user/rose'),
         headers: {
           'Content-Type': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
+          if (token != null) 'Authorization': authHeader,
         },
         body: jsonEncode({
           'receiverId': receiverId,
@@ -1128,10 +1146,7 @@ class ApiService {
           'mediaUrl': mediaUrl,
         }),
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body);
-      }
-      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+      return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};
     }
@@ -1148,11 +1163,12 @@ class ApiService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
+      final authHeader = token != null && token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       final response = await http.post(
         Uri.parse('$baseUrl/user/gift'),
         headers: {
           'Content-Type': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
+          if (token != null) 'Authorization': authHeader,
         },
         body: jsonEncode({
           'receiverId': receiverId,
@@ -1163,10 +1179,7 @@ class ApiService {
           'mediaUrl': mediaUrl,
         }),
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body);
-      }
-      return {'success': false, 'message': 'Error: ${response.statusCode}'};
+      return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};
     }

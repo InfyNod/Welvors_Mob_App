@@ -7,7 +7,6 @@ import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_state.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_detail_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_repository.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/SocketService.dart';
-import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
 import 'try_screen.dart';
 import 'gift_selection_screen.dart';
@@ -130,6 +129,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     super.initState();
     _loadMyBalances();
     _textController.addListener(() {
+      if (_errorMessage != null) {
+        _errorMessage = null;
+      }
       setState(() {});
     });
     _focusNode.addListener(() {
@@ -389,7 +391,15 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       debugPrint('✨ ENGAGEMENT RESPONSE = $r');
 
       if (r['success'] != true) {
-        throw Exception(r['message'] ?? 'Engagement send failed');
+        final backendMessage = r['message']?.toString() ??
+            r['error']?.toString() ??
+            'Engagement send failed';
+        if (mounted) {
+          setState(() {
+            _errorMessage = backendMessage;
+          });
+        }
+        return;
       }
 
       debugPrint('✅ ENGAGEMENT API SUCCESS');
@@ -613,9 +623,14 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       debugPrint('STACK      = $st');
       debugPrint('==============================================');
 
+      String cleanError = e.toString();
+      if (cleanError.startsWith('Exception: ')) {
+        cleanError = cleanError.substring('Exception: '.length);
+      }
+
       if (mounted) {
         setState(() {
-          _errorMessage = 'Send failed: $e';
+          _errorMessage = cleanError;
         });
       }
     } finally {
@@ -868,6 +883,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                         onTap: () {
                           setState(() {
                             _roseSelected = !_roseSelected;
+                            _errorMessage = null;
                           });
                         },
                         child: _buildGiftButton(
@@ -896,6 +912,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                             _selectedGiftId = selectedGift.id;
                             _selectedGiftName = selectedGift.name;
                             _selectedGiftEmoji = selectedGift.emoji;
+                            _errorMessage = null;
                             if (selectedGift.message.isNotEmpty) {
                               _textController.text = selectedGift.message;
                               _textController.selection =
