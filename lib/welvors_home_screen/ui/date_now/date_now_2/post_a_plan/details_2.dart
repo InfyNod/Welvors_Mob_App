@@ -83,7 +83,10 @@ class _Details2ViewState extends State<Details2View> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update plan. Please try again.')));
+          final errorMessage = response?['message']?.toString() ??
+              response?['error']?.toString() ??
+              'Failed to update plan. Please try again.';
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
         }
       }
     } catch (e) {

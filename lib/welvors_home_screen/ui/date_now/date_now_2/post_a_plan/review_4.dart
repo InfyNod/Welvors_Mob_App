@@ -17,7 +17,7 @@ class Review4View extends StatefulWidget {
 class _Review4ViewState extends State<Review4View> {
   bool _isPublishing = false;
 
-  Future<void> _submitPublish(BuildContext context, PostPlanState state) async {
+  Future<void> _submitPublish(PostPlanState state) async {
     final planId = state.planId;
     if (planId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -32,18 +32,28 @@ class _Review4ViewState extends State<Review4View> {
 
     try {
       final response = await DateNowApiService.publishPlan(planId);
-      if (response != null) {
-        if (mounted) {
-          context.read<PostPlanBloc>().add(JumpToStepEvent(5));
-        }
+      if (!mounted) return;
+
+      final bool isSuccess = response != null && response['success'] == true;
+
+      if (isSuccess) {
+        context.read<PostPlanBloc>().add(JumpToStepEvent(5));
       } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to publish plan. Please try again.'),
-            ),
-          );
+        String errorMessage = 'Failed to publish plan. Please try again.';
+        if (response != null) {
+          if (response['message'] != null &&
+              response['message'].toString().trim().isNotEmpty) {
+            errorMessage = response['message'].toString();
+          } else if (response['error'] != null &&
+              response['error'].toString().trim().isNotEmpty) {
+            errorMessage = response['error'].toString();
+          }
         }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -389,7 +399,7 @@ class _Review4ViewState extends State<Review4View> {
                       onTap: _isPublishing
                           ? null
                           : () {
-                              _submitPublish(context, state);
+                              _submitPublish(state);
                             },
                       child: Container(
                         width: double.infinity,
