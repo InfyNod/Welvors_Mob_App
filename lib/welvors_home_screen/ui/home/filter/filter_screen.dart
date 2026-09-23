@@ -565,7 +565,7 @@ class _FilterScreenState extends State<FilterScreen> {
     if (selectedIndex == -1) selectedIndex = 0;
 
     return Container(
-      height: 60,
+      height: 52,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 243, 243, 243),
