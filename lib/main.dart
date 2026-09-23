@@ -18,6 +18,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:velvors/config/env_config.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
+import 'package:velvors/welvors_home_screen/services/network_connectivity_service.dart';
+import 'package:velvors/welvors_home_screen/ui/network/no_internet_screen.dart';
+
 void main() {
   AppLogger.runLoggingApp(() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +41,9 @@ void main() {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
+
+    // Initialize global network connectivity monitoring
+    NetworkConnectivityService.instance.initialize();
 
     runApp(const WelvorsApp(initialRoute: '/splash'));
   });
@@ -79,6 +85,7 @@ class WelvorsApp extends StatelessWidget {
           '/landing': (context) => const LandingScreen(),
           '/TrustVerificationScreen': (context) =>
               const TrustVerificationScreen(),
+          '/no-internet': (context) => const NoInternetScreen(),
         },
       ),
     );
