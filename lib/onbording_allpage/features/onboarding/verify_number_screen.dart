@@ -8,8 +8,10 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'user_data.dart';
 import 'onboarding_flow_screen.dart';
+import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
 class VerifyNumberScreen extends StatefulWidget {
   const VerifyNumberScreen({super.key});
@@ -125,25 +127,90 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
         final shouldProceed = await showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: Colors.white,
-              title: Text('Have an invite code?', style: AppText.h2.copyWith(fontSize: 18)),
-              content: Text('Do you have an invite code? Entering it gives you extra benefits!', style: AppText.body),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: Text('Skip', style: AppText.body.copyWith(color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 30,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.pinkDeep,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Yes, I have one'),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.pinkDeep.withOpacity(0.1),
+                            AppColors.pinkDeep.withOpacity(0.2),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.card_giftcard_rounded,
+                        color: AppColors.pinkDeep,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Have an invite code?',
+                      style: AppText.h2.copyWith(fontSize: 22, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Entering an invite code gives you extra benefits and exclusive access!',
+                      style: AppText.body.copyWith(color: Colors.grey.shade600, height: 1.4),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.pinkDeep,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: Text(
+                          'Yes, I have one', 
+                          style: AppText.body.copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey.shade500,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      child: Text(
+                        'Skip for now',
+                        style: AppText.body.copyWith(color: Colors.grey.shade500, fontWeight: FontWeight.w600)
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             );
           },
         );
@@ -172,6 +239,11 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
+
+        if (mounted) {
+          // Trigger a re-fetch of the profile data using the new token
+          context.read<ProfileEditCubit>().loadProfile();
+        }
 
         // Save phone to UserData
         userData.phone = '+91 ${_phoneController.text.trim()}';
