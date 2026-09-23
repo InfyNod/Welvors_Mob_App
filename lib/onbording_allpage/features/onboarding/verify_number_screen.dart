@@ -26,6 +26,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
   final TextEditingController _otpController = TextEditingController();
   final FocusNode _otpFocusNode = FocusNode();
   final TextEditingController _inviteCodeController = TextEditingController();
+  final FocusNode _inviteCodeFocusNode = FocusNode();
 
   bool _isPhoneValid = false;
   bool _isOtpSent = false;
@@ -75,6 +76,8 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
     _phoneFocusNode.dispose();
     _otpController.dispose();
     _otpFocusNode.dispose();
+    _inviteCodeController.dispose();
+    _inviteCodeFocusNode.dispose();
     super.dispose();
   }
 
@@ -118,6 +121,41 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
         }
       }
     } else {
+      if (_inviteCodeController.text.trim().isEmpty) {
+        final shouldProceed = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text('Have an invite code?', style: AppText.h2.copyWith(fontSize: 18)),
+              content: Text('Do you have an invite code? Entering it gives you extra benefits!', style: AppText.body),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text('Skip', style: AppText.body.copyWith(color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.pinkDeep,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Yes, I have one'),
+                ),
+              ],
+            );
+          },
+        );
+
+        if (shouldProceed != true) {
+          if (mounted) {
+            FocusScope.of(context).requestFocus(_inviteCodeFocusNode);
+          }
+          return;
+        }
+      }
+
       setState(() => _isLoading = true);
       final result = await ApiService.verifyOtp(
         _phoneController.text,
@@ -784,6 +822,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                     ),
                                     child: TextField(
                                       controller: _inviteCodeController,
+                                      focusNode: _inviteCodeFocusNode,
                                       readOnly: _isInviteCodeVerified,
                                       textCapitalization:
                                           TextCapitalization.characters,
