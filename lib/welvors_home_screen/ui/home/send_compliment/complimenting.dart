@@ -34,7 +34,7 @@ class ComplimentingBottomSheet extends StatefulWidget {
     this.profile,
   });
 
-  static void show(
+  static Future<void> show(
     BuildContext context, {
     String type = 'PROMPT',
     String? complimentingID,
@@ -42,8 +42,8 @@ class ComplimentingBottomSheet extends StatefulWidget {
     String? profileImageUrl,
     String? user_ID,
     final ProfileModel? profilemodel,
-  }) {
-    showModalBottomSheet(
+  }) async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -86,6 +86,45 @@ class ComplimentingBottomSheet extends StatefulWidget {
         );
       },
     );
+
+    if (result != null && result['action'] == 'open_chat' && context.mounted) {
+      final user = result['user'] as ChatUser;
+      final chatBloc = result['chatBloc'] as ChatBloc;
+      final profileId = result['profileId'] as String?;
+
+      // Immediately remove the complimented profile from the stack so it's not visible
+      if (profileId != null && profileId.isNotEmpty) {
+        try {
+          context.read<HomeBloc>().add(RemoveProfileEvent(profileId: profileId));
+        } catch (e) {
+          debugPrint('⚠️ Could not remove profile from HomeBloc: $e');
+        }
+      }
+
+      // Navigate to ChatDetailScreen and wait for the user to return
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: chatBloc,
+            child: ChatDetailScreen(user: user),
+          ),
+        ),
+      );
+
+      // Clean up chatBloc after exiting chat
+      try {
+        chatBloc.close();
+      } catch (_) {}
+
+      // Once returned to the previous screen (Home), refresh the home data properly
+      if (context.mounted) {
+        try {
+          context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
+        } catch (e) {
+          debugPrint('⚠️ Could not refresh HomeBloc on return: $e');
+        }
+      }
+    }
   }
 
   @override
@@ -582,31 +621,17 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       // ==========================================================
 
       // ==========================================================
-      // CLOSE CURRENT PROFILE ACTION
+      // CLOSE CURRENT PROFILE ACTION & PASS NAVIGATION RESULT
       // ==========================================================
 
-      Navigator.of(context).pop();
+      Navigator.of(context).pop({
+        'action': 'open_chat',
+        'user': user,
+        'chatBloc': chatBloc,
+        'profileId': receiverId,
+      });
 
-      if (!mounted) {
-        return;
-      }
-
-      final nav = Navigator.of(context);
-
-      // ==========================================================
-      // DIRECT CHAT DETAIL
-      // ==========================================================
-
-      nav.push(
-        MaterialPageRoute(
-          builder: (_) => BlocProvider.value(
-            value: chatBloc,
-            child: ChatDetailScreen(user: user),
-          ),
-        ),
-      );
-
-      debugPrint('✅ ChatDetailScreen opened directly');
+      debugPrint('✅ ComplimentingBottomSheet closed with open_chat action');
     } catch (e, st) {
       debugPrint('');
       debugPrint('==============================================');
