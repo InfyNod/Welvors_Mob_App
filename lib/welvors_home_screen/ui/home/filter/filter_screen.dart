@@ -629,7 +629,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   if (title == 'Premium+') {
                     subtitle = isSelected ? '✓ Active' : '○ Other world';
                     subtitleColor = isSelected
-                        ? Colors.white.withOpacity(0.9)
+                        ? const Color(0xFF00E676) // Bright green
                         : Colors.grey.shade500;
                     titleColor = isSelected
                         ? Colors.white
@@ -637,7 +637,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   } else if (title == 'VIP & Elite') {
                     subtitle = isSelected ? '✓ Active' : '○ Other world';
                     subtitleColor = isSelected
-                        ? Colors.white.withOpacity(0.9)
+                        ? const Color(0xFF00E676) // Bright green
                         : Colors.grey.shade500;
                     titleColor = isSelected
                         ? Colors.white
