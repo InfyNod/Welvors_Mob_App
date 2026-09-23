@@ -2460,10 +2460,7 @@ class _ProfileCardUI extends StatelessWidget {
             : null,
         gradient: profile.images.isEmpty
             ? LinearGradient(
-                colors: [
-                  const Color(0xFF2C2C32),
-                  const Color(0xFF18181B),
-                ],
+                colors: [const Color(0xFF2C2C32), const Color(0xFF18181B)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
