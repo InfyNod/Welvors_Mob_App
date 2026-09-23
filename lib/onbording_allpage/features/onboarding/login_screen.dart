@@ -9,9 +9,11 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'waitlist_confirmed_screen.dart';
 import 'user_data.dart';
 import 'onboarding_flow_screen.dart';
+import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -119,6 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
+
+        if (mounted) {
+          context.read<ProfileEditCubit>().loadProfile();
+        }
 
         // Save phone to UserData
         userData.phone = '+91 ${_phoneController.text.trim()}';

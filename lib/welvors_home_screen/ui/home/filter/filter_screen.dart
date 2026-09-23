@@ -566,7 +566,7 @@ class _FilterScreenState extends State<FilterScreen> {
     if (selectedIndex == -1) selectedIndex = 0;
 
     return Container(
-      height: 60,
+      height: 52,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 243, 243, 243),
@@ -593,32 +593,28 @@ class _FilterScreenState extends State<FilterScreen> {
                 bottom: 0,
                 width: itemWidth,
                 child: Container(
-                  padding: const EdgeInsets.all(1.5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(26),
-                    gradient: _selectedTier == 'VIP & Elite'
+                    gradient: _selectedTier == 'Premium+'
                         ? const LinearGradient(
-                            colors: [Color(0xFF9C27B0), Color(0xFFB8860B)],
+                            colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           )
-                        : null,
-                    color: _selectedTier != 'VIP & Elite'
-                        ? activeBorderColor
-                        : null,
+                        : const LinearGradient(
+                            colors: [Color(0xFF9C27B0), Color(0xFFB8860B)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                        color: _selectedTier == 'Premium+'
+                            ? const Color(0xFFDE2957).withOpacity(0.4)
+                            : const Color(0xFF9C27B0).withOpacity(0.4),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
                       ),
                     ],
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24.5),
-                    ),
                   ),
                 ),
               ),
@@ -628,24 +624,24 @@ class _FilterScreenState extends State<FilterScreen> {
                   final isSelected = _selectedTier == title;
 
                   String subtitle = '';
-                  Color subtitleColor = Colors.grey.shade400;
+                  Color subtitleColor = Colors.grey.shade500;
                   Color titleColor = Colors.grey.shade700;
 
                   if (title == 'Premium+') {
                     subtitle = isSelected ? '✓ Active' : '○ Other world';
                     subtitleColor = isSelected
-                        ? const Color(0xFF00C853)
-                        : Colors.grey.shade400;
+                        ? const Color(0xFF00E676) // Bright green
+                        : Colors.grey.shade500;
                     titleColor = isSelected
-                        ? const Color(0xFFE43A6A)
+                        ? Colors.white
                         : Colors.grey.shade700;
                   } else if (title == 'VIP & Elite') {
-                    subtitle = isSelected ? '✓ Active' : '⊘ Other world';
+                    subtitle = isSelected ? '✓ Active' : '○ Other world';
                     subtitleColor = isSelected
-                        ? const Color(0xFF00C853)
-                        : Colors.grey.shade400;
+                        ? const Color(0xFF00E676) // Bright green
+                        : Colors.grey.shade500;
                     titleColor = isSelected
-                        ? const Color(0xFF9C27B0)
+                        ? Colors.white
                         : Colors.grey.shade700;
                   }
 
@@ -664,7 +660,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                     text: 'VIP ',
                                     style: TextStyle(
                                       color: isSelected
-                                          ? const Color(0xFF9C27B0)
+                                          ? Colors.white
                                           : Colors.grey.shade700,
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
@@ -675,7 +671,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                     text: '& ',
                                     style: TextStyle(
                                       color: isSelected
-                                          ? Colors.black87
+                                          ? Colors.white
                                           : Colors.grey.shade700,
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
@@ -686,9 +682,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                     text: 'Elite',
                                     style: TextStyle(
                                       color: isSelected
-                                          ? const Color(
-                                              0xFFB8860B,
-                                            ) // Dark Goldenrod (mix of dark & yellow)
+                                          ? Colors.white
                                           : Colors.grey.shade700,
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
