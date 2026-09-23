@@ -19,6 +19,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<SwipeProfileEvent>(_onSwipeProfile);
     on<UndoSwipeEvent>(_onUndoSwipe);
     on<FetchProfileDetailsEvent>(_onFetchProfileDetails);
+    on<RemoveProfileEvent>(_onRemoveProfile);
   }
 
   Future<void> _onLoadHomeData(
@@ -264,6 +265,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             }
           }
         }
+      }
+    }
+  }
+
+  void _onRemoveProfile(
+    RemoveProfileEvent event,
+    Emitter<HomeState> emit,
+  ) {
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      final updatedProfiles = currentState.profiles
+          .where((p) => p.id != event.profileId)
+          .toList();
+      if (updatedProfiles.isEmpty) {
+        emit(
+          HomeEmpty(
+            remainingSwipes: currentState.remainingSwipes,
+            cursor: currentState.cursor,
+          ),
+        );
+      } else {
+        emit(
+          HomeLoaded(
+            profiles: updatedProfiles,
+            remainingSwipes: currentState.remainingSwipes,
+            cursor: currentState.cursor,
+          ),
+        );
       }
     }
   }

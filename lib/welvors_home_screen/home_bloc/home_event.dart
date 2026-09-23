@@ -37,3 +37,11 @@ class FetchProfileDetailsEvent extends HomeEvent {
   @override
   List<Object?> get props => [userId];
 }
+
+class RemoveProfileEvent extends HomeEvent {
+  final String profileId;
+  const RemoveProfileEvent({required this.profileId});
+
+  @override
+  List<Object?> get props => [profileId];
+}

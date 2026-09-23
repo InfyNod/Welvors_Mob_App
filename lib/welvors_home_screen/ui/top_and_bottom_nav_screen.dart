@@ -206,7 +206,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                         onPanEnd: (details) {
                           _isDraggingRoseNotifier.value = false;
                         },
-                        onTap: () {
+                        onTap: () async {
                           if (!_isRoseVisible) {
                             // Tap to undock
                             setState(() => _isRoseVisible = true);
@@ -221,7 +221,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                                   ? profile.images.first
                                   : null;
 
-                              ComplimentingBottomSheet.show(
+                              await ComplimentingBottomSheet.show(
                                 context,
                                 type: 'Profile',
                                 profileName: name,
