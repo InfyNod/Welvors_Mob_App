@@ -2472,6 +2472,7 @@ class _ProfileCardUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        color: const Color(0xFF18181B), // Solid base color to prevent bleed-through while loading
         borderRadius: BorderRadius.circular(24),
         image: profile.images.isNotEmpty
             ? DecorationImage(
