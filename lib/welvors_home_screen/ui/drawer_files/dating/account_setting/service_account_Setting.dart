@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class AccountSettingService {
   static String get baseUrl => EnvConfig.apiBaseUrl;
@@ -25,14 +26,14 @@ class AccountSettingService {
         body: jsonEncode({"reason": reason}),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Account paused successfully');
+        AppLogger.i('AccountSettingService', 'Account paused successfully');
         return true;
       } else {
-        debugPrint('Failed to pause account: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to pause account: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in pauseAccount: $e');
+      AppLogger.e('AccountSettingService', 'Error in pauseAccount: $e');
       return false;
     }
   }
@@ -45,14 +46,14 @@ class AccountSettingService {
         headers: await _headers,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Account resumed successfully');
+        AppLogger.i('AccountSettingService', 'Account resumed successfully');
         return null; // success
       } else {
-        debugPrint('Failed to resume account: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to resume account: ${response.statusCode} - ${response.body}');
         return response.body;
       }
     } catch (e) {
-      debugPrint('Error in resumeAccount: $e');
+      AppLogger.e('AccountSettingService', 'Error in resumeAccount: $e');
       return e.toString();
     }
   }
@@ -65,14 +66,14 @@ class AccountSettingService {
         headers: await _headers,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Account deleted successfully');
+        AppLogger.i('AccountSettingService', 'Account deleted successfully');
         return true;
       } else {
-        debugPrint('Failed to delete account: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to delete account: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in deleteAccount: $e');
+      AppLogger.e('AccountSettingService', 'Error in deleteAccount: $e');
       return false;
     }
   }
@@ -102,14 +103,14 @@ class AccountSettingService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Notification settings updated successfully');
+        AppLogger.i('AccountSettingService', 'Notification settings updated successfully');
         return true;
       } else {
-        debugPrint('Failed to update notification settings: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to update notification settings: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in updateNotificationSettings: $e');
+      AppLogger.e('AccountSettingService', 'Error in updateNotificationSettings: $e');
       return false;
     }
   }
@@ -131,11 +132,11 @@ class AccountSettingService {
           return data;
         }
       } else {
-        debugPrint('Failed to get notification settings: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to get notification settings: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error in getNotificationSettings: $e');
+      AppLogger.e('AccountSettingService', 'Error in getNotificationSettings: $e');
       return null;
     }
   }
@@ -149,14 +150,14 @@ class AccountSettingService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Bank/UPI added successfully');
+        AppLogger.i('AccountSettingService', 'Bank/UPI added successfully');
         return true;
       } else {
-        debugPrint('Failed to add Bank/UPI: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to add Bank/UPI: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in addBankOrUpi: $e');
+      AppLogger.e('AccountSettingService', 'Error in addBankOrUpi: $e');
       return false;
     }
   }
@@ -171,11 +172,11 @@ class AccountSettingService {
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        debugPrint('Failed to get Bank/UPI: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to get Bank/UPI: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error in getBankAndUpi: $e');
+      AppLogger.e('AccountSettingService', 'Error in getBankAndUpi: $e');
       return null;
     }
   }
@@ -190,14 +191,14 @@ class AccountSettingService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Bank/UPI updated successfully');
+        AppLogger.i('AccountSettingService', 'Bank/UPI updated successfully');
         return true;
       } else {
-        debugPrint('Failed to update Bank/UPI: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to update Bank/UPI: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in updateBankOrUpi: $e');
+      AppLogger.e('AccountSettingService', 'Error in updateBankOrUpi: $e');
       return false;
     }
   }
@@ -218,7 +219,7 @@ class AccountSettingService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error in getPrivacyControls: $e');
+      AppLogger.e('AccountSettingService', 'Error in getPrivacyControls: $e');
       return null;
     }
   }
@@ -239,7 +240,7 @@ class AccountSettingService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error in getMembershipPlan: $e');
+      AppLogger.e('AccountSettingService', 'Error in getMembershipPlan: $e');
       return null;
     }
   }
@@ -260,7 +261,7 @@ class AccountSettingService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error in getMembershipInvoice: $e');
+      AppLogger.e('AccountSettingService', 'Error in getMembershipInvoice: $e');
       return null;
     }
   }
@@ -276,11 +277,11 @@ class AccountSettingService {
       if (response.statusCode == 200) {
         return response.bodyBytes;
       } else {
-        debugPrint('Failed PDF download: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed PDF download: ${response.statusCode} - ${response.body}');
       }
       return null;
     } catch (e) {
-      debugPrint('Error in downloadInvoicePdf: $e');
+      AppLogger.e('AccountSettingService', 'Error in downloadInvoicePdf: $e');
       return null;
     }
   }
@@ -295,14 +296,14 @@ class AccountSettingService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Privacy controls updated successfully');
+        AppLogger.i('AccountSettingService', 'Privacy controls updated successfully');
         return true;
       } else {
-        debugPrint('Failed to update privacy controls: ${response.statusCode}');
+        AppLogger.e('AccountSettingService', 'Failed to update privacy controls: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in updatePrivacyControls: $e');
+      AppLogger.e('AccountSettingService', 'Error in updatePrivacyControls: $e');
       return false;
     }
   }
@@ -320,7 +321,7 @@ class AccountSettingService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error in getBlockedUsers: $e');
+      AppLogger.e('AccountSettingService', 'Error in getBlockedUsers: $e');
       return null;
     }
   }
@@ -338,7 +339,7 @@ class AccountSettingService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error in getMutedUsers: $e');
+      AppLogger.e('AccountSettingService', 'Error in getMutedUsers: $e');
       return null;
     }
   }
@@ -349,12 +350,12 @@ class AccountSettingService {
       final response = await http.delete(url, headers: await _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('User unblocked successfully');
+        AppLogger.i('AccountSettingService', 'User unblocked successfully');
         return true;
       }
       return false;
     } catch (e) {
-      debugPrint('Error in unblockUser: $e');
+      AppLogger.e('AccountSettingService', 'Error in unblockUser: $e');
       return false;
     }
   }
@@ -365,12 +366,12 @@ class AccountSettingService {
       final response = await http.patch(url, headers: await _headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('User unmuted successfully');
+        AppLogger.i('AccountSettingService', 'User unmuted successfully');
         return true;
       }
       return false;
     } catch (e) {
-      debugPrint('Error in unmuteUser: $e');
+      AppLogger.e('AccountSettingService', 'Error in unmuteUser: $e');
       return false;
     }
   }
@@ -384,14 +385,14 @@ class AccountSettingService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('Bank/UPI set as primary successfully');
+        AppLogger.i('AccountSettingService', 'Bank/UPI set as primary successfully');
         return true;
       } else {
-        debugPrint('Failed to set primary Bank/UPI: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to set primary Bank/UPI: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in setPrimaryBankUpi: $e');
+      AppLogger.e('AccountSettingService', 'Error in setPrimaryBankUpi: $e');
       return false;
     }
   }
@@ -405,14 +406,14 @@ class AccountSettingService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-        debugPrint('Bank/UPI removed successfully');
+        AppLogger.i('AccountSettingService', 'Bank/UPI removed successfully');
         return true;
       } else {
-        debugPrint('Failed to remove Bank/UPI: ${response.statusCode} - ${response.body}');
+        AppLogger.e('AccountSettingService', 'Failed to remove Bank/UPI: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error in removeBankUpi: $e');
+      AppLogger.e('AccountSettingService', 'Error in removeBankUpi: $e');
       return false;
     }
   }

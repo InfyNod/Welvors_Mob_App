@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'chat_bloc/chat_state.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatMessagesPage {
   final List<ChatMessage> messages;
@@ -61,8 +62,8 @@ class ChatRepository {
     final token = rawToken.toLowerCase().startsWith('bearer ')
         ? rawToken
         : 'Bearer $rawToken';
-    debugPrint('💗 RELATIONSHIP API: $url');
-    debugPrint('💗 RELATIONSHIP BODY: ${jsonEncode(body)}');
+    AppLogger.d('ChatRepository', '💗 RELATIONSHIP API: $url');
+    AppLogger.d('ChatRepository', '💗 RELATIONSHIP BODY: ${jsonEncode(body)}');
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -72,8 +73,8 @@ class ChatRepository {
       },
       body: jsonEncode(body),
     );
-    debugPrint('💗 RELATIONSHIP STATUS: ${response.statusCode}');
-    debugPrint('💗 RELATIONSHIP RESPONSE: ${response.body}');
+    AppLogger.d('ChatRepository', '💗 RELATIONSHIP STATUS: ${response.statusCode}');
+    AppLogger.d('ChatRepository', '💗 RELATIONSHIP RESPONSE: ${response.body}');
     Map<String, dynamic>? data;
     try {
       final decoded = jsonDecode(response.body);
@@ -92,8 +93,8 @@ class ChatRepository {
   Future<void> blockUser(String blockedId) async {
     final cleanId = blockedId.trim();
 
-    debugPrint('========== BLOCK USER API ==========');
-    debugPrint('blockedId: $cleanId');
+    AppLogger.d('ChatRepository', '========== BLOCK USER API ==========');
+    AppLogger.d('ChatRepository', 'blockedId: $cleanId');
 
     if (cleanId.isEmpty) {
       throw Exception('Blocked user id is empty');
@@ -102,7 +103,7 @@ class ChatRepository {
     final prefs = await SharedPreferences.getInstance();
     final rawToken = prefs.getString('auth_token')?.trim() ?? '';
 
-    debugPrint('auth_token exists: ${rawToken.isNotEmpty}');
+    AppLogger.d('ChatRepository', 'auth_token exists: ${rawToken.isNotEmpty}');
 
     if (rawToken.isEmpty) {
       throw Exception('Authentication token is missing');
@@ -116,9 +117,9 @@ class ChatRepository {
     final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/block');
     final body = jsonEncode(<String, dynamic>{'blockedId': cleanId});
 
-    debugPrint('METHOD: POST');
-    debugPrint('URL: $uri');
-    debugPrint('BODY: $body');
+    AppLogger.d('ChatRepository', 'METHOD: POST');
+    AppLogger.d('ChatRepository', 'URL: $uri');
+    AppLogger.d('ChatRepository', 'BODY: $body');
 
     final response = await http.patch(
       uri,
@@ -130,9 +131,9 @@ class ChatRepository {
       body: body,
     );
 
-    debugPrint('BLOCK USER STATUS: ${response.statusCode}');
-    debugPrint('BLOCK USER RESPONSE: ${response.body}');
-    debugPrint('===================================');
+    AppLogger.d('ChatRepository', 'BLOCK USER STATUS: ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'BLOCK USER RESPONSE: ${response.body}');
+    AppLogger.d('ChatRepository', '===================================');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       String message = 'Unable to block user (${response.statusCode})';
@@ -184,10 +185,10 @@ class ChatRepository {
       'description': cleanDescription,
     });
 
-    debugPrint('========== REPORT USER API ==========');
-    debugPrint('METHOD: POST');
-    debugPrint('URL: $uri');
-    debugPrint('BODY: $body');
+    AppLogger.d('ChatRepository', '========== REPORT USER API ==========');
+    AppLogger.d('ChatRepository', 'METHOD: POST');
+    AppLogger.d('ChatRepository', 'URL: $uri');
+    AppLogger.d('ChatRepository', 'BODY: $body');
 
     final response = await http.post(
       uri,
@@ -199,9 +200,9 @@ class ChatRepository {
       body: body,
     );
 
-    debugPrint('REPORT USER STATUS: ${response.statusCode}');
-    debugPrint('REPORT USER RESPONSE: ${response.body}');
-    debugPrint('====================================');
+    AppLogger.d('ChatRepository', 'REPORT USER STATUS: ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'REPORT USER RESPONSE: ${response.body}');
+    AppLogger.d('ChatRepository', '====================================');
 
     Map<String, dynamic>? decoded;
     try {
@@ -224,8 +225,8 @@ class ChatRepository {
   Future<void> UnblockUser(String blockedId) async {
     final cleanId = blockedId.trim();
 
-    debugPrint('========== BLOCK USER API ==========');
-    debugPrint('blockedId: $cleanId');
+    AppLogger.d('ChatRepository', '========== BLOCK USER API ==========');
+    AppLogger.d('ChatRepository', 'blockedId: $cleanId');
 
     if (cleanId.isEmpty) {
       throw Exception('Blocked user id is empty');
@@ -234,7 +235,7 @@ class ChatRepository {
     final prefs = await SharedPreferences.getInstance();
     final rawToken = prefs.getString('auth_token')?.trim() ?? '';
 
-    debugPrint('auth_token exists: ${rawToken.isNotEmpty}');
+    AppLogger.d('ChatRepository', 'auth_token exists: ${rawToken.isNotEmpty}');
 
     if (rawToken.isEmpty) {
       throw Exception('Authentication token is missing');
@@ -248,8 +249,8 @@ class ChatRepository {
     final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/unblock/$cleanId');
     // final body = jsonEncode(<String, dynamic>{'blockedId': cleanId});
 
-    debugPrint('METHOD: POST');
-    debugPrint('URL: $uri');
+    AppLogger.d('ChatRepository', 'METHOD: POST');
+    AppLogger.d('ChatRepository', 'URL: $uri');
     // debugPrint('BODY: $body');
 
     final response = await http.delete(
@@ -262,9 +263,9 @@ class ChatRepository {
       // body: body,
     );
 
-    debugPrint('BLOCK USER STATUS: ${response.statusCode}');
-    debugPrint('BLOCK USER RESPONSE: ${response.body}');
-    debugPrint('===================================');
+    AppLogger.d('ChatRepository', 'BLOCK USER STATUS: ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'BLOCK USER RESPONSE: ${response.body}');
+    AppLogger.d('ChatRepository', '===================================');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       String message = 'Unable to block user (${response.statusCode})';
@@ -341,8 +342,8 @@ class ChatRepository {
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("auth_token");
-    debugPrint("token>>>>>>>>$token");
-    debugPrint("messageId>>>>>>>>$messageId");
+    AppLogger.d('ChatRepository', "token>>>>>>>>$token");
+    AppLogger.d('ChatRepository', "messageId>>>>>>>>$messageId");
     final response = await http.delete(
       Uri.parse('${EnvConfig.apiBaseUrl}/user/chat/messages/$cleanId'),
       headers: {
@@ -355,9 +356,9 @@ class ChatRepository {
       },
     );
 
-    debugPrint('DELETE MESSAGE status: ${response.statusCode}');
-    debugPrint('DELETE MESSAGE uri: ${response.request}');
-    debugPrint('DELETE MESSAGE body: ${response.body}');
+    AppLogger.d('ChatRepository', 'DELETE MESSAGE status: ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'DELETE MESSAGE uri: ${response.request}');
+    AppLogger.d('ChatRepository', 'DELETE MESSAGE body: ${response.body}');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Unable to delete message (${response.statusCode})');
@@ -968,17 +969,17 @@ class ChatRepository {
 
     final url = '${EnvConfig.apiBaseUrl}/user/chat/conversations/$id';
 
-    debugPrint('========== DELETE CONVERSATION API ==========');
-    debugPrint('URL: DELETE $url');
-    debugPrint('conversationId: $id');
+    AppLogger.d('ChatRepository', '========== DELETE CONVERSATION API ==========');
+    AppLogger.d('ChatRepository', 'URL: DELETE $url');
+    AppLogger.d('ChatRepository', 'conversationId: $id');
 
     final response = await http.delete(
       Uri.parse(url),
       headers: {'Accept': 'application/json', 'Authorization': authorization},
     );
 
-    debugPrint('DELETE CONVERSATION STATUS: ${response.statusCode}');
-    debugPrint('DELETE CONVERSATION RESPONSE: ${response.body}');
+    AppLogger.d('ChatRepository', 'DELETE CONVERSATION STATUS: ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'DELETE CONVERSATION RESPONSE: ${response.body}');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       String message = 'Unable to delete conversation (${response.statusCode})';
@@ -1033,8 +1034,8 @@ class ChatRepository {
       },
     );
 
-    debugPrint('CLEAR CONVERSATION [$id] => ${response.statusCode}');
-    debugPrint('CLEAR CONVERSATION BODY => ${response.body}');
+    AppLogger.d('ChatRepository', 'CLEAR CONVERSATION [$id] => ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'CLEAR CONVERSATION BODY => ${response.body}');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Unable to clear chat (${response.statusCode})');
@@ -1146,7 +1147,7 @@ class ChatRepository {
         // "https://dating-app-backend-plum.vercel.app/api/user/chat/conversations",
       ).replace(queryParameters: {'type': type});
 
-      debugPrint('📥 Chat conversations API => $uri');
+      AppLogger.d('ChatRepository', '📥 Chat conversations API => $uri');
 
       final response = await http.get(
         uri,
@@ -1160,7 +1161,7 @@ class ChatRepository {
         },
       );
 
-      debugPrint('📥 Chat conversations status: ${response.statusCode}');
+      AppLogger.d('ChatRepository', '📥 Chat conversations status: ${response.statusCode}');
 
       final body = response.body;
 
@@ -1169,7 +1170,7 @@ class ChatRepository {
       for (var i = 0; i < body.length; i += chunkSize) {
         final end = (i + chunkSize < body.length) ? i + chunkSize : body.length;
 
-        debugPrint(body.substring(i, end));
+        AppLogger.d('ChatRepository', body.substring(i, end));
       }
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -1198,14 +1199,14 @@ class ChatRepository {
           )
           .toList();
 
-      debugPrint(
+      AppLogger.i('ChatRepository', 
         '✅ Chat conversations loaded '
         'type=$type count=${chats.length}',
       );
 
       return [...chats];
     } catch (e, stackTrace) {
-      debugPrint(
+      AppLogger.e('ChatRepository', 
         '❌ Error fetching chat conversations '
         'type=$type: $e',
       );
@@ -1241,7 +1242,7 @@ class ChatRepository {
       '${EnvConfig.apiBaseUrl}/user/chat/$cleanId/details',
     );
 
-    debugPrint('👤 Conversation user details API => $uri');
+    AppLogger.d('ChatRepository', '👤 Conversation user details API => $uri');
 
     final response = await http.get(
       uri,
@@ -1255,8 +1256,8 @@ class ChatRepository {
       },
     );
 
-    debugPrint('👤 Conversation user details status: ${response.statusCode}');
-    debugPrint('👤 Conversation user details body: ${response.body}');
+    AppLogger.d('ChatRepository', '👤 Conversation user details status: ${response.statusCode}');
+    AppLogger.d('ChatRepository', '👤 Conversation user details body: ${response.body}');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
@@ -1347,7 +1348,7 @@ class ChatRepository {
       '${EnvConfig.apiBaseUrl}/user/chat/conversations/$id/messages',
     ).replace(queryParameters: query);
 
-    debugPrint('Chat messages GET: $uri');
+    AppLogger.d('ChatRepository', 'Chat messages GET: $uri');
 
     final response = await http.get(
       uri,
@@ -1364,8 +1365,8 @@ class ChatRepository {
       },
     );
 
-    debugPrint('Chat messages status: ${response.statusCode}');
-    debugPrint('Chat messages body: ${response.body}');
+    AppLogger.d('ChatRepository', 'Chat messages status: ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'Chat messages body: ${response.body}');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Unable to load messages (${response.statusCode})');
@@ -1396,15 +1397,15 @@ class ChatRepository {
         ? currentUserId.trim()
         : _userIdFromJwt(token).trim();
 
-    debugPrint('================ CHAT DEBUG ================');
-    debugPrint('CURRENT USER ID: [$effectiveUserId]');
-    debugPrint('MESSAGE RAW COUNT: ${(rawData as List).length}');
+    AppLogger.d('ChatRepository', '================ CHAT DEBUG ================');
+    AppLogger.d('ChatRepository', 'CURRENT USER ID: [$effectiveUserId]');
+    AppLogger.d('ChatRepository', 'MESSAGE RAW COUNT: ${(rawData as List).length}');
 
     final messages = ChatMessage.fromJsonList(
       rawData,
       currentUserId: effectiveUserId,
     );
-    debugPrint('MESSAGE MAPPED COUNT: ${messages.length}');
+    AppLogger.d('ChatRepository', 'MESSAGE MAPPED COUNT: ${messages.length}');
     final pagination = decoded['pagination'] is Map
         ? Map<String, dynamic>.from(decoded['pagination'] as Map)
         : const <String, dynamic>{};
@@ -1458,10 +1459,10 @@ class ChatRepository {
       if (cleanNote != null && cleanNote.isNotEmpty) 'note': cleanNote,
     };
 
-    debugPrint('========== UNMATCH USER API ==========');
-    debugPrint('METHOD: POST');
-    debugPrint('URL: $uri');
-    debugPrint('BODY: ${jsonEncode(body)}');
+    AppLogger.d('ChatRepository', '========== UNMATCH USER API ==========');
+    AppLogger.d('ChatRepository', 'METHOD: POST');
+    AppLogger.d('ChatRepository', 'URL: $uri');
+    AppLogger.d('ChatRepository', 'BODY: ${jsonEncode(body)}');
 
     final response = await http.post(
       uri,
@@ -1473,9 +1474,9 @@ class ChatRepository {
       body: jsonEncode(body),
     );
 
-    debugPrint('UNMATCH STATUS: ${response.statusCode}');
-    debugPrint('UNMATCH RESPONSE: ${response.body}');
-    debugPrint('======================================');
+    AppLogger.d('ChatRepository', 'UNMATCH STATUS: ${response.statusCode}');
+    AppLogger.d('ChatRepository', 'UNMATCH RESPONSE: ${response.body}');
+    AppLogger.d('ChatRepository', '======================================');
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       String message = 'Unable to unmatch user (${response.statusCode})';

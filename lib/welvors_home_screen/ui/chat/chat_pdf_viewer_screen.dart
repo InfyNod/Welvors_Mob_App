@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatPdfViewerScreen extends StatefulWidget {
   final String pdfUrl;
@@ -79,7 +80,7 @@ class _ChatPdfViewerScreenState extends State<ChatPdfViewerScreen> {
                 if (mounted) setState(() => _loading = false);
               },
               onDocumentLoadFailed: (details) {
-                debugPrint(
+                AppLogger.e('ChatPdfViewerScreen', 
                   '❌ PDF LOAD FAILED: ${details.error} | ${details.description}',
                 );
                 if (mounted) {

@@ -8,6 +8,7 @@ import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_no
 import 'date_now_2/post_a_plan/activity_1.dart';
 import 'package:intl/intl.dart';
 import 'profile/profile_detail.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 String _formatEventTime(String? timeStr) {
   if (timeStr == null || timeStr.isEmpty) return '';
@@ -1064,7 +1065,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () async {
-                              debugPrint("plan>>>>>>>${plan}");
+                              AppLogger.d('DateNowScreen', "plan>>>>>>>${plan}");
                               final requestSent =
                                   await showRequestDateBottomSheet(
                                     context,

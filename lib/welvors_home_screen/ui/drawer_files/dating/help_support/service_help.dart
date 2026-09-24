@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ServiceHelp {
   static String get baseUrl => EnvConfig.apiBaseUrl;
@@ -21,7 +22,7 @@ class ServiceHelp {
         },
       );
 
-      debugPrint('Fetch FAQs Status: ${response.statusCode}');
+      AppLogger.d('HelpApiService', 'Fetch FAQs Status: ${response.statusCode}');
       
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -31,7 +32,7 @@ class ServiceHelp {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching FAQs: $e');
+      AppLogger.e('HelpApiService', 'Error fetching FAQs: $e');
       return [];
     }
   }
@@ -58,7 +59,7 @@ class ServiceHelp {
         }),
       );
 
-      debugPrint('Request Callback Status: ${response.statusCode}');
+      AppLogger.d('HelpApiService', 'Request Callback Status: ${response.statusCode}');
       
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -66,7 +67,7 @@ class ServiceHelp {
       }
       return {'success': false, 'error': 'Server error: ${response.statusCode}'};
     } catch (e) {
-      debugPrint('Error requesting callback: $e');
+      AppLogger.e('HelpApiService', 'Error requesting callback: $e');
       return {'success': false, 'error': e.toString()};
     }
   }
@@ -84,7 +85,7 @@ class ServiceHelp {
         },
       );
 
-      debugPrint('Fetch Callback History Status: ${response.statusCode}');
+      AppLogger.d('HelpApiService', 'Fetch Callback History Status: ${response.statusCode}');
       
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -94,7 +95,7 @@ class ServiceHelp {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching callback history: $e');
+      AppLogger.e('HelpApiService', 'Error fetching callback history: $e');
       return [];
     }
   }

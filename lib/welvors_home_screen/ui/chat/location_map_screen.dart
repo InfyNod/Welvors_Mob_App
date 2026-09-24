@@ -5,6 +5,7 @@ import 'package:geocoding/geocoding.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class LocationPickerResult {
   final double latitude;
@@ -154,7 +155,7 @@ class _LocationMapScreenState extends State<LocationMapScreen> {
         }
       }
     } catch (e) {
-      debugPrint('❌ Reverse geocoding error: $e');
+      AppLogger.e('LocationMapScreen', '❌ Reverse geocoding error: $e');
 
       if (mounted) {
         setState(() {
@@ -259,7 +260,7 @@ class _LocationMapScreenState extends State<LocationMapScreen> {
       // Get address
       await _getAddress(currentLocation);
     } catch (e) {
-      debugPrint('❌ Current location error: $e');
+      AppLogger.e('LocationMapScreen', '❌ Current location error: $e');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

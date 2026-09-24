@@ -14,6 +14,7 @@ import 'view_details/event_details.dart';
 import 'service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import '../../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EventsCards extends StatefulWidget {
   final String? eventType;
@@ -174,7 +175,7 @@ class _EventsCardsState extends State<EventsCards> {
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
       }
-      debugPrint('Error sharing: $e');
+      AppLogger.e('EventsCards', 'Error sharing: $e');
     }
   }
 
@@ -183,7 +184,7 @@ class _EventsCardsState extends State<EventsCards> {
       builder: (BuildContext iconContext) {
         return InkWell(
           onTap: () {
-            debugPrint("Share clicked for $title");
+            AppLogger.d('EventsCards', "Share clicked for $title");
             _shareEvent(iconContext, eventId, title, date, location, imageUrl, price);
           },
           borderRadius: BorderRadius.circular(20),

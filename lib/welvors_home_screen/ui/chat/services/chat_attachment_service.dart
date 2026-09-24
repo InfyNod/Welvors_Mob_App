@@ -19,6 +19,7 @@ import '../chat_bloc/chat_state.dart';
 import '../custom_camera_screen.dart' as custom_camera;
 import '../location_map_screen.dart';
 import '../widgets/sheets/chat_contact_picker_sheet.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 /// Helper service responsible for picking, compressing, uploading, and dispatching
 /// media attachments (images, audio, documents, videos, locations, contacts).
@@ -87,15 +88,15 @@ class ChatAttachmentService {
               fileSize: picked.size,
             );
           } else {
-            debugPrint('⚠️ Unsupported gallery media: ${picked.name}');
+            AppLogger.w('ChatAttachmentService', '⚠️ Unsupported gallery media: ${picked.name}');
           }
         }
       } finally {
         onHideLoader();
       }
     } catch (e, st) {
-      debugPrint('❌ GALLERY IMAGE ERROR: $e');
-      debugPrint('$st');
+      AppLogger.e('ChatAttachmentService', '❌ GALLERY IMAGE ERROR: $e');
+      AppLogger.d('ChatAttachmentService', '$st');
       showToast('Unable to send image');
     }
   }
@@ -103,7 +104,7 @@ class ChatAttachmentService {
   Future<File?> compressChatImage(XFile image) async {
     try {
       final originalBytes = await image.readAsBytes();
-      debugPrint(
+      AppLogger.d('ChatAttachmentService', 
         '🖼️ ORIGINAL IMAGE SIZE => '
         '${(originalBytes.length / 1024).toStringAsFixed(2)} KB',
       );
@@ -111,7 +112,7 @@ class ChatAttachmentService {
       final jpgBytes = await compute(encodeChatImageIsolate, originalBytes);
 
       if (jpgBytes == null) {
-        debugPrint('❌ IMAGE DECODE/ENCODE FAILED');
+        AppLogger.e('ChatAttachmentService', '❌ IMAGE DECODE/ENCODE FAILED');
         return null;
       }
 
@@ -121,15 +122,15 @@ class ChatAttachmentService {
       );
       await file.writeAsBytes(jpgBytes, flush: true);
 
-      debugPrint(
+      AppLogger.i('ChatAttachmentService', 
         '✅ COMPRESSED IMAGE SIZE => '
         '${(jpgBytes.length / 1024).toStringAsFixed(2)} KB',
       );
 
       return file;
     } catch (e, st) {
-      debugPrint('❌ IMAGE COMPRESSION ERROR => $e');
-      debugPrint('$st');
+      AppLogger.e('ChatAttachmentService', '❌ IMAGE COMPRESSION ERROR => $e');
+      AppLogger.d('ChatAttachmentService', '$st');
       return null;
     }
   }
@@ -138,7 +139,7 @@ class ChatAttachmentService {
     final conversationId = user.conversationId;
 
     if (conversationId == null || conversationId.isEmpty) {
-      debugPrint('❌ IMAGE: conversationId missing');
+      AppLogger.e('ChatAttachmentService', '❌ IMAGE: conversationId missing');
       return;
     }
 
@@ -146,9 +147,9 @@ class ChatAttachmentService {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
-      debugPrint('==========================================');
-      debugPrint('📤 IMAGE UPLOAD START');
-      debugPrint('📤 ORIGINAL FILE => ${image.path}');
+      AppLogger.d('ChatAttachmentService', '==========================================');
+      AppLogger.d('ChatAttachmentService', '📤 IMAGE UPLOAD START');
+      AppLogger.d('ChatAttachmentService', '📤 ORIGINAL FILE => ${image.path}');
 
       final compressedFile = await compressChatImage(image);
 
@@ -157,8 +158,8 @@ class ChatAttachmentService {
       }
 
       final compressedSize = await compressedFile.length();
-      debugPrint('📤 COMPRESSED FILE => ${compressedFile.path}');
-      debugPrint('📤 COMPRESSED SIZE => ${(compressedSize / 1024).toStringAsFixed(2)} KB');
+      AppLogger.d('ChatAttachmentService', '📤 COMPRESSED FILE => ${compressedFile.path}');
+      AppLogger.d('ChatAttachmentService', '📤 COMPRESSED SIZE => ${(compressedSize / 1024).toStringAsFixed(2)} KB');
 
       final request = http.MultipartRequest(
         'POST',
@@ -179,15 +180,15 @@ class ChatAttachmentService {
 
       request.files.add(multipartFile);
 
-      debugPrint('📤 REQUEST URL => ${request.url}');
-      debugPrint('📤 REQUEST HEADERS => ${request.headers}');
-      debugPrint('📤 SENDING REQUEST...');
+      AppLogger.d('ChatAttachmentService', '📤 REQUEST URL => ${request.url}');
+      AppLogger.d('ChatAttachmentService', '📤 REQUEST HEADERS => ${request.headers}');
+      AppLogger.d('ChatAttachmentService', '📤 SENDING REQUEST...');
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      debugPrint('📤 RESPONSE STATUS => ${response.statusCode}');
-      debugPrint('📤 RESPONSE BODY => ${response.body}');
+      AppLogger.d('ChatAttachmentService', '📤 RESPONSE STATUS => ${response.statusCode}');
+      AppLogger.d('ChatAttachmentService', '📤 RESPONSE BODY => ${response.body}');
 
       if (response.statusCode == 413) {
         throw Exception('Image size is too large for server');
@@ -214,7 +215,7 @@ class ChatAttachmentService {
         throw Exception('Image URL not found in response');
       }
 
-      debugPrint('✅ FINAL IMAGE URL => $imageUrl');
+      AppLogger.i('ChatAttachmentService', '✅ FINAL IMAGE URL => $imageUrl');
 
       final reply = getReplyingTo();
 
@@ -235,10 +236,10 @@ class ChatAttachmentService {
 
       onClearReply();
       onScrollToBottom();
-      debugPrint('🎉 IMAGE MESSAGE SENT SUCCESSFULLY');
+      AppLogger.i('ChatAttachmentService', '🎉 IMAGE MESSAGE SENT SUCCESSFULLY');
     } catch (e, st) {
-      debugPrint('❌ IMAGE UPLOAD ERROR => $e');
-      debugPrint('$st');
+      AppLogger.e('ChatAttachmentService', '❌ IMAGE UPLOAD ERROR => $e');
+      AppLogger.d('ChatAttachmentService', '$st');
       showToast('Image sending failed');
     }
   }
@@ -249,7 +250,7 @@ class ChatAttachmentService {
 
   Future<void> captureImage() async {
     try {
-      debugPrint('📷 CAPTURE IMAGE START');
+      AppLogger.d('ChatAttachmentService', '📷 CAPTURE IMAGE START');
 
       final picker = ImagePicker();
       final picked = await picker.pickImage(
@@ -261,7 +262,7 @@ class ChatAttachmentService {
       XFile? finalFile = picked;
 
       if (finalFile == null) {
-        debugPrint('⚠️ ImagePicker returned null, opening CustomCameraScreen');
+        AppLogger.w('ChatAttachmentService', '⚠️ ImagePicker returned null, opening CustomCameraScreen');
 
         final customResult = await Navigator.push<String>(
           context,
@@ -276,11 +277,11 @@ class ChatAttachmentService {
       }
 
       if (finalFile == null) {
-        debugPrint('ℹ️ Camera capture cancelled by user');
+        AppLogger.d('ChatAttachmentService', 'ℹ️ Camera capture cancelled by user');
         return;
       }
 
-      debugPrint('📷 CAMERA PHOTO CAPTURED => ${finalFile.path}');
+      AppLogger.d('ChatAttachmentService', '📷 CAMERA PHOTO CAPTURED => ${finalFile.path}');
 
       onShowLoader();
       try {
@@ -289,8 +290,8 @@ class ChatAttachmentService {
         onHideLoader();
       }
     } catch (e, st) {
-      debugPrint('❌ CAMERA CAPTURE ERROR => $e');
-      debugPrint('$st');
+      AppLogger.e('ChatAttachmentService', '❌ CAMERA CAPTURE ERROR => $e');
+      AppLogger.d('ChatAttachmentService', '$st');
       showToast('Unable to capture or send photo');
     }
   }
@@ -315,7 +316,7 @@ class ChatAttachmentService {
         type: ChatMessageType.audio,
       );
     } catch (e) {
-      debugPrint('❌ PICK AUDIO ERROR => $e');
+      AppLogger.e('ChatAttachmentService', '❌ PICK AUDIO ERROR => $e');
       showToast('Unable to pick audio file');
     }
   }
@@ -343,7 +344,7 @@ class ChatAttachmentService {
         type: ChatMessageType.document,
       );
     } catch (e) {
-      debugPrint('❌ PICK DOCUMENT ERROR => $e');
+      AppLogger.e('ChatAttachmentService', '❌ PICK DOCUMENT ERROR => $e');
       showToast('Unable to pick document');
     }
   }
@@ -357,7 +358,7 @@ class ChatAttachmentService {
     final conversationId = user.conversationId;
 
     if (conversationId == null || conversationId.isEmpty) {
-      debugPrint('❌ UPLOAD FILE: conversationId missing');
+      AppLogger.e('ChatAttachmentService', '❌ UPLOAD FILE: conversationId missing');
       return;
     }
 
@@ -388,7 +389,7 @@ class ChatAttachmentService {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      debugPrint('FILE UPLOAD RESPONSE: ${response.body}');
+      AppLogger.d('ChatAttachmentService', 'FILE UPLOAD RESPONSE: ${response.body}');
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('Upload failed with status ${response.statusCode}');
@@ -413,7 +414,7 @@ class ChatAttachmentService {
         fileSize: fileSize,
       );
     } catch (e) {
-      debugPrint('❌ UPLOAD FILE ERROR => $e');
+      AppLogger.e('ChatAttachmentService', '❌ UPLOAD FILE ERROR => $e');
       showToast('Failed to upload file');
     } finally {
       onHideLoader();
@@ -428,7 +429,7 @@ class ChatAttachmentService {
     final conversationId = user.conversationId;
 
     if (conversationId == null || conversationId.isEmpty) {
-      debugPrint('❌ VIDEO: conversationId missing');
+      AppLogger.e('ChatAttachmentService', '❌ VIDEO: conversationId missing');
       return;
     }
 
@@ -436,10 +437,10 @@ class ChatAttachmentService {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
-      debugPrint('==========================================');
-      debugPrint('🎬 VIDEO UPLOAD START');
-      debugPrint('🎬 ORIGINAL FILE => ${video.path}');
-      debugPrint('🎬 FILE SIZE => ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB');
+      AppLogger.d('ChatAttachmentService', '==========================================');
+      AppLogger.d('ChatAttachmentService', '🎬 VIDEO UPLOAD START');
+      AppLogger.d('ChatAttachmentService', '🎬 ORIGINAL FILE => ${video.path}');
+      AppLogger.d('ChatAttachmentService', '🎬 FILE SIZE => ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB');
 
       final request = http.MultipartRequest(
         'POST',
@@ -463,15 +464,15 @@ class ChatAttachmentService {
 
       request.files.add(multipartFile);
 
-      debugPrint('🎬 REQUEST URL => ${request.url}');
-      debugPrint('🎬 REQUEST HEADERS => ${request.headers}');
-      debugPrint('🎬 SENDING VIDEO UPLOAD REQUEST...');
+      AppLogger.d('ChatAttachmentService', '🎬 REQUEST URL => ${request.url}');
+      AppLogger.d('ChatAttachmentService', '🎬 REQUEST HEADERS => ${request.headers}');
+      AppLogger.d('ChatAttachmentService', '🎬 SENDING VIDEO UPLOAD REQUEST...');
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      debugPrint('🎬 RESPONSE STATUS => ${response.statusCode}');
-      debugPrint('🎬 RESPONSE BODY => ${response.body}');
+      AppLogger.d('ChatAttachmentService', '🎬 RESPONSE STATUS => ${response.statusCode}');
+      AppLogger.d('ChatAttachmentService', '🎬 RESPONSE BODY => ${response.body}');
 
       if (response.statusCode == 413) {
         throw Exception('Video size is too large for server');
@@ -500,7 +501,7 @@ class ChatAttachmentService {
         throw Exception('Video URL not found in response');
       }
 
-      debugPrint('✅ FINAL VIDEO URL => $videoUrl');
+      AppLogger.i('ChatAttachmentService', '✅ FINAL VIDEO URL => $videoUrl');
 
       final reply = getReplyingTo();
 
@@ -523,10 +524,10 @@ class ChatAttachmentService {
 
       onClearReply();
       onScrollToBottom();
-      debugPrint('🎉 VIDEO MESSAGE SENT SUCCESSFULLY');
+      AppLogger.i('ChatAttachmentService', '🎉 VIDEO MESSAGE SENT SUCCESSFULLY');
     } catch (e, st) {
-      debugPrint('❌ VIDEO UPLOAD ERROR => $e');
-      debugPrint('$st');
+      AppLogger.e('ChatAttachmentService', '❌ VIDEO UPLOAD ERROR => $e');
+      AppLogger.d('ChatAttachmentService', '$st');
       showToast('Video sending failed');
     }
   }
@@ -560,11 +561,11 @@ class ChatAttachmentService {
 
       if (selected == null) return;
 
-      debugPrint('📍 SELECTED LOCATION');
-      debugPrint('Latitude  : ${selected.latitude}');
-      debugPrint('Longitude : ${selected.longitude}');
-      debugPrint('Label     : ${selected.label}');
-      debugPrint('Address   : ${selected.address}');
+      AppLogger.d('ChatAttachmentService', '📍 SELECTED LOCATION');
+      AppLogger.d('ChatAttachmentService', 'Latitude  : ${selected.latitude}');
+      AppLogger.d('ChatAttachmentService', 'Longitude : ${selected.longitude}');
+      AppLogger.d('ChatAttachmentService', 'Label     : ${selected.label}');
+      AppLogger.d('ChatAttachmentService', 'Address   : ${selected.address}');
 
       sendAttachment(
         type: ChatMessageType.location,
@@ -578,8 +579,8 @@ class ChatAttachmentService {
 
       showToast('Location sent ✓');
     } catch (e, st) {
-      debugPrint('❌ LOCATION PICKER ERROR => $e');
-      debugPrint('$st');
+      AppLogger.e('ChatAttachmentService', '❌ LOCATION PICKER ERROR => $e');
+      AppLogger.d('ChatAttachmentService', '$st');
       showToast('Unable to get location');
     }
   }
@@ -621,7 +622,7 @@ class ChatAttachmentService {
 
       showToast('Contact sent ✓');
     } catch (e, stackTrace) {
-      debugPrint('CONTACT ERROR: $e');
+      AppLogger.e('ChatAttachmentService', 'CONTACT ERROR: $e');
       debugPrintStack(stackTrace: stackTrace);
       showToast('Unable to select contact');
     }
@@ -647,10 +648,10 @@ class ChatAttachmentService {
     final String? contactPhoneNumber =
         isContact ? (fileName ?? '').trim() : null;
 
-    debugPrint('================ SEND ATTACHMENT ================');
-    debugPrint('chatId              : ${user.id}');
-    debugPrint('conversationId      : ${user.conversationId}');
-    debugPrint('type                : $type');
+    AppLogger.d('ChatAttachmentService', '================ SEND ATTACHMENT ================');
+    AppLogger.d('ChatAttachmentService', 'chatId              : ${user.id}');
+    AppLogger.d('ChatAttachmentService', 'conversationId      : ${user.conversationId}');
+    AppLogger.d('ChatAttachmentService', 'type                : $type');
 
     context.read<ChatBloc>().add(
       SendMessageEvent(

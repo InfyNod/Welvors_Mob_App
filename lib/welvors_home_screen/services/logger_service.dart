@@ -113,29 +113,38 @@ class AppLogger {
   // ─── Level Logging Methods ────────────────────────────────────
 
   /// Verbose log
-  static void v(String tag, String message) {
+  static void v(String tag, Object? message) {
     _output(LogLevel.verbose, tag, '🔍 $message');
   }
 
   /// Debug log (replaces standard debug prints)
-  static void d(String tag, String message) {
+  static void d(String tag, Object? message) {
     _output(LogLevel.debug, tag, '🐛 $message');
   }
 
   /// Informational log
-  static void i(String tag, String message) {
+  static void i(String tag, Object? message) {
     _output(LogLevel.info, tag, 'ℹ️ $message');
   }
 
   /// Warning log
-  static void w(String tag, String message) {
+  static void w(String tag, Object? message) {
     _output(LogLevel.warning, tag, '⚠️ $message');
+  }
+
+  /// General log (defaults to debug level)
+  static void log(String tag, [Object? message]) {
+    if (message == null) {
+      d('LOG', tag);
+    } else {
+      d(tag, message);
+    }
   }
 
   /// Error log with optional [error] object and [stackTrace].
   static void e(
     String tag,
-    String message, {
+    Object? message, {
     Object? error,
     StackTrace? stackTrace,
   }) {
@@ -244,3 +253,6 @@ class AppLogger {
     return '${text.substring(0, maxLength)}... (truncated ${text.length} chars)';
   }
 }
+
+/// Alias for [AppLogger] so both naming conventions are supported.
+typedef LoggerService = AppLogger;

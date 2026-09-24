@@ -5,6 +5,7 @@ import 'package:velvors/welvors_home_screen/ui/chat/SocketService.dart';
 import '../chat_repository.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final Map<String, String?> _messageNextCursor = {};
@@ -43,7 +44,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     socketService.on('user:online', _onUserOnlineSocket);
     socketService.on('user:offline', _onUserOfflineSocket);
 
-    debugPrint('🟢 CHAT BLOC: real-time socket listeners registered');
+    AppLogger.d('ChatBloc', '🟢 CHAT BLOC: real-time socket listeners registered');
   }
 
   String? _socketUserId(dynamic payload) {
@@ -75,20 +76,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   void _onUserOnlineSocket(dynamic payload) {
     final userId = _socketUserId(payload);
-    debugPrint('🟢 CHAT BLOC user:online => $payload | userId=$userId');
+    AppLogger.d('ChatBloc', '🟢 CHAT BLOC user:online => $payload | userId=$userId');
     if (userId == null || userId.isEmpty) return;
     add(UserOnlineSocketEvent(userId));
   }
 
   void _onUserOfflineSocket(dynamic payload) {
     final userId = _socketUserId(payload);
-    debugPrint('🔴 CHAT BLOC user:offline => $payload | userId=$userId');
+    AppLogger.d('ChatBloc', '🔴 CHAT BLOC user:offline => $payload | userId=$userId');
     if (userId == null || userId.isEmpty) return;
     add(UserOfflineSocketEvent(userId));
   }
 
   void _onMessageReceiveSocket(dynamic payload) {
-    debugPrint('📩 CHAT BLOC message:receive => $payload');
+    AppLogger.d('ChatBloc', '📩 CHAT BLOC message:receive => $payload');
     dynamic data = payload;
     if (data is List) {
       if (data.isEmpty) return;
@@ -158,7 +159,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             .toString()
             .trim();
     if (conversationId.isEmpty) {
-      debugPrint(
+      AppLogger.w('ChatBloc', 
         '⚠️ message:receive ignored for chat list: conversationId missing',
       );
       return;
@@ -170,7 +171,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             .trim();
     if (messageId.isNotEmpty) {
       if (_handledSocketMessageIds.contains(messageId)) {
-        debugPrint('ℹ️ Duplicate message:receive ignored => $messageId');
+        AppLogger.d('ChatBloc', 'ℹ️ Duplicate message:receive ignored => $messageId');
         return;
       }
       _handledSocketMessageIds.add(messageId);
@@ -227,7 +228,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onMessageReadSocket(dynamic payload) {
-    debugPrint('📩 CHAT BLOC: message:read RECEIVED => $payload');
+    AppLogger.d('ChatBloc', '📩 CHAT BLOC: message:read RECEIVED => $payload');
 
     dynamic data = payload;
     if (data is List) {
@@ -236,7 +237,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
 
     if (data is! Map) {
-      debugPrint('❌ message:read invalid payload => $data');
+      AppLogger.e('ChatBloc', '❌ message:read invalid payload => $data');
       return;
     }
 
@@ -250,7 +251,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             .trim();
 
     if (messageId.isEmpty && conversationId.isEmpty) {
-      debugPrint('⚠️ message:read missing messageId/conversationId');
+      AppLogger.w('ChatBloc', '⚠️ message:read missing messageId/conversationId');
       return;
     }
 
@@ -263,7 +264,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _onMessageDeliveredSocket(dynamic payload) {
-    debugPrint('📩 CHAT BLOC: message:delivered RECEIVED => $payload');
+    AppLogger.d('ChatBloc', '📩 CHAT BLOC: message:delivered RECEIVED => $payload');
 
     dynamic data = payload;
     if (data is List) {
@@ -320,7 +321,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       updatedMessages[entry.key] = updated;
 
       emit(state.copyWith(messages: updatedMessages));
-      debugPrint('✅ message:delivered applied to ${event.messageId}');
+      AppLogger.i('ChatBloc', '✅ message:delivered applied to ${event.messageId}');
       return;
     }
   }
@@ -337,7 +338,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
       // Sender-side only.
       if (target == null || !target.isMine) {
-        debugPrint('⚠️ DELETE MESSAGE: sender-side message only>>>>$target');
+        AppLogger.w('ChatBloc', '⚠️ DELETE MESSAGE: sender-side message only>>>>$target');
         return;
       }
 
@@ -353,14 +354,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       updatedMessages[event.chatId] = updated;
 
       emit(state.copyWith(messages: updatedMessages));
-      debugPrint('🗑️ DELETE MESSAGE SUCCESS => ${event.messageId}');
+      AppLogger.i('ChatBloc', '🗑️ DELETE MESSAGE SUCCESS => ${event.messageId}');
     } catch (e) {
-      debugPrint('❌ DELETE MESSAGE ERROR => $e');
+      AppLogger.e('ChatBloc', '❌ DELETE MESSAGE ERROR => $e');
     }
   }
 
   void _onConversationUpdateSocket(dynamic payload) {
-    debugPrint('📩 CHAT BLOC: conversation:update RECEIVED => $payload');
+    AppLogger.d('ChatBloc', '📩 CHAT BLOC: conversation:update RECEIVED => $payload');
 
     dynamic data = payload;
     if (data is List) {
@@ -369,7 +370,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
 
     if (data is! Map) {
-      debugPrint('❌ conversation:update invalid payload => $data');
+      AppLogger.e('ChatBloc', '❌ conversation:update invalid payload => $data');
       return;
     }
 
@@ -540,11 +541,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(loading: true));
 
     try {
-      debugPrint('🔄 Loading chats => type=${event.type}');
+      AppLogger.d('ChatBloc', '🔄 Loading chats => type=${event.type}');
 
       final chats = await repository.fetchChats(type: event.type);
 
-      debugPrint(
+      AppLogger.i('ChatBloc', 
         '✅ Chats loaded => '
         'type=${event.type}, count=${chats.length}',
       );
@@ -587,7 +588,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ),
       );
     } catch (e, stackTrace) {
-      debugPrint(
+      AppLogger.e('ChatBloc', 
         '❌ Load chats error '
         'type=${event.type}: $e',
       );
@@ -612,7 +613,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             .trim();
 
     if (conversationId.isEmpty) {
-      debugPrint('❌ conversation:update missing conversationId');
+      AppLogger.e('ChatBloc', '❌ conversation:update missing conversationId');
       return;
     }
 
@@ -643,7 +644,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final hasUnreadCount = unreadRaw != null;
     final unread = ChatUser.toInt(unreadRaw);
 
-    debugPrint(
+    AppLogger.d('ChatBloc', 
       '🔄 conversation:update -> id=$conversationId | '
       'content=$content | unread=$unread | hasUnread=$hasUnreadCount',
     );
@@ -656,7 +657,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
 
     if (index == -1) {
-      debugPrint('⚠️ conversation:update chat not found -> reloading list');
+      AppLogger.w('ChatBloc', '⚠️ conversation:update chat not found -> reloading list');
       add(const LoadChatsEvent());
       return;
     }
@@ -689,7 +690,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     emit(state.copyWith(allChats: updatedAll, filteredChats: updatedFiltered));
 
-    debugPrint(
+    AppLogger.i('ChatBloc', 
       '✅ CHAT LIST UPDATED -> $conversationId | preview="$content" | unread=$unread',
     );
   }
@@ -805,7 +806,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     try {
-      debugPrint(
+      AppLogger.d('ChatBloc', 
         '➡️ FETCH MESSAGES: chatId=${event.chatId} '
         'conversationId=${event.conversationId} cursor=${event.cursor}',
       );
@@ -818,14 +819,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         cursor: event.cursor,
       );
 
-      debugPrint(
+      AppLogger.d('ChatBloc', 
         '⬅️ FETCH RESULT: count=${page.messages.length} '
         'nextCursor=${page.nextCursor} hasMore=${page.hasMore}',
       );
 
       final key = _messageKey(event.chatId, event.conversationId);
 
-      debugPrint(
+      AppLogger.d('ChatBloc', 
         '📥 LOAD MESSAGES -> chatId=${event.chatId} conversationId=${event.conversationId} key=$key count=${page.messages.length}',
       );
 
@@ -844,7 +845,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           page.nextCursor != null &&
           page.nextCursor!.isNotEmpty;
 
-      debugPrint(
+      AppLogger.d('ChatBloc', 
         '📌 PAGINATION STATE | key=$key '
         'hasMore=${_messageHasMore[key]} '
         'nextCursor=${_messageNextCursor[key]}',
@@ -863,7 +864,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ),
       );
     } catch (e, st) {
-      debugPrint('❌ LOAD MESSAGES ERROR: $e');
+      AppLogger.e('ChatBloc', '❌ LOAD MESSAGES ERROR: $e');
       debugPrintStack(stackTrace: st);
       // Do not replace existing messages with an empty list on failure.
     }
@@ -889,10 +890,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
         updatedMessages[entry.key] = updated;
         emit(state.copyWith(messages: updatedMessages));
-        debugPrint('✅ message:read applied to ${event.messageId}');
+        AppLogger.i('ChatBloc', '✅ message:read applied to ${event.messageId}');
         return;
       }
-      debugPrint(
+      AppLogger.w('ChatBloc', 
         '⚠️ message:read message not found locally: ${event.messageId}',
       );
       return;
@@ -917,7 +918,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
         updatedMessages[event.conversationId!] = updated;
         emit(state.copyWith(messages: updatedMessages));
-        debugPrint(
+        AppLogger.i('ChatBloc', 
           '✅ message:read applied to conversation ${event.conversationId}',
         );
       }
@@ -992,7 +993,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   void markConversationRead(String conversationId) {
     if (conversationId.isEmpty) return;
 
-    print('📖 Mark conversation read locally: $conversationId');
+    AppLogger.d('ChatBloc', '📖 Mark conversation read locally: $conversationId');
     // Do NOT emit message:read with conversationId here.
     // The backend message:read contract is messageId-based; ChatDetailScreen
     // emits one message:read event for every unread incoming message.
@@ -1021,7 +1022,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ),
     );
 
-    print('✅ MESSAGE READ EVENT SENT: $conversationId');
+    AppLogger.i('ChatBloc', '✅ MESSAGE READ EVENT SENT: $conversationId');
   }
 
   //<navneet>
@@ -1303,9 +1304,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         'messageTarget': event.messageTarget,
         'expiresIn': event.expiresIn,
       };
-      debugPrint('🎁 GIFT SEND');
-      debugPrint('🎁 giftId => ${giftId}');
-      debugPrint('🎁 payload => $socketPayload');
+      AppLogger.d('ChatBloc', '🎁 GIFT SEND');
+      AppLogger.d('ChatBloc', '🎁 giftId => ${giftId}');
+      AppLogger.d('ChatBloc', '🎁 payload => $socketPayload');
     }
 
     // ==========================================================
@@ -1328,30 +1329,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // 7. DEBUG LOG
     // ==========================================================
 
-    debugPrint('========================================');
-    debugPrint('📤 MESSAGE SEND');
-    debugPrint('📌 type => $eventTypeMsg');
-    debugPrint('📌 messageType => $socketMessageType');
+    AppLogger.d('ChatBloc', '========================================');
+    AppLogger.d('ChatBloc', '📤 MESSAGE SEND');
+    AppLogger.d('ChatBloc', '📌 type => $eventTypeMsg');
+    AppLogger.d('ChatBloc', '📌 messageType => $socketMessageType');
 
-    debugPrint('🖼️ imageUrl => ${event.imageUrl}');
-    debugPrint('🎬 videoUrl => ${event.videoUrl}');
-    debugPrint('🎵 audioUrl => ${event.audioUrl}');
-    debugPrint('📄 fileUrl => ${event.fileUrl}');
+    AppLogger.d('ChatBloc', '🖼️ imageUrl => ${event.imageUrl}');
+    AppLogger.d('ChatBloc', '🎬 videoUrl => ${event.videoUrl}');
+    AppLogger.d('ChatBloc', '🎵 audioUrl => ${event.audioUrl}');
+    AppLogger.d('ChatBloc', '📄 fileUrl => ${event.fileUrl}');
 
     if (isContact) {
-      debugPrint('👤 contactName => ${event.contactName}');
-      debugPrint('📞 contactPhoneNumber => ${event.contactPhoneNumber}');
+      AppLogger.d('ChatBloc', '👤 contactName => ${event.contactName}');
+      AppLogger.d('ChatBloc', '📞 contactPhoneNumber => ${event.contactPhoneNumber}');
     }
 
     if (isLocation) {
-      debugPrint('📍 LOCATION');
-      debugPrint('🌐 latitude => ${event.latitude}');
-      debugPrint('🌐 longitude => ${event.longitude}');
-      debugPrint('🏷️ label => ${event.locationLabel}');
+      AppLogger.d('ChatBloc', '📍 LOCATION');
+      AppLogger.d('ChatBloc', '🌐 latitude => ${event.latitude}');
+      AppLogger.d('ChatBloc', '🌐 longitude => ${event.longitude}');
+      AppLogger.d('ChatBloc', '🏷️ label => ${event.locationLabel}');
     }
 
-    debugPrint('📦 SOCKET PAYLOAD => $socketPayload');
-    debugPrint('========================================');
+    AppLogger.d('ChatBloc', '📦 SOCKET PAYLOAD => $socketPayload');
+    AppLogger.d('ChatBloc', '========================================');
 
     // ==========================================================
     // 8. SEND THROUGH SOCKET
@@ -1557,13 +1558,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
       chatList.insert(0, updatedChat);
 
-      debugPrint('📋 CHAT LIST LIVE UPDATE SUCCESS');
+      AppLogger.i('ChatBloc', '📋 CHAT LIST LIVE UPDATE SUCCESS');
 
-      debugPrint('📋 updated chat = ${updatedChat.name}');
+      AppLogger.d('ChatBloc', '📋 updated chat = ${updatedChat.name}');
 
-      debugPrint('📋 preview = ${updatedChat.preview}');
+      AppLogger.d('ChatBloc', '📋 preview = ${updatedChat.preview}');
     } else {
-      debugPrint(
+      AppLogger.w('ChatBloc', 
         '⚠️ CHAT LIST LIVE UPDATE: '
         'chat not found | '
         'chatId=${event.chatId} | '

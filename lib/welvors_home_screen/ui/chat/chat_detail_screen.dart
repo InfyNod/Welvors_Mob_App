@@ -47,6 +47,7 @@ import 'widgets/chat_input_composer.dart';
 import 'widgets/dialogs/chat_dialogs.dart';
 import 'widgets/sheets/chat_unmatch_sheet.dart';
 import 'widgets/sheets/chat_attachment_bottom_sheet.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -203,11 +204,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   void joinConversation(String conversationId) {
     if (conversationId.isEmpty) {
-      debugPrint('❌ CONVERSATION ID IS EMPTY');
+      AppLogger.e('ChatDetailScreen', '❌ CONVERSATION ID IS EMPTY');
       return;
     }
 
-    debugPrint('🚪 Joining conversation: $conversationId');
+    AppLogger.d('ChatDetailScreen', '🚪 Joining conversation: $conversationId');
 
     _socketService.emit('conversation:join', {
       'conversationId': conversationId,
@@ -215,7 +216,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
     _socketService.emit('profile:details', {'conversationId': conversationId});
 
-    debugPrint('✅ conversation:join emitted');
+    AppLogger.i('ChatDetailScreen', '✅ conversation:join emitted');
   }
 
   Timer? _typingTimer;
@@ -224,7 +225,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     final conversationId = widget.user.conversationId;
 
     if (conversationId == null || conversationId.isEmpty) {
-      debugPrint('❌ TYPING: conversationId is missing');
+      AppLogger.e('ChatDetailScreen', '❌ TYPING: conversationId is missing');
       return;
     }
 
@@ -235,7 +236,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       if (_isTyping) {
         _isTyping = false;
 
-        debugPrint('🛑 typing:stop');
+        AppLogger.d('ChatDetailScreen', '🛑 typing:stop');
 
         _socketService.emit('typing:stop', {'conversationId': conversationId});
       }
@@ -247,7 +248,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     if (!_isTyping) {
       _isTyping = true;
 
-      debugPrint('⌨️ typing:start');
+      AppLogger.d('ChatDetailScreen', '⌨️ typing:start');
 
       _socketService.emit('typing:start', {'conversationId': conversationId});
     }
@@ -260,7 +261,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       _isTyping = false;
 
-      debugPrint('🛑 typing:stop');
+      AppLogger.d('ChatDetailScreen', '🛑 typing:stop');
 
       _socketService.emit('typing:stop', {'conversationId': conversationId});
     });
@@ -326,7 +327,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   void _sendEffectMessage(String emoji, String label) {
     final reply = _replyingTo;
-    debugPrint(
+    AppLogger.d('ChatDetailScreen', 
       '💫 Sending effect message: $label ($emoji)>>>>>>${ChatMessageType.effect}',
     );
     context.read<ChatBloc>().add(
@@ -361,12 +362,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   void _onGiftItemSelected(GiftItem gift) {
-    debugPrint('🎁 GIFT SELECTED');
-    debugPrint('🎁 giftId => ${gift.id}');
-    debugPrint('🎁 giftName => ${gift.name}');
-    debugPrint('🎁 giftEmoji => ${gift.emoji}');
-    debugPrint('🎁 giftCoins => ${gift.coins}');
-    debugPrint('🎁 giftImage => ${gift.image}');
+    AppLogger.d('ChatDetailScreen', '🎁 GIFT SELECTED');
+    AppLogger.d('ChatDetailScreen', '🎁 giftId => ${gift.id}');
+    AppLogger.d('ChatDetailScreen', '🎁 giftName => ${gift.name}');
+    AppLogger.d('ChatDetailScreen', '🎁 giftEmoji => ${gift.emoji}');
+    AppLogger.d('ChatDetailScreen', '🎁 giftCoins => ${gift.coins}');
+    AppLogger.d('ChatDetailScreen', '🎁 giftImage => ${gift.image}');
 
     context.read<ChatBloc>().add(
       SendMessageEvent(
@@ -421,7 +422,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       _readMessageIds.add(message.id);
       _socketService.markMessageAsRead(message.id);
-      debugPrint('📖 message:read EMIT => messageId: ${message.id}');
+      AppLogger.d('ChatDetailScreen', '📖 message:read EMIT => messageId: ${message.id}');
     }
   }
 
@@ -473,14 +474,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
     final conversationId = widget.user.conversationId?.trim() ?? '';
 
-    debugPrint('');
-    debugPrint('==============================================');
-    debugPrint('🟢 CHAT DETAIL INIT');
-    debugPrint('==============================================');
-    debugPrint('chatId         = ${widget.user.id}');
-    debugPrint('userId         = ${widget.user.userId}');
-    debugPrint('conversationId = $conversationId');
-    debugPrint('==============================================');
+    AppLogger.d('ChatDetailScreen', '');
+    AppLogger.d('ChatDetailScreen', '==============================================');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL INIT');
+    AppLogger.d('ChatDetailScreen', '==============================================');
+    AppLogger.d('ChatDetailScreen', 'chatId         = ${widget.user.id}');
+    AppLogger.d('ChatDetailScreen', 'userId         = ${widget.user.userId}');
+    AppLogger.d('ChatDetailScreen', 'conversationId = $conversationId');
+    AppLogger.d('ChatDetailScreen', '==============================================');
 
     // ==========================================================
     // SOCKET JOIN
@@ -489,7 +490,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     if (conversationId.isNotEmpty) {
       joinConversation(conversationId);
     } else {
-      debugPrint('❌ CHAT DETAIL: conversationId is NULL/EMPTY');
+      AppLogger.e('ChatDetailScreen', '❌ CHAT DETAIL: conversationId is NULL/EMPTY');
     }
 
     // ==========================================================
@@ -515,7 +516,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     if (conversationId.isNotEmpty) {
       _loadChatMessages(conversationId: conversationId);
     } else {
-      debugPrint(
+      AppLogger.w('ChatDetailScreen', 
         '⚠️ CHAT DETAIL: missing conversationId; '
         'using legacy chat id',
       );
@@ -550,15 +551,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     _socketService.on('user:online', _onUserOnline);
     _socketService.on('user:offline', _onUserOffline);
 
-    debugPrint('🟢 CHAT DETAIL: user:online listener registered');
-    debugPrint('🟢 CHAT DETAIL: user:offline listener registered');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: user:online listener registered');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: user:offline listener registered');
   }
 
   Future<void> _loadChatMessages({required String conversationId}) async {
     final id = conversationId.trim();
 
     if (id.isEmpty) {
-      debugPrint('❌ _loadChatMessages: conversationId empty');
+      AppLogger.e('ChatDetailScreen', '❌ _loadChatMessages: conversationId empty');
       return;
     }
 
@@ -567,17 +568,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     final bloc = context.read<ChatBloc>();
 
     if (bloc.isClosed) {
-      debugPrint('❌ _loadChatMessages: ChatBloc already closed');
+      AppLogger.e('ChatDetailScreen', '❌ _loadChatMessages: ChatBloc already closed');
       return;
     }
 
-    debugPrint('');
-    debugPrint('==============================================');
-    debugPrint('📥 LOAD CHAT MESSAGES');
-    debugPrint('==============================================');
-    debugPrint('conversationId = $id');
-    debugPrint('chatId         = ${widget.user.id}');
-    debugPrint('==============================================');
+    AppLogger.d('ChatDetailScreen', '');
+    AppLogger.d('ChatDetailScreen', '==============================================');
+    AppLogger.d('ChatDetailScreen', '📥 LOAD CHAT MESSAGES');
+    AppLogger.d('ChatDetailScreen', '==============================================');
+    AppLogger.d('ChatDetailScreen', 'conversationId = $id');
+    AppLogger.d('ChatDetailScreen', 'chatId         = ${widget.user.id}');
+    AppLogger.d('ChatDetailScreen', '==============================================');
 
     // ----------------------------------------------------------
     // FIRST LOAD
@@ -595,7 +596,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
     var messages = bloc.state.messages[id];
 
-    debugPrint(
+    AppLogger.d('ChatDetailScreen', 
       '📥 FIRST LOAD RESULT: '
       '${messages?.length ?? 0} messages',
     );
@@ -604,7 +605,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       return;
     }
 
-    debugPrint('🔁 Message list empty. Retry #1...');
+    AppLogger.d('ChatDetailScreen', '🔁 Message list empty. Retry #1...');
 
     bloc.add(LoadMessagesEvent(widget.user.id, conversationId: id));
 
@@ -642,7 +643,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   void _onUserOnline(dynamic data) {
     final userId = _extractOnlineUserId(data);
-    debugPrint('🟢 CHAT DETAIL user:online => $data | userId=$userId');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL user:online => $data | userId=$userId');
     if (!mounted || userId != widget.user.userId) return;
 
     setState(() {
@@ -652,7 +653,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   void _onUserOffline(dynamic data) {
     final userId = _extractOnlineUserId(data);
-    debugPrint('🔴 CHAT DETAIL user:offline => $data | userId=$userId');
+    AppLogger.d('ChatDetailScreen', '🔴 CHAT DETAIL user:offline => $data | userId=$userId');
     if (!mounted || userId != widget.user.userId) return;
 
     setState(() {
@@ -673,7 +674,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         conversationId,
       );
 
-      debugPrint('👤 CHAT DETAIL: profile details loaded => $details');
+      AppLogger.i('ChatDetailScreen', '👤 CHAT DETAIL: profile details loaded => $details');
 
       if (!mounted) return;
       if (widget.user.conversationId?.trim() != conversationId.trim()) return;
@@ -684,45 +685,45 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         _isBlocked = details.isBlocked;
       });
     } catch (e) {
-      debugPrint('❌ CHAT DETAIL: failed to load profile details: $e');
+      AppLogger.e('ChatDetailScreen', '❌ CHAT DETAIL: failed to load profile details: $e');
     }
   }
 
   void _registerProfileDetailsListener() {
-    debugPrint('🔥 REGISTERING profile:details LISTENER');
+    AppLogger.d('ChatDetailScreen', '🔥 REGISTERING profile:details LISTENER');
 
     _socketService.offListener('profile:details', _onProfileDetails);
     _socketService.on('profile:details', (data) {
-      debugPrint('🔥🔥🔥 profile:details RAW RECEIVED => $data');
+      AppLogger.d('ChatDetailScreen', '🔥🔥🔥 profile:details RAW RECEIVED => $data');
 
       _onProfileDetails(data);
     });
 
-    debugPrint('✅ profile:details LISTENER REGISTERED');
+    AppLogger.i('ChatDetailScreen', '✅ profile:details LISTENER REGISTERED');
   }
 
   void _onProfileDetails(dynamic data) {
-    debugPrint('🔥 profile:details RAW => $data');
-    debugPrint('🔥 profile:details TYPE => ${data.runtimeType}');
+    AppLogger.d('ChatDetailScreen', '🔥 profile:details RAW => $data');
+    AppLogger.d('ChatDetailScreen', '🔥 profile:details TYPE => ${data.runtimeType}');
 
     if (!mounted) {
-      debugPrint('❌ profile:details ignored: screen not mounted');
+      AppLogger.e('ChatDetailScreen', '❌ profile:details ignored: screen not mounted');
       return;
     }
 
     final payload = _normalizeSocketMap(data);
 
-    debugPrint('🔥 profile:details NORMALIZED => $payload');
+    AppLogger.d('ChatDetailScreen', '🔥 profile:details NORMALIZED => $payload');
 
     if (payload == null) {
-      debugPrint('❌ profile:details payload is NULL');
+      AppLogger.e('ChatDetailScreen', '❌ profile:details payload is NULL');
       return;
     }
 
     try {
       final details = ConversationProfileDetails.fromJson(payload);
 
-      debugPrint(
+      AppLogger.i('ChatDetailScreen', 
         '✅ profile:details PARSED'
         '\n'
         'conversationId = ${details.conversationId}'
@@ -742,14 +743,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       final eventConversationId = details.conversationId.trim();
 
-      debugPrint('🔎 CURRENT conversationId = $currentConversationId');
+      AppLogger.d('ChatDetailScreen', '🔎 CURRENT conversationId = $currentConversationId');
 
-      debugPrint('🔎 EVENT conversationId = $eventConversationId');
+      AppLogger.d('ChatDetailScreen', '🔎 EVENT conversationId = $eventConversationId');
 
       if (eventConversationId.isNotEmpty &&
           currentConversationId.isNotEmpty &&
           eventConversationId != currentConversationId) {
-        debugPrint('❌ profile:details ignored because conversationId differs');
+        AppLogger.e('ChatDetailScreen', '❌ profile:details ignored because conversationId differs');
         return;
       }
 
@@ -759,9 +760,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         _isBlocked = details.isBlocked;
       });
 
-      debugPrint('✅ profile:details UI UPDATED');
+      AppLogger.i('ChatDetailScreen', '✅ profile:details UI UPDATED');
     } catch (e, stackTrace) {
-      debugPrint('❌ profile:details PARSE ERROR => $e');
+      AppLogger.e('ChatDetailScreen', '❌ profile:details PARSE ERROR => $e');
       debugPrintStack(stackTrace: stackTrace);
     }
   }
@@ -777,26 +778,26 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     // is removed in dispose().
     _socketService.on('message:receive', _onMessageReceive);
 
-    debugPrint('🟢 CHAT DETAIL: message:receive listener registered');
-    debugPrint('🟢 CHAT DETAIL: conversationId=${widget.user.conversationId}');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: message:receive listener registered');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: conversationId=${widget.user.conversationId}');
   }
 
   void _onMessageReceive(dynamic data) {
-    debugPrint('📩 CHAT DETAIL: message:receive RECEIVED => $data');
+    AppLogger.d('ChatDetailScreen', '📩 CHAT DETAIL: message:receive RECEIVED => $data');
 
     if (!mounted) return;
 
     final payload = _normalizeSocketMap(data);
     if (payload == null) {
-      debugPrint('❌ CHAT DETAIL: message:receive invalid payload');
+      AppLogger.e('ChatDetailScreen', '❌ CHAT DETAIL: message:receive invalid payload');
       return;
     }
 
     final receivedConversationId = _extractConversationId(payload);
     final currentConversationId = widget.user.conversationId?.trim();
 
-    debugPrint('📩 RECEIVED conversationId => $receivedConversationId');
-    debugPrint('📩 CURRENT conversationId => $currentConversationId');
+    AppLogger.d('ChatDetailScreen', '📩 RECEIVED conversationId => $receivedConversationId');
+    AppLogger.d('ChatDetailScreen', '📩 CURRENT conversationId => $currentConversationId');
 
     // If backend sends a conversation id, it MUST match this screen.
     if (receivedConversationId != null &&
@@ -804,7 +805,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         currentConversationId != null &&
         currentConversationId.isNotEmpty &&
         receivedConversationId != currentConversationId) {
-      debugPrint(
+      AppLogger.d('ChatDetailScreen', 
         'ℹ️ CHAT DETAIL: message:receive ignored - different conversation',
       );
       return;
@@ -814,7 +815,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     // into an open chat. This prevents cross-conversation messages.
     if ((receivedConversationId == null || receivedConversationId.isEmpty) &&
         (currentConversationId == null || currentConversationId.isEmpty)) {
-      debugPrint(
+      AppLogger.w('ChatDetailScreen', 
         '⚠️ CHAT DETAIL: message:receive ignored - conversationId missing',
       );
       return;
@@ -833,7 +834,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       IncomingMessageEvent(chatId: widget.user.id, payload: payload),
     );
 
-    debugPrint(
+    AppLogger.i('ChatDetailScreen', 
       '✅ CHAT DETAIL: IncomingMessageEvent added for ${widget.user.id}',
     );
 
@@ -941,7 +942,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     final cursor = bloc.state.messageNextCursor[_messageKey];
     final hasMore = bloc.state.messageHasMore[_messageKey] ?? false;
 
-    debugPrint(
+    AppLogger.d('ChatDetailScreen', 
       '🔼 CHAT TOP REACHED | pixels=${position.pixels} '
       'max=${position.maxScrollExtent} distance=$distanceFromTop '
       'hasMore=$hasMore cursor=$cursor '
@@ -949,7 +950,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     );
 
     if (!hasMore || cursor == null || cursor.trim().isEmpty) {
-      debugPrint('⛔ NO OLDER PAGE | hasMore=$hasMore cursor=$cursor');
+      AppLogger.d('ChatDetailScreen', '⛔ NO OLDER PAGE | hasMore=$hasMore cursor=$cursor');
       return;
     }
 
@@ -975,14 +976,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     _olderMessagesTimeout?.cancel();
     _olderMessagesTimeout = Timer(const Duration(seconds: 12), () {
       if (!mounted || !_loadingOlderMessages) return;
-      debugPrint('⏱️ OLDER PAGE TIMEOUT | cursor=$_lastRequestedOlderCursor');
+      AppLogger.d('ChatDetailScreen', '⏱️ OLDER PAGE TIMEOUT | cursor=$_lastRequestedOlderCursor');
       setState(() {
         _loadingOlderMessages = false;
         _lastRequestedOlderCursor = null;
       });
     });
 
-    debugPrint('🚀 LOAD OLDER CHAT | cursor=$cursor');
+    AppLogger.d('ChatDetailScreen', '🚀 LOAD OLDER CHAT | cursor=$cursor');
 
     bloc.add(
       LoadMessagesEvent(
@@ -999,7 +1000,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     // Unlock when the BLoC has processed the requested cursor and produced
     // a new nextCursor. This also unlocks when the server reaches the end.
     if (_loadingOlderMessages && currentCursor != _lastRequestedOlderCursor) {
-      debugPrint('✅ OLDER PAGE COMPLETE | nextCursor=$currentCursor');
+      AppLogger.i('ChatDetailScreen', '✅ OLDER PAGE COMPLETE | nextCursor=$currentCursor');
       _olderMessagesTimeout?.cancel();
       _loadingOlderMessages = false;
       _lastRequestedOlderCursor = null;
@@ -1091,7 +1092,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         });
       });
     } catch (e, stackTrace) {
-      debugPrint('START RECORDING ERROR: $e');
+      AppLogger.e('ChatDetailScreen', 'START RECORDING ERROR: $e');
       debugPrintStack(stackTrace: stackTrace);
       _toast('Unable to start recording');
     }
@@ -1132,7 +1133,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       _toast('Voice message sent ✓');
     } catch (e, stackTrace) {
-      debugPrint('STOP RECORDING ERROR: $e');
+      AppLogger.e('ChatDetailScreen', 'STOP RECORDING ERROR: $e');
       debugPrintStack(stackTrace: stackTrace);
       if (mounted) {
         setState(() {
@@ -1155,7 +1156,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         if (await file.exists()) await file.delete();
       }
     } catch (e) {
-      debugPrint('CANCEL RECORDING ERROR: $e');
+      AppLogger.e('ChatDetailScreen', 'CANCEL RECORDING ERROR: $e');
     } finally {
       if (!mounted) return;
       setState(() {
@@ -1194,7 +1195,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         _isAudioPlaying = true;
       });
     } catch (e, stackTrace) {
-      debugPrint('AUDIO PLAY ERROR: $e');
+      AppLogger.e('ChatDetailScreen', 'AUDIO PLAY ERROR: $e');
       debugPrintStack(stackTrace: stackTrace);
       _toast('Unable to play audio');
     }
@@ -1525,12 +1526,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         _isBlocked = false;
       });
       _toast('${widget.user.name} unblocked');
-      debugPrint("check>>>>>${check}");
+      AppLogger.d('ChatDetailScreen', "check>>>>>${check}");
       // if (check) {
       //   Navigator.pop(context);
       // }
     } catch (e) {
-      debugPrint('❌ UNBLOCK USER ERROR: $e');
+      AppLogger.e('ChatDetailScreen', '❌ UNBLOCK USER ERROR: $e');
       if (mounted) {
         _toast(e.toString().replaceFirst('Exception: ', ''));
       }
@@ -1839,7 +1840,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   Future<void> _openChatImage(ChatMessage message) async {
     final imageUrl = (message.imageUrl ?? '').trim();
     if (imageUrl.isEmpty) {
-      debugPrint('❌ IMAGE VIEW: imageUrl is empty');
+      AppLogger.e('ChatDetailScreen', '❌ IMAGE VIEW: imageUrl is empty');
       return;
     }
 
@@ -1857,7 +1858,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   Future<void> _openChatDocument(ChatMessage message) async {
     final fileUrl = (message.fileUrl ?? '').trim();
     if (fileUrl.isEmpty) {
-      debugPrint('❌ DOCUMENT VIEW: fileUrl is empty');
+      AppLogger.e('ChatDetailScreen', '❌ DOCUMENT VIEW: fileUrl is empty');
       return;
     }
 
@@ -1882,16 +1883,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     final uri = Uri.tryParse(fileUrl);
 
     if (uri == null) {
-      debugPrint('❌ Invalid document URL: $fileUrl');
+      AppLogger.e('ChatDetailScreen', '❌ Invalid document URL: $fileUrl');
       return;
     }
 
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
-      debugPrint('📄 Document opened: $opened');
+      AppLogger.d('ChatDetailScreen', '📄 Document opened: $opened');
     } catch (e) {
-      debugPrint('❌ Document open error: $e');
+      AppLogger.e('ChatDetailScreen', '❌ Document open error: $e');
     }
   }
   // ============================================================
@@ -1955,7 +1956,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       userName: widget.user.name,
       onPickGallery: _attachmentService.pickGallery,
       onPickCamera: () async {
-        debugPrint('📷 SHARE CAMERA: clicked');
+        AppLogger.d('ChatDetailScreen', '📷 SHARE CAMERA: clicked');
         await Future.delayed(const Duration(milliseconds: 300));
         if (!mounted) return;
         await _attachmentService.captureImage();
@@ -2137,7 +2138,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         ? widget.user.userId.trim()
         : widget.user.id.trim();
 
-    debugPrint('💗 RELATIONSHIP RECEIVER: $receiverId');
+    AppLogger.d('ChatDetailScreen', '💗 RELATIONSHIP RECEIVER: $receiverId');
 
     showModalBottomSheet(
       context: context,
@@ -2153,7 +2154,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                     current.relationshipTagAction ||
                 previous.relationshipTagError != current.relationshipTagError,
             listener: (context, state) async {
-              debugPrint(
+              AppLogger.d('ChatDetailScreen', 
                 '💗 RELATIONSHIP ACTION: ${state.relationshipTagAction}',
               );
 
@@ -2231,9 +2232,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
             builder: (context, state) {
               return RelationshipTagSheet(
                 onSend: (tag, message) {
-                  debugPrint('💗 RELATIONSHIP TAG: $tag');
-                  debugPrint('💗 RELATIONSHIP MESSAGE: $message');
-                  debugPrint('💗 RELATIONSHIP RECEIVER: $receiverId');
+                  AppLogger.d('ChatDetailScreen', '💗 RELATIONSHIP TAG: $tag');
+                  AppLogger.d('ChatDetailScreen', '💗 RELATIONSHIP MESSAGE: $message');
+                  AppLogger.d('ChatDetailScreen', '💗 RELATIONSHIP RECEIVER: $receiverId');
 
                   if (receiverId.isEmpty) {
                     if (Navigator.of(sheetContext).canPop()) {

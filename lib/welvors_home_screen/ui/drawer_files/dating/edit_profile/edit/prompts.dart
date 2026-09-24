@@ -6,6 +6,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
 import 'package:velvors/onbording_allpage/services/api_service.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class PromptsSection extends StatelessWidget {
   const PromptsSection({super.key});
@@ -235,7 +236,7 @@ class PromptsSection extends StatelessWidget {
         }
       }
     } catch (e) {
-      debugPrint("Error resolving categoryId: $e");
+      AppLogger.e('PromptsSection', "Error resolving categoryId: $e");
     }
     return '';
   }

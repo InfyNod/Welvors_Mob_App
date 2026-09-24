@@ -3,6 +3,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class PdfGenerator {
   static Future<File?> generateInvoice(Map<String, dynamic> invoiceData) async {
@@ -282,7 +283,7 @@ class PdfGenerator {
       
       return file;
     } catch (e) {
-      print('Error generating PDF: $e');
+      AppLogger.e('PdfGenerator', 'Error generating PDF: $e');
       return null;
     }
   }

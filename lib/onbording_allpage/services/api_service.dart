@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/main.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ApiService {
   static String get baseUrl => EnvConfig.apiBaseUrl;
@@ -26,8 +27,8 @@ class ApiService {
         },
       );
 
-      debugPrint('MY BALANCES STATUS: ${response.statusCode}');
-      debugPrint('MY BALANCES BODY: ${response.body}');
+      AppLogger.d('ApiService', 'MY BALANCES STATUS: ${response.statusCode}');
+      AppLogger.d('ApiService', 'MY BALANCES BODY: ${response.body}');
 
       await handleTokenExpiration(response.statusCode);
 
@@ -40,7 +41,7 @@ class ApiService {
 
       return {'success': false, 'message': 'Error: ${response.statusCode}'};
     } catch (e) {
-      debugPrint('MY BALANCES ERROR: $e');
+      AppLogger.e('ApiService', 'MY BALANCES ERROR: $e');
       return {'success': false, 'message': e.toString()};
     }
   }
@@ -48,7 +49,7 @@ class ApiService {
   /// Centralized method to handle 401 Unauthorized token expiration
   static Future<void> handleTokenExpiration(int statusCode) async {
     if (statusCode == 401 || statusCode == 403) {
-      debugPrint('Token Expired! Logging out automatically...');
+      AppLogger.d('ApiService', 'Token Expired! Logging out automatically...');
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('auth_token');
 
@@ -100,7 +101,7 @@ class ApiService {
       }
       return {};
     } catch (e) {
-      debugPrint('Error fetching intentions: $e');
+      AppLogger.e('ApiService', 'Error fetching intentions: $e');
       return {};
     }
   }
@@ -120,7 +121,7 @@ class ApiService {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching prompts categories: $e');
+      AppLogger.e('ApiService', 'Error fetching prompts categories: $e');
       return [];
     }
   }
@@ -139,7 +140,7 @@ class ApiService {
         },
       );
 
-      debugPrint('Referral Dashboard Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Referral Dashboard Status: ${response.statusCode}');
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true) {
@@ -149,7 +150,7 @@ class ApiService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching referral dashboard: $e');
+      AppLogger.e('ApiService', 'Error fetching referral dashboard: $e');
       return null;
     }
   }
@@ -168,7 +169,7 @@ class ApiService {
         },
       );
 
-      debugPrint('Onboarding Details ($type) Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Onboarding Details ($type) Status: ${response.statusCode}');
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true &&
@@ -180,7 +181,7 @@ class ApiService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching onboarding details ($type): $e');
+      AppLogger.e('ApiService', 'Error fetching onboarding details ($type): $e');
       return null;
     }
   }
@@ -199,7 +200,7 @@ class ApiService {
         },
       );
 
-      debugPrint('Refer Earn Info Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Refer Earn Info Status: ${response.statusCode}');
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -209,7 +210,7 @@ class ApiService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching refer earn info: $e');
+      AppLogger.e('ApiService', 'Error fetching refer earn info: $e');
       return null;
     }
   }
@@ -228,7 +229,7 @@ class ApiService {
         },
       );
 
-      debugPrint('Waitlist Offer Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Waitlist Offer Status: ${response.statusCode}');
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -238,7 +239,7 @@ class ApiService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching waitlist offer: $e');
+      AppLogger.e('ApiService', 'Error fetching waitlist offer: $e');
       return null;
     }
   }
@@ -258,10 +259,10 @@ class ApiService {
         body: jsonEncode({'referralCode': code}),
       );
 
-      debugPrint('Apply Referral Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Apply Referral Status: ${response.statusCode}');
       return jsonDecode(response.body);
     } catch (e) {
-      debugPrint('Error applying referral code: $e');
+      AppLogger.e('ApiService', 'Error applying referral code: $e');
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
@@ -300,7 +301,7 @@ class ApiService {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching lifestyle: $e');
+      AppLogger.e('ApiService', 'Error fetching lifestyle: $e');
       return [];
     }
   }
@@ -319,12 +320,12 @@ class ApiService {
         },
       );
 
-      debugPrint(
+      AppLogger.d('ApiService', 
         'Complete Onboarding: ${response.statusCode} - ${response.body}',
       );
       return (response.statusCode == 200 || response.statusCode == 201);
     } catch (e) {
-      debugPrint('Error completing onboarding: $e');
+      AppLogger.e('ApiService', 'Error completing onboarding: $e');
       return false;
     }
   }
@@ -347,7 +348,7 @@ class ApiService {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching interests: $e');
+      AppLogger.e('ApiService', 'Error fetching interests: $e');
       return [];
     }
   }
@@ -372,7 +373,7 @@ class ApiService {
       }
       return {};
     } catch (e) {
-      debugPrint('Error fetching professions: $e');
+      AppLogger.e('ApiService', 'Error fetching professions: $e');
       return {};
     }
   }
@@ -397,7 +398,7 @@ class ApiService {
       }
       return {};
     } catch (e) {
-      debugPrint('Error fetching experiences: $e');
+      AppLogger.e('ApiService', 'Error fetching experiences: $e');
       return {};
     }
   }
@@ -422,7 +423,7 @@ class ApiService {
       }
       return {};
     } catch (e) {
-      debugPrint('Error fetching employment types: $e');
+      AppLogger.e('ApiService', 'Error fetching employment types: $e');
       return {};
     }
   }
@@ -447,7 +448,7 @@ class ApiService {
       }
       return {};
     } catch (e) {
-      debugPrint('Error fetching salary ranges: $e');
+      AppLogger.e('ApiService', 'Error fetching salary ranges: $e');
       return {};
     }
   }
@@ -472,7 +473,7 @@ class ApiService {
       }
       return {};
     } catch (e) {
-      debugPrint('Error fetching ambitions: $e');
+      AppLogger.e('ApiService', 'Error fetching ambitions: $e');
       return {};
     }
   }
@@ -486,7 +487,7 @@ class ApiService {
         body: jsonEncode({'phoneNumber': phoneNumber}),
       );
 
-      debugPrint('OTP Send: ${response.statusCode} - ${response.body}');
+      AppLogger.d('ApiService', 'OTP Send: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true) return null;
@@ -494,7 +495,7 @@ class ApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error sending OTP: $e');
+      AppLogger.e('ApiService', 'Error sending OTP: $e');
       return e.toString();
     }
   }
@@ -508,7 +509,7 @@ class ApiService {
         body: jsonEncode({'referralCode': code}),
       );
 
-      debugPrint(
+      AppLogger.d('ApiService', 
         'Referral Validate: ${response.statusCode} - ${response.body}',
       );
       try {
@@ -520,7 +521,7 @@ class ApiService {
         return null;
       }
     } catch (e) {
-      debugPrint('Error validating referral code: $e');
+      AppLogger.e('ApiService', 'Error validating referral code: $e');
       return null;
     }
   }
@@ -542,7 +543,7 @@ class ApiService {
         body: jsonEncode(body),
       );
 
-      debugPrint('OTP Verify: ${response.statusCode} - ${response.body}');
+      AppLogger.d('ApiService', 'OTP Verify: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true &&
@@ -568,7 +569,7 @@ class ApiService {
         'error': 'Error ${response.statusCode}: ${response.body}',
       };
     } catch (e) {
-      debugPrint('Error verifying OTP: $e');
+      AppLogger.e('ApiService', 'Error verifying OTP: $e');
       return {'token': null, 'error': e.toString()};
     }
   }
@@ -588,8 +589,8 @@ class ApiService {
         body: jsonEncode(data),
       );
 
-      debugPrint('Basic Info Status: ${response.statusCode}');
-      debugPrint('Basic Info Response: ${response.body}');
+      AppLogger.d('ApiService', 'Basic Info Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Basic Info Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -608,7 +609,7 @@ class ApiService {
         return 'Error ${response.statusCode}: ${response.body}';
       }
     } catch (e) {
-      debugPrint('Error submitting basic info: $e');
+      AppLogger.e('ApiService', 'Error submitting basic info: $e');
       return e.toString();
     }
   }
@@ -633,8 +634,8 @@ class ApiService {
         }),
       );
 
-      debugPrint('Interested In Status: ${response.statusCode}');
-      debugPrint('Interested In Response: ${response.body}');
+      AppLogger.d('ApiService', 'Interested In Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Interested In Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -653,7 +654,7 @@ class ApiService {
         return 'Error ${response.statusCode}: ${response.body}';
       }
     } catch (e) {
-      debugPrint('Error submitting interested in: $e');
+      AppLogger.e('ApiService', 'Error submitting interested in: $e');
       return e.toString();
     }
   }
@@ -673,8 +674,8 @@ class ApiService {
         body: jsonEncode({'optionId': intentionId}),
       );
 
-      debugPrint('Looking For Status: ${response.statusCode}');
-      debugPrint('Looking For Response: ${response.body}');
+      AppLogger.d('ApiService', 'Looking For Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Looking For Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -693,7 +694,7 @@ class ApiService {
         return 'Error ${response.statusCode}: ${response.body}';
       }
     } catch (e) {
-      debugPrint('Error submitting looking for: $e');
+      AppLogger.e('ApiService', 'Error submitting looking for: $e');
       return e.toString();
     }
   }
@@ -716,8 +717,8 @@ class ApiService {
         body: jsonEncode({'questionId': questionId, 'optionIds': optionIds}),
       );
 
-      debugPrint('Submit Answer Status: ${response.statusCode}');
-      debugPrint('Submit Answer Response: ${response.body}');
+      AppLogger.d('ApiService', 'Submit Answer Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Answer Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -736,7 +737,7 @@ class ApiService {
         return 'Error ${response.statusCode}: ${response.body}';
       }
     } catch (e) {
-      debugPrint('Error submitting answer: $e');
+      AppLogger.e('ApiService', 'Error submitting answer: $e');
       return e.toString();
     }
   }
@@ -756,8 +757,8 @@ class ApiService {
         body: jsonEncode(data),
       );
 
-      debugPrint('Submit Education Status: ${response.statusCode}');
-      debugPrint('Submit Education Response: ${response.body}');
+      AppLogger.d('ApiService', 'Submit Education Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Education Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -769,7 +770,7 @@ class ApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error submitting education: $e');
+      AppLogger.e('ApiService', 'Error submitting education: $e');
       return e.toString();
     }
   }
@@ -789,8 +790,8 @@ class ApiService {
         body: jsonEncode(data),
       );
 
-      debugPrint('Submit Work Status: ${response.statusCode}');
-      debugPrint('Submit Work Response: ${response.body}');
+      AppLogger.d('ApiService', 'Submit Work Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Work Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -802,7 +803,7 @@ class ApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error submitting work: $e');
+      AppLogger.e('ApiService', 'Error submitting work: $e');
       return e.toString();
     }
   }
@@ -836,8 +837,8 @@ class ApiService {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      debugPrint('Submit Photos Status: ${response.statusCode}');
-      debugPrint('Submit Photos Response: ${response.body}');
+      AppLogger.d('ApiService', 'Submit Photos Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Photos Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -856,7 +857,7 @@ class ApiService {
         return 'Error ${response.statusCode}: ${response.body}';
       }
     } catch (e) {
-      debugPrint('Error submitting photos: $e');
+      AppLogger.e('ApiService', 'Error submitting photos: $e');
       return e.toString();
     }
   }
@@ -876,8 +877,8 @@ class ApiService {
         body: jsonEncode({"bio": bioText}),
       );
 
-      debugPrint('Submit Bio Status: ${response.statusCode}');
-      debugPrint('Submit Bio Response: ${response.body}');
+      AppLogger.d('ApiService', 'Submit Bio Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Bio Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -889,7 +890,7 @@ class ApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error submitting bio: $e');
+      AppLogger.e('ApiService', 'Error submitting bio: $e');
       return e.toString();
     }
   }
@@ -911,8 +912,8 @@ class ApiService {
         body: jsonEncode({"prompts": prompts}),
       );
 
-      debugPrint('Submit Prompts Status: ${response.statusCode}');
-      debugPrint('Submit Prompts Response: ${response.body}');
+      AppLogger.d('ApiService', 'Submit Prompts Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Prompts Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -924,7 +925,7 @@ class ApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error submitting prompts: $e');
+      AppLogger.e('ApiService', 'Error submitting prompts: $e');
       return e.toString();
     }
   }
@@ -956,13 +957,13 @@ class ApiService {
         body: jsonEncode(body),
       );
 
-      debugPrint('Submit Address Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Address Status: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return null;
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error submitting address: $e');
+      AppLogger.e('ApiService', 'Error submitting address: $e');
       return e.toString();
     }
   }
@@ -982,13 +983,13 @@ class ApiService {
         body: jsonEncode({"latitude": lat, "longitude": lng}),
       );
 
-      debugPrint('Submit Location Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Submit Location Status: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return null;
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error submitting location: $e');
+      AppLogger.e('ApiService', 'Error submitting location: $e');
       return e.toString();
     }
   }
@@ -1080,8 +1081,8 @@ class ApiService {
             'gift': {'giftId': giftId, if (giftMessage != null) 'message': giftMessage},
         }),
       );
-      debugPrint('SEND ENGAGEMENT STATUS: ${response.statusCode}');
-      debugPrint('SEND ENGAGEMENT BODY: ${response.body}');
+      AppLogger.d('ApiService', 'SEND ENGAGEMENT STATUS: ${response.statusCode}');
+      AppLogger.d('ApiService', 'SEND ENGAGEMENT BODY: ${response.body}');
       return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};

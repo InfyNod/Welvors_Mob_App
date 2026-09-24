@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'dart:io';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class VideoSection extends StatefulWidget {
   const VideoSection({super.key});
@@ -42,7 +43,7 @@ class _VideoSectionState extends State<VideoSection> {
     _thumbnailController?.dispose();
     _hasError = false;
     
-    debugPrint('🎬 Attempting to load video from: $path');
+    AppLogger.d('VideoSection', '🎬 Attempting to load video from: $path');
 
     if (path.startsWith('http')) {
       _thumbnailController = VideoPlayerController.networkUrl(Uri.parse(path));
@@ -58,7 +59,7 @@ class _VideoSectionState extends State<VideoSection> {
             if (mounted) setState(() {});
           })
           .catchError((e) {
-            debugPrint('Thumbnail Init Error: $e');
+            AppLogger.e('VideoSection', 'Thumbnail Init Error: $e');
             if (mounted) {
               setState(() {
                 _hasError = true;
@@ -571,7 +572,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
         });
       }
     } catch (e) {
-      debugPrint('Error initializing camera: $e');
+      AppLogger.e('VideoSection', 'Error initializing camera: $e');
       if (mounted) {
         setState(() {
           _cameraError = true;
@@ -602,7 +603,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
         }
       });
     } catch (e) {
-      debugPrint(e.toString());
+      AppLogger.d('VideoSection', e.toString());
     }
   }
 
@@ -628,7 +629,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
               }
             });
     } catch (e) {
-      debugPrint(e.toString());
+      AppLogger.d('VideoSection', e.toString());
     }
   }
 

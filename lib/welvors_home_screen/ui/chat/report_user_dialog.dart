@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/main.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ReportUserDialog extends StatefulWidget {
   final String userName;
@@ -62,9 +63,9 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
 
     try {
       await widget.onSubmit?.call(reason, description, alsoBlock);
-      debugPrint("navneet>>>>>>${alsoBlock}");
+      AppLogger.d('ReportUserDialog', "navneet>>>>>>${alsoBlock}");
     } catch (e) {
-      debugPrint("navneet22");
+      AppLogger.d('ReportUserDialog', "navneet22");
 
       final errorMessage = e.toString().replaceFirst('Exception: ', '');
 

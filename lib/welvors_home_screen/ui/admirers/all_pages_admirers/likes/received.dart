@@ -8,6 +8,7 @@ import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
 import 'reveal_drawer.dart';
 import '../profile_view/profile_view.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ReceivedLikesScreen extends StatefulWidget {
   const ReceivedLikesScreen({super.key});
@@ -33,9 +34,9 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
       final action = popupText.toLowerCase().contains('reject') ? 'PASS' : 'LIKE';
       final service = AdmirersApiService();
       await service.swipeUser(targetUserId: id.toString(), action: action);
-      debugPrint('Successfully swiped $action on user $id');
+      AppLogger.i('ReceivedLikesScreen', 'Successfully swiped $action on user $id');
     } catch (e) {
-      debugPrint('Failed to swipe: $e');
+      AppLogger.e('ReceivedLikesScreen', 'Failed to swipe: $e');
     }
   }
 

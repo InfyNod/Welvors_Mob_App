@@ -8,6 +8,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'service_event/event_api_service.dart';
 import 'share_ticket_card.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class TicketScreen extends StatefulWidget {
   final String title;
@@ -751,7 +752,7 @@ class ShareModalContentState extends State<ShareModalContent> {
         sharePositionOrigin: sharePositionOrigin,
       );
     } catch (e) {
-      debugPrint('Error sharing: $e');
+      AppLogger.e('TicketScreen', 'Error sharing: $e');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -809,7 +810,7 @@ class ShareModalContentState extends State<ShareModalContent> {
         sharePositionOrigin: sharePositionOrigin,
       );
     } catch (e) {
-      debugPrint('Error sharing all: $e');
+      AppLogger.e('TicketScreen', 'Error sharing all: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to share all tickets: $e')),

@@ -5,6 +5,7 @@ import '../filter_bloc/filter_event.dart';
 import 'package:http/http.dart' as __http;
 import 'dart:convert' as dart_convert;
 import '../service/service_filter.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class LookingForScreen extends StatefulWidget {
   const LookingForScreen({super.key});
@@ -45,8 +46,8 @@ class _LookingForScreenState extends State<LookingForScreen> {
         return;
       }
     } catch (e) {
-      print('====== [LOOKING FOR API ERROR] ======');
-      print(e);
+      AppLogger.e('LookingForScreen', '====== [LOOKING FOR API ERROR] ======');
+      AppLogger.e('LookingForScreen', e);
     }
     
     // Fallback if failed

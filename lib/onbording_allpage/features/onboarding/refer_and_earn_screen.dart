@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'share_referral_card.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ReferAndEarnScreen extends StatefulWidget {
   const ReferAndEarnScreen({super.key});
@@ -508,7 +509,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                 if (Navigator.canPop(context)) {
                                   Navigator.pop(context);
                                 }
-                                debugPrint('Error sharing referral: $e');
+                                AppLogger.e('ReferAndEarnScreen', 'Error sharing referral: $e');
                               }
                             },
                             child: Container(

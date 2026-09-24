@@ -10,6 +10,7 @@ import 'package:velvors/welvors_home_screen/ui/chat/SocketService.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
 import 'try_screen.dart';
 import 'gift_selection_screen.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 Future<String> _currentUserId() async {
   final prefs = await SharedPreferences.getInstance();
@@ -97,7 +98,7 @@ class ComplimentingBottomSheet extends StatefulWidget {
         try {
           context.read<HomeBloc>().add(RemoveProfileEvent(profileId: profileId));
         } catch (e) {
-          debugPrint('⚠️ Could not remove profile from HomeBloc: $e');
+          AppLogger.w('ComplimentingBottomSheet', '⚠️ Could not remove profile from HomeBloc: $e');
         }
       }
 
@@ -121,7 +122,7 @@ class ComplimentingBottomSheet extends StatefulWidget {
         try {
           context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
         } catch (e) {
-          debugPrint('⚠️ Could not refresh HomeBloc on return: $e');
+          AppLogger.w('ComplimentingBottomSheet', '⚠️ Could not refresh HomeBloc on return: $e');
         }
       }
     }
@@ -211,7 +212,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         setState(() => _balancesLoading = false);
       }
     } else {
-      debugPrint('❌ MY BALANCES FAILED: ${response['message']}');
+      AppLogger.e('ComplimentingBottomSheet', '❌ MY BALANCES FAILED: ${response['message']}');
       setState(() => _balancesLoading = false);
     }
   }
@@ -289,11 +290,11 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       targetType = null;
     }
 
-    debugPrint(
+    AppLogger.d('ComplimentingBottomSheet', 
       '🚀 PROFILE ACTION receiverId=$receiverId type=$targetType rose=$_roseSelected gift=$_giftSelected message=$message',
     );
     if (receiverId.isEmpty) {
-      debugPrint('❌ receiverId missing');
+      AppLogger.e('ComplimentingBottomSheet', '❌ receiverId missing');
       if (mounted) {
         setState(() {
           _errorMessage = 'Something went wrong. Please try again.';
@@ -314,22 +315,22 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     final selectedCount =
         (hasMessage ? 1 : 0) + (hasRose ? 1 : 0) + (hasGift ? 1 : 0);
 
-    debugPrint('');
-    debugPrint('==============================================');
-    debugPrint('🚀 PROFILE ACTION');
-    debugPrint('==============================================');
-    debugPrint('receiverId       = $receiverId');
-    debugPrint('targetType       = $targetType');
-    debugPrint('targetId         = $complimentingID');
-    debugPrint('message          = $message');
-    debugPrint('hasMessage       = $hasMessage');
-    debugPrint('hasRose          = $hasRose');
-    debugPrint('hasGift          = $hasGift');
-    debugPrint('selectedCount    = $selectedCount');
-    debugPrint('==============================================');
+    AppLogger.d('ComplimentingBottomSheet', '');
+    AppLogger.d('ComplimentingBottomSheet', '==============================================');
+    AppLogger.d('ComplimentingBottomSheet', '🚀 PROFILE ACTION');
+    AppLogger.d('ComplimentingBottomSheet', '==============================================');
+    AppLogger.d('ComplimentingBottomSheet', 'receiverId       = $receiverId');
+    AppLogger.d('ComplimentingBottomSheet', 'targetType       = $targetType');
+    AppLogger.d('ComplimentingBottomSheet', 'targetId         = $complimentingID');
+    AppLogger.d('ComplimentingBottomSheet', 'message          = $message');
+    AppLogger.d('ComplimentingBottomSheet', 'hasMessage       = $hasMessage');
+    AppLogger.d('ComplimentingBottomSheet', 'hasRose          = $hasRose');
+    AppLogger.d('ComplimentingBottomSheet', 'hasGift          = $hasGift');
+    AppLogger.d('ComplimentingBottomSheet', 'selectedCount    = $selectedCount');
+    AppLogger.d('ComplimentingBottomSheet', '==============================================');
 
     if (selectedCount == 0) {
-      debugPrint('❌ Nothing selected');
+      AppLogger.e('ComplimentingBottomSheet', '❌ Nothing selected');
       if (mounted) {
         setState(() {
           _errorMessage = 'Please select compliment, rose or gift';
@@ -348,7 +349,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     ChatUser? preExistingTarget;
 
     try {
-      debugPrint('🔎 Looking for existing conversation before send...');
+      AppLogger.d('ComplimentingBottomSheet', '🔎 Looking for existing conversation before send...');
 
       chatBloc.add(const LoadChatsEvent());
 
@@ -368,7 +369,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         }
       }
     } catch (e) {
-      debugPrint('⚠️ Pre-send conversation lookup failed: $e');
+      AppLogger.e('ComplimentingBottomSheet', '⚠️ Pre-send conversation lookup failed: $e');
 
       for (final u in chatBloc.state.allChats) {
         if ((u.userId == receiverId || u.conversationId == receiverId) &&
@@ -379,7 +380,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       }
     }
 
-    debugPrint(
+    AppLogger.d('ComplimentingBottomSheet', 
       '🔎 PRE-SEND CONVERSATION = '
       '${preExistingTarget?.conversationId ?? "NONE"}',
     );
@@ -412,10 +413,10 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       // SendMessageEvent nahi hoga.
       // ==========================================================
 
-      debugPrint('');
-      debugPrint('==============================================');
-      debugPrint('🚀 SENDING ENGAGEMENT');
-      debugPrint('==============================================');
+      AppLogger.d('ComplimentingBottomSheet', '');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
+      AppLogger.d('ComplimentingBottomSheet', '🚀 SENDING ENGAGEMENT');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
 
       final r = await ApiService.sendEngagement(
         receiverId: receiverId,
@@ -427,7 +428,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         giftMessage: hasGift ? message : null,
       );
 
-      debugPrint('✨ ENGAGEMENT RESPONSE = $r');
+      AppLogger.d('ComplimentingBottomSheet', '✨ ENGAGEMENT RESPONSE = $r');
 
       if (r['success'] != true) {
         final backendMessage = r['message']?.toString() ??
@@ -441,7 +442,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         return;
       }
 
-      debugPrint('✅ ENGAGEMENT API SUCCESS');
+      AppLogger.i('ComplimentingBottomSheet', '✅ ENGAGEMENT API SUCCESS');
       await _loadMyBalances();
 
       // ==========================================================
@@ -455,8 +456,8 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       // ==========================================================
 
       if (target == null) {
-        debugPrint('🆕 Existing conversation not found.');
-        debugPrint('🔄 Loading chats after send...');
+        AppLogger.d('ComplimentingBottomSheet', '🆕 Existing conversation not found.');
+        AppLogger.d('ComplimentingBottomSheet', '🔄 Loading chats after send...');
 
         chatBloc.add(const LoadChatsEvent());
 
@@ -484,7 +485,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
             }
           }
         } catch (e) {
-          debugPrint('⚠️ Post-send lookup failed: $e');
+          AppLogger.e('ComplimentingBottomSheet', '⚠️ Post-send lookup failed: $e');
 
           for (final u in chatBloc.state.allChats) {
             if ((u.userId == receiverId || u.conversationId == receiverId) &&
@@ -499,7 +500,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         // after the send API call returns. If the first list refresh still
         // doesn't contain it, give it one more short retry before giving up.
         if (target == null) {
-          debugPrint('🔁 Conversation still not found, retrying once...');
+          AppLogger.d('ComplimentingBottomSheet', '🔁 Conversation still not found, retrying once...');
           await Future<void>.delayed(const Duration(milliseconds: 900));
           chatBloc.add(const LoadChatsEvent());
 
@@ -523,7 +524,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
               }
             }
           } catch (e) {
-            debugPrint('⚠️ Retry lookup failed: $e');
+            AppLogger.e('ComplimentingBottomSheet', '⚠️ Retry lookup failed: $e');
 
             for (final u in chatBloc.state.allChats) {
               if ((u.userId == receiverId || u.conversationId == receiverId) &&
@@ -590,15 +591,15 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
 
       chatBloc.joinConversation(conversationId);
 
-      debugPrint('');
-      debugPrint('==============================================');
-      debugPrint('🟢 DIRECT CHAT DETAIL');
-      debugPrint('==============================================');
-      debugPrint('Receiver ID : $receiverId');
-      debugPrint('User ID     : ${user.userId}');
-      debugPrint('Chat ID     : ${user.id}');
-      debugPrint('Conversation : $conversationId');
-      debugPrint('==============================================');
+      AppLogger.d('ComplimentingBottomSheet', '');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
+      AppLogger.d('ComplimentingBottomSheet', '🟢 DIRECT CHAT DETAIL');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
+      AppLogger.d('ComplimentingBottomSheet', 'Receiver ID : $receiverId');
+      AppLogger.d('ComplimentingBottomSheet', 'User ID     : ${user.userId}');
+      AppLogger.d('ComplimentingBottomSheet', 'Chat ID     : ${user.id}');
+      AppLogger.d('ComplimentingBottomSheet', 'Conversation : $conversationId');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
 
       // ==========================================================
       // IMPORTANT
@@ -631,22 +632,22 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
         'profileId': receiverId,
       });
 
-      debugPrint('✅ ComplimentingBottomSheet closed with open_chat action');
+      AppLogger.i('ComplimentingBottomSheet', '✅ ComplimentingBottomSheet closed with open_chat action');
     } catch (e, st) {
-      debugPrint('');
-      debugPrint('==============================================');
-      debugPrint('❌ PROFILE ACTION FAILED');
-      debugPrint('==============================================');
-      debugPrint('receiverId = $receiverId');
-      debugPrint('targetType = $targetType');
-      debugPrint('message    = $message');
-      debugPrint('compliment = $hasMessage');
-      debugPrint('rose       = $hasRose');
-      debugPrint('gift       = $hasGift');
-      debugPrint('count      = $selectedCount');
-      debugPrint('ERROR      = $e');
-      debugPrint('STACK      = $st');
-      debugPrint('==============================================');
+      AppLogger.d('ComplimentingBottomSheet', '');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
+      AppLogger.e('ComplimentingBottomSheet', '❌ PROFILE ACTION FAILED');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
+      AppLogger.d('ComplimentingBottomSheet', 'receiverId = $receiverId');
+      AppLogger.d('ComplimentingBottomSheet', 'targetType = $targetType');
+      AppLogger.d('ComplimentingBottomSheet', 'message    = $message');
+      AppLogger.d('ComplimentingBottomSheet', 'compliment = $hasMessage');
+      AppLogger.d('ComplimentingBottomSheet', 'rose       = $hasRose');
+      AppLogger.d('ComplimentingBottomSheet', 'gift       = $hasGift');
+      AppLogger.d('ComplimentingBottomSheet', 'count      = $selectedCount');
+      AppLogger.e('ComplimentingBottomSheet', 'ERROR      = $e');
+      AppLogger.d('ComplimentingBottomSheet', 'STACK      = $st');
+      AppLogger.d('ComplimentingBottomSheet', '==============================================');
 
       String cleanError = e.toString();
       if (cleanError.startsWith('Exception: ')) {

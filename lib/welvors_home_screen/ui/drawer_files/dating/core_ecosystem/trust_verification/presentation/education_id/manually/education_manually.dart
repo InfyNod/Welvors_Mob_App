@@ -4,6 +4,7 @@ import '../../instant_verification/widget/aadhaarVerifiedScreen.dart';
 import 'bloc/education_bloc.dart';
 import 'bloc/education_event.dart';
 import 'bloc/education_state.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EducationManuallyScreen extends StatelessWidget {
   const EducationManuallyScreen({super.key});
@@ -128,7 +129,7 @@ class _EducationView extends StatelessWidget {
                           title: 'Submit for review',
                           onTap: state.isConfirmed
                               ? () {
-                                  debugPrint('Submit button clicked');
+                                  AppLogger.d('EducationManuallyScreen', 'Submit button clicked');
 
                                   context.read<EducationBloc_manually>().add(
                                     const SubmitEducation(),

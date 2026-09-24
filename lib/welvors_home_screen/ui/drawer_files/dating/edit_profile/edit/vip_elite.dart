@@ -4,6 +4,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class NetworkingIntentSection extends StatelessWidget {
   const NetworkingIntentSection({super.key});
@@ -368,7 +369,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
       }
     }
 
-    debugPrint('🚀 Sending Networking Intent: questionKey=$questionKey, optionIds=$selectedIds, desc=${_wordsController.text.trim()}');
+    AppLogger.d('NetworkingIntentSection', '🚀 Sending Networking Intent: questionKey=$questionKey, optionIds=$selectedIds, desc=${_wordsController.text.trim()}');
 
     // Call the PATCH API
     final success = await EditProfileApiService.updateAnswers(

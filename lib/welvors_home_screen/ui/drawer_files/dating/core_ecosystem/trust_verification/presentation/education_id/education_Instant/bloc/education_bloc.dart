@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'education_event.dart';
 import 'education_state.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EducationBloc_instant
     extends Bloc<EducationEvent, EducationState_instant> {
@@ -31,8 +32,8 @@ class EducationBloc_instant
   ) async {
     final number = state.mobileNumber.replaceAll(RegExp(r'\D'), '');
 
-    print('Mobile Number: "$number"');
-    print('Mobile Length: ${number.length}');
+    AppLogger.d('EducationInstantBloc', 'Mobile Number: "$number"');
+    AppLogger.d('EducationInstantBloc', 'Mobile Length: ${number.length}');
 
     // Empty
     if (number.isEmpty) {

@@ -10,7 +10,7 @@ import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'waitlist_confirmed_screen.dart';
+// import 'waitlist_confirmed_screen.dart';
 import 'user_data.dart';
 import 'onboarding_flow_screen.dart';
 import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';

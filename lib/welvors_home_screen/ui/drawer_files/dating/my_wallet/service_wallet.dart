@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class WalletApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/my-wallet';
@@ -32,7 +33,7 @@ class WalletApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching wallet data: $e');
+      AppLogger.e('WalletApiService', 'Error fetching wallet data: $e');
       return null;
     }
   }
@@ -58,7 +59,7 @@ class WalletApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching my balances: $e');
+      AppLogger.e('WalletApiService', 'Error fetching my balances: $e');
       return null;
     }
   }

@@ -7,6 +7,7 @@ import '../../education_Instant/bloc/education_state.dart';
 
 import 'education_event.dart';
 import 'education_state.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EducationBloc_manually
     extends Bloc<EducationEvent_manually, EducationState_manually> {
@@ -56,13 +57,13 @@ class EducationBloc_manually
     SubmitEducation event,
     Emitter<EducationState_manually> emit,
   ) async {
-    debugPrint('========== SUBMIT EDUCATION ==========');
+    AppLogger.d('EducationManuallyBloc', '========== SUBMIT EDUCATION ==========');
 
-    debugPrint('College: ${state.college}');
-    debugPrint('Degree: ${state.degree}');
-    debugPrint('Year: ${state.year}');
-    debugPrint('File: ${state.file?.path}');
-    debugPrint('Confirmed: ${state.isConfirmed}');
+    AppLogger.d('EducationManuallyBloc', 'College: ${state.college}');
+    AppLogger.d('EducationManuallyBloc', 'Degree: ${state.degree}');
+    AppLogger.d('EducationManuallyBloc', 'Year: ${state.year}');
+    AppLogger.d('EducationManuallyBloc', 'File: ${state.file?.path}');
+    AppLogger.d('EducationManuallyBloc', 'Confirmed: ${state.isConfirmed}');
 
     if (state.college.trim().isEmpty) {
       emit(
@@ -120,7 +121,7 @@ class EducationBloc_manually
       // API call
       await Future.delayed(const Duration(seconds: 2));
 
-      debugPrint('EDUCATION SUBMIT SUCCESS');
+      AppLogger.i('EducationManuallyBloc', 'EDUCATION SUBMIT SUCCESS');
 
       emit(state.copyWith(status: EducationStatus.success));
     } catch (e) {

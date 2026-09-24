@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class RoseApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/admin/purchase-store/data/ROSE';
@@ -26,7 +27,7 @@ class RoseApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching roses data: $e');
+      AppLogger.e('RoseApiService', 'Error fetching roses data: $e');
       return null;
     }
   }

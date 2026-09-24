@@ -10,6 +10,7 @@ import 'package:velvors/welvors_home_screen/ui/date_now/send_request_drawer.dart
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 // Mock HomeBloc to feed the single fetched profile to the HomeScreen.
 class ProfileDetailHomeBloc extends Bloc<HomeEvent, HomeState>
     implements HomeBloc {
@@ -375,8 +376,8 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
         }
       }
     } catch (e, stackTrace) {
-      debugPrint('Error in _fetchProfileDetails: $e');
-      debugPrint('StackTrace: $stackTrace');
+      AppLogger.e('ProfileDetail', 'Error in _fetchProfileDetails: $e');
+      AppLogger.d('ProfileDetail', 'StackTrace: $stackTrace');
       if (mounted) {
         setState(() {
           _errorMessage = 'Connection error: $e';

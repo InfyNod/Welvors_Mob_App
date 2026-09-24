@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import '../../chat_repository.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 /// Bottom sheet dialog for confirming unmatching with another user.
 class ChatUnmatchSheet extends StatefulWidget {
@@ -80,10 +81,10 @@ class _ChatUnmatchSheetState extends State<ChatUnmatchSheet> {
     });
 
     try {
-      debugPrint('💔 UNMATCH API CALL');
-      debugPrint('Other User ID: ${widget.otherUserId}');
-      debugPrint('Reason: $reason');
-      debugPrint('Note: $note');
+      AppLogger.d('ChatUnmatchSheet', '💔 UNMATCH API CALL');
+      AppLogger.d('ChatUnmatchSheet', 'Other User ID: ${widget.otherUserId}');
+      AppLogger.d('ChatUnmatchSheet', 'Reason: $reason');
+      AppLogger.d('ChatUnmatchSheet', 'Note: $note');
 
       await ChatRepository().unmatchUser(
         otherUserId: widget.otherUserId,
@@ -96,7 +97,7 @@ class _ChatUnmatchSheetState extends State<ChatUnmatchSheet> {
       widget.onUnmatched();
       widget.showToast('User unmatched successfully');
     } catch (e) {
-      debugPrint('❌ UNMATCH API ERROR: $e');
+      AppLogger.e('ChatUnmatchSheet', '❌ UNMATCH API ERROR: $e');
       if (!mounted) return;
       setState(() {
         _isLoading = false;

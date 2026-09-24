@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class LegalApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/legal/legal-pages';
@@ -17,10 +18,10 @@ class LegalApiService {
           return data['data'];
         }
       } else {
-        debugPrint('Failed to load $pageType: ${response.statusCode}');
+        AppLogger.e('LegalApiService', 'Failed to load $pageType: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('Error fetching $pageType: $e');
+      AppLogger.e('LegalApiService', 'Error fetching $pageType: $e');
     }
     return null;
   }

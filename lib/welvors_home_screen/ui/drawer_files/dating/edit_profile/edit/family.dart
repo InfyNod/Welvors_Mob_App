@@ -9,6 +9,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class FamilySection extends StatefulWidget {
   const FamilySection({super.key});
@@ -72,7 +73,7 @@ class _FamilySectionState extends State<FamilySection> {
         }).toList();
       }
     } catch (e) {
-      debugPrint('Error fetching $type: $e');
+      AppLogger.e('FamilySection', 'Error fetching $type: $e');
     }
     return [];
   }
@@ -90,10 +91,10 @@ class _FamilySectionState extends State<FamilySection> {
         body: jsonEncode(data),
       );
       if (response.statusCode != 200 && response.statusCode != 201) {
-        debugPrint('Failed to patch family data: ${response.body}');
+        AppLogger.e('FamilySection', 'Failed to patch family data: ${response.body}');
       }
     } catch (e) {
-      debugPrint('Error patching family data: $e');
+      AppLogger.e('FamilySection', 'Error patching family data: $e');
     }
   }
 
@@ -846,7 +847,7 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
         }).toList();
       }
     } catch (e) {
-      debugPrint('Error fetching $type: $e');
+      AppLogger.e('FamilySection', 'Error fetching $type: $e');
     }
     return [];
   }

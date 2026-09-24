@@ -17,6 +17,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'share_event_deatil.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   final String eventId;
@@ -375,7 +376,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 if (Navigator.canPop(context)) {
                   Navigator.pop(context);
                 }
-                debugPrint('Error sharing: $e');
+                AppLogger.e('EventDetailsScreen', 'Error sharing: $e');
               }
             },
             icon: const Icon(
