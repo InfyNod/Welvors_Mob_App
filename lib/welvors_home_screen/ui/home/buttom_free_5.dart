@@ -317,7 +317,18 @@ class BottomFree5Popup extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(18),
-        child: Image.network(url, fit: BoxFit.cover),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(url, fit: BoxFit.cover),
+            BackdropFilter(
+              filter: dart_ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
