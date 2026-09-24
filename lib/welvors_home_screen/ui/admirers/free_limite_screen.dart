@@ -7,7 +7,8 @@ class FreeLimitScreen extends StatefulWidget {
   State<FreeLimitScreen> createState() => _FreeLimitScreenState();
 }
 
-class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProviderStateMixin {
+class _FreeLimitScreenState extends State<FreeLimitScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _rippleScaleAnimation;
   late Animation<double> _rippleOpacityAnimation;
@@ -38,12 +39,14 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 8),
+          const SizedBox(height: 0),
           // Rocket Icon with Glow
           _buildRocketIcon(),
           const SizedBox(height: 12),
@@ -106,9 +109,24 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
             ),
             child: Column(
               children: [
-                _buildBenefitItem('👀', 'Be seen first', 'Top spot for verified singles near you', true),
-                _buildBenefitItem('❤️', 'Get your first likes fast', 'Most boosted profiles get likes within 30 min', true),
-                _buildBenefitItem('📊', 'Track every view', 'See who viewed and liked you, live', false),
+                _buildBenefitItem(
+                  '👀',
+                  'Be seen first',
+                  'Top spot for verified singles near you',
+                  true,
+                ),
+                _buildBenefitItem(
+                  '❤️',
+                  'Get your first likes fast',
+                  'Most boosted profiles get likes within 30 min',
+                  true,
+                ),
+                _buildBenefitItem(
+                  '📊',
+                  'Track every view',
+                  'See who viewed and liked you, live',
+                  false,
+                ),
               ],
             ),
           ),
@@ -120,7 +138,10 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               gradient: const LinearGradient(
-                colors: [Color(0xFF8B49ED), Color(0xFF702EDC)], // Light to requested purple
+                colors: [
+                  Color(0xFF8B49ED),
+                  Color(0xFF702EDC),
+                ], // Light to requested purple
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -194,7 +215,9 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF702EDC).withOpacity(_rippleOpacityAnimation.value),
+                    color: const Color(
+                      0xFF702EDC,
+                    ).withOpacity(_rippleOpacityAnimation.value),
                   ),
                 ),
               ),
@@ -206,7 +229,11 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF702EDC).withOpacity(_rippleOpacityAnimation.value * 1.5 > 1.0 ? 1.0 : _rippleOpacityAnimation.value * 1.5),
+                    color: const Color(0xFF702EDC).withOpacity(
+                      _rippleOpacityAnimation.value * 1.5 > 1.0
+                          ? 1.0
+                          : _rippleOpacityAnimation.value * 1.5,
+                    ),
                   ),
                 ),
               ),
@@ -216,9 +243,9 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
                 child: Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF702EDC).withOpacity(0.1),
+                    color: Colors.transparent,
                   ),
                   child: Center(
                     child: Container(
@@ -237,7 +264,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
                             blurRadius: 10 * breatheScale,
                             spreadRadius: 2,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ],
                       ),
                       child: const Center(
@@ -276,10 +303,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey.shade800,
-              ),
+              style: TextStyle(fontSize: 10, color: Colors.grey.shade800),
             ),
           ],
         ),
@@ -287,7 +311,12 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildBenefitItem(String emoji, String title, String subtitle, bool showDivider) {
+  Widget _buildBenefitItem(
+    String emoji,
+    String title,
+    String subtitle,
+    bool showDivider,
+  ) {
     return Column(
       children: [
         Padding(
