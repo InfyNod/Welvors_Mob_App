@@ -16,6 +16,7 @@ import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:screen_protector/screen_protector.dart';
 import 'free_limit_pop.dart';
+import 'buttom_free_5.dart';
 
 class SectionColor {
   final Color bg;
@@ -46,6 +47,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _hasShownFree5Popup = false;
+  bool _hasShownFree25Popup = false;
+
   @override
   void initState() {
     super.initState();
@@ -85,12 +89,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
         final swipedCount = context.read<HomeBloc>().swipedCount;
-        if (swipedCount == 25 || state.remainingSwipes == 0) {
+        if ((swipedCount >= 25 || state.remainingSwipes <= 0) && !_hasShownFree25Popup) {
+          _hasShownFree25Popup = true;
           showDialog(
             context: context,
             barrierDismissible: true,
             barrierColor: Colors.black.withOpacity(0.6),
             builder: (context) => const FreeLimitPopup(),
+          );
+        } else if (swipedCount == 5 && !_hasShownFree5Popup) {
+          _hasShownFree5Popup = true;
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            barrierColor: Colors.black.withOpacity(0.6),
+            builder: (context) => const BottomFree5Popup(),
           );
         }
       },

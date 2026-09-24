@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as dart_ui;
 
 class BottomFree5Popup extends StatelessWidget {
   const BottomFree5Popup({super.key});
@@ -12,12 +13,16 @@ class BottomFree5Popup extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
               // Close button
               Padding(
                 padding: const EdgeInsets.only(top: 0.0, right: 4.0),
@@ -171,68 +176,72 @@ class BottomFree5Popup extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+            // Close scrollable area
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
 
-              // Button
-              Container(
-                width: double.infinity,
-                height: 46,
-                decoration: BoxDecoration(
+            // Button
+            Container(
+              width: double.infinity,
+              height: 46,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFF35B84), Color(0xFFD61F54)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
                   borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFF35B84), Color(0xFFD61F54)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFE43A6A).withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Center(
-                      child: Text(
-                        'Unlock my matches with Premium+ ›',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Timer
-              RichText(
-                text: TextSpan(
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
-                  children: const [
-                    TextSpan(text: 'Free picks refresh in '),
-                    TextSpan(
-                      text: '05:40:23',
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Center(
+                    child: Text(
+                      'Unlock my matches with Premium+ ›',
                       style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+
+            // Timer
+            RichText(
+              text: TextSpan(
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                children: const [
+                  TextSpan(text: 'Free picks refresh in '),
+                  TextSpan(
+                    text: '05:40:23',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+          ],
         ),
       ),
     );
@@ -240,36 +249,48 @@ class BottomFree5Popup extends StatelessWidget {
 
   Widget _buildAvatarsRow() {
     return SizedBox(
-      height: 40,
+      height: 44,
+      width: 120, // To center the overlapping stack
       child: Stack(
-        alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildAvatar('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'),
-              const SizedBox(width: 8),
-              _buildAvatar('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=100&h=100'),
-              const SizedBox(width: 8),
-              _buildAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100'),
-              const SizedBox(width: 20), // Space for badge
-            ],
+          Positioned(
+            left: 0,
+            child: _buildAvatar('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100'),
           ),
           Positioned(
-            right: 0,
+            left: 24, // Overlap by 12px (36 - 12 = 24)
+            child: _buildAvatar('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=100&h=100'),
+          ),
+          Positioned(
+            left: 48, // Overlap
+            child: _buildAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100'),
+          ),
+          Positioned(
+            left: 72, // Overlaps the 3rd avatar
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: const Color(0xFFE43A6A),
-                borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Text(
-                '+20',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+              child: const Center(
+                child: Text(
+                  '+20',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -364,9 +385,18 @@ class BottomFree5Popup extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18),
             // Adding a blur effect to the image as it's a hidden profile
-            child: ImageFiltered(
-              imageFilter: ColorFilter.mode(Colors.black.withOpacity(0.1), BlendMode.darken),
-              child: Image.network(imgUrl, fit: BoxFit.cover),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.network(imgUrl, fit: BoxFit.cover),
+                // Blur layer
+                BackdropFilter(
+                  filter: dart_ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.1),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
