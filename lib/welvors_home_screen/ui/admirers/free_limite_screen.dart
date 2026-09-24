@@ -9,23 +9,23 @@ class FreeLimitScreen extends StatefulWidget {
 
 class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _rotateAnimation;
+  late Animation<double> _rippleScaleAnimation;
+  late Animation<double> _rippleOpacityAnimation;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
+      duration: const Duration(milliseconds: 2000),
+    )..repeat();
 
-    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    _rippleScaleAnimation = Tween<double>(begin: 0.6, end: 1.5).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
 
-    _rotateAnimation = Tween<double>(begin: -0.05, end: 0.05).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOutSine),
+    _rippleOpacityAnimation = Tween<double>(begin: 0.2, end: 0.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
   }
 
@@ -53,7 +53,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF7B2CBF),
+              color: const Color(0xFF702EDC),
               letterSpacing: 1.2,
             ),
           ),
@@ -116,19 +116,19 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
           // Boost Button
           Container(
             width: double.infinity,
-            height: 48,
+            height: 56,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               gradient: const LinearGradient(
-                colors: [Color(0xFF8A2BE2), Color(0xFF6A0DAD)], // Bright purple to deep purple
+                colors: [Color(0xFF8B49ED), Color(0xFF702EDC)], // Light to requested purple
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF8A2BE2).withOpacity(0.4),
-                  blurRadius: 15,
-                  offset: const Offset(0, 6),
+                  color: const Color(0xFF702EDC).withOpacity(0.4),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
@@ -141,13 +141,13 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('🚀', style: TextStyle(fontSize: 16)),
+                      const Text('🚀', style: TextStyle(fontSize: 18)),
                       const SizedBox(width: 8),
                       const Text(
                         'Boost my profile now ›',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -177,53 +177,77 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
-        return Transform.scale(
-          scale: _scaleAnimation.value,
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF8A2BE2).withOpacity(0.05),
-            ),
-            child: Center(
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF8A2BE2).withOpacity(0.1),
+        final value = _animationController.value;
+        final breatheScale = 1.0 + (value < 0.5 ? value : 1.0 - value) * 0.1;
+
+        return SizedBox(
+          width: 140,
+          height: 140,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Outer Ripple
+              Transform.scale(
+                scale: _rippleScaleAnimation.value,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF702EDC).withOpacity(_rippleOpacityAnimation.value),
+                  ),
                 ),
-                child: Center(
-                  child: Transform.rotate(
-                    angle: _rotateAnimation.value,
+              ),
+              // Inner Ripple
+              Transform.scale(
+                scale: _rippleScaleAnimation.value * 0.8,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF702EDC).withOpacity(_rippleOpacityAnimation.value * 1.5 > 1.0 ? 1.0 : _rippleOpacityAnimation.value * 1.5),
+                  ),
+                ),
+              ),
+              // Breathing Rocket Center
+              Transform.scale(
+                scale: breatheScale,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF702EDC).withOpacity(0.1),
+                  ),
+                  child: Center(
                     child: Container(
-                      width: 45,
-                      height: 45,
+                      width: 60,
+                      height: 60,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF9D4EDD), Color(0xFF5A189A)],
+                          colors: [Color(0xFF8B49ED), Color(0xFF702EDC)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF5A189A).withOpacity(0.5 * _scaleAnimation.value),
-                            blurRadius: 10 * _scaleAnimation.value,
+                            color: const Color(0xFF702EDC).withOpacity(0.4),
+                            blurRadius: 10 * breatheScale,
                             spreadRadius: 2,
                             offset: const Offset(0, 4),
                           )
                         ],
                       ),
                       child: const Center(
-                        child: Text('🚀', style: TextStyle(fontSize: 22)),
+                        child: Text('🚀', style: TextStyle(fontSize: 28)),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       },
@@ -236,7 +260,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFFF3E8FF), // Very light purple
+          color: const Color(0xFF702EDC).withOpacity(0.08), // Very light purple
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -246,7 +270,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen> with SingleTickerProv
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF7B2CBF),
+                color: Color(0xFF702EDC),
               ),
             ),
             const SizedBox(height: 2),
