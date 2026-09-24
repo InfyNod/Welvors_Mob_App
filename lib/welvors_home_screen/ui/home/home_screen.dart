@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
         final swipedCount = context.read<HomeBloc>().swipedCount;
-        if (swipedCount == 8 || state is HomeEmpty || (state is HomeLoaded && state.profiles.isEmpty)) {
+        if (swipedCount == 25 || state.remainingSwipes == 0) {
           showDialog(
             context: context,
             barrierDismissible: true,

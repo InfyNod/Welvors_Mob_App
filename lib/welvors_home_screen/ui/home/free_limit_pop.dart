@@ -91,7 +91,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
               const SizedBox(height: 0),
               // PRE-TITLE
               const Text(
-                'PREMIUM+ · 8 OF 8 SEEN',
+                'PREMIUM+ · 25 OF 25 SEEN',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w900,
@@ -124,7 +124,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
                   children: const [
                     TextSpan(
                       text:
-                          'You\'ve seen today\'s 8 picks. Now put your profile in front of ',
+                          'You\'ve seen today\'s 25 picks. Now put your profile in front of ',
                     ),
                     TextSpan(
                       text: 'hundreds of verified singles',
@@ -252,7 +252,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
                 text: TextSpan(
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                   children: const [
-                    TextSpan(text: 'Your next 8 picks unlock in '),
+                    TextSpan(text: 'Your next 25 picks unlock in '),
                     TextSpan(
                       text: '06:06:43',
                       style: TextStyle(
