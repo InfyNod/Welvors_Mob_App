@@ -15,6 +15,7 @@ import '../../../onbording_allpage/theme/app_colors.dart';
 import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:screen_protector/screen_protector.dart';
+import 'free_limit_pop.dart';
 
 class SectionColor {
   final Color bg;
@@ -81,7 +82,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
+    return BlocConsumer<HomeBloc, HomeState>(
+      listener: (context, state) {
+        final swipedCount = context.read<HomeBloc>().swipedCount;
+        if (swipedCount == 8 || state is HomeEmpty || (state is HomeLoaded && state.profiles.isEmpty)) {
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            barrierColor: Colors.black.withOpacity(0.6),
+            builder: (context) => const FreeLimitPopup(),
+          );
+        }
+      },
       builder: (context, state) {
         if (state is HomeLoaded && state.profiles.isNotEmpty) {
           final currentProfile = state.profiles.first;

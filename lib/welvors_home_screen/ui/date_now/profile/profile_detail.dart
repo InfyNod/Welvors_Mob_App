@@ -22,6 +22,9 @@ class ProfileDetailHomeBloc extends Bloc<HomeEvent, HomeState>
 
   @override
   bool get hasSwipedProfiles => false;
+
+  @override
+  int get swipedCount => 0;
 }
 
 class ProfileDetailScreen extends StatefulWidget {
