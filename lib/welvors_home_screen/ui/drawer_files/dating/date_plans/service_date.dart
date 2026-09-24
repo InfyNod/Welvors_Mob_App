@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class DatePlanApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/date-now/date-plan-packages/get-all';
@@ -26,7 +27,7 @@ class DatePlanApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching date plans data: $e');
+      AppLogger.e('DatePlanApiService', 'Error fetching date plans data: $e');
       return null;
     }
   }

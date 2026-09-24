@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'shared_item_model.dart';
 import 'shared_item_repository.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 abstract class SharedItemEvent {
   const SharedItemEvent();
@@ -66,15 +67,15 @@ class SharedItemBloc extends Bloc<SharedItemEvent, SharedItemState> {
     try {
       final data = await repository.getSharedItems(event.conversationId);
 
-      debugPrint('✅ MEDIA COUNT: ${data.media.length}');
+      AppLogger.i('SharedItemBloc', '✅ MEDIA COUNT: ${data.media.length}');
 
-      debugPrint('✅ DOCUMENT COUNT: ${data.documents.length}');
+      AppLogger.i('SharedItemBloc', '✅ DOCUMENT COUNT: ${data.documents.length}');
 
-      debugPrint('✅ LINK COUNT: ${data.links.length}');
+      AppLogger.i('SharedItemBloc', '✅ LINK COUNT: ${data.links.length}');
 
       emit(state.copyWith(loading: false, data: data, clearError: true));
     } catch (e) {
-      debugPrint('❌ SHARED ITEMS ERROR: $e');
+      AppLogger.e('SharedItemBloc', '❌ SHARED ITEMS ERROR: $e');
 
       emit(
         state.copyWith(

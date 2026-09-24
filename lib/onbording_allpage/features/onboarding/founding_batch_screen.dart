@@ -7,6 +7,7 @@ import '../../widgets/primary_button.dart';
 import 'payment_success_screen.dart';
 
 import '../../services/api_service.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class FoundingBatchScreen extends StatefulWidget {
   const FoundingBatchScreen({super.key});
@@ -508,7 +509,7 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                           url,
                           mode: LaunchMode.externalApplication,
                         )) {
-                          debugPrint('Could not launch $url');
+                          AppLogger.d('FoundingBatchScreen', 'Could not launch $url');
                         }
                       },
                       child: Container(

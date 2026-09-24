@@ -15,6 +15,7 @@ import 'chat_detail_screen.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatScreen_ extends StatefulWidget {
   const ChatScreen_({super.key});
@@ -35,7 +36,7 @@ class _ChatScreen_State extends State<ChatScreen_> {
         : savedToken;
 
     if (token.isEmpty) {
-      debugPrint('❌ CHAT: no auth_token found - socket not connected');
+      AppLogger.e('ChatScreen', '❌ CHAT: no auth_token found - socket not connected');
     }
 
     // Socket connection is intentionally started by _ChatListView AFTER
@@ -460,8 +461,8 @@ class _ChatListViewState extends State<_ChatListView> {
         },
       );
 
-      debugPrint('NEW MATCHES status: ${response.statusCode}');
-      debugPrint('NEW MATCHES body: ${response.body}');
+      AppLogger.d('ChatScreen', 'NEW MATCHES status: ${response.statusCode}');
+      AppLogger.d('ChatScreen', 'NEW MATCHES body: ${response.body}');
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw Exception('Unable to load new matches (${response.statusCode})');
@@ -497,7 +498,7 @@ class _ChatListViewState extends State<_ChatListView> {
         _newMatchesLoading = false;
       });
     } catch (e) {
-      debugPrint('❌ NEW MATCHES: $e');
+      AppLogger.e('ChatScreen', '❌ NEW MATCHES: $e');
 
       if (!mounted) return;
 
@@ -559,7 +560,7 @@ class _ChatListViewState extends State<_ChatListView> {
     // listeners while creating the socket, so user:online cannot be missed.
     _socketService.ensureConnected();
 
-    debugPrint('🟢 CHAT LIST: initState completed');
+    AppLogger.d('ChatScreen', '🟢 CHAT LIST: initState completed');
   }
 
   // ==========================================================
@@ -572,7 +573,7 @@ class _ChatListViewState extends State<_ChatListView> {
     }
 
     if (_socketService.socket == null) {
-      debugPrint(
+      AppLogger.d('ChatScreen', 
         '⏳ CHAT LIST: SOCKET NULL - retrying listener registration...',
       );
 
@@ -594,11 +595,11 @@ class _ChatListViewState extends State<_ChatListView> {
 
     _socketService.on('typing:stop', _onTypingStop);
 
-    debugPrint('🟢 CHAT LIST: typing:start listener registered');
+    AppLogger.d('ChatScreen', '🟢 CHAT LIST: typing:start listener registered');
 
-    debugPrint('🟢 CHAT LIST: typing:stop listener registered');
+    AppLogger.d('ChatScreen', '🟢 CHAT LIST: typing:stop listener registered');
 
-    debugPrint(
+    AppLogger.i('ChatScreen', 
       '🟢 CHAT LIST: socket connected = '
       '${_socketService.socket?.connected}',
     );
@@ -612,7 +613,7 @@ class _ChatListViewState extends State<_ChatListView> {
     if (!mounted) return;
 
     if (_socketService.socket == null) {
-      debugPrint(
+      AppLogger.d('ChatScreen', 
         '⏳ CHAT LIST: SOCKET NULL - retrying online listener registration...',
       );
       Future.delayed(const Duration(milliseconds: 300), () {
@@ -627,8 +628,8 @@ class _ChatListViewState extends State<_ChatListView> {
     _socketService.on('user:online', _onUserOnline);
     _socketService.on('user:offline', _onUserOffline);
 
-    debugPrint('🟢 CHAT LIST: user:online listener registered');
-    debugPrint('🟢 CHAT LIST: user:offline listener registered');
+    AppLogger.d('ChatScreen', '🟢 CHAT LIST: user:online listener registered');
+    AppLogger.d('ChatScreen', '🟢 CHAT LIST: user:offline listener registered');
   }
 
   String? _extractUserId(dynamic data) {
@@ -651,7 +652,7 @@ class _ChatListViewState extends State<_ChatListView> {
 
   void _onUserOnline(dynamic data) {
     final userId = _extractUserId(data);
-    debugPrint('🟢 user:online RECEIVED => $data | userId=$userId');
+    AppLogger.d('ChatScreen', '🟢 user:online RECEIVED => $data | userId=$userId');
     if (!mounted ||
         userId == null ||
         userId.isEmpty ||
@@ -665,7 +666,7 @@ class _ChatListViewState extends State<_ChatListView> {
 
   void _onUserOffline(dynamic data) {
     final userId = _extractUserId(data);
-    debugPrint('🔴 user:offline RECEIVED => $data | userId=$userId');
+    AppLogger.d('ChatScreen', '🔴 user:offline RECEIVED => $data | userId=$userId');
     if (!mounted ||
         userId == null ||
         userId.isEmpty ||
@@ -691,26 +692,26 @@ class _ChatListViewState extends State<_ChatListView> {
   // ==========================================================
 
   void _onTypingStart(dynamic data) {
-    debugPrint('🟢 SOCKET typing:start RECEIVED => $data');
+    AppLogger.d('ChatScreen', '🟢 SOCKET typing:start RECEIVED => $data');
 
     // ONLY userId is extracted.
     final String? userId = _extractTypingValue(data, 'userId');
 
-    debugPrint('🟢 typing:start userId => $userId');
+    AppLogger.d('ChatScreen', '🟢 typing:start userId => $userId');
 
     if (!mounted) {
-      debugPrint('⚠️ CHAT LIST NOT MOUNTED');
+      AppLogger.w('ChatScreen', '⚠️ CHAT LIST NOT MOUNTED');
       return;
     }
 
     if (userId == null || userId.isEmpty) {
-      debugPrint('❌ typing:start userId missing');
+      AppLogger.e('ChatScreen', '❌ typing:start userId missing');
       return;
     }
 
     // Ignore own typing
     if (userId == _currentUserId) {
-      debugPrint('ℹ️ Own typing:start event ignored');
+      AppLogger.d('ChatScreen', 'ℹ️ Own typing:start event ignored');
       return;
     }
 
@@ -719,7 +720,7 @@ class _ChatListViewState extends State<_ChatListView> {
       _typingUsers[userId] = true;
     });
 
-    debugPrint('✅ TYPING SHOWING FOR USER: $userId');
+    AppLogger.i('ChatScreen', '✅ TYPING SHOWING FOR USER: $userId');
   }
 
   // ==========================================================
@@ -729,25 +730,25 @@ class _ChatListViewState extends State<_ChatListView> {
   // ==========================================================
 
   void _onTypingStop(dynamic data) {
-    debugPrint('🔴 SOCKET typing:stop RECEIVED => $data');
+    AppLogger.d('ChatScreen', '🔴 SOCKET typing:stop RECEIVED => $data');
 
     // ONLY userId is extracted.
     final String? userId = _extractTypingValue(data, 'userId');
 
-    debugPrint('🔴 typing:stop userId => $userId');
+    AppLogger.d('ChatScreen', '🔴 typing:stop userId => $userId');
 
     if (!mounted) {
       return;
     }
 
     if (userId == null || userId.isEmpty) {
-      debugPrint('❌ typing:stop userId missing');
+      AppLogger.e('ChatScreen', '❌ typing:stop userId missing');
       return;
     }
 
     // Ignore own typing
     if (userId == _currentUserId) {
-      debugPrint('ℹ️ Own typing:stop event ignored');
+      AppLogger.d('ChatScreen', 'ℹ️ Own typing:stop event ignored');
       return;
     }
 
@@ -756,7 +757,7 @@ class _ChatListViewState extends State<_ChatListView> {
       _typingUsers.remove(userId);
     });
 
-    debugPrint('✅ TYPING HIDDEN FOR USER: $userId');
+    AppLogger.i('ChatScreen', '✅ TYPING HIDDEN FOR USER: $userId');
   }
 
   // ==========================================================
@@ -798,13 +799,13 @@ class _ChatListViewState extends State<_ChatListView> {
 
     if (value is List) {
       if (value.isEmpty) {
-        debugPrint('❌ Typing event list is empty');
+        AppLogger.e('ChatScreen', '❌ Typing event list is empty');
         return null;
       }
 
       value = value.first;
 
-      debugPrint('🟢 Typing event first item => $value');
+      AppLogger.d('ChatScreen', '🟢 Typing event first item => $value');
     }
 
     // ==========================================================
@@ -822,7 +823,7 @@ class _ChatListViewState extends State<_ChatListView> {
       }
 
       if (value is! Map) {
-        debugPrint('❌ Typing event data is not Map/List: $value');
+        AppLogger.e('ChatScreen', '❌ Typing event data is not Map/List: $value');
         return null;
       }
 
@@ -967,7 +968,7 @@ class _ChatListViewState extends State<_ChatListView> {
     _socketService.offListener('user:online', _onUserOnline);
     _socketService.offListener('user:offline', _onUserOffline);
 
-    debugPrint('🔴 CHAT LIST: socket listeners removed');
+    AppLogger.d('ChatScreen', '🔴 CHAT LIST: socket listeners removed');
 
     searchController.dispose();
 
@@ -1358,7 +1359,7 @@ class _ChatListViewState extends State<_ChatListView> {
                       type = 'all';
                   }
 
-                  debugPrint('🔎 Filter clicked: $selectedFilter -> $type');
+                  AppLogger.d('ChatScreen', '🔎 Filter clicked: $selectedFilter -> $type');
 
                   context.read<ChatBloc>().add(
                     SelectFilterEvent(selectedFilter),
@@ -1696,7 +1697,7 @@ class _ChatListViewState extends State<_ChatListView> {
   Future<void> _showDeleteConversationDialog(ChatUser user) async {
     final conversationId = (user.conversationId ?? '').trim();
     if (conversationId.isEmpty) {
-      debugPrint('❌ DELETE CHAT: conversationId is missing for ${user.name}');
+      AppLogger.e('ChatScreen', '❌ DELETE CHAT: conversationId is missing for ${user.name}');
       return;
     }
 
@@ -1984,11 +1985,11 @@ class _ChatListViewState extends State<_ChatListView> {
     final String? conversationId = user.conversationId;
 
     if (conversationId == null || conversationId.isEmpty) {
-      debugPrint('❌ Conversation ID is missing');
+      AppLogger.e('ChatScreen', '❌ Conversation ID is missing');
       return;
     }
 
-    debugPrint('🟢 OPEN CHAT CONVERSATION ID: $conversationId');
+    AppLogger.d('ChatScreen', '🟢 OPEN CHAT CONVERSATION ID: $conversationId');
 
     // ==========================================================
     // JOIN CONVERSATION
@@ -2009,7 +2010,7 @@ class _ChatListViewState extends State<_ChatListView> {
     ).then((_) {
       if (!mounted) return;
       chatBloc.clearConversationUnread(conversationId);
-      debugPrint('🔙 RETURNED CHAT -> unread cleared: $conversationId');
+      AppLogger.d('ChatScreen', '🔙 RETURNED CHAT -> unread cleared: $conversationId');
     });
   }
   // ==========================================================

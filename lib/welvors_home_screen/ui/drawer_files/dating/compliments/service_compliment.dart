@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ComplimentApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/admin/purchase-store/data/COMPLIMENT';
@@ -26,7 +27,7 @@ class ComplimentApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching compliments data: $e');
+      AppLogger.e('ComplimentApiService', 'Error fetching compliments data: $e');
       return null;
     }
   }

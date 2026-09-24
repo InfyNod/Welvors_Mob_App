@@ -9,6 +9,7 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'user_data.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class PhotosScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -97,7 +98,7 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
           });
         }
       } catch (e) {
-        debugPrint('Error picking image: $e');
+        AppLogger.e('PhotosScreen', 'Error picking image: $e');
       }
     }
   }

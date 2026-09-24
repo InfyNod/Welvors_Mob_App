@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/services/gift_api_service.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 /// One item inside a gift grid.
 class GiftItem {
@@ -117,7 +118,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
         _giftLoading = false;
       });
     } catch (e) {
-      debugPrint('❌ Gift catalog load failed: $e');
+      AppLogger.e('ComposerExtrasPanel', '❌ Gift catalog load failed: $e');
       if (!mounted) return;
       setState(() {
         _giftLoading = false;

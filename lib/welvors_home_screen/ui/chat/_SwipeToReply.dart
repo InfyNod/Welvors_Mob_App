@@ -1,5 +1,6 @@
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 enum SwipeDirection { none, reply, delete }
 
@@ -110,7 +111,7 @@ class _SwipeToReplyState extends State<SwipeToReply>
     if (_direction == SwipeDirection.reply && _dragX >= _replyThreshold) {
       _actionTriggered = true;
 
-      debugPrint('↩️ REPLY ONLY');
+      AppLogger.d('SwipeToReply', '↩️ REPLY ONLY');
 
       widget.onReply();
 
@@ -125,7 +126,7 @@ class _SwipeToReplyState extends State<SwipeToReply>
     if (_direction == SwipeDirection.delete && _dragX <= _deleteThreshold) {
       _actionTriggered = true;
 
-      debugPrint('🗑️ DELETE ONLY');
+      AppLogger.d('SwipeToReply', '🗑️ DELETE ONLY');
 
       widget.onDelete?.call();
 

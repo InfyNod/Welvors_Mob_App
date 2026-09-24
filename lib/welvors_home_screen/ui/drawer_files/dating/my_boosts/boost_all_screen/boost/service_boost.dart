@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class BoostApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/admin/boost/get-all?type=BOOST';
@@ -26,7 +27,7 @@ class BoostApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching boosts data: $e');
+      AppLogger.e('BoostApiService', 'Error fetching boosts data: $e');
       return null;
     }
   }
@@ -50,7 +51,7 @@ class BoostApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching boost wallet details: $e');
+      AppLogger.e('BoostApiService', 'Error fetching boost wallet details: $e');
       return null;
     }
   }
@@ -74,7 +75,7 @@ class BoostApiService {
       }
       return false;
     } catch (e) {
-      print('Error activating boost: $e');
+      AppLogger.e('BoostApiService', 'Error activating boost: $e');
       return false;
     }
   }

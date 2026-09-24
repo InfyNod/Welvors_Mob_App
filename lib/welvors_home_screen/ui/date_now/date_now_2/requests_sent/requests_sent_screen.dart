@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class RequestsSentScreen extends StatefulWidget {
   final int initialTabIndex;
@@ -157,7 +158,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
         });
       }
     } catch (e) {
-      debugPrint('Error fetching requests: $e');
+      AppLogger.e('RequestsSentScreen', 'Error fetching requests: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -1292,7 +1293,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         if (mounted) {
                           _showActionPopup(errorMessage, isError: true);
                         }
-                        debugPrint(
+                        AppLogger.e('RequestsSentScreen', 
                           'Failed to cancel: ${response.statusCode} - ${response.body}',
                         );
                       }
@@ -1300,7 +1301,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       if (mounted) {
                         _showActionPopup('Error canceling date', isError: true);
                       }
-                      debugPrint('Error canceling date: $e');
+                      AppLogger.e('RequestsSentScreen', 'Error canceling date: $e');
                     }
                   },
                   child: Container(

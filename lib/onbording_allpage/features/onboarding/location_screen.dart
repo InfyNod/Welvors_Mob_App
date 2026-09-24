@@ -12,6 +12,7 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'user_data.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class LocationScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -68,7 +69,7 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
             area ??= place.subLocality ?? place.thoroughfare;
           }
         } catch (e) {
-          debugPrint('Reverse geocoding error in loadData: $e');
+          AppLogger.e('LocationScreen', 'Reverse geocoding error in loadData: $e');
         }
       }
 
@@ -170,7 +171,7 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
         });
       }
     } catch (e) {
-      debugPrint(e.toString());
+      AppLogger.d('LocationScreen', e.toString());
       setState(() {
         _cityController.text = '';
         _useCurrentLocation = false;
@@ -465,7 +466,7 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                                     }
                                   }
                                 } catch (e) {
-                                  debugPrint('Manual geocode failed: $e');
+                                  AppLogger.e('LocationScreen', 'Manual geocode failed: $e');
                                 }
 
                                 // Override with custom parsing based on commas

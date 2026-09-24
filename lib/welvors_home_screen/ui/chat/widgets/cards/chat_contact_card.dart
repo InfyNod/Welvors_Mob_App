@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../chat_bloc/chat_state.dart';
 import 'chat_attachment_bubble.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 /// Card for shared contacts with tap to dial
 class ChatContactCard extends StatelessWidget {
@@ -25,7 +26,7 @@ class ChatContactCard extends StatelessWidget {
           try {
             await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
           } catch (e) {
-            debugPrint('❌ Call error: $e');
+            AppLogger.e('ChatContactCard', '❌ Call error: $e');
           }
         },
         child: ChatAttachmentBubble(

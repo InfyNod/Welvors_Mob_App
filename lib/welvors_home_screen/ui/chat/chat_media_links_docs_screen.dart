@@ -9,6 +9,7 @@ import 'package:velvors/welvors_home_screen/ui/chat/shared_bloc/shared_item_bloc
 
 import 'shared_bloc/shared_item_model.dart';
 import 'shared_bloc/shared_item_repository.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatMediaLinksDocsScreen extends StatefulWidget {
   final String conversationId;
@@ -90,14 +91,14 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
 
         body: BlocBuilder<SharedItemBloc, SharedItemState>(
           builder: (context, state) {
-            debugPrint(
+            AppLogger.e('ChatMediaLinksDocsScreen', 
               'SHARED UI => '
               'loading=${state.loading}, '
               'error=${state.error}',
             );
 
             if (state.data != null) {
-              debugPrint(
+              AppLogger.d('ChatMediaLinksDocsScreen', 
                 'SHARED UI => '
                 'all=${state.data!.all.length}, '
                 'images=${state.data!.images.length}, '
@@ -245,7 +246,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
   Widget _photoTab(BuildContext context, SharedItemsBundle data) {
     final photos = data.images;
 
-    debugPrint('PHOTO TAB COUNT = ${photos.length}');
+    AppLogger.d('ChatMediaLinksDocsScreen', 'PHOTO TAB COUNT = ${photos.length}');
 
     if (photos.isEmpty) {
       return _empty();
@@ -265,7 +266,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
       itemBuilder: (context, index) {
         final item = photos[index];
 
-        debugPrint(
+        AppLogger.d('ChatMediaLinksDocsScreen', 
           'PHOTO [$index] => '
           '${item.mediaUrl}',
         );
@@ -293,7 +294,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
               },
 
               errorBuilder: (context, error, stackTrace) {
-                debugPrint('PHOTO LOAD ERROR => $error');
+                AppLogger.e('ChatMediaLinksDocsScreen', 'PHOTO LOAD ERROR => $error');
 
                 return Container(
                   color: Colors.grey.shade200,
@@ -500,7 +501,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
-      debugPrint('OPEN URL ERROR => $e');
+      AppLogger.e('ChatMediaLinksDocsScreen', 'OPEN URL ERROR => $e');
     }
   }
 

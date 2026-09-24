@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'filter_event.dart';
 import 'filter_state.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class FilterBloc extends Bloc<FilterEvent, FilterState> {
   FilterBloc() : super(const FilterState()) {
@@ -123,7 +124,7 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
         add(LoadSavedFilter(loadedState));
       }
     } catch (e) {
-      debugPrint('Error loading saved filter state: $e');
+      AppLogger.e('FilterBloc', 'Error loading saved filter state: $e');
     }
   }
 
@@ -138,7 +139,7 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('filter_state_cache', jsonEncode(state.toMap()));
     } catch (e) {
-      debugPrint('Error saving filter state: $e');
+      AppLogger.e('FilterBloc', 'Error saving filter state: $e');
     }
   }
 }

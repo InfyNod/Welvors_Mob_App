@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class BoostAllApiService {
   static const String _baseUrlBoost = 'https://api.welvors.com/api/admin/boost/get-all?type=BOOST';
@@ -25,7 +26,7 @@ class BoostAllApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching boosts data: $e');
+      AppLogger.e('BoostAllApiService', 'Error fetching boosts data: $e');
       return null;
     }
   }
@@ -49,7 +50,7 @@ class BoostAllApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching super boosts data: $e');
+      AppLogger.e('BoostAllApiService', 'Error fetching super boosts data: $e');
       return null;
     }
   }
@@ -73,7 +74,7 @@ class BoostAllApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching boost wallet details: $e');
+      AppLogger.e('BoostAllApiService', 'Error fetching boost wallet details: $e');
       return null;
     }
   }
@@ -97,7 +98,7 @@ class BoostAllApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching super boost wallet details: $e');
+      AppLogger.e('BoostAllApiService', 'Error fetching super boost wallet details: $e');
       return null;
     }
   }
@@ -116,8 +117,8 @@ class BoostAllApiService {
         }),
       );
 
-      print('Activate Boost Response Code: ${response.statusCode}');
-      print('Activate Boost Response Body: ${response.body}');
+      AppLogger.d('BoostAllApiService', 'Activate Boost Response Code: ${response.statusCode}');
+      AppLogger.d('BoostAllApiService', 'Activate Boost Response Body: ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
         if (data['success'] == true) {
@@ -127,7 +128,7 @@ class BoostAllApiService {
       }
       return null;
     } catch (e) {
-      print('Error activating boost: $e');
+      AppLogger.e('BoostAllApiService', 'Error activating boost: $e');
       return null;
     }
   }
@@ -151,7 +152,7 @@ class BoostAllApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching boost history: $e');
+      AppLogger.e('BoostAllApiService', 'Error fetching boost history: $e');
       return null;
     }
   }
@@ -175,7 +176,7 @@ class BoostAllApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching boost performance: $e');
+      AppLogger.e('BoostAllApiService', 'Error fetching boost performance: $e');
       return null;
     }
   }

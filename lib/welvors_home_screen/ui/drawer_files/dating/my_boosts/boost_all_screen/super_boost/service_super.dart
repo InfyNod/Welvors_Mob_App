@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class SuperBoostApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/admin/boost/get-all?type=SUPER';
@@ -26,7 +27,7 @@ class SuperBoostApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching super boosts data: $e');
+      AppLogger.e('SuperBoostApiService', 'Error fetching super boosts data: $e');
       return null;
     }
   }
@@ -50,7 +51,7 @@ class SuperBoostApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching super boost wallet details: $e');
+      AppLogger.e('SuperBoostApiService', 'Error fetching super boost wallet details: $e');
       return null;
     }
   }

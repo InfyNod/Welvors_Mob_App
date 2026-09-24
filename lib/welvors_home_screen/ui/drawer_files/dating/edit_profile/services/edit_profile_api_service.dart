@@ -5,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EditProfileApiService {
   // Update this baseUrl if it differs for your environment
@@ -50,7 +51,7 @@ class EditProfileApiService {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching family options for $type: $e');
+      AppLogger.e('EditProfileApiService', 'Error fetching family options for $type: $e');
       return [];
     }
   }
@@ -89,7 +90,7 @@ class EditProfileApiService {
         body: jsonEncode(body),
       );
 
-      debugPrint('Update Location Status: ${response.statusCode}');
+      AppLogger.d('EditProfileApiService', 'Update Location Status: ${response.statusCode}');
       
       if (response.statusCode == 200 || response.statusCode == 201) {
         return {'error': null, 'data': jsonDecode(response.body)};
@@ -97,7 +98,7 @@ class EditProfileApiService {
         return {'error': 'Failed: ${response.body}'};
       }
     } catch (e) {
-      debugPrint('Error updating location: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating location: $e');
       return {'error': e.toString()};
     }
   }
@@ -138,7 +139,7 @@ class EditProfileApiService {
       }
       return {'error': 'Error ${response.statusCode}: ${response.body}'};
     } catch (e) {
-      debugPrint('Error adding photo: $e');
+      AppLogger.e('EditProfileApiService', 'Error adding photo: $e');
       return {'error': e.toString()};
     }
   }
@@ -178,7 +179,7 @@ class EditProfileApiService {
       }
       return {'error': 'Error ${response.statusCode}: ${response.body}'};
     } catch (e) {
-      debugPrint('Error uploading video: $e');
+      AppLogger.e('EditProfileApiService', 'Error uploading video: $e');
       return {'error': e.toString()};
     }
   }
@@ -190,7 +191,7 @@ class EditProfileApiService {
       final token = prefs.getString('auth_token');
 
       final url = Uri.parse('$baseUrl/user/profile/video/$videoId');
-      debugPrint('Deleting video with URL: $url');
+      AppLogger.d('EditProfileApiService', 'Deleting video with URL: $url');
       final response = await http.delete(
         url,
         headers: {
@@ -204,7 +205,7 @@ class EditProfileApiService {
       }
       return 'Failed to delete video: ${response.statusCode} - ${response.body}';
     } catch (e) {
-      debugPrint('Error deleting video: $e');
+      AppLogger.e('EditProfileApiService', 'Error deleting video: $e');
       return e.toString();
     }
   }
@@ -248,7 +249,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating photo: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating photo: $e');
       return e.toString();
     }
   }
@@ -267,7 +268,7 @@ class EditProfileApiService {
         },
       );
 
-      debugPrint('Delete Photo Status: ${response.statusCode}');
+      AppLogger.d('EditProfileApiService', 'Delete Photo Status: ${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = jsonDecode(response.body);
@@ -278,7 +279,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error deleting photo: $e');
+      AppLogger.e('EditProfileApiService', 'Error deleting photo: $e');
       return e.toString();
     }
   }
@@ -309,7 +310,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating bio: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating bio: $e');
       return e.toString();
     }
   }
@@ -322,14 +323,14 @@ class EditProfileApiService {
       );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
-        debugPrint('GET NETWORKING INTENTS RESPONSE: ${response.body}');
+        AppLogger.d('EditProfileApiService', 'GET NETWORKING INTENTS RESPONSE: ${response.body}');
         if (decoded['success'] == true && decoded['data'] != null) {
           return List<Map<String, dynamic>>.from(decoded['data']);
         }
       }
       return null;
     } catch (e) {
-      debugPrint('Error fetching networking intents: $e');
+      AppLogger.e('EditProfileApiService', 'Error fetching networking intents: $e');
       return null;
     }
   }
@@ -359,14 +360,14 @@ class EditProfileApiService {
         body: jsonEncode(body),
       );
 
-      debugPrint('Update Answers Status: ${response.statusCode}');
+      AppLogger.d('EditProfileApiService', 'Update Answers Status: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       }
-      debugPrint('Failed to update answers: ${response.body}');
+      AppLogger.e('EditProfileApiService', 'Failed to update answers: ${response.body}');
       return false;
     } catch (e) {
-      debugPrint('Error updating answers: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating answers: $e');
       return false;
     }
   }
@@ -395,7 +396,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating intention: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating intention: $e');
       return e.toString();
     }
   }
@@ -430,7 +431,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating interested-in: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating interested-in: $e');
       return e.toString();
     }
   }
@@ -462,7 +463,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating profile answer: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating profile answer: $e');
       return e.toString();
     }
   }
@@ -501,7 +502,7 @@ class EditProfileApiService {
       }
       return {'error': 'Error ${response.statusCode}: ${response.body}'};
     } catch (e) {
-      debugPrint('Error updating prompt: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating prompt: $e');
       return {'error': 'Network error occurred'};
     }
   }
@@ -525,7 +526,7 @@ class EditProfileApiService {
         return {'error': 'Failed: ${response.statusCode} - ${response.body}'};
       }
     } catch (e) {
-      debugPrint('Error deleting prompt: $e');
+      AppLogger.e('EditProfileApiService', 'Error deleting prompt: $e');
       return {'error': 'Network error occurred'};
     }
   }
@@ -553,7 +554,7 @@ class EditProfileApiService {
       }
       return {'error': 'Error ${response.statusCode}: ${response.body}'};
     } catch (e) {
-      debugPrint('Error fetching profile details: $e');
+      AppLogger.e('EditProfileApiService', 'Error fetching profile details: $e');
       return {'error': e.toString()};
     }
   }
@@ -582,7 +583,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating basic details: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating basic details: $e');
       return e.toString();
     }
   }
@@ -611,7 +612,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating career: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating career: $e');
       return e.toString();
     }
   }
@@ -646,7 +647,7 @@ class EditProfileApiService {
       }
       return 'Error ${response.statusCode}: ${response.body}';
     } catch (e) {
-      debugPrint('Error updating religion: $e');
+      AppLogger.e('EditProfileApiService', 'Error updating religion: $e');
       return e.toString();
     }
   }
@@ -663,7 +664,7 @@ class EditProfileApiService {
       }
       return {'error': 'Error ${response.statusCode}: ${response.body}'};
     } catch (e) {
-      debugPrint('Error fetching religions: $e');
+      AppLogger.e('EditProfileApiService', 'Error fetching religions: $e');
       return {'error': e.toString()};
     }
   }
@@ -680,7 +681,7 @@ class EditProfileApiService {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching languages: $e');
+      AppLogger.e('EditProfileApiService', 'Error fetching languages: $e');
       return [];
     }
   }

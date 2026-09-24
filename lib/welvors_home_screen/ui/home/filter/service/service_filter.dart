@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ServiceFilter {
   static String get baseUrl => EnvConfig.apiBaseUrl;
@@ -54,8 +55,8 @@ class ServiceFilter {
         }
       }
     } catch (e) {
-      debugPrint('====== [FILTER API ERROR] ======');
-      debugPrint(e.toString());
+      AppLogger.e('FilterApiService', '====== [FILTER API ERROR] ======');
+      AppLogger.d('FilterApiService', e.toString());
     }
     return null;
   }
@@ -68,9 +69,9 @@ class ServiceFilter {
         'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
-      debugPrint('====== [LANGUAGES API RESPONSE] ======');
-      debugPrint('STATUS: ${response.statusCode}');
-      debugPrint('BODY: ${response.body}');
+      AppLogger.d('FilterApiService', '====== [LANGUAGES API RESPONSE] ======');
+      AppLogger.d('FilterApiService', 'STATUS: ${response.statusCode}');
+      AppLogger.d('FilterApiService', 'BODY: ${response.body}');
       
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -79,8 +80,8 @@ class ServiceFilter {
         }
       }
     } catch (e) {
-      debugPrint('====== [LANGUAGES API ERROR] ======');
-      debugPrint(e.toString());
+      AppLogger.e('FilterApiService', '====== [LANGUAGES API ERROR] ======');
+      AppLogger.d('FilterApiService', e.toString());
     }
     return null;
   }
@@ -93,8 +94,8 @@ class ServiceFilter {
         'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
-      debugPrint('====== [LIFESTYLE API RESPONSE] ======');
-      debugPrint('STATUS: ${response.statusCode}');
+      AppLogger.d('FilterApiService', '====== [LIFESTYLE API RESPONSE] ======');
+      AppLogger.d('FilterApiService', 'STATUS: ${response.statusCode}');
       
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -103,8 +104,8 @@ class ServiceFilter {
         }
       }
     } catch (e) {
-      debugPrint('====== [LIFESTYLE API ERROR] ======');
-      debugPrint(e.toString());
+      AppLogger.e('FilterApiService', '====== [LIFESTYLE API ERROR] ======');
+      AppLogger.d('FilterApiService', e.toString());
     }
     return null;
   }
@@ -117,9 +118,9 @@ class ServiceFilter {
         'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
-      debugPrint('====== [RELIGION API RESPONSE] ======');
-      debugPrint('STATUS: ${response.statusCode}');
-      debugPrint('BODY: ${response.body}');
+      AppLogger.d('FilterApiService', '====== [RELIGION API RESPONSE] ======');
+      AppLogger.d('FilterApiService', 'STATUS: ${response.statusCode}');
+      AppLogger.d('FilterApiService', 'BODY: ${response.body}');
       
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -128,8 +129,8 @@ class ServiceFilter {
         }
       }
     } catch (e) {
-      debugPrint('====== [RELIGION API ERROR] ======');
-      debugPrint(e.toString());
+      AppLogger.e('FilterApiService', '====== [RELIGION API ERROR] ======');
+      AppLogger.d('FilterApiService', e.toString());
     }
     return null;
   }
@@ -142,8 +143,8 @@ class ServiceFilter {
         'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
       });
       
-      debugPrint('====== [PROFESSION API RESPONSE] ======');
-      debugPrint('STATUS: ${response.statusCode}');
+      AppLogger.d('FilterApiService', '====== [PROFESSION API RESPONSE] ======');
+      AppLogger.d('FilterApiService', 'STATUS: ${response.statusCode}');
       
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -154,8 +155,8 @@ class ServiceFilter {
         }
       }
     } catch (e) {
-      debugPrint('====== [PROFESSION API ERROR] ======');
-      debugPrint(e.toString());
+      AppLogger.e('FilterApiService', '====== [PROFESSION API ERROR] ======');
+      AppLogger.d('FilterApiService', e.toString());
     }
     return null;
   }
@@ -177,7 +178,7 @@ class ServiceFilter {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching family incomes: $e');
+      AppLogger.e('FilterApiService', 'Error fetching family incomes: $e');
       return [];
     }
   }
@@ -202,7 +203,7 @@ class ServiceFilter {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching networking intent: $e');
+      AppLogger.e('FilterApiService', 'Error fetching networking intent: $e');
       return [];
     }
   }
@@ -224,7 +225,7 @@ class ServiceFilter {
       }
       return [];
     } catch (e) {
-      debugPrint('Error fetching ambition options: $e');
+      AppLogger.e('FilterApiService', 'Error fetching ambition options: $e');
       return [];
     }
   }

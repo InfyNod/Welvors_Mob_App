@@ -1,6 +1,7 @@
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/government_Id/upload_id/screens/upload_id_screen.dart';
 
 import '../../../export.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class BottomSection extends StatelessWidget {
   const BottomSection();
@@ -34,7 +35,7 @@ class BottomSection extends StatelessWidget {
 
                 GestureDetector(
                   onTap: () {
-                    debugPrint('Upload manually instead clicked');
+                    AppLogger.d('BottomSection', 'Upload manually instead clicked');
                     Navigator.pop(context);
                     Navigator.push(
                       context,

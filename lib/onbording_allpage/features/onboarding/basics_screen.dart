@@ -5,6 +5,7 @@ import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import 'user_data.dart';
 import '../../services/api_service.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class BasicsScreen extends StatefulWidget {
   final VoidCallback onNext;
@@ -895,7 +896,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                         final totalInches = (feet * 12) + inches;
                         heightCm = (totalInches * 2.54).round();
                       } catch (e) {
-                        debugPrint('Height parse error: $e');
+                        AppLogger.e('BasicsScreen', 'Height parse error: $e');
                       }
                     }
 

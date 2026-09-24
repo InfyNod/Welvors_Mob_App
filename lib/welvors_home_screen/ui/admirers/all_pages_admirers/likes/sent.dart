@@ -4,6 +4,7 @@ import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class SentLikesScreen extends StatefulWidget {
   const SentLikesScreen({super.key});
@@ -627,11 +628,11 @@ class _AnimatedSentCardItemState extends State<AnimatedSentCardItem>
     try {
       final service = AdmirersApiService();
       final receiverId = widget.card['userId']?.toString() ?? widget.card['id'].toString();
-      debugPrint('Attempting to send rose to receiverId: $receiverId');
+      AppLogger.d('SentLikesScreen', 'Attempting to send rose to receiverId: $receiverId');
       await service.sendRose(receiverId: receiverId);
-      debugPrint('Rose sent successfully to $receiverId');
+      AppLogger.i('SentLikesScreen', 'Rose sent successfully to $receiverId');
     } catch (e) {
-      debugPrint('Failed to send rose: $e');
+      AppLogger.e('SentLikesScreen', 'Failed to send rose: $e');
     }
 
     // Wait for the popup message to be seen, then slide out

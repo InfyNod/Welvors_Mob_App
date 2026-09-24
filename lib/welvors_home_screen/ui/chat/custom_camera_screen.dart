@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class CustomCameraScreen extends StatefulWidget {
   const CustomCameraScreen({super.key});
@@ -32,7 +33,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
         await _controller!.initialize();
       }
     } catch (e) {
-      debugPrint('Error initializing camera: $e');
+      AppLogger.e('CustomCameraScreen', 'Error initializing camera: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -65,7 +66,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
         Navigator.pop(context, picture);
       }
     } catch (e) {
-      debugPrint('Error taking picture: $e');
+      AppLogger.e('CustomCameraScreen', 'Error taking picture: $e');
       if (mounted) {
         setState(() {
           _isTakingPicture = false;
@@ -98,7 +99,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
     try {
       await _controller!.initialize();
     } catch (e) {
-      debugPrint('Error switching camera: $e');
+      AppLogger.e('CustomCameraScreen', 'Error switching camera: $e');
     } finally {
       if (mounted) {
         setState(() {

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class CommitmentApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/relationship-tags/commitment-management';
@@ -26,7 +27,7 @@ class CommitmentApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching commitment data: $e');
+      AppLogger.e('CommitmentApiService', 'Error fetching commitment data: $e');
       return null;
     }
   }
@@ -53,7 +54,7 @@ class CommitmentApiService {
       }
       return "HTTP ${response.statusCode}: ${response.body}";
     } catch (e) {
-      print('Error ending commitment: $e');
+      AppLogger.e('CommitmentApiService', 'Error ending commitment: $e');
       return "Exception: $e";
     }
   }
@@ -79,7 +80,7 @@ class CommitmentApiService {
       }
       return null;
     } catch (e) {
-      print('Error fetching received proposals: $e');
+      AppLogger.e('CommitmentApiService', 'Error fetching received proposals: $e');
       return null;
     }
   }
@@ -104,7 +105,7 @@ class CommitmentApiService {
       }
       return false;
     } catch (e) {
-      print('Error responding to proposal: $e');
+      AppLogger.e('CommitmentApiService', 'Error responding to proposal: $e');
       return false;
     }
   }

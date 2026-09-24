@@ -5,6 +5,7 @@ import '../services/edit_profile_api_service.dart';
 import '../models/profile_photo.dart';
 import 'profile_edit_state.dart';
 import 'package:video_compress/video_compress.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ProfileEditCubit extends Cubit<ProfileEditState> {
   ProfileEditCubit() : super(ProfileEditState.initial()) {
@@ -19,14 +20,14 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     final response = await EditProfileApiService.getProfileDetails();
     if (response['error'] == null && response['data'] != null) {
       final data = response['data'];
-      debugPrint('PROFILE KEYS: ${data.keys.toList()}');
+      AppLogger.d('ProfileEditCubit', 'PROFILE KEYS: ${data.keys.toList()}');
       if (data.containsKey('answers')) {
-        debugPrint('PROFILE ANSWERS: ${data['answers']}');
+        AppLogger.d('ProfileEditCubit', 'PROFILE ANSWERS: ${data['answers']}');
       }
-      debugPrint('PROFILE KEYS OF profile: ${data['profile']?.keys.toList()}');
-      debugPrint('LIFESTYLE DATA: ${data['lifestyle']}');
-      debugPrint('INTERESTS DATA: ${data['interests']}');
-      debugPrint('PROMPTS DATA: ${data['prompts']}');
+      AppLogger.d('ProfileEditCubit', 'PROFILE KEYS OF profile: ${data['profile']?.keys.toList()}');
+      AppLogger.d('ProfileEditCubit', 'LIFESTYLE DATA: ${data['lifestyle']}');
+      AppLogger.d('ProfileEditCubit', 'INTERESTS DATA: ${data['interests']}');
+      AppLogger.d('ProfileEditCubit', 'PROMPTS DATA: ${data['prompts']}');
 
       final basic = data['basicDetails'] ?? {};
       final bio = data['bio']?['bio'] ?? '';
@@ -227,7 +228,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       String parsedNetworkingInYourWords = '';
       if (data['networkingIntent'] != null &&
           data['networkingIntent'] is List) {
-        debugPrint(
+        AppLogger.d('ProfileEditCubit', 
           'RAW NETWORKING INTENT FROM BACKEND: ${data['networkingIntent']}',
         );
         for (var item in data['networkingIntent']) {
@@ -379,11 +380,11 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
   }
 
   String? _extractVideoId(dynamic videoData) {
-    debugPrint('EXTRACTION VIDEO DATA: $videoData');
+    AppLogger.d('ProfileEditCubit', 'EXTRACTION VIDEO DATA: $videoData');
     if (videoData == null) return null;
     if (videoData is Map) {
       final id = videoData['id']?.toString() ?? videoData['_id']?.toString();
-      debugPrint('EXTRACTED VIDEO ID: $id');
+      AppLogger.d('ProfileEditCubit', 'EXTRACTED VIDEO ID: $id');
       return id;
     }
     return null;
@@ -490,10 +491,10 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
         final bytes = mediaInfo.file!.lengthSync();
         final mb = bytes / (1024 * 1024);
         sizeStr = '${mb.toStringAsFixed(2)} MB';
-        debugPrint('✅ Video compressed from ${mediaInfo.filesize} to new file');
+        AppLogger.i('ProfileEditCubit', '✅ Video compressed from ${mediaInfo.filesize} to new file');
       }
     } catch (e) {
-      debugPrint('❌ Video compression failed: $e, using original');
+      AppLogger.e('ProfileEditCubit', '❌ Video compression failed: $e, using original');
     }
 
     final response = await EditProfileApiService.uploadVideo(finalPath!);
@@ -671,12 +672,12 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       data["gender_option"] = "NOT_LISTED";
     }
 
-    debugPrint('🚀 Sending basic info payload: $data');
+    AppLogger.d('ProfileEditCubit', '🚀 Sending basic info payload: $data');
     final result = await EditProfileApiService.updateBasicDetails(data);
     if (result != null) {
-      debugPrint('❌ basic-info API Failed: $result');
+      AppLogger.e('ProfileEditCubit', '❌ basic-info API Failed: $result');
     } else {
-      debugPrint('✅ basic-info API Success');
+      AppLogger.i('ProfileEditCubit', '✅ basic-info API Success');
     }
     return result;
   }

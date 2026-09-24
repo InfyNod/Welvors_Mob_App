@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../service_account_Setting.dart';
 import 'pdf_generator.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 void showInvoiceBottomSheet(BuildContext context, Map<String, dynamic> item) {
   showModalBottomSheet(
@@ -79,7 +80,7 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
         // Share the file so user can save or view it
         await Share.shareXFiles([XFile(file.path)], text: 'Invoice $invoiceNo');
       } catch (e) {
-        debugPrint('Error sharing file: $e');
+        AppLogger.e('InvoiceDrawer', 'Error sharing file: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Failed to open PDF')),

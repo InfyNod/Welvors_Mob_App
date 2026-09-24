@@ -4,6 +4,7 @@ import 'package:velvors/main.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_repository.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/report_user_dialog.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class BlockUserDialog extends StatefulWidget {
   final String userName;
@@ -39,11 +40,11 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
     final rootContext = navigatorKey.currentContext;
 
     if (rootContext == null) {
-      debugPrint('❌ rootContext is null, cannot open report sheet');
+      AppLogger.e('BlockUserDialog', '❌ rootContext is null, cannot open report sheet');
       return;
     }
 
-    debugPrint('🟢 OPENING REPORT SHEET (isBlocked: $isBlocked)');
+    AppLogger.d('BlockUserDialog', '🟢 OPENING REPORT SHEET (isBlocked: $isBlocked)');
 
     showModalBottomSheet(
       context: rootContext,
@@ -62,11 +63,11 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
               final prefs = await SharedPreferences.getInstance();
               final reportedId = prefs.getString("reciverId")?.trim() ?? '';
 
-              debugPrint('🚫 REPORT USER CLICKED');
-              debugPrint('🚫 reportedId => $reportedId');
-              debugPrint('🚫 reason => $reason');
-              debugPrint('🚫 description => $description');
-              debugPrint('🚫 alsoBlock => $alsoBlock');
+              AppLogger.d('BlockUserDialog', '🚫 REPORT USER CLICKED');
+              AppLogger.d('BlockUserDialog', '🚫 reportedId => $reportedId');
+              AppLogger.d('BlockUserDialog', '🚫 reason => $reason');
+              AppLogger.d('BlockUserDialog', '🚫 description => $description');
+              AppLogger.d('BlockUserDialog', '🚫 alsoBlock => $alsoBlock');
 
               if (reportedId.isEmpty) {
                 throw Exception('User ID is missing');
@@ -78,7 +79,7 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
               // used in the "block_and_report" path).
               if (alsoBlock) {
                 await repository.blockUser(reportedId);
-                debugPrint('✅ USER BLOCK SUCCESS');
+                AppLogger.i('BlockUserDialog', '✅ USER BLOCK SUCCESS');
               }
 
               await repository.reportUser(
@@ -87,7 +88,7 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                 description: description,
               );
 
-              debugPrint('✅ USER REPORT SUCCESS');
+              AppLogger.i('BlockUserDialog', '✅ USER REPORT SUCCESS');
 
               final ctx = navigatorKey.currentContext;
               if (ctx == null) return;
@@ -102,7 +103,7 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                 ),
               );
             } catch (e) {
-              debugPrint('❌ REPORT USER ERROR: $e');
+              AppLogger.e('BlockUserDialog', '❌ REPORT USER ERROR: $e');
 
               final errorMessage = e.toString().replaceFirst('Exception: ', '');
 
@@ -170,7 +171,7 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
     Navigator.pop(context);
     final shouldReport = await _showBlockSuccessDialog(selectedOption);
 
-    debugPrint('🟢 shouldReport = $shouldReport');
+    AppLogger.d('BlockUserDialog', '🟢 shouldReport = $shouldReport');
   }
 
   Future<bool?> _showBlockSuccessDialog(String? selectedOption) {
@@ -259,7 +260,7 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                 const SizedBox(height: 14),
                 GestureDetector(
                   onTap: () {
-                    debugPrint('🟢 ALSO REPORT HER CLICKED');
+                    AppLogger.d('BlockUserDialog', '🟢 ALSO REPORT HER CLICKED');
                     // Close current sheet and return true.
                     Navigator.of(sheetContext).pop(true);
                   },
@@ -282,8 +283,8 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
         ),
       ),
     ).then((onValue) async {
-      debugPrint('🟢 BLOCK SUCCESS SHEET CLOSED');
-      debugPrint('🟢 RESULT => $onValue');
+      AppLogger.i('BlockUserDialog', '🟢 BLOCK SUCCESS SHEET CLOSED');
+      AppLogger.d('BlockUserDialog', '🟢 RESULT => $onValue');
 
       if (onValue == true) {
         // Small delay lets the previous sheet's closing animation

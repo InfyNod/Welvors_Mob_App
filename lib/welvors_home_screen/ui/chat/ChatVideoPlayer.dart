@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatVideoPlayer extends StatefulWidget {
   final String url;
@@ -25,7 +26,7 @@ class _ChatVideoPlayerState extends State<ChatVideoPlayer> {
         .then((_) {
           if (mounted) setState(() => _ready = true);
         })
-        .catchError((e) => debugPrint('❌ VIDEO PLAYER ERROR => $e'));
+        .catchError((e) => AppLogger.e('ChatVideoPlayer', '❌ VIDEO PLAYER ERROR => $e'));
   }
 
   @override

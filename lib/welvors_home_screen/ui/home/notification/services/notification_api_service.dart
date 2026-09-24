@@ -61,13 +61,13 @@ class NotificationApiService {
       queryParameters: <String, String>{'category': normalizedCategory},
     );
 
-    debugPrint('🔔 GET NOTIFICATIONS');
-    debugPrint('URL: $uri');
+    AppLogger.d('NotificationApiService', '🔔 GET NOTIFICATIONS');
+    AppLogger.d('NotificationApiService', 'URL: $uri');
 
     final response = await http.get(uri, headers: await _headers());
 
-    debugPrint('NOTIFICATION STATUS: ${response.statusCode}');
-    debugPrint('NOTIFICATION BODY: ${response.body}');
+    AppLogger.d('NotificationApiService', 'NOTIFICATION STATUS: ${response.statusCode}');
+    AppLogger.d('NotificationApiService', 'NOTIFICATION BODY: ${response.body}');
 
     await _handleAuth(response.statusCode);
 
@@ -103,13 +103,13 @@ class NotificationApiService {
   static Future<int> getUnreadCount() async {
     final uri = Uri.parse('$_baseUrl/unread-count');
 
-    debugPrint('🔔 GET UNREAD COUNT');
-    debugPrint('URL: $uri');
+    AppLogger.d('NotificationApiService', '🔔 GET UNREAD COUNT');
+    AppLogger.d('NotificationApiService', 'URL: $uri');
 
     final response = await http.get(uri, headers: await _headers());
 
-    debugPrint('UNREAD COUNT STATUS: ${response.statusCode}');
-    debugPrint('UNREAD COUNT BODY: ${response.body}');
+    AppLogger.d('NotificationApiService', 'UNREAD COUNT STATUS: ${response.statusCode}');
+    AppLogger.d('NotificationApiService', 'UNREAD COUNT BODY: ${response.body}');
 
     await _handleAuth(response.statusCode);
 
@@ -141,13 +141,13 @@ class NotificationApiService {
 
     final uri = Uri.parse('$_baseUrl/$id/read');
 
-    debugPrint('🔔 PATCH NOTIFICATION READ');
-    debugPrint('URL: $uri');
+    AppLogger.d('NotificationApiService', '🔔 PATCH NOTIFICATION READ');
+    AppLogger.d('NotificationApiService', 'URL: $uri');
 
     final response = await http.patch(uri, headers: await _headers());
 
-    debugPrint('MARK READ STATUS: ${response.statusCode}');
-    debugPrint('MARK READ BODY: ${response.body}');
+    AppLogger.d('NotificationApiService', 'MARK READ STATUS: ${response.statusCode}');
+    AppLogger.d('NotificationApiService', 'MARK READ BODY: ${response.body}');
 
     await _handleAuth(response.statusCode);
 
@@ -164,13 +164,13 @@ class NotificationApiService {
   static Future<void> markAllAsRead() async {
     final uri = Uri.parse('$_baseUrl/read-all');
 
-    debugPrint('🔔 PATCH ALL NOTIFICATIONS READ');
-    debugPrint('URL: $uri');
+    AppLogger.d('NotificationApiService', '🔔 PATCH ALL NOTIFICATIONS READ');
+    AppLogger.d('NotificationApiService', 'URL: $uri');
 
     final response = await http.patch(uri, headers: await _headers());
 
-    debugPrint('MARK ALL READ STATUS: ${response.statusCode}');
-    debugPrint('MARK ALL READ BODY: ${response.body}');
+    AppLogger.d('NotificationApiService', 'MARK ALL READ STATUS: ${response.statusCode}');
+    AppLogger.d('NotificationApiService', 'MARK ALL READ BODY: ${response.body}');
 
     await _handleAuth(response.statusCode);
 

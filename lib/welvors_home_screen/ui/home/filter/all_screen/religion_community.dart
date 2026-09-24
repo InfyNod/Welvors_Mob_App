@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
 import '../service/service_filter.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ReligionCommunityScreen extends StatefulWidget {
   const ReligionCommunityScreen({super.key});
@@ -43,8 +44,8 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
   void _parseData(List<dynamic> data) {
     _parsedReligions.clear();
     // For now just dumping the structure to help understand it:
-    debugPrint('====== RELIGION PARSER INPUT ======');
-    debugPrint(data.toString());
+    AppLogger.d('ReligionCommunityScreen', '====== RELIGION PARSER INPUT ======');
+    AppLogger.d('ReligionCommunityScreen', data.toString());
     
     // We will assume the API returns a list of objects with 'name' and possibly nested 'community' or 'caste' or 'options'
     for (var rel in data) {

@@ -8,6 +8,7 @@ import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import 'package:velvors/welvors_home_screen/services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 // Mock HomeBloc to feed the current user's data to HomeScreen without changing its code!
 class PreviewHomeBloc extends Bloc<HomeEvent, HomeState> implements HomeBloc {
   PreviewHomeBloc(ProfileModel profile)
@@ -384,8 +385,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
         }
       }
     } catch (e, stackTrace) {
-      debugPrint('Error in _fetchProfileDetails: $e');
-      debugPrint('StackTrace: $stackTrace');
+      AppLogger.e('ProfilePreviewScreen', 'Error in _fetchProfileDetails: $e');
+      AppLogger.d('ProfilePreviewScreen', 'StackTrace: $stackTrace');
       if (mounted) {
         setState(() {
           _errorMessage = 'Connection error: $e';

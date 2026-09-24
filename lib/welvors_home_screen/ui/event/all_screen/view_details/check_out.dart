@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String eventId;
@@ -62,7 +63,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    debugPrint(
+    AppLogger.i('CheckoutScreen', 
       'Razorpay Success: Payment ID: ${response.paymentId}, Order ID: ${response.orderId}, Signature: ${response.signature}',
     );
     
@@ -124,7 +125,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    debugPrint(
+    AppLogger.e('CheckoutScreen', 
       'Razorpay Error: Code: ${response.code}, Message: ${response.message}',
     );
     if (mounted) {
@@ -141,7 +142,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-    debugPrint('Razorpay External Wallet: ${response.walletName}');
+    AppLogger.d('CheckoutScreen', 'Razorpay External Wallet: ${response.walletName}');
     // Optional
   }
 
@@ -804,7 +805,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     try {
                                       _razorpay.open(options);
                                     } catch (e) {
-                                      debugPrint('Error opening Razorpay: $e');
+                                      AppLogger.e('CheckoutScreen', 'Error opening Razorpay: $e');
                                       setState(() {
                                         _isProcessingPayment = false;
                                       });

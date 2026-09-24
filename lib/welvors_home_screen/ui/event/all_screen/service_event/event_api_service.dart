@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../services/token_helper.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EventApiService {
   static String get baseUrl => EnvConfig.apiBaseUrl;
@@ -44,11 +45,11 @@ class EventApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to get events: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to get events: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error getting events: $e');
+      AppLogger.e('EventApiService', 'Error getting events: $e');
       return null;
     }
   }
@@ -61,11 +62,11 @@ class EventApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to get event details: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to get event details: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error getting event details: $e');
+      AppLogger.e('EventApiService', 'Error getting event details: $e');
       return null;
     }
   }
@@ -82,11 +83,11 @@ class EventApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to get checkout details: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to get checkout details: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error getting checkout details: $e');
+      AppLogger.e('EventApiService', 'Error getting checkout details: $e');
       return null;
     }
   }
@@ -106,11 +107,11 @@ class EventApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to calculate checkout: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to calculate checkout: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error calculating checkout: $e');
+      AppLogger.e('EventApiService', 'Error calculating checkout: $e');
       return null;
     }
   }
@@ -138,11 +139,11 @@ class EventApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to create event order: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to create event order: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error creating event order: $e');
+      AppLogger.e('EventApiService', 'Error creating event order: $e');
       return null;
     }
   }
@@ -169,11 +170,11 @@ class EventApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to verify payment: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to verify payment: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error verifying payment: $e');
+      AppLogger.e('EventApiService', 'Error verifying payment: $e');
       return null;
     }
   }
@@ -186,11 +187,11 @@ class EventApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to get booking payment success: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to get booking payment success: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error getting booking payment success: $e');
+      AppLogger.e('EventApiService', 'Error getting booking payment success: $e');
       return null;
     }
   }
@@ -203,11 +204,11 @@ class EventApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to get chat conversations: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to get chat conversations: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error getting chat conversations: $e');
+      AppLogger.e('EventApiService', 'Error getting chat conversations: $e');
       return null;
     }
   }
@@ -224,11 +225,11 @@ class EventApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to get my tickets: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to get my tickets: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      debugPrint('Error getting my tickets: $e');
+      AppLogger.e('EventApiService', 'Error getting my tickets: $e');
       return null;
     }
   }
@@ -254,11 +255,11 @@ class EventApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to cancel event booking: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to cancel event booking: ${response.statusCode} - ${response.body}');
         return {'success': false, 'error': json.decode(response.body)['message'] ?? 'Failed to cancel booking'};
       }
     } catch (e) {
-      debugPrint('Error cancelling event booking: $e');
+      AppLogger.e('EventApiService', 'Error cancelling event booking: $e');
       return {'success': false, 'error': e.toString()};
     }
   }
@@ -282,12 +283,12 @@ class EventApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        debugPrint('Failed to send invite: ${response.statusCode} - ${response.body}');
+        AppLogger.e('EventApiService', 'Failed to send invite: ${response.statusCode} - ${response.body}');
         final errorMsg = json.decode(response.body)['message'] ?? 'Failed to send invite';
         return {'success': false, 'error': errorMsg};
       }
     } catch (e) {
-      debugPrint('Error sending invite: $e');
+      AppLogger.e('EventApiService', 'Error sending invite: $e');
       return {'success': false, 'error': e.toString()};
     }
   }

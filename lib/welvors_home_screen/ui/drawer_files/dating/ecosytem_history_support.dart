@@ -14,6 +14,7 @@ import 'logout/logout_screen.dart';
 import 'account_setting/account_setting._screen.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EcosystemHistorySupport extends StatefulWidget {
   const EcosystemHistorySupport({super.key});
@@ -57,7 +58,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
         }
       }
     } catch (e) {
-      debugPrint('Error fetching requests: $e');
+      AppLogger.e('EcosystemHistorySupport', 'Error fetching requests: $e');
     }
 
     if (mounted) {
