@@ -7,6 +7,7 @@ import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
 import 'reveal_drawer.dart';
 import '../profile_view/profile_view.dart';
+import '../../free_limite_screen.dart';
 
 class ReceivedLikesScreen extends StatefulWidget {
   const ReceivedLikesScreen({super.key});
@@ -145,24 +146,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
         await Future.delayed(const Duration(milliseconds: 1500));
       },
       child: _likeCards.isEmpty
-          ? const CustomScrollView(
-              physics: BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              slivers: [
-                SliverFillRemaining(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text(
-                        'No received likes yet',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
+          ? const FreeLimitScreen()
           : SingleChildScrollView(
               physics: const BouncingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics(),

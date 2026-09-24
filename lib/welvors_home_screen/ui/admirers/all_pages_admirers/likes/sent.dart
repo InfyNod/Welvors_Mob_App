@@ -5,6 +5,7 @@ import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
 import 'reveal_drawer.dart';
+import '../../free_limite_screen.dart';
 
 class SentLikesScreen extends StatefulWidget {
   const SentLikesScreen({super.key});
@@ -29,14 +30,16 @@ class _SentLikesScreenState extends State<SentLikesScreen> {
           final sentCards = allSentCards.where((c) => !_hiddenCardIds.contains(c['id']?.toString() ?? '')).toList();
 
           if (sentCards.isEmpty) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: Text(
-                  'No sent likes yet',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
+            return RefreshIndicator(
+              color: const Color(0xFFE43A6A),
+              onRefresh: () async {
+                setState(() {
+                  _hiddenCardIds.clear();
+                });
+                context.read<AdmirersBloc>().add(LoadAdmirersData());
+                await Future.delayed(const Duration(milliseconds: 1500));
+              },
+              child: const FreeLimitScreen(),
             );
           }
 
