@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'roses_screen.dart';
 import 'payment_processing_dialog.dart';
+import 'service_rose.dart';
 
 class GetRosesDrawer extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -163,19 +164,37 @@ class _GetRosesDrawerState extends State<GetRosesDrawer> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the bottom sheet
-                    final rosesToAdd = int.parse(widget.selectedPackage['title']);
-                    final newBalance = RosesScreen.availableRoses + rosesToAdd;
-                    PaymentProcessingDialog.show(
-                      context: context,
-                      selectedPackage: widget.selectedPackage,
-                      newBalance: newBalance,
-                      onDone: () {
-                        RosesScreen.availableRoses = newBalance;
-                        widget.onPurchased();
-                      },
-                    );
+                  onPressed: () async {
+                    // Show a quick loading state if desired, but we can just await the API
+                    // In a real app we'd want to show a loading spinner on the button itself.
+                    final apiService = RoseApiService();
+                    final packId = widget.selectedPackage['id']?.toString() ?? widget.selectedPackage['_id']?.toString() ?? '';
+                    
+                    final success = await apiService.buyRosePack(packId);
+                    
+                    if (!mounted) return;
+                    
+                    if (success) {
+                      Navigator.pop(context); // Close the bottom sheet
+                      final rosesToAdd = int.parse(widget.selectedPackage['title'].toString().replaceAll(RegExp(r'[^0-9]'), ''));
+                      final newBalance = RosesScreen.availableRoses + rosesToAdd;
+                      PaymentProcessingDialog.show(
+                        context: context,
+                        selectedPackage: widget.selectedPackage,
+                        newBalance: newBalance,
+                        onDone: () {
+                          RosesScreen.availableRoses = newBalance;
+                          widget.onPurchased();
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to top up wallet. Please try again.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE0182C), // Brand Red
