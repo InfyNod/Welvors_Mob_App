@@ -874,6 +874,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
             const SizedBox(height: 4), // Reduced spacing from image
             Text(
               value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
