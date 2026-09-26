@@ -49,7 +49,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
           _complimentsBalance = data['compliments']?['balance'] ?? 0;
           _boostsBalance = data['boosts']?['balance'] ?? 0;
           _walletBalance = data['wallet']?['formattedBalance'] ?? '₹0';
-          _walletVal = double.tryParse((data['wallet']?['balance'] ?? 0).toString()) ?? 0.0;
+          _walletVal =
+              double.tryParse((data['wallet']?['balance'] ?? 0).toString()) ??
+              0.0;
           _datePlansBalance = data['datePlans']?['balance'] ?? 0;
 
           // Update static variables for child screens
@@ -720,8 +722,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
   Widget _buildBalancesSection() {
     return BlocBuilder<BoostBloc, BoostState>(
       builder: (context, state) {
-        final totalBoosts = state.boostBalance + state.superBoostBalance > 0 
-            ? state.boostBalance + state.superBoostBalance 
+        final totalBoosts = state.boostBalance + state.superBoostBalance > 0
+            ? state.boostBalance + state.superBoostBalance
             : _boostsBalance;
 
         return Column(
@@ -742,7 +744,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     onTap: () async {
                       await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const RosesScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const RosesScreen(),
+                        ),
                       );
                       if (mounted) _fetchBalances();
                     },
@@ -791,13 +795,17 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   child: _buildBalanceCard(
                     emoji: '👛',
                     bgColor: const Color(0xFFFBE4E7),
-                    value: _walletBalance,
+                    value: _walletBalance.length > 7 
+                        ? '${_walletBalance.substring(0, 7)}...' 
+                        : _walletBalance,
                     label: 'My Wallet',
                     hasDot: false,
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const MyWalletScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const MyWalletScreen(),
+                        ),
                       ).then((_) => _fetchBalances());
                     },
                   ),
@@ -903,100 +911,103 @@ class _DrawerScreenState extends State<DrawerScreen> {
     return Column(
       children: [
         GestureDetector(
-      onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const DatePlanWallet()),
-        );
-        // Refresh the drawer to show the updated plan count
-        if (mounted) _fetchBalances();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 10,
-        ), // Reduced vertical padding
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const DatePlanWallet()),
+            );
+            // Refresh the drawer to show the updated plan count
+            if (mounted) _fetchBalances();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 10,
+            ), // Reduced vertical padding
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFF4E0), // Soft cream/orange background
-                shape: BoxShape.circle,
-              ),
-              child: const Text('📋', style: TextStyle(fontSize: 22)),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Date Plans',
-                    style: TextStyle(
-                      fontSize: 16, // larger
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Post dates on Date Now · any activity type',
-                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child: Row(
               children: [
-                Text(
-                  '$_datePlansBalance',
-                  style: const TextStyle(
-                    fontSize: 22, // larger
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.gold, // premium gold
+                Container(
+                  width: 44,
+                  height: 44,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF4E0), // Soft cream/orange background
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text('📋', style: TextStyle(fontSize: 22)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Date Plans',
+                        style: TextStyle(
+                          fontSize: 16, // larger
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Post dates on Date Now · any activity type',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'left',
-                      style: TextStyle(
-                        fontSize: 12, // larger
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.bold,
+                      '$_datePlansBalance',
+                      style: const TextStyle(
+                        fontSize: 22, // larger
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.gold, // premium gold
                       ),
                     ),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 16,
-                      color: Colors.grey.shade600,
+                    Row(
+                      children: [
+                        Text(
+                          'left',
+                          style: TextStyle(
+                            fontSize: 12, // larger
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          size: 16,
+                          color: Colors.grey.shade600,
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
-    ),
-    const SizedBox(height: 24),
-    ],
+        const SizedBox(height: 24),
+      ],
     );
   }
 }
