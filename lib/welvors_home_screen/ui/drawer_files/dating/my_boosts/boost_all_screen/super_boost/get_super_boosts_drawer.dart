@@ -4,6 +4,7 @@ import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_event.dart';
 import 'super_boost_screen.dart';
 import 'super_boost_payment_processing_dialog.dart';
+import '../../service_all_flow.dart';
 
 class GetSuperBoostsDrawer extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -166,23 +167,39 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final rootContext = Navigator.of(context).context;
-                    final boostBloc = context.read<BoostBloc>();
-                    final itemsToAdd = int.parse(widget.selectedPackage['title']);
-                    final newBalance = boostBloc.state.superBoostBalance + itemsToAdd;
+                  onPressed: () async {
+                    final apiService = BoostAllApiService();
+                    final packId = widget.selectedPackage['id']?.toString() ?? widget.selectedPackage['_id']?.toString() ?? '';
                     
-                    Navigator.pop(context); // Close the bottom sheet
+                    final success = await apiService.buyBoostPack(packId);
                     
-                    SuperBoostPaymentProcessingDialog.show(
-                      context: rootContext,
-                      selectedPackage: widget.selectedPackage,
-                      newBalance: newBalance,
-                      onDone: () {
-                        boostBloc.add(AddSuperBoostEvent(itemsToAdd));
-                        widget.onPurchased();
-                      },
-                    );
+                    if (!mounted) return;
+                    
+                    if (success) {
+                      final rootContext = Navigator.of(context).context;
+                      final boostBloc = context.read<BoostBloc>();
+                      final itemsToAdd = int.parse(widget.selectedPackage['title'].toString().replaceAll(RegExp(r'[^0-9]'), ''));
+                      final newBalance = boostBloc.state.superBoostBalance + itemsToAdd;
+                      
+                      Navigator.pop(context); // Close the bottom sheet
+                      
+                      SuperBoostPaymentProcessingDialog.show(
+                        context: rootContext,
+                        selectedPackage: widget.selectedPackage,
+                        newBalance: newBalance,
+                        onDone: () {
+                          boostBloc.add(AddSuperBoostEvent(itemsToAdd));
+                          widget.onPurchased();
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to top up wallet. Please try again.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black, // Brand Black

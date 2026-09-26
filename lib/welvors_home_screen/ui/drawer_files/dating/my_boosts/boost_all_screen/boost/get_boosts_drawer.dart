@@ -4,6 +4,7 @@ import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_event.dart';
 // import 'boost_screen.dart';
 import 'boost_payment_processing_dialog.dart';
+import '../../service_all_flow.dart';
 
 class GetBoostsDrawer extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -166,23 +167,39 @@ class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final rootContext = Navigator.of(context).context;
-                    final boostBloc = context.read<BoostBloc>();
-                    final itemsToAdd = int.parse(widget.selectedPackage['title']);
-                    final newBalance = boostBloc.state.boostBalance + itemsToAdd;
+                  onPressed: () async {
+                    final apiService = BoostAllApiService();
+                    final packId = widget.selectedPackage['id']?.toString() ?? widget.selectedPackage['_id']?.toString() ?? '';
                     
-                    Navigator.pop(context); // Close the bottom sheet
+                    final success = await apiService.buyBoostPack(packId);
                     
-                    BoostPaymentProcessingDialog.show(
-                      context: rootContext,
-                      selectedPackage: widget.selectedPackage,
-                      newBalance: newBalance,
-                      onDone: () {
-                        boostBloc.add(AddBoostEvent(itemsToAdd));
-                        widget.onPurchased();
-                      },
-                    );
+                    if (!mounted) return;
+                    
+                    if (success) {
+                      final rootContext = Navigator.of(context).context;
+                      final boostBloc = context.read<BoostBloc>();
+                      final itemsToAdd = int.parse(widget.selectedPackage['title'].toString().replaceAll(RegExp(r'[^0-9]'), ''));
+                      final newBalance = boostBloc.state.boostBalance + itemsToAdd;
+                      
+                      Navigator.pop(context); // Close the bottom sheet
+                      
+                      BoostPaymentProcessingDialog.show(
+                        context: rootContext,
+                        selectedPackage: widget.selectedPackage,
+                        newBalance: newBalance,
+                        onDone: () {
+                          boostBloc.add(AddBoostEvent(itemsToAdd));
+                          widget.onPurchased();
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to top up wallet. Please try again.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A), // Brand Pink
