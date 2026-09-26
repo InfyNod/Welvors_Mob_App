@@ -28,4 +28,32 @@ class ComplimentApiService {
       return null;
     }
   }
+
+  Future<bool> buyComplimentPack(String packId) async {
+    const String topUpUrl = 'https://api.welvors.com/api/user/compliment/wallet/top-up';
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.post(
+        Uri.parse(topUpUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'packId': packId,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error buying compliment pack: $e');
+      return false;
+    }
+  }
 }

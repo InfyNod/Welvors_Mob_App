@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'compliments_screen.dart';
 import 'compliments_payment_processing_dialog.dart';
+import 'service_compliment.dart';
 
 class GetComplimentsDrawer extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -169,22 +170,38 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the bottom sheet
-                    final itemsToAdd = int.parse(
-                      widget.selectedPackage['title'],
-                    );
-                    final newBalance =
-                        ComplimentsScreen.availableCompliments + itemsToAdd;
-                    ComplimentsPaymentProcessingDialog.show(
-                      context: context,
-                      selectedPackage: widget.selectedPackage,
-                      newBalance: newBalance,
-                      onDone: () {
-                        ComplimentsScreen.availableCompliments = newBalance;
-                        widget.onPurchased();
-                      },
-                    );
+                  onPressed: () async {
+                    final apiService = ComplimentApiService();
+                    final packId = widget.selectedPackage['id']?.toString() ?? widget.selectedPackage['_id']?.toString() ?? '';
+                    
+                    final success = await apiService.buyComplimentPack(packId);
+                    
+                    if (!mounted) return;
+                    
+                    if (success) {
+                      Navigator.pop(context); // Close the bottom sheet
+                      final itemsToAdd = int.parse(
+                        widget.selectedPackage['title'].toString().replaceAll(RegExp(r'[^0-9]'), ''),
+                      );
+                      final newBalance =
+                          ComplimentsScreen.availableCompliments + itemsToAdd;
+                      ComplimentsPaymentProcessingDialog.show(
+                        context: context,
+                        selectedPackage: widget.selectedPackage,
+                        newBalance: newBalance,
+                        onDone: () {
+                          ComplimentsScreen.availableCompliments = newBalance;
+                          widget.onPurchased();
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to top up wallet. Please try again.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF632EB7), // Brand Pink
