@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/model/membership_plan_model.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/choose_plan_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/data/membership_plan_repository.dart';
 
 class PrivacySafetyAndMembership extends StatefulWidget {
   const PrivacySafetyAndMembership({super.key});
@@ -14,6 +15,25 @@ class PrivacySafetyAndMembership extends StatefulWidget {
 class _PrivacySafetyAndMembershipState
     extends State<PrivacySafetyAndMembership> {
   bool _isSafetyModeOn = false;
+  List<MembershipPlanModel> _plans = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPlans();
+  }
+
+  Future<void> _fetchPlans() async {
+    final repo = MembershipPlanRepository();
+    final plans = await repo.fetchPlans();
+    if (mounted) {
+      setState(() {
+        _plans = plans;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,24 +203,31 @@ class _PrivacySafetyAndMembershipState
         ),
         const SizedBox(height: 12),
         // Horizontal Scrolling Cards
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          child: Row(
-            children: [
-              _buildPremiumPlusCard(),
-              const SizedBox(width: 16),
-              _buildVIPCard(),
-              const SizedBox(width: 16),
-              _buildVIPEliteCard(),
-            ],
-          ),
-        ),
+        _isLoading
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(color: AppColors.pink),
+                ),
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                child: Row(
+                  children: [
+                    if (_plans.isNotEmpty) _buildPremiumPlusCard(_plans[0]),
+                    const SizedBox(width: 16),
+                    if (_plans.length > 1) _buildVIPCard(_plans[1]),
+                    const SizedBox(width: 16),
+                    if (_plans.length > 2) _buildVIPEliteCard(_plans[2]),
+                  ],
+                ),
+              ),
       ],
     );
   }
 
-  Widget _buildPremiumPlusCard() {
+  Widget _buildPremiumPlusCard(MembershipPlanModel plan) {
     return Container(
       width: 280, // Fixed width for horizontal scrolling
       padding: const EdgeInsets.all(16), // Reduced padding to decrease height
@@ -236,43 +263,44 @@ class _PrivacySafetyAndMembershipState
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'Premium+',
-                          style: TextStyle(
+                        Text(
+                          plan.name.replaceAll('_', ' '),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE85A7A),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'POPULAR',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
+                        if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE85A7A),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              plan.badgeLabel!.toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         children: [
-                          const TextSpan(
-                            text: '₹499 ',
-                            style: TextStyle(
+                          TextSpan(
+                            text: '${plan.monthlyPrice} ',
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
@@ -294,35 +322,7 @@ class _PrivacySafetyAndMembershipState
             ],
           ),
           const SizedBox(height: 16),
-          _buildFeatureRow(
-            'Unlimited likes & weekly boost',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'See who liked you',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Voice & video calls',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'ID verification badge',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Marriage Intent badge + ₹5L rewards',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
+          ..._buildDynamicFeatures(plan, const Color(0xFFE85A7A), Colors.black87),
           const SizedBox(height: 16),
           InkWell(
             onTap: () {
@@ -358,7 +358,7 @@ class _PrivacySafetyAndMembershipState
     );
   }
 
-  Widget _buildVIPCard() {
+  Widget _buildVIPCard(MembershipPlanModel plan) {
     return Container(
       width: 280, // Fixed width
       padding: const EdgeInsets.all(16), // Reduced padding
@@ -394,45 +394,46 @@ class _PrivacySafetyAndMembershipState
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'VIP',
-                          style: TextStyle(
+                        Text(
+                          plan.name.replaceAll('_', ' '),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFC8933A,
-                            ), // Dark gold/brown background
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'EXCLUSIVE',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
+                        if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFC8933A,
+                              ), // Dark gold/brown background
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              plan.badgeLabel!.toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         children: [
-                          const TextSpan(
-                            text: '₹1,999 ',
-                            style: TextStyle(
+                          TextSpan(
+                            text: '${plan.monthlyPrice} ',
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
@@ -454,35 +455,7 @@ class _PrivacySafetyAndMembershipState
             ],
           ),
           const SizedBox(height: 16),
-          _buildFeatureRow(
-            'VIP-only member pool',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Luxury date planning',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'VIP events & private mixers',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Education + profession verified',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Mentorship & networking access',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
+          ..._buildDynamicFeatures(plan, const Color(0xFFC8933A), Colors.black87),
           const SizedBox(height: 16),
           InkWell(
             onTap: () {
@@ -517,7 +490,7 @@ class _PrivacySafetyAndMembershipState
     );
   }
 
-  Widget _buildVIPEliteCard() {
+  Widget _buildVIPEliteCard(MembershipPlanModel plan) {
     return Container(
       width: 280, // Fixed width
       padding: const EdgeInsets.all(16), // Reduced padding
@@ -549,52 +522,53 @@ class _PrivacySafetyAndMembershipState
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'VIP Elite',
-                          style: TextStyle(
+                        Text(
+                          plan.name.replaceAll('_', ' '),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: Colors.white, // White text for dark theme
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE5C07B), // Gold background
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ), // More rounded badge
-                          ),
-                          child: const Text(
-                            'INVITE',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87, // Dark text
-                              letterSpacing: 0.5,
+                        if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE5C07B), // Gold background
+                              borderRadius: BorderRadius.circular(
+                                5,
+                              ), // More rounded badge
+                            ),
+                            child: Text(
+                              plan.badgeLabel!.toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87, // Dark text
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         children: [
-                          const TextSpan(
-                            text: '₹49,999 ',
-                            style: TextStyle(
+                          TextSpan(
+                            text: '${plan.monthlyPrice} ',
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFFE5C07B), // Gold price
                             ),
                           ),
                           TextSpan(
-                            text: '/ year',
+                            text: '/ month',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade400,
@@ -609,35 +583,7 @@ class _PrivacySafetyAndMembershipState
             ],
           ),
           const SizedBox(height: 16),
-          _buildFeatureRow(
-            'Elite-only discovery feed',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Personal date concierge',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Only 100 members per city',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'International retreats & luxury travel',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Founder & executive network',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
+          ..._buildDynamicFeatures(plan, const Color(0xFFE5C07B), Colors.white),
           const SizedBox(height: 16),
           InkWell(
             onTap: () {
@@ -690,5 +636,23 @@ class _PrivacySafetyAndMembershipState
         ),
       ],
     );
+  }
+
+  List<Widget> _buildDynamicFeatures(MembershipPlanModel plan, Color iconColor, Color textColor) {
+    List<String> allFeatures = [];
+    for (var section in plan.sections) {
+      for (var feature in section.features) {
+        allFeatures.add(feature.title);
+      }
+    }
+    
+    final displayFeatures = allFeatures.take(5).toList();
+    
+    return displayFeatures.map((feat) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 6.0),
+        child: _buildFeatureRow(feat, iconColor, textColor),
+      );
+    }).toList();
   }
 }

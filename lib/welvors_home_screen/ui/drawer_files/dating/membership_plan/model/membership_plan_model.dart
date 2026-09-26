@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 enum MembershipTier { premiumPlus, vip, elite }
 
 class MembershipPlanModel {
+  final String id;
   final MembershipTier tier;
   final String name;
   final String badge;
+  final String? badgeLabel; // From API
   final String emoji;
   final String description;
   final String monthlyPrice;
@@ -17,11 +19,14 @@ class MembershipPlanModel {
   final List<PlanDuration> durations;
   final WeeklyBenefits weeklyBenefits;
   final List<PlanSection> sections;
+  final List<dynamic>? rawFeatures; // From API
 
   const MembershipPlanModel({
+    this.id = '',
     required this.tier,
     required this.name,
     required this.badge,
+    this.badgeLabel,
     required this.emoji,
     required this.description,
     required this.monthlyPrice,
@@ -33,6 +38,7 @@ class MembershipPlanModel {
     required this.durations,
     required this.weeklyBenefits,
     required this.sections,
+    this.rawFeatures,
   });
 }
 
