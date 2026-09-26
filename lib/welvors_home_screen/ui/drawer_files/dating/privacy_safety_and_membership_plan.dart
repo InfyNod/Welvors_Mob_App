@@ -229,16 +229,22 @@ class _PrivacySafetyAndMembershipState
 
   Widget _buildPremiumPlusCard(MembershipPlanModel plan) {
     return Container(
-      width: 280, // Fixed width for horizontal scrolling
-      padding: const EdgeInsets.all(16), // Reduced padding to decrease height
+      width: 280,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: const Color(0xFFFBE4E7),
-          width: 1.5,
-        ), // Light pink border
-        boxShadow: AppColors.shadow,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFE85A7A).withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,16 +253,28 @@ class _PrivacySafetyAndMembershipState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBE4E7), // Light red/pink circle
-                  borderRadius: BorderRadius.circular(12), // Rounded square
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFFF0F3), Color(0xFFFBE4E7)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFE85A7A).withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
-                child: const Text('🔥', style: TextStyle(fontSize: 22)),
+                child: Text(plan.emoji, style: const TextStyle(fontSize: 24)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,21 +284,26 @@ class _PrivacySafetyAndMembershipState
                         Text(
                           plan.name.replaceAll('_', ' '),
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(width: 8),
                         if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
+                              horizontal: 8,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE85A7A),
-                              borderRadius: BorderRadius.circular(4),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFE85A7A), Color(0xFFFF758C)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               plan.badgeLabel!.toUpperCase(),
@@ -301,8 +324,8 @@ class _PrivacySafetyAndMembershipState
                           TextSpan(
                             text: '${plan.monthlyPrice} ',
                             style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
                               color: Colors.black87,
                             ),
                           ),
@@ -310,6 +333,7 @@ class _PrivacySafetyAndMembershipState
                             text: '/ month',
                             style: TextStyle(
                               fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey.shade500,
                             ),
                           ),
@@ -321,9 +345,9 @@ class _PrivacySafetyAndMembershipState
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           ..._buildDynamicFeatures(plan, const Color(0xFFE85A7A), Colors.black87),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -335,20 +359,33 @@ class _PrivacySafetyAndMembershipState
                 ),
               );
             },
+            borderRadius: BorderRadius.circular(14),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE85A7A),
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFE85A7A), Color(0xFFFF758C)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFE85A7A).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               alignment: Alignment.center,
               child: const Text(
                 'Upgrade now →',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -360,16 +397,22 @@ class _PrivacySafetyAndMembershipState
 
   Widget _buildVIPCard(MembershipPlanModel plan) {
     return Container(
-      width: 280, // Fixed width
-      padding: const EdgeInsets.all(16), // Reduced padding
+      width: 280,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: const Color(0xFFFFF4E0),
-          width: 1.5,
-        ), // Light gold border
-        boxShadow: AppColors.shadow,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFC8933A).withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,16 +421,28 @@ class _PrivacySafetyAndMembershipState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF4E0), // Light gold background
-                  borderRadius: BorderRadius.circular(12), // Rounded square
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFFF8EA), Color(0xFFFFF4E0)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFC8933A).withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
-                child: const Text('👑', style: TextStyle(fontSize: 22)),
+                child: Text(plan.emoji, style: const TextStyle(fontSize: 24)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,23 +452,26 @@ class _PrivacySafetyAndMembershipState
                         Text(
                           plan.name.replaceAll('_', ' '),
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(width: 8),
                         if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
+                              horizontal: 8,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(
-                                0xFFC8933A,
-                              ), // Dark gold/brown background
-                              borderRadius: BorderRadius.circular(4),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFE5C07B), Color(0xFFC8933A)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               plan.badgeLabel!.toUpperCase(),
@@ -434,8 +492,8 @@ class _PrivacySafetyAndMembershipState
                           TextSpan(
                             text: '${plan.monthlyPrice} ',
                             style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
                               color: Colors.black87,
                             ),
                           ),
@@ -443,6 +501,7 @@ class _PrivacySafetyAndMembershipState
                             text: '/ month',
                             style: TextStyle(
                               fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey.shade500,
                             ),
                           ),
@@ -454,9 +513,9 @@ class _PrivacySafetyAndMembershipState
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           ..._buildDynamicFeatures(plan, const Color(0xFFC8933A), Colors.black87),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -467,20 +526,33 @@ class _PrivacySafetyAndMembershipState
                 ),
               );
             },
+            borderRadius: BorderRadius.circular(14),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFC8933A), // Gold color
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFF3C669), Color(0xFFC8933A)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFC8933A).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               alignment: Alignment.center,
               child: const Text(
                 'Apply for VIP →',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -492,12 +564,26 @@ class _PrivacySafetyAndMembershipState
 
   Widget _buildVIPEliteCard(MembershipPlanModel plan) {
     return Container(
-      width: 280, // Fixed width
-      padding: const EdgeInsets.all(16), // Reduced padding
+      width: 280,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF222222), // Dark premium background
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: AppColors.shadow,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2C2C2C), Color(0xFF111111)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFF444444),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,16 +592,28 @@ class _PrivacySafetyAndMembershipState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF333333), // Darker background
-                  borderRadius: BorderRadius.circular(12), // Rounded square
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF444444), Color(0xFF222222)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFF555555), width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
-                child: const Text('💫', style: TextStyle(fontSize: 22)),
+                child: Text(plan.emoji, style: const TextStyle(fontSize: 24)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -525,30 +623,33 @@ class _PrivacySafetyAndMembershipState
                         Text(
                           plan.name.replaceAll('_', ' '),
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white, // White text for dark theme
+                            color: Colors.white,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(width: 8),
                         if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
+                              horizontal: 8,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE5C07B), // Gold background
-                              borderRadius: BorderRadius.circular(
-                                5,
-                              ), // More rounded badge
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFFF2D0), Color(0xFFE5C07B)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               plan.badgeLabel!.toUpperCase(),
                               style: const TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87, // Dark text
+                                color: Colors.black87,
                                 letterSpacing: 0.5,
                               ),
                             ),
@@ -562,15 +663,16 @@ class _PrivacySafetyAndMembershipState
                           TextSpan(
                             text: '${plan.monthlyPrice} ',
                             style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFE5C07B), // Gold price
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFFE5C07B),
                             ),
                           ),
                           TextSpan(
                             text: '/ month',
                             style: TextStyle(
                               fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey.shade400,
                             ),
                           ),
@@ -582,9 +684,9 @@ class _PrivacySafetyAndMembershipState
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           ..._buildDynamicFeatures(plan, const Color(0xFFE5C07B), Colors.white),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -595,20 +697,33 @@ class _PrivacySafetyAndMembershipState
                 ),
               );
             },
+            borderRadius: BorderRadius.circular(14),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE5C07B), // Gold color
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFF2D0), Color(0xFFE5C07B)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFE5C07B).withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               alignment: Alignment.center,
               child: const Text(
                 'Request invite →',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87, // Dark text on gold button
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
