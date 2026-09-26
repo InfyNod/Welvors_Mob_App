@@ -196,6 +196,9 @@ class BoostAllApiService {
         }),
       );
 
+      print('Boost Top-Up Response Status: ${response.statusCode}');
+      print('Boost Top-Up Response Body: ${response.body}');
+      
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
         if (data['success'] == true) {

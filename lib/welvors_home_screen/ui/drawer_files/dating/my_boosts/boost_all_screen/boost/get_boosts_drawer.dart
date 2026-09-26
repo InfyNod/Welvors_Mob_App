@@ -169,7 +169,12 @@ class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
                 child: ElevatedButton(
                   onPressed: () async {
                     final apiService = BoostAllApiService();
-                    final packId = widget.selectedPackage['id']?.toString() ?? widget.selectedPackage['_id']?.toString() ?? '';
+                    final raw = widget.selectedPackage['raw'];
+                    final packId = widget.selectedPackage['id']?.toString() ?? 
+                                   widget.selectedPackage['_id']?.toString() ?? 
+                                   raw?['id']?.toString() ?? 
+                                   raw?['_id']?.toString() ?? 
+                                   '';
                     
                     final success = await apiService.buyBoostPack(packId);
                     
