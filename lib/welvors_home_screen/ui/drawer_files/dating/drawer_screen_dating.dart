@@ -17,9 +17,10 @@ import 'edit_profile/top_bottom_nav_editscreen.dart';
 import 'dart:io';
 import 'edit_profile/bloc/profile_edit_cubit.dart';
 import 'edit_profile/bloc/profile_edit_state.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class DrawerScreen extends StatefulWidget {
-  const DrawerScreen({Key? key}) : super(key: key);
+  const DrawerScreen({super.key});
 
   @override
   State<DrawerScreen> createState() => _DrawerScreenState();
@@ -28,7 +29,6 @@ class DrawerScreen extends StatefulWidget {
 class _DrawerScreenState extends State<DrawerScreen> {
   int _selectedTabIndex = 1; // 0 = Marriage, 1 = Dating, 2 = Mature Dating
   String _walletBalance = '₹0';
-  double _walletVal = 0.0;
   int _rosesBalance = 0;
   int _complimentsBalance = 0;
   int _boostsBalance = 0;
@@ -49,7 +49,6 @@ class _DrawerScreenState extends State<DrawerScreen> {
           _complimentsBalance = data['compliments']?['balance'] ?? 0;
           _boostsBalance = data['boosts']?['balance'] ?? 0;
           _walletBalance = data['wallet']?['formattedBalance'] ?? '₹0';
-          _walletVal = double.tryParse((data['wallet']?['balance'] ?? 0).toString()) ?? 0.0;
           _datePlansBalance = data['datePlans']?['balance'] ?? 0;
 
           // Update static variables for child screens
@@ -79,7 +78,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
         }
         return age;
       }
-    } catch (e) {}
+    } catch (e) {
+      AppLogger.w('DrawerScreen', 'Failed to calculate age from DOB: $e');
+    }
     return 26; // Default fallback
   }
 
@@ -321,8 +322,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                AppColors.pinkSoft.withOpacity(1.0), // Stronger pink glow
-                AppColors.pinkSoft.withOpacity(0.0),
+                AppColors.pinkSoft.withValues(alpha: 1.0), // Stronger pink glow
+                AppColors.pinkSoft.withValues(alpha: 0.0),
               ],
               stops: const [0.3, 1.0],
             ),
@@ -343,7 +344,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.pink.withOpacity(0.3 * animValue),
+                        color: AppColors.pink.withValues(alpha: 0.3 * animValue),
                         blurRadius: 16,
                         spreadRadius: 2,
                       ),
@@ -401,7 +402,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                             : null,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: Colors.black.withValues(alpha: 0.15),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -532,7 +533,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFEB5076).withOpacity(0.3),
+                        color: const Color(0xFFEB5076).withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -568,7 +569,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     color: const Color(0xFFE4F8EA),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: const Color(0xFF1EAD5D).withOpacity(0.3),
+                      color: const Color(0xFF1EAD5D).withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -830,7 +831,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
           border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05), // Soft elegant shadow
+              color: Colors.black.withValues(alpha: 0.05), // Soft elegant shadow
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -920,7 +921,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
           border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

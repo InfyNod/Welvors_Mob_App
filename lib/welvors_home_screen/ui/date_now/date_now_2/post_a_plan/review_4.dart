@@ -8,7 +8,7 @@ import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_no
 class Review4View extends StatefulWidget {
   final VoidCallback onBack;
 
-  const Review4View({Key? key, required this.onBack}) : super(key: key);
+  const Review4View({super.key, required this.onBack});
 
   @override
   State<Review4View> createState() => _Review4ViewState();
@@ -127,9 +127,9 @@ class _Review4ViewState extends State<Review4View> {
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                                  Colors.black.withOpacity(0.5),
+                                  Colors.black.withValues(alpha: 0.5),
                                   Colors.transparent,
-                                  Colors.black.withOpacity(0.9),
+                                  Colors.black.withValues(alpha: 0.9),
                                 ],
                               ),
                             ),
@@ -188,7 +188,7 @@ class _Review4ViewState extends State<Review4View> {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color: Colors.black.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: const Row(
@@ -415,7 +415,7 @@ class _Review4ViewState extends State<Review4View> {
                                   BoxShadow(
                                     color: const Color(
                                       0xFFE43A6A,
-                                    ).withOpacity(0.3),
+                                    ).withValues(alpha: 0.3),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
@@ -488,9 +488,9 @@ class _Review4ViewState extends State<Review4View> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -518,7 +518,7 @@ class _Review4ViewState extends State<Review4View> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha: 0.12),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -582,7 +582,7 @@ class _Review4ViewState extends State<Review4View> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFFE43A6A).withOpacity(0.08)
+                ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
                 : Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -620,7 +620,7 @@ class _Review4ViewState extends State<Review4View> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha: 0.12),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -651,11 +651,11 @@ class _Review4ViewState extends State<Review4View> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.white,
+            activeThumbColor: Colors.white,
             activeTrackColor: const Color(0xFFE43A6A),
             inactiveThumbColor: Colors.white,
             inactiveTrackColor: Colors.grey.shade300,
-            trackOutlineColor: MaterialStateProperty.all(Colors.transparent),
+            trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
           ),
         ],
       ),
@@ -670,7 +670,7 @@ class _Review4ViewState extends State<Review4View> {
     Color? customBgColor,
     Color? customTextColor,
   }) {
-    final bgColor = customBgColor ?? baseColor.withOpacity(0.04);
+    final bgColor = customBgColor ?? baseColor.withValues(alpha: 0.04);
     final textColor = customTextColor ?? baseColor;
 
     return Container(
@@ -678,7 +678,7 @@ class _Review4ViewState extends State<Review4View> {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: textColor.withOpacity(0.2)),
+        border: Border.all(color: textColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -686,7 +686,7 @@ class _Review4ViewState extends State<Review4View> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: textColor.withOpacity(0.1),
+              color: textColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Text(emoji, style: const TextStyle(fontSize: 16)),
@@ -699,7 +699,7 @@ class _Review4ViewState extends State<Review4View> {
                 Text(
                   title,
                   style: TextStyle(
-                    color: textColor.withOpacity(0.9),
+                    color: textColor.withValues(alpha: 0.9),
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                   ),
@@ -708,7 +708,7 @@ class _Review4ViewState extends State<Review4View> {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: textColor.withOpacity(0.75),
+                    color: textColor.withValues(alpha: 0.75),
                     fontSize: 12,
                     height: 1.3,
                   ),

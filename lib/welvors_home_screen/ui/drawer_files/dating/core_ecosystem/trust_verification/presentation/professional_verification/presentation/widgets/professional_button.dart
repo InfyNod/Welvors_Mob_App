@@ -24,7 +24,7 @@ class ProfessionalButton extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFC9155D).withOpacity(.25),
+            color: const Color(0xFFC9155D).withValues(alpha: .25),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),

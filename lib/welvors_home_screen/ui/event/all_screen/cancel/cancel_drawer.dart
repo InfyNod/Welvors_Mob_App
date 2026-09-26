@@ -111,7 +111,7 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
                   border: Border.all(color: const Color(0xFFFFE0B2)),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFB9770E).withOpacity(0.08),
+                      color: const Color(0xFFB9770E).withValues(alpha: 0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -125,7 +125,7 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB9770E).withOpacity(0.1),
+                          color: const Color(0xFFB9770E).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -262,7 +262,7 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
                       comment: _commentsController.text,
                     );
 
-                    if (mounted) {
+                    if (context.mounted) {
                       setState(() {
                         _isCancelling = false;
                       });
@@ -291,11 +291,11 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: const Color(
                       0xFFE43A6A,
-                    ).withOpacity(0.4),
-                    disabledForegroundColor: Colors.white.withOpacity(0.8),
+                    ).withValues(alpha: 0.4),
+                    disabledForegroundColor: Colors.white.withValues(alpha: 0.8),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     elevation: selectedReason != null ? 6 : 0,
-                    shadowColor: const Color(0xFFE43A6A).withOpacity(0.5),
+                    shadowColor: const Color(0xFFE43A6A).withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

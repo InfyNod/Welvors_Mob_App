@@ -1388,7 +1388,7 @@ class ChatRepository {
     // because messages are inside data.messages/data.items.
     dynamic rawData = decoded['data'];
     if (rawData is Map) {
-      final map = Map<String, dynamic>.from(rawData as Map);
+      final map = Map<String, dynamic>.from(rawData);
       rawData =
           map['messages'] ?? map['items'] ?? map['results'] ?? map['data'];
     }
@@ -1399,7 +1399,7 @@ class ChatRepository {
 
     AppLogger.d('ChatRepository', '================ CHAT DEBUG ================');
     AppLogger.d('ChatRepository', 'CURRENT USER ID: [$effectiveUserId]');
-    AppLogger.d('ChatRepository', 'MESSAGE RAW COUNT: ${(rawData as List).length}');
+    AppLogger.d('ChatRepository', 'MESSAGE RAW COUNT: ${(rawData).length}');
 
     final messages = ChatMessage.fromJsonList(
       rawData,

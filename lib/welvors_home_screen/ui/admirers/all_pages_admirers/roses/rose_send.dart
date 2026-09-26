@@ -105,7 +105,7 @@ class _RoseSendScreenState extends State<RoseSendScreen> {
                       218,
                       61,
                       61,
-                    ).withOpacity(0.1),
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Text('🌹', style: TextStyle(fontSize: 20)),
@@ -186,7 +186,7 @@ class _RoseSendScreenState extends State<RoseSendScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

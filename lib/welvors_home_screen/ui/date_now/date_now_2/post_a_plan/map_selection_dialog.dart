@@ -3,7 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapSelectionDialog extends StatefulWidget {
-  const MapSelectionDialog({Key? key}) : super(key: key);
+  const MapSelectionDialog({super.key});
 
   @override
   State<MapSelectionDialog> createState() => _MapSelectionDialogState();

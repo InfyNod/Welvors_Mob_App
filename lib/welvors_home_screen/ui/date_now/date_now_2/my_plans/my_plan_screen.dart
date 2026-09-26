@@ -34,7 +34,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   List<Map<String, dynamic>> _apiPlans = [];
   bool _isLoading = true;
 
-  bool _isBoosted = false;
+  final bool _isBoosted = false;
   DateTime? _boostEndTime;
   Timer? _timer;
 
@@ -392,7 +392,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFFFA6A85).withOpacity(0.1),
+              color: const Color(0xFFFA6A85).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -437,7 +437,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                    color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -473,7 +473,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 24,
             spreadRadius: 4,
             offset: const Offset(0, 8),
@@ -626,8 +626,8 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(0.7),
+                      Colors.black.withValues(alpha: 0.1),
+                      Colors.black.withValues(alpha: 0.7),
                     ],
                   ),
                 ),
@@ -681,10 +681,10 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             width: 1,
                           ),
                         ),
@@ -779,7 +779,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFDE2957).withOpacity(0.3),
+                          color: const Color(0xFFDE2957).withValues(alpha: 0.3),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -1166,7 +1166,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                  color: const Color(0xFFFA6A85).withOpacity(0.3),
+                  color: const Color(0xFFFA6A85).withValues(alpha: 0.3),
                   width: 3,
                 ),
               ),
@@ -1215,7 +1215,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -1389,7 +1389,7 @@ void _showFeedbackSavedSnackBar(BuildContext context, String message) {
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

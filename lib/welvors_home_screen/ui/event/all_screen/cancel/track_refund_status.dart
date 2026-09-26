@@ -171,7 +171,7 @@ class TrackRefundScreen extends StatelessWidget {
         border: Border.all(color: Colors.pink.shade50, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE43A6A).withOpacity(0.08),
+            color: const Color(0xFFE43A6A).withValues(alpha: 0.08),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -186,7 +186,7 @@ class TrackRefundScreen extends StatelessWidget {
             child: Icon(
               Icons.account_balance_wallet_rounded,
               size: 80,
-              color: const Color(0xFFE43A6A).withOpacity(0.05),
+              color: const Color(0xFFE43A6A).withValues(alpha: 0.05),
             ),
           ),
           Column(
@@ -197,7 +197,7 @@ class TrackRefundScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE43A6A).withOpacity(0.1),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -235,7 +235,7 @@ class TrackRefundScreen extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [
                       Colors.pink.shade200,
-                      Colors.pink.shade50.withOpacity(0.1),
+                      Colors.pink.shade50.withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -284,7 +284,7 @@ class TrackRefundScreen extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade100, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -435,7 +435,7 @@ class TrackRefundScreen extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade100, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -471,7 +471,7 @@ class TrackRefundScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFE43A6A).withOpacity(0.1),
+              color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: const Color(0xFFE43A6A), size: 20),
@@ -519,7 +519,7 @@ class TrackRefundScreen extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -586,7 +586,7 @@ class TrackRefundScreen extends StatelessWidget {
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: const Color(0xFFE43A6A).withOpacity(0.4),
+                  color: const Color(0xFFE43A6A).withValues(alpha: 0.4),
                   blurRadius: 8,
                   spreadRadius: 2,
                 ),
@@ -594,7 +594,7 @@ class TrackRefundScreen extends StatelessWidget {
             : (isCompleted
                   ? [
                       BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.15),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

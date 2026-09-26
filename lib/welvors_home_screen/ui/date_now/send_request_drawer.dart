@@ -492,14 +492,14 @@ Widget _buildSelectionChip(
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: const Color(0xFFE43A6A).withOpacity(0.15),
+                  color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
               ]
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -602,7 +602,7 @@ void showRequestSentBottomSheet(
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4CAF50).withOpacity(0.15),
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.15),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -711,7 +711,7 @@ void showRequestSentBottomSheet(
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFDE2957).withOpacity(0.3),
+                      color: const Color(0xFFDE2957).withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),

@@ -656,8 +656,9 @@ class _ChatListViewState extends State<_ChatListView> {
     if (!mounted ||
         userId == null ||
         userId.isEmpty ||
-        userId == _currentUserId)
+        userId == _currentUserId) {
       return;
+    }
 
     setState(() {
       _onlineUsers[userId] = true;
@@ -670,8 +671,9 @@ class _ChatListViewState extends State<_ChatListView> {
     if (!mounted ||
         userId == null ||
         userId.isEmpty ||
-        userId == _currentUserId)
+        userId == _currentUserId) {
       return;
+    }
 
     setState(() {
       _onlineUsers[userId] = false;
@@ -1249,7 +1251,7 @@ class _ChatListViewState extends State<_ChatListView> {
                       color: Colors.white,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.primary.withOpacity(0.25),
+                        color: AppColors.primary.withValues(alpha: 0.25),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -1718,7 +1720,7 @@ class _ChatListViewState extends State<_ChatListView> {
                 width: 72,
                 height: 72,
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.1),
+                  color: accentColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -1810,7 +1812,7 @@ class _ChatListViewState extends State<_ChatListView> {
       onTap: () {
         showDialog(
           context: context,
-          barrierColor: Colors.black.withOpacity(0.8),
+          barrierColor: Colors.black.withValues(alpha: 0.8),
           builder: (context) {
             return Dialog(
               backgroundColor: Colors.transparent,
@@ -1841,7 +1843,7 @@ class _ChatListViewState extends State<_ChatListView> {
                               width: 400,
                               height: 400,
                               fit: BoxFit.cover,
-                              placeholder: (_, __) => const SizedBox(
+                              placeholder: (_, _) => const SizedBox(
                                 width: 400,
                                 height: 400,
                                 child: ColoredBox(color: AppColors.soft),
@@ -1869,7 +1871,7 @@ class _ChatListViewState extends State<_ChatListView> {
                             height: 40,
                             child: Center(
                               child: Text(
-                                '$name${int.tryParse(age?.toString() ?? '0') != null && int.tryParse(age?.toString() ?? '')! > 0 ? ", ${age} yrs" : ""}',
+                                '$name${(int.tryParse(age.toString()) ?? 0) > 0 ? ", $age yrs" : ""}',
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -1930,7 +1932,7 @@ class _ChatListViewState extends State<_ChatListView> {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              placeholder: (_, __) => ColoredBox(
+              placeholder: (_, _) => ColoredBox(
                 color: AppColors.soft,
                 child: SizedBox(width: size, height: size),
               ),

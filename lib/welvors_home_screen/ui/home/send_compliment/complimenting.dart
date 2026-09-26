@@ -41,6 +41,7 @@ class ComplimentingBottomSheet extends StatefulWidget {
     String? complimentingID,
     String? profileName,
     String? profileImageUrl,
+    // ignore: non_constant_identifier_names
     String? user_ID,
     final ProfileModel? profilemodel,
   }) async {
@@ -732,7 +733,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                         Container(
                           padding: const EdgeInsets.all(2), // Border width
                           decoration: BoxDecoration(
-                            color: _primaryColor.withOpacity(0.15),
+                            color: _primaryColor.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: CircleAvatar(
@@ -871,7 +872,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: const Color(0xFFFFB6C1).withOpacity(0.5),
+                              color: const Color(0xFFFFB6C1).withValues(alpha: 0.5),
                             ),
                           ),
                           child: Row(
@@ -987,9 +988,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                     ),
                     margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.08),
+                      color: Colors.red.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.red.withOpacity(0.3)),
+                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1038,7 +1039,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                           decoration: BoxDecoration(
                             color: (_canSend && !_isSending)
                                 ? _primaryColor
-                                : _primaryColor.withOpacity(0.3),
+                                : _primaryColor.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Center(
@@ -1116,7 +1117,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: isSelected ? primaryPink.withOpacity(0.05) : Colors.white,
+        color: isSelected ? primaryPink.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isSelected ? primaryPink : Colors.grey.shade200,

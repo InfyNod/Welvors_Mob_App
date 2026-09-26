@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class ShareEventDetailCard extends StatelessWidget {
   final String title;
@@ -30,7 +31,7 @@ class ShareEventDetailCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -50,7 +51,7 @@ class ShareEventDetailCard extends StatelessWidget {
                 height: 200,
                 width: double.infinity,
                 child: imageUrl.startsWith('http')
-                    ? Image.network(imageUrl, fit: BoxFit.cover)
+                    ? AppCachedImage(imageUrl: imageUrl, fit: BoxFit.cover)
                     : Image.asset(imageUrl, fit: BoxFit.cover),
                 ),
             ),

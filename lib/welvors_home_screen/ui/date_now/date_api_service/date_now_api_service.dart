@@ -617,18 +617,21 @@ class DateNowApiService {
       AppLogger.i('DateNowApiService', 'PATCH response: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) return true;
       if (response.body.contains('"success":') ||
-          response.body.contains('not found'))
+          response.body.contains('not found')) {
         return false;
+      }
 
       // If 404 HTML, try POST on Vercel
       if (response.statusCode == 404) {
         response = await http.post(url, headers: headers);
         AppLogger.i('DateNowApiService', 'POST response: ${response.statusCode} - ${response.body}');
-        if (response.statusCode == 200 || response.statusCode == 201)
+        if (response.statusCode == 200 || response.statusCode == 201) {
           return true;
+        }
         if (response.body.contains('"success":') ||
-            response.body.contains('not found'))
+            response.body.contains('not found')) {
           return false;
+        }
       }
 
       // Try DELETE on Vercel
@@ -638,11 +641,13 @@ class DateNowApiService {
           'DateNowApiService',
           'DELETE response: ${response.statusCode} - ${response.body}',
         );
-        if (response.statusCode == 200 || response.statusCode == 201)
+        if (response.statusCode == 200 || response.statusCode == 201) {
           return true;
+        }
         if (response.body.contains('"success":') ||
-            response.body.contains('not found'))
+            response.body.contains('not found')) {
           return false;
+        }
       }
 
       return false;

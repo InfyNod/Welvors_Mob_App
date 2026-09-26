@@ -15,6 +15,7 @@ import 'service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import '../../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class EventsCards extends StatefulWidget {
   final String? eventType;
@@ -152,14 +153,18 @@ class _EventsCardsState extends State<EventsCards> {
         context: context,
       );
       // Hide loading
-      if (Navigator.canPop(context)) {
+      if (context.mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
+
+      if (!context.mounted) return;
 
       // Save to temp directory
       final directory = await getTemporaryDirectory();
       final imagePath = await File('${directory.path}/event_share_$eventId.png').create();
       await imagePath.writeAsBytes(capturedImage);
+
+      if (!context.mounted) return;
 
       final box = context.findRenderObject() as RenderBox?;
       final shareLink = 'https://welvors.com/event/$eventId';
@@ -172,7 +177,7 @@ class _EventsCardsState extends State<EventsCards> {
             : null,
       );
     } catch (e) {
-      if (Navigator.canPop(context)) {
+      if (context.mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
       AppLogger.e('EventsCards', 'Error sharing: $e');
@@ -449,7 +454,7 @@ class _EventsCardsState extends State<EventsCards> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -462,8 +467,8 @@ class _EventsCardsState extends State<EventsCards> {
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
               colors: [
-                Colors.black.withOpacity(0.9),
-                Colors.black.withOpacity(0.1),
+                Colors.black.withValues(alpha: 0.9),
+                Colors.black.withValues(alpha: 0.1),
               ],
             ),
           ),
@@ -479,12 +484,12 @@ class _EventsCardsState extends State<EventsCards> {
                 ),
                 decoration: BoxDecoration(
                   color: isBrand
-                      ? const Color(0xFFE85A7A).withOpacity(0.95)
+                      ? const Color(0xFFE85A7A).withValues(alpha: 0.95)
                       : (isFeatured || isPromoted)
                       ? null
                       : const Color(
                           0xFF424242,
-                        ).withOpacity(0.95), // Fallback dark grey
+                        ).withValues(alpha: 0.95), // Fallback dark grey
                   gradient: isFeatured
                       ? const LinearGradient(
                           begin: Alignment.topLeft,
@@ -566,7 +571,7 @@ class _EventsCardsState extends State<EventsCards> {
               Text(
                 '$capacity singles · $eventType',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 10,
                 ),
                 maxLines: 1,
@@ -650,19 +655,19 @@ class _EventsCardsState extends State<EventsCards> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFE85A7A).withOpacity(0.06),
+              color: const Color(0xFFE85A7A).withValues(alpha: 0.06),
               blurRadius: 24,
               spreadRadius: 4,
               offset: const Offset(0, 12),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
           border: Border.all(
-            color: const Color(0xFFE85A7A).withOpacity(0.1),
+            color: const Color(0xFFE85A7A).withValues(alpha: 0.1),
             width: 1.5,
           ),
         ),
@@ -677,22 +682,11 @@ class _EventsCardsState extends State<EventsCards> {
                     topLeft: Radius.circular(24),
                     topRight: Radius.circular(24),
                   ),
-                  child: Image.network(
-                    imageUrl,
+                  child: AppCachedImage(
+                    imageUrl: imageUrl,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 200,
-                        color: Colors.grey.shade200,
-                        child: const Icon(
-                          Icons.image,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
                   ),
                 ),
                 Positioned(
@@ -708,7 +702,7 @@ class _EventsCardsState extends State<EventsCards> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -849,7 +843,7 @@ class PriceBadge extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 width: 1.5,
               ),
             ),

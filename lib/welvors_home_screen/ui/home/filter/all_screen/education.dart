@@ -108,7 +108,7 @@ class _EducationScreenState extends State<EducationScreen> {
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       )
@@ -197,7 +197,7 @@ class _EducationScreenState extends State<EducationScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

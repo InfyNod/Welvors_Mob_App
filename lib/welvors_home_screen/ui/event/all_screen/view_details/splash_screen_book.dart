@@ -12,13 +12,13 @@ class SplashScreenBook extends StatefulWidget {
   final String bookingId;
 
   const SplashScreenBook({
-    Key? key,
+    super.key,
     required this.totalPayable,
     this.title = '',
     this.date = '',
     this.location = '',
     this.bookingId = '',
-  }) : super(key: key);
+  });
 
   @override
   State<SplashScreenBook> createState() => _SplashScreenBookState();
@@ -95,7 +95,7 @@ class _SplashScreenBookState extends State<SplashScreenBook> {
                   color: isVisible ? const Color(0xFFE43A6A) : Colors.grey.shade300,
                   shape: BoxShape.circle,
                   boxShadow: isVisible 
-                      ? [BoxShadow(color: const Color(0xFFE43A6A).withOpacity(0.4), blurRadius: 8, offset: const Offset(0, 4))]
+                      ? [BoxShadow(color: const Color(0xFFE43A6A).withValues(alpha: 0.4), blurRadius: 8, offset: const Offset(0, 4))]
                       : null,
                 ),
                 child: const Icon(Icons.check, color: Colors.white, size: 14),
@@ -145,7 +145,7 @@ class _SplashScreenBookState extends State<SplashScreenBook> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFE43A6A).withOpacity(0.2),
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.2),
                             blurRadius: 50,
                             spreadRadius: 30,
                           ),
@@ -189,18 +189,18 @@ class _SplashScreenBookState extends State<SplashScreenBook> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 24,
                       offset: const Offset(0, 10),
                     ),
                     BoxShadow(
-                      color: const Color(0xFFE43A6A).withOpacity(0.05),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
                   ],
                   border: Border.all(
-                    color: const Color(0xFFE43A6A).withOpacity(0.1),
+                    color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                     width: 1,
                   ),
                 ),

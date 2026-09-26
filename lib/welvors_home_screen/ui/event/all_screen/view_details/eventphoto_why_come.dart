@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class EventMoreDetailsSection extends StatelessWidget {
   final String? aboutEvent;
@@ -202,7 +203,7 @@ class EventMoreDetailsSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -228,8 +229,8 @@ class EventMoreDetailsSection extends StatelessWidget {
                                   width: double.infinity,
                                   height: double.infinity,
                                   alignment: Alignment.center,
-                                  child: Image.network(
-                                    allUrls[idx],
+                                  child: AppCachedImage(
+                                    imageUrl: allUrls[idx],
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -247,12 +248,12 @@ class EventMoreDetailsSection extends StatelessWidget {
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.3),
+                                      color: Colors.white.withValues(alpha: 0.3),
                                       borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+                                      border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 1),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.05),
+                                          color: Colors.black.withValues(alpha: 0.05),
                                           blurRadius: 10,
                                           spreadRadius: 1,
                                         ),
@@ -285,12 +286,12 @@ class EventMoreDetailsSection extends StatelessWidget {
                                   child: Container(
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.3),
+                                      color: Colors.white.withValues(alpha: 0.3),
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+                                      border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 1),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.05),
+                                          color: Colors.black.withValues(alpha: 0.05),
                                           blurRadius: 10,
                                           spreadRadius: 1,
                                         ),
@@ -324,7 +325,7 @@ class EventMoreDetailsSection extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       color: isCurrent
                                           ? const Color(0xFFE43A6A)
-                                          : Colors.grey.withOpacity(0.3),
+                                          : Colors.grey.withValues(alpha: 0.3),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                   );

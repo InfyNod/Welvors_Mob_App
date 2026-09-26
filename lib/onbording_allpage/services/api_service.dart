@@ -25,7 +25,7 @@ class ApiService {
                 ? token
                 : 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'MY BALANCES STATUS: ${response.statusCode}');
       AppLogger.d('ApiService', 'MY BALANCES BODY: ${response.body}');
@@ -69,7 +69,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/onboarding/intention/get'),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -111,7 +111,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/onboarding/prompt/get'),
-      );
+      ).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -138,7 +138,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Referral Dashboard Status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -167,7 +167,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Onboarding Details ($type) Status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -198,7 +198,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Refer Earn Info Status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -227,7 +227,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Waitlist Offer Status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -257,7 +257,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode({'referralCode': code}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Apply Referral Status: ${response.statusCode}');
       return jsonDecode(response.body);
@@ -272,7 +272,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/question/fetch?category=DATING&screen=LIFESTYLE'),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -318,7 +318,7 @@ class ApiService {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 
         'Complete Onboarding: ${response.statusCode} - ${response.body}',
@@ -337,7 +337,7 @@ class ApiService {
         Uri.parse(
           '$baseUrl/question/fetch?category=DATING&screen=THINGS_U_LOVE',
         ),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -358,7 +358,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/onboarding/professions/get'),
-      );
+      ).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -383,7 +383,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/onboarding/experiences/get'),
-      );
+      ).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -408,7 +408,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/onboarding/employment-type/get'),
-      );
+      ).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -433,7 +433,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/onboarding/salary-ranges/get'),
-      );
+      ).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -458,7 +458,7 @@ class ApiService {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/onboarding/ambitions/get'),
-      );
+      ).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         if (decoded['success'] == true && decoded['data'] != null) {
@@ -485,7 +485,7 @@ class ApiService {
         Uri.parse('$baseUrl/user/send-otp'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'phoneNumber': phoneNumber}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'OTP Send: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -507,7 +507,7 @@ class ApiService {
         Uri.parse('$baseUrl/user/referral-validate'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'referralCode': code}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 
         'Referral Validate: ${response.statusCode} - ${response.body}',
@@ -541,7 +541,7 @@ class ApiService {
         Uri.parse('$baseUrl/user/verify-otp'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'OTP Verify: ${response.statusCode} - ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -587,7 +587,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode(data),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Basic Info Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Basic Info Response: ${response.body}');
@@ -632,7 +632,7 @@ class ApiService {
           'interested_in': interestedIn,
           'sexual_orientation': sexualOrientation,
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Interested In Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Interested In Response: ${response.body}');
@@ -672,7 +672,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode({'optionId': intentionId}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Looking For Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Looking For Response: ${response.body}');
@@ -715,7 +715,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode({'questionId': questionId, 'optionIds': optionIds}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Submit Answer Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Submit Answer Response: ${response.body}');
@@ -755,7 +755,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode(data),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Submit Education Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Submit Education Response: ${response.body}');
@@ -788,7 +788,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode(data),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Submit Work Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Submit Work Response: ${response.body}');
@@ -834,7 +834,7 @@ class ApiService {
         );
       }
 
-      final streamedResponse = await request.send();
+      final streamedResponse = await request.send().timeout(const Duration(seconds: 30));
       final response = await http.Response.fromStream(streamedResponse);
 
       AppLogger.d('ApiService', 'Submit Photos Status: ${response.statusCode}');
@@ -875,7 +875,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode({"bio": bioText}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Submit Bio Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Submit Bio Response: ${response.body}');
@@ -910,7 +910,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode({"prompts": prompts}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Submit Prompts Status: ${response.statusCode}');
       AppLogger.d('ApiService', 'Submit Prompts Response: ${response.body}');
@@ -955,7 +955,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode(body),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Submit Address Status: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -981,7 +981,7 @@ class ApiService {
           if (token != null) 'Authorization': 'Bearer $token',
         },
         body: jsonEncode({"latitude": lat, "longitude": lng}),
-      );
+      ).timeout(const Duration(seconds: 15));
 
       AppLogger.d('ApiService', 'Submit Location Status: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -1070,17 +1070,17 @@ class ApiService {
         },
         body: jsonEncode({
           'receiverId': receiverId,
-          if (targetType != null) 'targetType': targetType,
-          if (targetId != null) 'targetId': targetId,
-          if (mediaUrl != null) 'mediaUrl': mediaUrl,
+          'targetType': ?targetType,
+          'targetId': ?targetId,
+          'mediaUrl': ?mediaUrl,
           if (complimentMessage != null && complimentMessage.isNotEmpty) 
             'compliment': {'message': complimentMessage},
           if (includeRose == true) 
             'rose': {},
           if (giftId != null) 
-            'gift': {'giftId': giftId, if (giftMessage != null) 'message': giftMessage},
+            'gift': {'giftId': giftId, 'message': ?giftMessage},
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
       AppLogger.d('ApiService', 'SEND ENGAGEMENT STATUS: ${response.statusCode}');
       AppLogger.d('ApiService', 'SEND ENGAGEMENT BODY: ${response.body}');
       return _handleApiResponse(response);
@@ -1113,7 +1113,7 @@ class ApiService {
           'targetId': targetId,
           'mediaUrl': mediaUrl,
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
       return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};
@@ -1146,7 +1146,7 @@ class ApiService {
           'targetId': targetId,
           'mediaUrl': mediaUrl,
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
       return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};
@@ -1179,7 +1179,7 @@ class ApiService {
           'targetId': targetId,
           'mediaUrl': mediaUrl,
         }),
-      );
+      ).timeout(const Duration(seconds: 15));
       return _handleApiResponse(response);
     } catch (e) {
       return {'success': false, 'message': e.toString()};

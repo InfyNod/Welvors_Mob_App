@@ -147,11 +147,11 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen>
                 color: Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFFF05C91).withOpacity(0.1),
+                  color: const Color(0xFFF05C91).withValues(alpha: 0.1),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF966EB4).withOpacity(0.10),
+                    color: const Color(0xFF966EB4).withValues(alpha: 0.10),
                     blurRadius: 30,
                     offset: const Offset(0, 4),
                   ),
@@ -208,7 +208,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen>
                                   224,
                                   138,
                                   168,
-                                ).withOpacity(0.35),
+                                ).withValues(alpha: 0.35),
                                 blurRadius: _glowAnimation.value,
                                 spreadRadius: _glowAnimation.value * 0.15,
                               ),
@@ -290,7 +290,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen>
                                 ? null
                                 : [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.04),
+                                      color: Colors.black.withValues(alpha: 0.04),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -411,8 +411,8 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white.withOpacity(0.0),
-                    Colors.white.withOpacity(0.9),
+                    Colors.white.withValues(alpha: 0.0),
+                    Colors.white.withValues(alpha: 0.9),
                     Colors.white,
                   ],
                   stops: const [0.0, 0.3, 1.0],

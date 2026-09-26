@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 
 import '../model/membership_plan_model.dart';
-import 'package:flutter/material.dart';
 
 class PlanTabs extends StatelessWidget {
   final MembershipTier selected;
@@ -61,7 +58,7 @@ class PlanTabs extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -105,19 +102,6 @@ class PlanTabs extends StatelessWidget {
       ),
     );
   }
-
-  Color _selectedColor() {
-    switch (selected) {
-      case MembershipTier.premiumPlus:
-        return const Color(0xFFD63D68);
-
-      case MembershipTier.vip:
-        return const Color(0xFFC88D22);
-
-      case MembershipTier.elite:
-        return const Color(0xFF111111);
-    }
-  }
 }
 
 class PlanHeroCard extends StatelessWidget {
@@ -151,12 +135,12 @@ class PlanHeroCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.14),
+                  color: Colors.white.withValues(alpha: .14),
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: Colors.white.withOpacity(.35)),
+                  border: Border.all(color: Colors.white.withValues(alpha: .35)),
                 ),
                 child: Text(
-                  plan.emoji + '${plan.badge}',
+                  '${plan.emoji}${plan.badge}',
                   style: GoogleFonts.dmSans(
                     color: elite ? const Color(0xFFE6CD7A) : Colors.white,
                     fontSize: 12,
@@ -234,7 +218,7 @@ class PlanHeroCard extends StatelessWidget {
             style: GoogleFonts.dmSans(
               fontSize: 12,
               height: 1.45,
-              color: Colors.white.withOpacity(.9),
+              color: Colors.white.withValues(alpha: .9),
             ),
           ),
           hSized5,
@@ -256,7 +240,7 @@ class PlanHeroCard extends StatelessWidget {
                   plan.tier == MembershipTier.elite ? '/ year' : '/ month',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(.85),
+                    color: Colors.white.withValues(alpha: .85),
                   ),
                 ),
               ),
@@ -267,7 +251,7 @@ class PlanHeroCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(.18),
+                color: Colors.white.withValues(alpha: .18),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -284,7 +268,7 @@ class PlanHeroCard extends StatelessWidget {
               margin: const EdgeInsets.only(top: 10),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
               decoration: BoxDecoration(
-                color: const Color(0xFFE7CD7B).withOpacity(.18),
+                color: const Color(0xFFE7CD7B).withValues(alpha: .18),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -320,11 +304,10 @@ class DurationSelector extends StatefulWidget {
 }
 
 class _DurationSelectorState extends State<DurationSelector> {
-  late final ScrollController _scrollController;
+  static const double _cardWidth = 185.0;
+  static const double _cardGap = 12.0;
 
-  // Card width + gap
-  static const double _cardWidth = 185;
-  static const double _cardGap = 12;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
@@ -352,13 +335,10 @@ class _DurationSelectorState extends State<DurationSelector> {
 
     final screenWidth = MediaQuery.sizeOf(context).width;
 
-    const cardWidth = 185.0;
-    const cardGap = 12.0;
-
-    final itemWidth = cardWidth + cardGap;
+    final itemWidth = _cardWidth + _cardGap;
 
     // Selected card ka center
-    final cardCenter = (index * itemWidth) + (cardWidth / 2);
+    final cardCenter = (index * itemWidth) + (_cardWidth / 2);
 
     // Screen ke center par lane ke liye
     final targetOffset = cardCenter - (screenWidth / 2);
@@ -397,7 +377,7 @@ class _DurationSelectorState extends State<DurationSelector> {
         clipBehavior: Clip.none,
         padding: EdgeInsets.zero,
         itemCount: plan.durations.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final duration = plan.durations[index];
           final selected = index == widget.selectedIndex;
@@ -519,7 +499,7 @@ class _DurationSelectorState extends State<DurationSelector> {
                         borderRadius: BorderRadius.circular(999),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: Colors.black.withValues(alpha: 0.15),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),

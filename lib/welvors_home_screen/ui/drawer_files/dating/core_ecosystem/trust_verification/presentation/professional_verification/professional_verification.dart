@@ -118,7 +118,7 @@ class ProfessionalVerficationScreen extends StatelessWidget {
                             itemCount: data.methods.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            separatorBuilder: (_, __) =>
+                            separatorBuilder: (_, _) =>
                                 const SizedBox(height: 18),
                             itemBuilder: (_, index) {
                               final method = data.methods[index];

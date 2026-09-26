@@ -284,7 +284,7 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                                 ? null
                                 : [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.04),
+                                      color: Colors.black.withValues(alpha: 0.04),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -344,8 +344,8 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                           boxShadow: [
                             BoxShadow(
                               color: selected 
-                                  ? const Color(0xFFE43A6A).withOpacity(0.3)
-                                  : Colors.black.withOpacity(0.07),
+                                  ? const Color(0xFFE43A6A).withValues(alpha: 0.3)
+                                  : Colors.black.withValues(alpha: 0.07),
                               blurRadius: selected ? 18 : 10,
                               offset: const Offset(0, 6),
                             ),
@@ -448,8 +448,8 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                             boxShadow: [
                               BoxShadow(
                                 color: _messageFocusNode.hasFocus
-                                    ? const Color(0xFFE43A6A).withOpacity(0.2)
-                                    : Colors.black.withOpacity(0.06),
+                                    ? const Color(0xFFE43A6A).withValues(alpha: 0.2)
+                                    : Colors.black.withValues(alpha: 0.06),
                                 blurRadius: _messageFocusNode.hasFocus ? 14 : 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -485,7 +485,7 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                  child: Container(
+                  child: SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: FilledButton(

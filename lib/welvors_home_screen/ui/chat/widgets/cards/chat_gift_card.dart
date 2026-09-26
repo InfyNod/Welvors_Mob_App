@@ -83,7 +83,7 @@ class ChatGiftCard extends StatelessWidget {
                       child: CachedNetworkImage(
                         imageUrl: message.imageUrl!,
                         fit: BoxFit.cover,
-                        placeholder: (_, __) => Container(
+                        placeholder: (_, _) => Container(
                           color: const Color(0xffeee8e5),
                           alignment: Alignment.center,
                           child: Text(
@@ -91,7 +91,7 @@ class ChatGiftCard extends StatelessWidget {
                             style: const TextStyle(fontSize: 54),
                           ),
                         ),
-                        errorWidget: (_, __, ___) => Container(
+                        errorWidget: (_, _, _) => Container(
                           color: const Color(0xffeee8e5),
                           alignment: Alignment.center,
                           child: Text(

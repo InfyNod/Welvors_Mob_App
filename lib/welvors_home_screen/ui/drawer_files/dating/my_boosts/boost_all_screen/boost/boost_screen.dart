@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 import 'get_boosts_drawer.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_all_screen/boost/service_boost.dart';
 
@@ -204,7 +203,7 @@ class _BoostScreenState extends State<BoostScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -219,9 +218,9 @@ class _BoostScreenState extends State<BoostScreen> {
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
-              Colors.black.withOpacity(0.3),
-              const Color(0xFFDE2957).withOpacity(0.45),
-              const Color(0xFFDE2957).withOpacity(0.55),
+              Colors.black.withValues(alpha: 0.3),
+              const Color(0xFFDE2957).withValues(alpha: 0.45),
+              const Color(0xFFDE2957).withValues(alpha: 0.55),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -234,7 +233,7 @@ class _BoostScreenState extends State<BoostScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -300,9 +299,9 @@ class _BoostScreenState extends State<BoostScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.3)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
         ),
         child: Center(
           child: Column(
@@ -390,14 +389,14 @@ class _BoostScreenState extends State<BoostScreen> {
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: themeColor.withOpacity(0.15),
+                        color: themeColor.withValues(alpha: 0.15),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
                     ]
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withValues(alpha: 0.02),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -489,7 +488,7 @@ class _BoostScreenState extends State<BoostScreen> {
                           (tag == 'BEST VALUE'
                                   ? const Color(0xFFDE2957)
                                   : Colors.black)
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -521,7 +520,7 @@ class _BoostScreenState extends State<BoostScreen> {
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+        border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -598,7 +597,7 @@ class _BoostScreenState extends State<BoostScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

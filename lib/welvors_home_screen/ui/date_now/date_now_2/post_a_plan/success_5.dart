@@ -8,8 +8,7 @@ import '../my_plans/my_plan_screen.dart';
 class Success5View extends StatelessWidget {
   final VoidCallback onBackToDateNow;
 
-  const Success5View({Key? key, required this.onBackToDateNow})
-    : super(key: key);
+  const Success5View({super.key, required this.onBackToDateNow});
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +86,7 @@ class Success5View extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.12),
+                            color: Colors.black.withValues(alpha: 0.12),
                             blurRadius: 24,
                             spreadRadius: 2,
                             offset: const Offset(0, 0),
@@ -174,7 +173,7 @@ class Success5View extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.12),
+                            color: Colors.black.withValues(alpha: 0.12),
                             blurRadius: 24,
                             spreadRadius: 2,
                             offset: const Offset(0, 0),
@@ -288,7 +287,7 @@ class Success5View extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFE43A6A).withOpacity(0.2),
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),

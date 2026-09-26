@@ -94,7 +94,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                         border: Border.all(color: Colors.grey.shade200),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -132,7 +132,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFDE2957).withOpacity(0.3),
+                            color: const Color(0xFFDE2957).withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -186,8 +186,8 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.4),
-                              Colors.black.withOpacity(0.9),
+                              Colors.black.withValues(alpha: 0.4),
+                              Colors.black.withValues(alpha: 0.9),
                             ],
                             stops: const [0.0, 0.5, 1.0],
                           ),
@@ -213,7 +213,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                               widget.category['subtitle'] ??
                                   'Music, dancing and late nights in Mumbai',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),

@@ -184,7 +184,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -199,9 +199,9 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
-              Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
-              const Color.fromARGB(255, 0, 0, 0).withOpacity(0.65),
-              const Color.fromARGB(255, 22, 22, 22).withOpacity(0.75),
+              Color.fromARGB(255, 0, 0, 0).withValues(alpha: 0.3),
+              const Color.fromARGB(255, 0, 0, 0).withValues(alpha: 0.65),
+              const Color.fromARGB(255, 22, 22, 22).withValues(alpha: 0.75),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -214,7 +214,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -280,9 +280,9 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.3)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
         ),
         child: Center(
           child: Column(
@@ -370,14 +370,14 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: themeColor.withOpacity(0.05),
+                        color: themeColor.withValues(alpha: 0.05),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
                     ]
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withValues(alpha: 0.02),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -466,8 +466,8 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: tag == 'BEST VALUE'
-                          ? Colors.black.withOpacity(0.4)
-                          : const Color(0xFFDE2957).withOpacity(0.4),
+                          ? Colors.black.withValues(alpha: 0.4)
+                          : const Color(0xFFDE2957).withValues(alpha: 0.4),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -495,7 +495,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -907,7 +907,7 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+        border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

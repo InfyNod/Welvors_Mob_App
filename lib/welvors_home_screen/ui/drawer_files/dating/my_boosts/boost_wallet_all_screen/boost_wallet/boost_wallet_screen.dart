@@ -132,7 +132,7 @@ class _BoostWalletScreenState extends State<BoostWalletScreen> {
               child: Icon(
                 Icons.bolt,
                 size: 70,
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
               ),
             ),
             Padding(
@@ -183,7 +183,7 @@ class _BoostWalletScreenState extends State<BoostWalletScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.4),
+                          color: Colors.white.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
@@ -321,7 +321,7 @@ class _BoostWalletScreenState extends State<BoostWalletScreen> {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

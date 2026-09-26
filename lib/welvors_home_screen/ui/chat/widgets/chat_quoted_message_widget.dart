@@ -309,7 +309,7 @@ class ChatQuotedMessageWidget extends StatelessWidget {
         imageUrl: message.replyImageUrl!,
         fit: BoxFit.cover,
         alignment: Alignment.topCenter,
-        placeholder: (_, __) => _imagePlaceholder(),
+        placeholder: (_, _) => _imagePlaceholder(),
         errorWidget: (_, _, _) => _imagePlaceholder(),
       );
     }

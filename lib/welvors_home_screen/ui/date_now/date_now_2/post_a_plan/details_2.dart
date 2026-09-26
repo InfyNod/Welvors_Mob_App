@@ -8,8 +8,7 @@ class Details2View extends StatefulWidget {
   final VoidCallback onContinue;
   final VoidCallback onBack;
 
-  const Details2View({Key? key, required this.onContinue, required this.onBack})
-    : super(key: key);
+  const Details2View({super.key, required this.onContinue, required this.onBack});
 
   @override
   State<Details2View> createState() => _Details2ViewState();
@@ -247,7 +246,7 @@ class _Details2ViewState extends State<Details2View> {
                             ),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? const Color(0xFFE43A6A).withOpacity(0.08)
+                                  ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
@@ -342,7 +341,7 @@ class _Details2ViewState extends State<Details2View> {
                             ),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? const Color(0xFFE43A6A).withOpacity(0.08)
+                                  ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(

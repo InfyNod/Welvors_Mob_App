@@ -10,10 +10,9 @@ import 'account_pages/bank_upi.dart';
 import 'account_pages/privacy_controls/privacy_controls_screen.dart';
 import 'account_pages/push_notification.dart';
 import 'account_pages/pause_delete_drawer.dart';
-import 'account_pages/pause_delete_drawer.dart';
-import '../edit_profile/bloc/profile_edit_state.dart';
 import 'service_account_Setting.dart';
 import '../edit_profile/services/edit_profile_api_service.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -109,7 +108,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         }
         return age;
       }
-    } catch (e) {}
+    } catch (e) {
+      AppLogger.w('AccountSettingScreen', 'Failed to calculate age from DOB: $e');
+    }
     return 26; // Default fallback
   }
 
@@ -133,7 +134,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -191,13 +192,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 16,
                       spreadRadius: 0,
                       offset: const Offset(0, 8),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       spreadRadius: 0,
                       offset: const Offset(0, 2),
@@ -476,13 +477,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 4,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -552,7 +553,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
             isToggle
                 ? CupertinoSwitch(
                     value: toggleValue,
-                    activeColor: const Color(0xFFE43A6A),
+                    activeTrackColor: const Color(0xFFE43A6A),
                     onChanged: onToggle,
                   )
                 : Icon(

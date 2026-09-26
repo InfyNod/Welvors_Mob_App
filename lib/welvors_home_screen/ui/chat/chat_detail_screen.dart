@@ -1,20 +1,12 @@
 import 'dart:io';
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:velvors/welvors_home_screen/ui/chat/ChatVideoPlayer.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/SuggestionLine.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/_SwipeToReply.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/sidedrawer.dart';
@@ -32,11 +24,8 @@ import 'chat_bloc/chat_bloc.dart';
 import 'chat_bloc/chat_event.dart';
 import 'chat_bloc/chat_state.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
-import 'custom_camera_screen.dart' as custom_camera;
-import 'location_map_screen.dart';
 import 'chat_image_pdf_viewer_screen.dart';
 
-import 'package:velvors/config/env_config.dart';
 import 'widgets/chat_detail_app_bar.dart';
 import 'widgets/chat_filter_tabs.dart';
 import 'widgets/chat_status_banners.dart';
@@ -1158,11 +1147,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     } catch (e) {
       AppLogger.e('ChatDetailScreen', 'CANCEL RECORDING ERROR: $e');
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isRecording = false;
-        _recordingDuration = Duration.zero;
-      });
+      if (mounted) {
+        setState(() {
+          _isRecording = false;
+          _recordingDuration = Duration.zero;
+        });
+      }
     }
   }
 
@@ -1526,7 +1516,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         _isBlocked = false;
       });
       _toast('${widget.user.name} unblocked');
-      AppLogger.d('ChatDetailScreen', "check>>>>>${check}");
+      AppLogger.d('ChatDetailScreen', "check>>>>>$check");
       // if (check) {
       //   Navigator.pop(context);
       // }
@@ -2352,7 +2342,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                               width: 400,
                               height: 400,
                               fit: BoxFit.cover,
-                              placeholder: (_, __) => const SizedBox(
+                              placeholder: (_, _) => const SizedBox(
                                 width: 400,
                                 height: 400,
                                 child: ColoredBox(color: AppColors.soft),
@@ -2431,7 +2421,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
           child: CachedNetworkImage(
             imageUrl: url,
             fit: BoxFit.cover,
-            placeholder: (_, __) => const ColoredBox(color: AppColors.soft),
+            placeholder: (_, _) => const ColoredBox(color: AppColors.soft),
             errorWidget: (_, _, _) => const ColoredBox(
               color: AppColors.soft,
               child: Icon(Icons.person, color: AppColors.muted),

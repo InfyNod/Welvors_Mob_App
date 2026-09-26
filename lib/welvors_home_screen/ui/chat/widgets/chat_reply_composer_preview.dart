@@ -111,7 +111,7 @@ class ChatReplyComposerPreview extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         fit: BoxFit.cover,
-        placeholder: (_, __) => _placeholder(),
+        placeholder: (_, _) => _placeholder(),
         errorWidget: (_, _, _) => _placeholder(),
       );
     }

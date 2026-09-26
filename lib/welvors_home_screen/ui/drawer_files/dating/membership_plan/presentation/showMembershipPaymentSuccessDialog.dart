@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/trust_verfication/home.dart';
 import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 
 import '../model/membership_plan_model.dart';
@@ -31,7 +30,7 @@ Future<void> showMembershipPaymentSuccessDialog(
     context: context,
     barrierDismissible: false,
     barrierLabel: 'Payment successful',
-    barrierColor: Colors.black.withOpacity(.56),
+    barrierColor: Colors.black.withValues(alpha: .56),
     transitionDuration: const Duration(milliseconds: 280),
     pageBuilder: (context, animation, secondaryAnimation) {
       return _MembershipPaymentSuccessDialog(
@@ -259,7 +258,7 @@ class _SuccessIcon extends StatelessWidget {
         color: AppColors.green,
         boxShadow: [
           BoxShadow(
-            color: AppColors.green.withOpacity(.24),
+            color: AppColors.green.withValues(alpha: .24),
             blurRadius: 24,
             spreadRadius: 5,
           ),

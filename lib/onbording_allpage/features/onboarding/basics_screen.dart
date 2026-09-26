@@ -203,7 +203,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
         Text(
           label,
           style: AppText.sub.copyWith(
-            color: AppColors.ink.withOpacity(0.8),
+            color: AppColors.ink.withValues(alpha: 0.8),
             fontWeight: FontWeight.w700,
             fontSize: 12,
           ),
@@ -261,7 +261,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
             Text(
               label,
               style: AppText.sub.copyWith(
-                color: AppColors.ink.withOpacity(0.8),
+                color: AppColors.ink.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
               ),
@@ -271,7 +271,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                 margin: const EdgeInsets.only(left: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.pinkSoft.withOpacity(0.6),
+                  color: AppColors.pinkSoft.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -328,7 +328,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: AppColors.ink.withOpacity(0.5),
+                  color: AppColors.ink.withValues(alpha: 0.5),
                 ),
                 dropdownColor: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -387,7 +387,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
             Text(
               label,
               style: AppText.sub.copyWith(
-                color: AppColors.ink.withOpacity(0.8),
+                color: AppColors.ink.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
               ),
@@ -397,7 +397,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                 margin: const EdgeInsets.only(left: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.pinkSoft.withOpacity(0.6),
+                  color: AppColors.pinkSoft.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -434,7 +434,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                 ),
                 Icon(
                   Icons.keyboard_arrow_down,
-                  color: AppColors.ink.withOpacity(0.5),
+                  color: AppColors.ink.withValues(alpha: 0.5),
                 ),
               ],
             ),
@@ -560,7 +560,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                               'Private — never shown on your profile to other people.',
                               style: AppText.sub.copyWith(
                                 fontSize: 12,
-                                color: AppColors.ink.withOpacity(0.8),
+                                color: AppColors.ink.withValues(alpha: 0.8),
                               ),
                             ),
                           ),
@@ -578,7 +578,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                         bottom: 48,
                       ),
                       itemCount: _orientationOptions.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final option = _orientationOptions[index];
                         final isSelected =
@@ -636,7 +636,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                                           fontSize: 12,
                                           color: isSelected
                                               ? AppColors.pinkDeep
-                                              : AppColors.ink.withOpacity(0.5),
+                                              : AppColors.ink.withValues(alpha: 0.5),
                                         ),
                                       ),
                                     ],
@@ -716,7 +716,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                 Text(
                   'Date of birth',
                   style: AppText.sub.copyWith(
-                    color: AppColors.ink.withOpacity(0.8),
+                    color: AppColors.ink.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w700,
                     fontSize: 12,
                   ),
@@ -739,7 +739,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                         ),
                         suffixIcon: Icon(
                           Icons.calendar_month,
-                          color: AppColors.pinkDeep.withOpacity(0.9),
+                          color: AppColors.pinkDeep.withValues(alpha: 0.9),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -777,7 +777,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                   RichText(
                     text: TextSpan(
                       style: AppText.sub.copyWith(
-                        color: AppColors.ink.withOpacity(0.6),
+                        color: AppColors.ink.withValues(alpha: 0.6),
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -798,7 +798,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                   Text(
                     'We only show your age — never the full date.',
                     style: TextStyle(
-                      color: AppColors.ink.withOpacity(0.8),
+                      color: AppColors.ink.withValues(alpha: 0.8),
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
                     ),
@@ -883,8 +883,9 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                     String mappedGender = 'PREFER_NOT_TO_SAY';
                     if (_selectedGender == 'Man') mappedGender = 'MEN';
                     if (_selectedGender == 'Woman') mappedGender = 'WOMEN';
-                    if (_selectedGender == 'Non-binary')
+                    if (_selectedGender == 'Non-binary') {
                       mappedGender = 'NON_BINARY';
+                    }
 
                     // Convert height (e.g. 5'9") to cm (number)
                     int heightCm = 170; // default

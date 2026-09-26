@@ -238,7 +238,7 @@ class _DateNowScreenState extends State<DateNowScreen>
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFDE2957).withOpacity(0.3),
+                  color: const Color(0xFFDE2957).withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -516,7 +516,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFDE2957).withOpacity(0.3),
+                    color: const Color(0xFFDE2957).withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -574,7 +574,7 @@ class _DateNowScreenState extends State<DateNowScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -660,7 +660,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -713,7 +713,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -740,7 +740,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           ),
@@ -859,7 +859,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -974,7 +974,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFDE2957).withOpacity(0.3),
+                                color: const Color(0xFFDE2957).withValues(alpha: 0.3),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -1065,7 +1065,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () async {
-                              AppLogger.d('DateNowScreen', "plan>>>>>>>${plan}");
+                              AppLogger.d('DateNowScreen', "plan>>>>>>>$plan");
                               final requestSent =
                                   await showRequestDateBottomSheet(
                                     context,
@@ -1132,7 +1132,7 @@ class _DateNowScreenState extends State<DateNowScreen>
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: bgColor.withOpacity(0.3),
+            color: bgColor.withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

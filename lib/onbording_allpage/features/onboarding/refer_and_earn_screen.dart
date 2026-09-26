@@ -225,7 +225,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -280,7 +280,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                     color:
                                         (_color1.value ??
                                                 const Color(0xFFE94086))
-                                            .withOpacity(0.3),
+                                            .withValues(alpha: 0.3),
                                     blurRadius: 10,
                                     offset: const Offset(0, 5),
                                   ),
@@ -381,7 +381,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -420,7 +420,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                   ),
                                   decoration: BoxDecoration(
                                     color: _isCopied
-                                        ? Colors.green.withOpacity(0.1)
+                                        ? Colors.green.withValues(alpha: 0.1)
                                         : AppColors.pinkSoft,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
@@ -520,7 +520,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.pinkDeep.withOpacity(0.3),
+                                    color: AppColors.pinkDeep.withValues(alpha: 0.3),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -583,7 +583,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                             gradient: LinearGradient(
                               colors: [
                                 Colors.white,
-                                AppColors.pinkSoft.withOpacity(0.3),
+                                AppColors.pinkSoft.withValues(alpha: 0.3),
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -595,7 +595,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.pinkDeep.withOpacity(0.08),
+                                color: AppColors.pinkDeep.withValues(alpha: 0.08),
                                 blurRadius: 24,
                                 offset: const Offset(0, 8),
                               ),
@@ -698,7 +698,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                             ? [
                                                 BoxShadow(
                                                   color: AppColors.pinkDeep
-                                                      .withOpacity(0.4),
+                                                      .withValues(alpha: 0.4),
                                                   blurRadius: 12,
                                                   offset: const Offset(0, 4),
                                                 ),
@@ -746,7 +746,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.pinkDeep.withOpacity(0.3),
+                                color: AppColors.pinkDeep.withValues(alpha: 0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, 5),
                               ),
@@ -852,7 +852,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -905,10 +905,10 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                           width: double.infinity,
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: AppColors.pinkSoft.withOpacity(0.15),
+                            color: AppColors.pinkSoft.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.pinkDeep.withOpacity(0.15),
+                              color: AppColors.pinkDeep.withValues(alpha: 0.15),
                               width: 1,
                             ),
                           ),
@@ -979,7 +979,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
           border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -1026,7 +1026,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.pinkSoft.withOpacity(0.3)
+              ? AppColors.pinkSoft.withValues(alpha: 0.3)
               : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
@@ -1075,7 +1075,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
           height: 8,
           child: CustomPaint(
             painter: DashedLinePainter(
-              color: AppColors.pinkDeep.withOpacity(0.4),
+              color: AppColors.pinkDeep.withValues(alpha: 0.4),
             ),
           ),
         ),
@@ -1105,7 +1105,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                       ? const SizedBox()
                       : CustomPaint(
                           painter: DashedLinePainter(
-                            color: AppColors.pinkDeep.withOpacity(0.4),
+                            color: AppColors.pinkDeep.withValues(alpha: 0.4),
                           ),
                         ),
                 ),
@@ -1124,7 +1124,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                       ? const SizedBox()
                       : CustomPaint(
                           painter: DashedLinePainter(
-                            color: AppColors.pinkDeep.withOpacity(0.4),
+                            color: AppColors.pinkDeep.withValues(alpha: 0.4),
                           ),
                         ),
                 ),
@@ -1142,7 +1142,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                 border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -1193,7 +1193,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFED8F03).withOpacity(0.3),
+                                color: const Color(0xFFED8F03).withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -1245,7 +1245,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AppColors.pinkSoft.withOpacity(0.2),
+            backgroundColor: AppColors.pinkSoft.withValues(alpha: 0.2),
             backgroundImage: profileImage != null && profileImage.isNotEmpty
                 ? NetworkImage(profileImage)
                 : null,
@@ -1324,7 +1324,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.pinkDeep.withOpacity(0.4),
+                  color: AppColors.pinkDeep.withValues(alpha: 0.4),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),

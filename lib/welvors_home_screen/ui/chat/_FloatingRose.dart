@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
 
 class FloatingRose extends StatefulWidget {
-  const FloatingRose();
+  const FloatingRose({super.key});
 
   @override
   State<FloatingRose> createState() => _FloatingRoseState();
@@ -43,7 +43,7 @@ class _FloatingRoseState extends State<FloatingRose>
 class FloatingGift extends StatefulWidget {
   final String? imageUrl;
 
-  const FloatingGift({this.imageUrl});
+  const FloatingGift({super.key, this.imageUrl});
 
   @override
   State<FloatingGift> createState() => _FloatingGiftState();
@@ -86,12 +86,12 @@ class _FloatingGiftState extends State<FloatingGift>
                 width: 64,
                 height: 64,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => Container(
+                placeholder: (_, _) => Container(
                   width: 64,
                   height: 64,
                   color: Colors.grey.shade200,
                 ),
-                errorWidget: (_, __, ___) {
+                errorWidget: (_, _, _) {
                   return const Center(
                     child: Text('🎁', style: TextStyle(fontSize: 38)),
                   );

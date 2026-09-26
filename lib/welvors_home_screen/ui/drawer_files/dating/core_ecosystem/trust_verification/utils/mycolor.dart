@@ -80,7 +80,7 @@ class Mycolor {
   static const coloredb147 = Color(0xffedb147);
   static const colorc4bec4 = Color(0xffc4bec4);
   static const colorfce4ef = Color(0xfffce4ef);
-  static const colore11d74 = Color(0xfffe11d74);
+  static const colore11d74 = Color(0xffe11d74);
   static const color8b8680 = Color(0xff8b8680);
   static const colorf5f2ec = Color(0xfff5f2ec);
 }

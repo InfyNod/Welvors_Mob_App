@@ -146,7 +146,7 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Text(
@@ -167,7 +167,7 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.close, color: Colors.white, size: 12),
@@ -186,7 +186,7 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
         borderType: BorderType.RRect,
         radius: const Radius.circular(12),
         dashPattern: const [6, 4],
-        color: AppColors.pinkDeep.withOpacity(0.4),
+        color: AppColors.pinkDeep.withValues(alpha: 0.4),
         strokeWidth: 1.5,
         padding: EdgeInsets.zero,
         child: Container(
@@ -206,7 +206,7 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
@@ -227,7 +227,7 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.pinkDeep.withOpacity(0.1),
+                        color: AppColors.pinkDeep.withValues(alpha: 0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

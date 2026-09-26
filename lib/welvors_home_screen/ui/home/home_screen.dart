@@ -276,48 +276,63 @@ class _ProfileDetailsView extends StatelessWidget {
     if (profile.career == null) return false;
     final c = profile.career!;
     if (c['highestEducation'] != null &&
-        c['highestEducation'].toString().isNotEmpty)
+        c['highestEducation'].toString().isNotEmpty) {
       return true;
-    if (c['collegeName'] != null && c['collegeName'].toString().isNotEmpty)
+    }
+    if (c['collegeName'] != null && c['collegeName'].toString().isNotEmpty) {
       return true;
-    if (c['profession'] != null && c['profession'].toString().isNotEmpty)
+    }
+    if (c['profession'] != null && c['profession'].toString().isNotEmpty) {
       return true;
-    if (c['companyName'] != null && c['companyName'].toString().isNotEmpty)
+    }
+    if (c['companyName'] != null && c['companyName'].toString().isNotEmpty) {
       return true;
-    if (c['salaryRange'] != null && c['salaryRange'].toString().isNotEmpty)
+    }
+    if (c['salaryRange'] != null && c['salaryRange'].toString().isNotEmpty) {
       return true;
+    }
     if (c['employmentType'] != null &&
-        c['employmentType'].toString().isNotEmpty)
+        c['employmentType'].toString().isNotEmpty) {
       return true;
-    if (c['ambition'] != null && c['ambition'].toString().isNotEmpty)
+    }
+    if (c['ambition'] != null && c['ambition'].toString().isNotEmpty) {
       return true;
-    if (c['bigDreams'] != null && c['bigDreams'].toString().trim().isNotEmpty)
+    }
+    if (c['bigDreams'] != null && c['bigDreams'].toString().trim().isNotEmpty) {
       return true;
+    }
     return false;
   }
 
   bool _hasFamilyData() {
     if (profile.family == null) return false;
     final f = profile.family!;
-    if (f['familyType'] != null && f['familyType'].toString().isNotEmpty)
+    if (f['familyType'] != null && f['familyType'].toString().isNotEmpty) {
       return true;
-    if (f['familyStatus'] != null && f['familyStatus'].toString().isNotEmpty)
+    }
+    if (f['familyStatus'] != null && f['familyStatus'].toString().isNotEmpty) {
       return true;
+    }
     if (f['fatherOccupation'] != null &&
-        f['fatherOccupation'].toString().isNotEmpty)
+        f['fatherOccupation'].toString().isNotEmpty) {
       return true;
+    }
     if (f['fatherOrganisation'] != null &&
-        f['fatherOrganisation'].toString().isNotEmpty)
+        f['fatherOrganisation'].toString().isNotEmpty) {
       return true;
+    }
     if (f['motherOccupation'] != null &&
-        f['motherOccupation'].toString().isNotEmpty)
+        f['motherOccupation'].toString().isNotEmpty) {
       return true;
+    }
     if (f['motherOrganisation'] != null &&
-        f['motherOrganisation'].toString().isNotEmpty)
+        f['motherOrganisation'].toString().isNotEmpty) {
       return true;
+    }
     if (f['numberOfSiblings'] != null &&
-        f['numberOfSiblings'].toString().isNotEmpty)
+        f['numberOfSiblings'].toString().isNotEmpty) {
       return true;
+    }
     return false;
   }
 
@@ -403,13 +418,13 @@ class _ProfileDetailsView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
+                    color: Colors.black.withValues(alpha: 0.10),
                     blurRadius: 16,
                     spreadRadius: 0,
                     offset: const Offset(0, 8),
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 4,
                     spreadRadius: 0,
                     offset: const Offset(0, 2),
@@ -441,7 +456,7 @@ class _ProfileDetailsView extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Divider(
-                          color: const Color(0xFF831843).withOpacity(0.3),
+                          color: const Color(0xFF831843).withValues(alpha: 0.3),
                           height: 1,
                         ),
                       ),
@@ -472,13 +487,13 @@ class _ProfileDetailsView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
+                    color: Colors.black.withValues(alpha: 0.10),
                     blurRadius: 16,
                     spreadRadius: 0,
                     offset: const Offset(0, 8),
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 4,
                     spreadRadius: 0,
                     offset: const Offset(0, 2),
@@ -516,7 +531,7 @@ class _ProfileDetailsView extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
-                            color: SectionColors.basics.icon.withOpacity(0.3),
+                            color: SectionColors.basics.icon.withValues(alpha: 0.3),
                             height: 1,
                           ),
                         ),
@@ -656,12 +671,12 @@ class _ProfileDetailsView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.10),
+                      color: Colors.black.withValues(alpha: 0.10),
                       blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -698,7 +713,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Divider(
-                              color: SectionColors.career.icon.withOpacity(0.3),
+                              color: SectionColors.career.icon.withValues(alpha: 0.3),
                               height: 1,
                             ),
                           ),
@@ -776,7 +791,7 @@ class _ProfileDetailsView extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Divider(
-                              color: SectionColors.career.icon.withOpacity(0.3),
+                              color: SectionColors.career.icon.withValues(alpha: 0.3),
                               height: 1,
                             ),
                           ),
@@ -792,7 +807,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           ),
                           Expanded(
                             child: Divider(
-                              color: SectionColors.career.icon.withOpacity(0.3),
+                              color: SectionColors.career.icon.withValues(alpha: 0.3),
                               height: 1,
                             ),
                           ),
@@ -856,12 +871,12 @@ class _ProfileDetailsView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.10),
+                      color: Colors.black.withValues(alpha: 0.10),
                       blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -932,7 +947,7 @@ class _ProfileDetailsView extends StatelessWidget {
                                     ),
                                     child: Divider(
                                       color: SectionColors.interests.icon
-                                          .withOpacity(0.3),
+                                          .withValues(alpha: 0.3),
                                       height: 1,
                                     ),
                                   ),
@@ -996,12 +1011,12 @@ class _ProfileDetailsView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.10),
+                      color: Colors.black.withValues(alpha: 0.10),
                       blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -1038,8 +1053,8 @@ class _ProfileDetailsView extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Divider(
-                              color: SectionColors.lifestyle.icon.withOpacity(
-                                0.3,
+                              color: SectionColors.lifestyle.icon.withValues(
+                                alpha: 0.3,
                               ),
                               height: 1,
                             ),
@@ -1103,12 +1118,12 @@ class _ProfileDetailsView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.10),
+                      color: Colors.black.withValues(alpha: 0.10),
                       blurRadius: 16,
                       offset: const Offset(0, 8),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -1145,7 +1160,7 @@ class _ProfileDetailsView extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Divider(
-                              color: SectionColors.family.icon.withOpacity(0.3),
+                              color: SectionColors.family.icon.withValues(alpha: 0.3),
                               height: 1,
                             ),
                           ),
@@ -1270,10 +1285,10 @@ class _ProfileDetailsView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: dotColor.withOpacity(0.2), width: 1.2),
+        border: Border.all(color: dotColor.withValues(alpha: 0.2), width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: dotColor.withOpacity(0.08),
+            color: dotColor.withValues(alpha: 0.08),
             blurRadius: 12,
             spreadRadius: 2,
             offset: const Offset(0, 4),
@@ -1291,7 +1306,7 @@ class _ProfileDetailsView extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: dotColor.withOpacity(0.4),
+                  color: dotColor.withValues(alpha: 0.4),
                   blurRadius: 4,
                   spreadRadius: 1,
                 ),
@@ -1303,7 +1318,7 @@ class _ProfileDetailsView extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.black.withOpacity(0.85),
+                color: Colors.black.withValues(alpha: 0.85),
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.3,
@@ -1351,7 +1366,7 @@ class _ProfileDetailsView extends StatelessWidget {
               color: isMatch ? Colors.white : SectionColors.interests.bg,
               border: isMatch
                   ? Border.all(
-                      color: SectionColors.interests.icon.withOpacity(0.5),
+                      color: SectionColors.interests.icon.withValues(alpha: 0.5),
                       width: 1.2,
                     )
                   : null,
@@ -1409,12 +1424,12 @@ class _ProfileDetailsView extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF956630).withOpacity(0.5), // antiqueGold
+          color: const Color(0xFF956630).withValues(alpha: 0.5), // antiqueGold
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.30),
+            color: Colors.black.withValues(alpha: 0.30),
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
@@ -1469,7 +1484,7 @@ class _ProfileDetailsView extends StatelessWidget {
               entry.key.toUpperCase(),
               entry.value,
             );
-          }).toList(),
+          }),
 
           if (inHerWords != null) ...[
             const SizedBox(height: 4),
@@ -1477,7 +1492,7 @@ class _ProfileDetailsView extends StatelessWidget {
               children: [
                 Expanded(
                   child: Divider(
-                    color: const Color(0xFF956630).withOpacity(0.5),
+                    color: const Color(0xFF956630).withValues(alpha: 0.5),
                     height: 1,
                   ), // antiqueGold
                 ),
@@ -1490,7 +1505,7 @@ class _ProfileDetailsView extends StatelessWidget {
                 ),
                 Expanded(
                   child: Divider(
-                    color: const Color(0xFF956630).withOpacity(0.5),
+                    color: const Color(0xFF956630).withValues(alpha: 0.5),
                     height: 1,
                   ), // antiqueGold
                 ),
@@ -1554,12 +1569,12 @@ class _ProfileDetailsView extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF493628).withOpacity(0.3), // darkBrown
+                  color: const Color(0xFF493628).withValues(alpha: 0.3), // darkBrown
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: const Color(
                       0xFF956630,
-                    ).withOpacity(0.6), // antiqueGold
+                    ).withValues(alpha: 0.6), // antiqueGold
                     width: 1,
                   ),
                 ),
@@ -1579,67 +1594,6 @@ class _ProfileDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildLifestyleRow(
-    IconData icon,
-    String label,
-    String value, {
-    String? subValue,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: subValue != null
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.pink.shade50.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: AppColors.pinkDeep, size: 20),
-            ),
-            const SizedBox(width: 16),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                value,
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              if (subValue != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subValue,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 12, color: Colors.black45),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildImageWithRose(BuildContext context, String imageUrl) {
     return Container(
       width: double.infinity,
@@ -1655,7 +1609,7 @@ class _ProfileDetailsView extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -1678,7 +1632,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   profilemodel: profile,
                 );
               },
-              child: Container(
+              child: SizedBox(
                 width: 65,
                 height: 65,
                 child: ClipOval(
@@ -1691,52 +1645,6 @@ class _ProfileDetailsView extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailCard({required String title, required Widget child}) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        // border removed to match benefits drawer design
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 16,
-            spreadRadius: 0,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black87,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          child,
         ],
       ),
     );
@@ -1850,54 +1758,69 @@ class _ProfileDetailsView extends StatelessWidget {
     final lower = interest.toLowerCase();
     if (lower.contains('nba') ||
         lower.contains('basketball') ||
-        lower.contains('sports'))
+        lower.contains('sports')) {
       return Icons.sports_basketball_rounded;
-    if (lower.contains('soccer') || lower.contains('football'))
+    }
+    if (lower.contains('soccer') || lower.contains('football')) {
       return Icons.sports_soccer_rounded;
+    }
     if (lower.contains('cricket')) return Icons.sports_cricket_rounded;
     if (lower.contains('tennis')) return Icons.sports_tennis_rounded;
     if (lower.contains('music') ||
         lower.contains('singing') ||
-        lower.contains('guitar'))
+        lower.contains('guitar')) {
       return Icons.music_note_rounded;
+    }
     if (lower.contains('art') ||
         lower.contains('painting') ||
-        lower.contains('drawing'))
+        lower.contains('drawing')) {
       return Icons.palette_rounded;
-    if (lower.contains('reading') || lower.contains('book'))
+    }
+    if (lower.contains('reading') || lower.contains('book')) {
       return Icons.menu_book_rounded;
+    }
     if (lower.contains('movie') ||
         lower.contains('cinema') ||
         lower.contains('film') ||
-        lower.contains('netflix'))
+        lower.contains('netflix')) {
       return Icons.movie_filter_rounded;
-    if (lower.contains('travel') || lower.contains('trip'))
+    }
+    if (lower.contains('travel') || lower.contains('trip')) {
       return Icons.flight_rounded;
+    }
     if (lower.contains('food') ||
         lower.contains('cooking') ||
-        lower.contains('baking'))
+        lower.contains('baking')) {
       return Icons.restaurant_rounded;
+    }
     if (lower.contains('coffee')) return Icons.local_cafe_rounded;
-    if (lower.contains('photo') || lower.contains('camera'))
+    if (lower.contains('photo') || lower.contains('camera')) {
       return Icons.camera_alt_rounded;
-    if (lower.contains('game') || lower.contains('gaming'))
+    }
+    if (lower.contains('game') || lower.contains('gaming')) {
       return Icons.videogame_asset_rounded;
+    }
     if (lower.contains('gym') ||
         lower.contains('fitness') ||
-        lower.contains('workout'))
+        lower.contains('workout')) {
       return Icons.fitness_center_rounded;
+    }
     if (lower.contains('nature') ||
         lower.contains('hiking') ||
-        lower.contains('mountain'))
+        lower.contains('mountain')) {
       return Icons.landscape_rounded;
+    }
     if (lower.contains('tech') ||
         lower.contains('coding') ||
-        lower.contains('program'))
+        lower.contains('program')) {
       return Icons.computer_rounded;
-    if (lower.contains('dance') || lower.contains('dancing'))
+    }
+    if (lower.contains('dance') || lower.contains('dancing')) {
       return Icons.music_video_rounded;
-    if (lower.contains('pet') || lower.contains('dog') || lower.contains('cat'))
+    }
+    if (lower.contains('pet') || lower.contains('dog') || lower.contains('cat')) {
       return Icons.pets_rounded;
+    }
 
     return Icons.star_border_rounded;
   }
@@ -2102,13 +2025,13 @@ class _ProfileDetailsView extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 4,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -2173,7 +2096,7 @@ class _ProfileDetailsView extends StatelessWidget {
                       profilemodel: profile,
                     );
                   },
-                  child: Container(
+                  child: SizedBox(
                     width: 65,
                     height: 65,
                     child: ClipOval(
@@ -2268,7 +2191,6 @@ class _DraggableCard extends StatefulWidget {
 class _DraggableCardState extends State<_DraggableCard>
     with SingleTickerProviderStateMixin {
   Offset _position = Offset.zero;
-  bool _isDragging = false;
   late AnimationController _animController;
   late Animation<Offset> _animOffset;
 
@@ -2292,9 +2214,7 @@ class _DraggableCardState extends State<_DraggableCard>
     super.dispose();
   }
 
-  void _onPanStart(DragStartDetails details) {
-    setState(() => _isDragging = true);
-  }
+  void _onPanStart(DragStartDetails details) {}
 
   void _onPanUpdate(DragUpdateDetails details) {
     setState(() {
@@ -2303,8 +2223,6 @@ class _DraggableCardState extends State<_DraggableCard>
   }
 
   void _onPanEnd(DragEndDetails details) {
-    setState(() => _isDragging = false);
-
     final screenWidth = MediaQuery.of(context).size.width;
     final threshold = screenWidth * 0.4;
 
@@ -2349,12 +2267,12 @@ class _DraggableCardState extends State<_DraggableCard>
     Color glowColor = Colors.transparent;
 
     if (dragPercent > 0) {
-      glowColor = Colors.green.withOpacity(
-        dragPercent * 0.6,
+      glowColor = Colors.green.withValues(
+        alpha: dragPercent * 0.6,
       ); // Green for right
     } else if (dragPercent < 0) {
-      glowColor = Colors.red.withOpacity(
-        dragPercent.abs() * 0.6,
+      glowColor = Colors.red.withValues(
+        alpha: dragPercent.abs() * 0.6,
       ); // Red for left
     }
 
@@ -2457,7 +2375,7 @@ class _ProfileCardUI extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -2547,8 +2465,9 @@ class _ProfileCardUI extends StatelessWidget {
             left: 16,
             child: BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
-                if (!context.read<HomeBloc>().hasSwipedProfiles)
+                if (!context.read<HomeBloc>().hasSwipedProfiles) {
                   return const SizedBox.shrink();
+                }
                 return GestureDetector(
                   onTap: () {
                     context.read<HomeBloc>().add(UndoSwipeEvent());
@@ -2556,11 +2475,11 @@ class _ProfileCardUI extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
+                      color: Colors.white.withValues(alpha: 0.95),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -2583,7 +2502,7 @@ class _ProfileCardUI extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                color: Colors.pink.shade50.withOpacity(0.95),
+                color: Colors.pink.shade50.withValues(alpha: 0.95),
                 shape: BoxShape.circle,
               ),
               child: Lottie.asset(
@@ -2615,8 +2534,8 @@ class _ProfileCardUI extends StatelessWidget {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.black.withOpacity(0.95),
-                    Colors.black.withOpacity(0.0),
+                    Colors.black.withValues(alpha: 0.95),
+                    Colors.black.withValues(alpha: 0.0),
                   ],
                   stops: const [0.0, 0.7],
                 ),
@@ -2681,7 +2600,7 @@ class _ProfileCardUI extends StatelessWidget {
                             ? profile.lookingForSubtitle
                             : _getLookingForSubtitle(profile.lookingFor),
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w400,
                           fontSize: 11,
                           height: 1.2,
@@ -2703,9 +2622,9 @@ class _ProfileCardUI extends StatelessWidget {
     Widget tag = Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -2744,13 +2663,13 @@ class _ProfileCardUI extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white.withOpacity(0.9), size: 16),
+          Icon(icon, color: Colors.white.withValues(alpha: 0.9), size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),
@@ -2899,7 +2818,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
           color: Colors.black,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -2943,7 +2862,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.8),
+                              Colors.black.withValues(alpha: 0.8),
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
@@ -2960,7 +2879,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -2983,7 +2902,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -3007,7 +2926,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -3038,7 +2957,7 @@ class _ProfileVideoPlayerState extends State<ProfileVideoPlayer> {
                     profilemodel: widget.profile,
                   );
                 },
-                child: Container(
+                child: SizedBox(
                   width: 65,
                   height: 65,
                   child: ClipOval(
@@ -3064,11 +2983,10 @@ class _ExpandableText extends StatefulWidget {
   final TextStyle style;
 
   const _ExpandableText({
-    Key? key,
     required this.text,
     this.maxLines = 4,
     required this.style,
-  }) : super(key: key);
+  });
 
   @override
   __ExpandableTextState createState() => __ExpandableTextState();

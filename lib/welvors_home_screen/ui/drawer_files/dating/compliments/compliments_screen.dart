@@ -85,7 +85,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -184,7 +184,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -199,9 +199,9 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
-              Colors.black.withOpacity(0.3),
-              const Color(0xFF632EB7).withOpacity(0.45),
-              const Color(0xFF632EB7).withOpacity(0.55),
+              Colors.black.withValues(alpha: 0.3),
+              const Color(0xFF632EB7).withValues(alpha: 0.45),
+              const Color(0xFF632EB7).withValues(alpha: 0.55),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -218,7 +218,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 Text(
                   'SAY MORE WITH WORDS',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
@@ -240,7 +240,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
             Text(
               'Stand out by adding a thoughtful note with your like — on a photo or prompt.',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -319,7 +319,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
             Text(
               '2 free every week · renews in 3 days',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 11,
               ),
             ),
@@ -337,9 +337,9 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -380,7 +380,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -586,7 +586,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
           Divider(
             height: 1,
             thickness: 1,
-            color: Colors.grey.withOpacity(0.15),
+            color: Colors.grey.withValues(alpha: 0.15),
             indent: 16,
             endIndent: 16,
           ),
@@ -641,7 +641,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                 Text(
                   "That's when match rates are highest — 2× higher than mornings.",
                   style: TextStyle(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withValues(alpha: 0.6),
                     fontSize: 12,
                     height: 1.4,
                   ),
@@ -691,7 +691,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
               boxShadow: [
                 if (!isSelected)
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -792,7 +792,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
                                   : index == 2
                                   ? Colors.black
                                   : const Color(0xFF632EB7))
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -825,7 +825,7 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F9FA),
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+        border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

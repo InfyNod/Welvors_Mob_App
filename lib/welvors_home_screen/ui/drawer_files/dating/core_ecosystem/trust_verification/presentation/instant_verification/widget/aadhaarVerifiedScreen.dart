@@ -1,9 +1,7 @@
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/trust_repository.dart';
 
 import '../../../export.dart';
 import 'trust_score_card.dart';
 import 'verified_icon.dart';
-import '../../trust_verfication/home.dart';
 
 import '../bloc/aadhaar_verified_bloc.dart';
 import '../bloc/aadhaar_verified_event.dart';

@@ -1305,7 +1305,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         'expiresIn': event.expiresIn,
       };
       AppLogger.d('ChatBloc', '🎁 GIFT SEND');
-      AppLogger.d('ChatBloc', '🎁 giftId => ${giftId}');
+      AppLogger.d('ChatBloc', '🎁 giftId => $giftId');
       AppLogger.d('ChatBloc', '🎁 payload => $socketPayload');
     }
 
@@ -1785,8 +1785,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           final incomingName = (incoming.giftName ?? '').trim();
           final incomingEmoji = (incoming.giftEmoji ?? '').trim();
           matchIndex = existing.indexWhere((message) {
-            if (!message.isMine || !_tempIdPattern.hasMatch(message.id))
+            if (!message.isMine || !_tempIdPattern.hasMatch(message.id)) {
               return false;
+            }
             if (message.type != ChatMessageType.gift) return false;
             final nameMatch =
                 incomingName.isEmpty ||

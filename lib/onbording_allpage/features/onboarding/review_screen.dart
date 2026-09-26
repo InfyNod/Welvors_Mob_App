@@ -121,7 +121,7 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
         border: isLast
             ? null
             : Border(
-                bottom: BorderSide(color: AppColors.line.withOpacity(0.5)),
+                bottom: BorderSide(color: AppColors.line.withValues(alpha: 0.5)),
               ),
       ),
       child: Row(
@@ -165,7 +165,7 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: AppColors.line.withOpacity(0.5)),
+          bottom: BorderSide(color: AppColors.line.withValues(alpha: 0.5)),
         ),
       ),
       child: Wrap(
@@ -175,7 +175,7 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.pinkDeep.withOpacity(0.1),
+              color: AppColors.pinkDeep.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -244,7 +244,7 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: AppColors.shadow,
                       border: Border.all(
-                        color: AppColors.line.withOpacity(0.3),
+                        color: AppColors.line.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
@@ -261,7 +261,7 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.ink.withOpacity(0.1),
+                                      color: AppColors.ink.withValues(alpha: 0.1),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -316,7 +316,7 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.green.withOpacity(0.1),
+                                        color: Colors.green.withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Row(
@@ -347,7 +347,7 @@ class _ReviewScreenState extends State<ReviewScreen> with AutomaticKeepAliveClie
                         ),
                         Container(
                           height: 1,
-                          color: AppColors.line.withOpacity(0.5),
+                          color: AppColors.line.withValues(alpha: 0.5),
                         ),
 
                         Padding(

@@ -171,7 +171,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.pinkSoft.withOpacity(0.5),
+                      AppColors.pinkSoft.withValues(alpha: 0.5),
                       AppColors.pinkSoft,
                     ],
                     begin: Alignment.topLeft,
@@ -181,7 +181,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.pink.withOpacity(0.08),
+                      color: AppColors.pink.withValues(alpha: 0.08),
                       blurRadius: 24,
                       offset: const Offset(0, 12),
                     ),
@@ -195,11 +195,11 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.pink.withOpacity(0.05),
+                            color: AppColors.pink.withValues(alpha: 0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -262,7 +262,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                     ),
                     const SizedBox(height: 24),
                     Divider(
-                      color: AppColors.pinkDeep.withOpacity(0.15),
+                      color: AppColors.pinkDeep.withValues(alpha: 0.15),
                       height: 1,
                     ),
                     const SizedBox(height: 20),
@@ -369,12 +369,12 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.pinkDeep.withOpacity(0.08),
+                      color: AppColors.pinkDeep.withValues(alpha: 0.08),
                       blurRadius: 24,
                       offset: const Offset(0, 12),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withValues(alpha: 0.02),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -445,14 +445,14 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.pinkDeep.withOpacity(0.15),
+                          color: AppColors.pinkDeep.withValues(alpha: 0.15),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.pink.withOpacity(0.04),
+                            color: AppColors.pink.withValues(alpha: 0.04),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -530,7 +530,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                           ),
                           const SizedBox(height: 18),
                           Divider(
-                            color: AppColors.line.withOpacity(0.5),
+                            color: AppColors.line.withValues(alpha: 0.5),
                             height: 1,
                           ),
                           const SizedBox(height: 14),
@@ -733,7 +733,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                   color: AppColors.pinkSoft,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: AppColors.pinkDeep.withOpacity(0.5),
+                    color: AppColors.pinkDeep.withValues(alpha: 0.5),
                   ),
                 ),
                 child: RichText(
@@ -778,12 +778,12 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
         border: Border.all(color: Colors.white, width: 2),
         boxShadow: [
           BoxShadow(
-            color: AppColors.pink.withOpacity(0.12),
+            color: AppColors.pink.withValues(alpha: 0.12),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -806,7 +806,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
           Text(
             label,
             style: AppText.body.copyWith(
-              color: AppColors.pink.withOpacity(0.8),
+              color: AppColors.pink.withValues(alpha: 0.8),
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 1.0,
@@ -832,12 +832,12 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
         border: Border.all(color: Colors.white, width: 2),
         boxShadow: [
           BoxShadow(
-            color: iconColor.withOpacity(0.05),
+            color: iconColor.withValues(alpha: 0.05),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -851,7 +851,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 20, color: iconColor),
@@ -872,7 +872,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
             children[i],
             if (i < children.length - 1) ...[
               const SizedBox(height: 16),
-              Divider(color: AppColors.line.withOpacity(0.3), height: 1),
+              Divider(color: AppColors.line.withValues(alpha: 0.3), height: 1),
               const SizedBox(height: 16),
             ],
           ],

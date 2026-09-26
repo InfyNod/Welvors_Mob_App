@@ -9,7 +9,6 @@ import '../../../../../../onbording_allpage/theme/app_colors.dart';
 import '../../../../../../onbording_allpage/theme/app_text.dart';
 import '../../../../../../onbording_allpage/widgets/primary_button.dart';
 import '../edit_profile/bloc/profile_edit_cubit.dart';
-import '../edit_profile/bloc/profile_edit_state.dart';
 
 import 'splash_logout.dart';
 
@@ -96,7 +95,7 @@ class LogoutScreen extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -443,7 +442,7 @@ class LogoutScreen extends StatelessWidget {
   Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.only(left: 56.0),
-      child: Container(height: 1, color: AppColors.line.withOpacity(0.5)),
+      child: Container(height: 1, color: AppColors.line.withValues(alpha: 0.5)),
     );
   }
 }

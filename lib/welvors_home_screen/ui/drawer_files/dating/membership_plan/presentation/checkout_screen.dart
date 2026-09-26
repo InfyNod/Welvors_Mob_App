@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/showMembershipPaymentSuccessDialog.dart';
 
 import '../model/membership_plan_model.dart';
@@ -149,7 +147,7 @@ class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -408,39 +406,6 @@ class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
 }
 
 // ===============================================================
-// BACK BUTTON
-// ===============================================================
-
-class _BackButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _BackButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFF0EFED),
-            shape: BoxShape.circle,
-          ),
-          alignment: Alignment.center,
-          child: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 16,
-            color: AppColors.ink,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ===============================================================
 // PLAN SUMMARY CARD
 // ===============================================================
 
@@ -472,7 +437,7 @@ class _PlanSummaryCard extends StatelessWidget {
         border: Border.all(color: accent, width: 2),
         boxShadow: [
           BoxShadow(
-            color: accent.withOpacity(.10),
+            color: accent.withValues(alpha: .10),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -861,8 +826,7 @@ class _MethodCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.child,
-  });
+  }) : child = null;
 
   @override
   Widget build(BuildContext context) {

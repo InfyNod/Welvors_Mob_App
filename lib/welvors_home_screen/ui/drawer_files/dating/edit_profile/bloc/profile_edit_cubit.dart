@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/edit_profile_api_service.dart';
@@ -174,9 +173,9 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
           if (option.isNotEmpty) {
             String emoji = '✨';
             final lowerQ = question.toLowerCase();
-            if (lowerQ.contains('creativ'))
+            if (lowerQ.contains('creativ')) {
               emoji = '🎨';
-            else if (lowerQ.contains('favorite'))
+            } else if (lowerQ.contains('favorite'))
               emoji = '🎬';
             else if (lowerQ.contains('food') || lowerQ.contains('drink'))
               emoji = '🍔';
@@ -653,7 +652,7 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
       "full_name": state.fullName,
       "email": state.email,
       "birth_date": formattedDob,
-      if (parsedHeight != null) "height": parsedHeight,
+      "height": ?parsedHeight,
       if (state.gender.isNotEmpty) "gender": mapGender(state.gender),
       if (state.genderIdentity.isNotEmpty)
         "gender_option": formatEnum(state.genderIdentity),
@@ -784,20 +783,24 @@ class ProfileEditCubit extends Cubit<ProfileEditState> {
     }
 
     final data = <String, dynamic>{};
-    if (state.highestEducation.isNotEmpty)
+    if (state.highestEducation.isNotEmpty) {
       data["highestEdu"] = mapHighestEdu(state.highestEducation);
+    }
     if (state.degreeCourse.isNotEmpty) data["degree"] = state.degreeCourse;
     if (state.college.isNotEmpty) data["collegeName"] = state.college;
-    if (state.graduationYear.isNotEmpty)
+    if (state.graduationYear.isNotEmpty) {
       data["graduationYear"] = int.tryParse(state.graduationYear) ?? 0;
+    }
     if (state.professionId != null) data["professionId"] = state.professionId;
     if (state.company.isNotEmpty) data["companyName"] = state.company;
-    if (state.employmentTypeId != null)
+    if (state.employmentTypeId != null) {
       data["employmentTypeId"] = state.employmentTypeId;
+    }
     if (state.experienceId != null) data["experienceId"] = state.experienceId;
     if (state.ambitionId != null) data["ambitionId"] = state.ambitionId;
-    if (state.salaryRangeId != null)
+    if (state.salaryRangeId != null) {
       data["salaryRangeId"] = state.salaryRangeId;
+    }
     if (state.bigDreams.isNotEmpty) data["bigDreams"] = state.bigDreams;
 
     if (data.isNotEmpty) {

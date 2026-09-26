@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:velvors/welvors_home_screen/ui/home/home_screen.dart';
-import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import 'package:velvors/welvors_home_screen/services/token_helper.dart';
 
@@ -57,11 +56,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
       );
 
       if (onboardingRes.statusCode != 200) {
-        if (mounted)
+        if (mounted) {
           setState(
             () => _errorMessage =
                 'Error ${onboardingRes.statusCode} getting user ID',
           );
+        }
         return;
       }
 

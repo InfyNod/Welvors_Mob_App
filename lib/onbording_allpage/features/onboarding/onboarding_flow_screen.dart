@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_dimens.dart';
 import '../../widgets/onboarding_app_bar.dart';
-import 'verify_number_screen.dart';
 import 'basics_screen.dart';
 import 'preferences_screen.dart';
 import 'intentions_screen.dart';

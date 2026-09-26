@@ -102,7 +102,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -135,7 +135,7 @@ class _CallBackScreenState extends State<CallBackScreen>
               controller: _tabController,
               isScrollable: true,
               splashFactory: NoSplash.splashFactory,
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
               labelColor: const Color(0xFFE85A7A),
               unselectedLabelColor: Colors.grey.shade600,
               labelStyle: const TextStyle(
@@ -417,13 +417,16 @@ class _CallBackScreenState extends State<CallBackScreen>
                     String? callDuration = item['callDuration'];
 
                     List<String> subtitleParts = [];
-                    if (formattedDate.isNotEmpty)
+                    if (formattedDate.isNotEmpty) {
                       subtitleParts.add(formattedDate);
+                    }
                     if (timeWindow.isNotEmpty) subtitleParts.add(timeWindow);
-                    if (agentName != null && agentName.isNotEmpty)
+                    if (agentName != null && agentName.isNotEmpty) {
                       subtitleParts.add(agentName);
-                    if (callDuration != null && callDuration.isNotEmpty)
+                    }
+                    if (callDuration != null && callDuration.isNotEmpty) {
                       subtitleParts.add(callDuration);
+                    }
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
@@ -459,13 +462,13 @@ class _CallBackScreenState extends State<CallBackScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 24,
             spreadRadius: 2,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 6,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -691,7 +694,7 @@ class _CallBackScreenState extends State<CallBackScreen>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFFD1DC).withOpacity(0.4),
+                  color: const Color(0xFFFFD1DC).withValues(alpha: 0.4),
                   blurRadius: 30,
                   offset: const Offset(0, 12),
                 ),
@@ -753,7 +756,7 @@ class _CallBackScreenState extends State<CallBackScreen>
                       230,
                       230,
                       230,
-                    ).withOpacity(0.6),
+                    ).withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: const Color.fromARGB(255, 250, 218, 218),

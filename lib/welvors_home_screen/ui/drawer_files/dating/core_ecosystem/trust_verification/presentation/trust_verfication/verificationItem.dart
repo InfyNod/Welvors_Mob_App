@@ -170,7 +170,7 @@ class VerificationItem extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            "${item.points}",
+                            item.points,
                             style: TextStyle(
                               color: item.ptstextcolor ?? Color(0xff27AE60),
                               fontWeight: FontWeight.w700,

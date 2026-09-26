@@ -74,8 +74,8 @@ class _GoingLiveScreenState extends State<_GoingLiveScreen> {
                   height: 100,
                   decoration: BoxDecoration(
                     color: widget.isSuperBoost
-                        ? const Color(0xFFFFC107).withOpacity(0.2)
-                        : Colors.white.withOpacity(0.2),
+                        ? const Color(0xFFFFC107).withValues(alpha: 0.2)
+                        : Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -105,7 +105,7 @@ class _GoingLiveScreenState extends State<_GoingLiveScreen> {
               style: TextStyle(
                 color: widget.isSuperBoost
                     ? Colors.white70
-                    : Colors.white.withOpacity(0.9),
+                    : Colors.white.withValues(alpha: 0.9),
                 fontSize: 14,
               ),
             ),

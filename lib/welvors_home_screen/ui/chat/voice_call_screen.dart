@@ -143,7 +143,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
             ? CachedNetworkImage(
                 imageUrl: widget.user.image,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => _fallbackAvatar(),
+                placeholder: (_, _) => _fallbackAvatar(),
                 errorWidget: (_, _, _) => _fallbackAvatar(),
               )
             : _fallbackAvatar(),

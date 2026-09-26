@@ -1,4 +1,3 @@
-import 'dart:io';
 
 class UserData {
   static final UserData _instance = UserData._internal();

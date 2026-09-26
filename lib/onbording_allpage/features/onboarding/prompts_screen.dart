@@ -148,7 +148,7 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
           color: const Color(0xFFFDEBED),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppColors.pinkDeep.withOpacity(0.2),
+            color: AppColors.pinkDeep.withValues(alpha: 0.2),
             width: 1.5,
           ),
         ),
@@ -174,7 +174,7 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: AppColors.pinkSoft.withOpacity(0.5),
+                      color: AppColors.pinkSoft.withValues(alpha: 0.5),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -241,7 +241,7 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
         }
       },
       child: DottedBorder(
-        color: AppColors.pinkDeep.withOpacity(0.3),
+        color: AppColors.pinkDeep.withValues(alpha: 0.3),
         strokeWidth: 1.5,
         dashPattern: const [6, 4],
         borderType: BorderType.RRect,

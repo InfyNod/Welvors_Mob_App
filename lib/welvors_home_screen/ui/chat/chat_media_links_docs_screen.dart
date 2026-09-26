@@ -10,6 +10,7 @@ import 'package:velvors/welvors_home_screen/ui/chat/shared_bloc/shared_item_bloc
 import 'shared_bloc/shared_item_model.dart';
 import 'shared_bloc/shared_item_repository.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class ChatMediaLinksDocsScreen extends StatefulWidget {
   final String conversationId;
@@ -152,7 +153,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final item = items[index];
 
@@ -279,31 +280,9 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
 
-            child: Image.network(
-              item.mediaUrl ?? '',
+            child: AppCachedImage(
+              imageUrl: item.mediaUrl,
               fit: BoxFit.cover,
-
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                }
-
-                return const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                );
-              },
-
-              errorBuilder: (context, error, stackTrace) {
-                AppLogger.e('ChatMediaLinksDocsScreen', 'PHOTO LOAD ERROR => $error');
-
-                return Container(
-                  color: Colors.grey.shade200,
-                  child: const Icon(
-                    Icons.broken_image_outlined,
-                    color: Colors.grey,
-                  ),
-                );
-              },
             ),
           ),
         );
@@ -325,7 +304,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: videos.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final item = videos[index];
 
@@ -355,7 +334,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: audios.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final item = audios[index];
 
@@ -385,7 +364,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: documents.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final item = documents[index];
 
@@ -415,7 +394,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: links.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final item = links[index];
 
@@ -568,20 +547,11 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
-      child: Image.network(
-        imageUrl,
+      child: AppCachedImage(
+        imageUrl: imageUrl,
         width: 56,
         height: 56,
         fit: BoxFit.cover,
-
-        errorBuilder: (_, __, ___) {
-          return Container(
-            width: 56,
-            height: 56,
-            color: Colors.grey.shade200,
-            child: const Icon(Icons.broken_image_outlined),
-          );
-        },
       ),
     );
   }

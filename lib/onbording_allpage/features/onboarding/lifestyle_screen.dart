@@ -112,7 +112,7 @@ class _LifestyleScreenState extends State<LifestyleScreen>
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: isExpanded
-              ? AppColors.pinkSoft.withOpacity(0.5)
+              ? AppColors.pinkSoft.withValues(alpha: 0.5)
               : Colors.white,
           border: Border.all(
             color: isExpanded || hasValue ? AppColors.pinkDeep : AppColors.line,
@@ -131,7 +131,7 @@ class _LifestyleScreenState extends State<LifestyleScreen>
                     height: 48,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: emojiBg.withOpacity(0.15),
+                      color: emojiBg.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Text(emoji, style: const TextStyle(fontSize: 24)),
@@ -196,7 +196,7 @@ class _LifestyleScreenState extends State<LifestyleScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Divider(color: AppColors.pinkDeep.withOpacity(0.2), height: 1),
+        Divider(color: AppColors.pinkDeep.withValues(alpha: 0.2), height: 1),
         Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -265,7 +265,7 @@ class _LifestyleScreenState extends State<LifestyleScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Divider(color: AppColors.pinkDeep.withOpacity(0.2), height: 1),
+        Divider(color: AppColors.pinkDeep.withValues(alpha: 0.2), height: 1),
         Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -366,7 +366,7 @@ class _LifestyleScreenState extends State<LifestyleScreen>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.pinkSoft.withOpacity(0.2),
+                        color: AppColors.pinkSoft.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(

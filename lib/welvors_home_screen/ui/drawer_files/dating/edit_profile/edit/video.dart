@@ -54,8 +54,8 @@ class _VideoSectionState extends State<VideoSection> {
     }
     
     _thumbnailController!
-      ..initialize()
-          .then((_) {
+        .initialize()
+        .then((_) {
             if (mounted) setState(() {});
           })
           .catchError((e) {
@@ -187,7 +187,7 @@ class _VideoSectionState extends State<VideoSection> {
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -238,7 +238,7 @@ class _VideoSectionState extends State<VideoSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -277,8 +277,8 @@ class _VideoSectionState extends State<VideoSection> {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.3),
-                    Colors.black.withOpacity(0.8),
+                    Colors.black.withValues(alpha: 0.3),
+                    Colors.black.withValues(alpha: 0.8),
                   ],
                 ),
               ),
@@ -291,7 +291,7 @@ class _VideoSectionState extends State<VideoSection> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -357,7 +357,7 @@ class _VideoSectionState extends State<VideoSection> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -402,7 +402,7 @@ class _VideoSectionState extends State<VideoSection> {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.close, color: Colors.white, size: 14),
@@ -485,9 +485,9 @@ class _VideoSectionState extends State<VideoSection> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.3)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                     ),
                     child: const Center(
                       child: Text(
@@ -582,8 +582,9 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   }
 
   void _startRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
     if (_cameraController!.value.isRecordingVideo) return;
 
     try {
@@ -608,8 +609,9 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   }
 
   void _stopRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isRecordingVideo)
+    if (_cameraController == null || !_cameraController!.value.isRecordingVideo) {
       return;
+    }
 
     _timer?.cancel();
 
@@ -672,7 +674,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -813,8 +815,8 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                                 child: CircularProgressIndicator(
                                   value: _remainingSeconds / 15,
                                   color: const Color(0xFFE43A6A),
-                                  backgroundColor: Colors.white.withOpacity(
-                                    0.2,
+                                  backgroundColor: Colors.white.withValues(
+                                    alpha: 0.2,
                                   ),
                                   strokeWidth: 3,
                                 ),
@@ -887,7 +889,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(30),
             ),
             child: Row(
@@ -1014,7 +1016,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
           width: 20,
           height: 20,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Colors.white.withValues(alpha: 0.15),
             shape: BoxShape.circle,
           ),
           child: Center(

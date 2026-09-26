@@ -143,7 +143,7 @@ class ChatImageCard extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         fit: BoxFit.cover,
-        placeholder: (_, __) => _imagePlaceholder(),
+        placeholder: (_, _) => _imagePlaceholder(),
         errorWidget: (_, _, _) => _imagePlaceholder(),
       );
     }
@@ -231,7 +231,7 @@ class ChatImageCard extends StatelessWidget {
         imageUrl: message.replyImageUrl!,
         fit: BoxFit.cover,
         alignment: Alignment.topCenter,
-        placeholder: (_, __) => _imagePlaceholder(),
+        placeholder: (_, _) => _imagePlaceholder(),
         errorWidget: (_, _, _) => _imagePlaceholder(),
       );
     }

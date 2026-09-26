@@ -120,14 +120,14 @@ class _ChoosePromptScreenState extends State<ChoosePromptScreen> {
                     gradient: LinearGradient(
                       colors: [
                         AppColors.pinkSoft,
-                        AppColors.pinkSoft.withOpacity(0.2),
+                        AppColors.pinkSoft.withValues(alpha: 0.2),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: AppColors.pinkDeep.withOpacity(0.1),
+                      color: AppColors.pinkDeep.withValues(alpha: 0.1),
                       width: 1.5,
                     ),
                   ),
@@ -185,8 +185,8 @@ class _ChoosePromptScreenState extends State<ChoosePromptScreen> {
                             boxShadow: isSelected
                                 ? [
                                     BoxShadow(
-                                      color: AppColors.pinkDeep.withOpacity(
-                                        0.3,
+                                      color: AppColors.pinkDeep.withValues(
+                                        alpha: 0.3,
                                       ),
                                       blurRadius: 8,
                                       offset: const Offset(0, 4),
@@ -251,12 +251,12 @@ class _ChoosePromptScreenState extends State<ChoosePromptScreen> {
                             border: Border.all(
                               color: isAdded
                                   ? AppColors.line
-                                  : AppColors.pinkDeep.withOpacity(0.15),
+                                  : AppColors.pinkDeep.withValues(alpha: 0.15),
                               width: 1.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.ink.withOpacity(0.04),
+                                color: AppColors.ink.withValues(alpha: 0.04),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),

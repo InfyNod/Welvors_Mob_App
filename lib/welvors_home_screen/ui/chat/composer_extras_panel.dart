@@ -6,6 +6,7 @@ import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/services/gift_api_service.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 /// One item inside a gift grid.
 class GiftItem {
@@ -1009,7 +1010,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                     scrollDirection: Axis.horizontal,
                     itemCount: _apiGiftCategories.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    separatorBuilder: (_, _) => const SizedBox(width: 10),
                     itemBuilder: (_, index) {
                       final selected = index == _giftCategory;
                       return GestureDetector(
@@ -1034,7 +1035,7 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                                     BoxShadow(
                                       color: const Color(
                                         0xFFE43A6A,
-                                      ).withOpacity(0.3),
+                                      ).withValues(alpha: 0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 3),
                                     ),
@@ -1128,8 +1129,8 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
               boxShadow: [
                 BoxShadow(
                   color: selected
-                      ? const Color(0xFFE43A6A).withOpacity(0.3)
-                      : Colors.black.withOpacity(0.07),
+                      ? const Color(0xFFE43A6A).withValues(alpha: 0.3)
+                      : Colors.black.withValues(alpha: 0.07),
                   blurRadius: selected ? 18 : 10,
                   offset: const Offset(0, 6),
                 ),
@@ -1166,13 +1167,9 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
                               topLeft: Radius.circular(18),
                               topRight: Radius.circular(18),
                             ),
-                            child: Image.network(
-                              gift.image,
+                            child: AppCachedImage(
+                              imageUrl: gift.image,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.card_giftcard_rounded,
-                                size: 34,
-                              ),
                             ),
                           )
                         : Text(

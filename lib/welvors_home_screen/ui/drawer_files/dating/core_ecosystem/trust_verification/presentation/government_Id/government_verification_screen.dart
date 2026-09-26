@@ -97,7 +97,7 @@ class GovernmentVerificationScreen extends StatelessWidget {
                         itemCount: data.methods.length,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 18),
+                        separatorBuilder: (_, _) => const SizedBox(height: 18),
                         itemBuilder: (_, index) {
                           return GovernmentMethodCard(
                             method: data.methods[index],

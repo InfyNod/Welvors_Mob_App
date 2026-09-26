@@ -104,8 +104,8 @@ class ChatEventInviteCard extends StatelessWidget {
                           child: CachedNetworkImage(
                             imageUrl: message.eventHeroImage!,
                             fit: BoxFit.cover,
-                            placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                            errorWidget: (_, __, ___) => const Center(
+                            placeholder: (_, _) => const Center(child: CircularProgressIndicator()),
+                            errorWidget: (_, _, _) => const Center(
                               child: Icon(Icons.image_not_supported_outlined, size: 40),
                             ),
                           ),

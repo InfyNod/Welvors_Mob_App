@@ -14,8 +14,7 @@ class Activity1Screen extends StatelessWidget {
   final PostPlanState? initialState;
   final int initialStep;
 
-  const Activity1Screen({Key? key, this.initialState, this.initialStep = 1})
-    : super(key: key);
+  const Activity1Screen({super.key, this.initialState, this.initialStep = 1});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,7 @@ class Activity1Screen extends StatelessWidget {
 }
 
 class Activity1ScreenBody extends StatefulWidget {
-  const Activity1ScreenBody({Key? key}) : super(key: key);
+  const Activity1ScreenBody({super.key});
 
   @override
   _Activity1ScreenBodyState createState() => _Activity1ScreenBodyState();
@@ -102,7 +101,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -211,7 +210,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                     '3 plans left • any type',
                     style: TextStyle(
                       fontSize: 12,
-                      color: const Color(0xFF9E7019).withOpacity(0.8),
+                      color: const Color(0xFF9E7019).withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -336,7 +335,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -495,7 +494,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                                   : null,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.12),
+                                  color: Colors.black.withValues(alpha: 0.12),
                                   blurRadius: 13,
                                   offset: const Offset(0, 4),
                                 ),
@@ -533,7 +532,7 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                                           Container(
                                             color: const Color(
                                               0xFFE43A6A,
-                                            ).withOpacity(0.3),
+                                            ).withValues(alpha: 0.3),
                                           ),
                                       ],
                                     ),

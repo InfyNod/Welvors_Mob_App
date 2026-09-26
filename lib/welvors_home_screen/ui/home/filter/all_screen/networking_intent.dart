@@ -93,7 +93,7 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
       decoration: BoxDecoration(
         color: bgColor ?? const Color(0xFFFFF8F2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor ?? Colors.orange.withOpacity(0.1), width: 1),
+        border: Border.all(color: borderColor ?? Colors.orange.withValues(alpha: 0.1), width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +154,7 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -239,7 +239,7 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                          color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                                           blurRadius: 6,
                                           offset: const Offset(0, 3),
                                         )
@@ -270,7 +270,7 @@ class _NetworkingIntentScreenState extends State<NetworkingIntentScreen> {
                       'VIP & VIP Elite only',
                       'Members outside the VIP world never see these preferences.',
                       bgColor: const Color(0xFFFFF9E6),
-                      borderColor: const Color(0xFFFFD700).withOpacity(0.3),
+                      borderColor: const Color(0xFFFFD700).withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 40),
                   ],

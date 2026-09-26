@@ -255,7 +255,7 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
         margin: EdgeInsets.zero,
         decoration: BoxDecoration(
           color: isExpanded
-              ? AppColors.pinkSoft.withOpacity(0.5)
+              ? AppColors.pinkSoft.withValues(alpha: 0.5)
               : Colors.white,
           border: Border.all(
             color: isExpanded || selectedCount > 0
@@ -276,7 +276,7 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
                     height: 48,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(categoryName).withOpacity(0.15),
+                      color: _getCategoryColor(categoryName).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Text(
@@ -334,7 +334,7 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Divider(
-                    color: AppColors.pinkDeep.withOpacity(0.2),
+                    color: AppColors.pinkDeep.withValues(alpha: 0.2),
                     height: 1,
                   ),
                   Padding(
@@ -379,8 +379,8 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: AppColors.pinkDeep.withOpacity(
-                                          0.3,
+                                        color: AppColors.pinkDeep.withValues(
+                                          alpha: 0.3,
                                         ),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
@@ -463,7 +463,7 @@ class _InterestsScreenState extends State<InterestsScreen> with AutomaticKeepAli
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.pinkSoft.withOpacity(0.2),
+                      color: AppColors.pinkSoft.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(

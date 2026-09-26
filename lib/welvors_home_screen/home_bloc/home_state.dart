@@ -91,22 +91,28 @@ class ProfileModel extends Equatable {
     if (json['profile'] != null) {
       final p = json['profile'];
       List<String> locParts = [];
-      if (p['area'] != null && p['area'].toString().isNotEmpty)
+      if (p['area'] != null && p['area'].toString().isNotEmpty) {
         locParts.add(p['area'].toString());
-      if (p['city'] != null && p['city'].toString().isNotEmpty)
+      }
+      if (p['city'] != null && p['city'].toString().isNotEmpty) {
         locParts.add(p['city'].toString());
-      if (p['state'] != null && p['state'].toString().isNotEmpty)
+      }
+      if (p['state'] != null && p['state'].toString().isNotEmpty) {
         locParts.add(p['state'].toString());
+      }
       loc = locParts.join(', ');
     } else if (json['location'] != null) {
       final l = json['location'];
       List<String> locParts = [];
-      if (l['area'] != null && l['area'].toString().isNotEmpty)
+      if (l['area'] != null && l['area'].toString().isNotEmpty) {
         locParts.add(l['area'].toString());
-      if (l['city'] != null && l['city'].toString().isNotEmpty)
+      }
+      if (l['city'] != null && l['city'].toString().isNotEmpty) {
         locParts.add(l['city'].toString());
-      if (l['state'] != null && l['state'].toString().isNotEmpty)
+      }
+      if (l['state'] != null && l['state'].toString().isNotEmpty) {
         locParts.add(l['state'].toString());
+      }
       loc = locParts.join(', ');
     }
 
@@ -134,8 +140,8 @@ class ProfileModel extends Equatable {
 
   ProfileModel copyWithDetails(Map<String, dynamic> details) {
     // Parse photos again in case details has higher quality or more images
-    List<String> parsedImages = List.from(this.images);
-    String? parsedVideo = this.videoUrl;
+    List<String> parsedImages = List.from(images);
+    String? parsedVideo = videoUrl;
     if (details['photos'] != null) {
       parsedImages = [];
       List<dynamic> photosList = List.from(details['photos']);
@@ -155,17 +161,20 @@ class ProfileModel extends Equatable {
       }
     }
 
-    String loc = this.location;
+    String loc = location;
     if (details['area'] != null ||
         details['city'] != null ||
         details['state'] != null) {
       List<String> locParts = [];
-      if (details['area'] != null && details['area'].toString().isNotEmpty)
+      if (details['area'] != null && details['area'].toString().isNotEmpty) {
         locParts.add(details['area'].toString());
-      if (details['city'] != null && details['city'].toString().isNotEmpty)
+      }
+      if (details['city'] != null && details['city'].toString().isNotEmpty) {
         locParts.add(details['city'].toString());
-      if (details['state'] != null && details['state'].toString().isNotEmpty)
+      }
+      if (details['state'] != null && details['state'].toString().isNotEmpty) {
         locParts.add(details['state'].toString());
+      }
       if (locParts.isNotEmpty) loc = locParts.join(', ');
     }
 
@@ -188,38 +197,38 @@ class ProfileModel extends Equatable {
     }
 
     return ProfileModel(
-      id: this.id,
+      id: id,
       images: parsedImages,
       videoUrl: parsedVideo,
-      name: (this.name != 'Unknown' && this.name.isNotEmpty)
-          ? this.name
-          : (details['full_name'] ?? details['fullName'] ?? this.name),
-      age: details['age'] ?? this.age,
+      name: (name != 'Unknown' && name.isNotEmpty)
+          ? name
+          : (details['full_name'] ?? details['fullName'] ?? name),
+      age: details['age'] ?? age,
       location: loc,
-      job: details['career']?['profession'] ?? this.job,
-      intent: details['lookingFor'] ?? this.intent,
+      job: details['career']?['profession'] ?? job,
+      intent: details['lookingFor'] ?? intent,
       matchPercentage: details['matchScore'] != null
           ? '${details['matchScore']}% Match'
-          : this.matchPercentage,
+          : matchPercentage,
       trustPercentage: details['trust'] != null
           ? '${details['trust']}% Trust'
-          : this.trustPercentage,
-      replyTime: details['replyTime']?.toString() ?? this.replyTime,
+          : trustPercentage,
+      replyTime: details['replyTime']?.toString() ?? replyTime,
       detailsLoaded: true,
       about: details['bio'] ?? '',
       lookingFor:
           (details['lookingFor'] != null &&
               details['lookingFor'].toString().isNotEmpty)
           ? details['lookingFor']
-          : this.intent,
+          : intent,
       lookingForSubtitle: details['lookingFor_subtitle'] ?? '',
       height: details['height'] != null
           ? '${details['height']} cm'
-          : this.height,
+          : height,
       religion: details['religion'] ?? '',
       community: details['community'] ?? '',
       motherTongue: details['motherTongue'] ?? '',
-      dob: details['dob'] ?? this.dob,
+      dob: details['dob'] ?? dob,
       zodiac: details['zodiac'] ?? '',
       loveLanguage: details['loveLanguage'] ?? '',
       communication: details['communicationStyle'] ?? '',

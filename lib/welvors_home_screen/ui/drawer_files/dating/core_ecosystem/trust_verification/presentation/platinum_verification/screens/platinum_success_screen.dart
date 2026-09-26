@@ -1,10 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/trust_repository.dart';
-import '../../trust_verfication/home.dart';
 
-import '../bloc/platinum_verification_bloc.dart';
-import '../bloc/platinum_verification_event.dart';
 import '../widgets/platinum_widgets.dart';
 import '../../../export.dart' hide TrustScoreCard;
 

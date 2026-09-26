@@ -187,7 +187,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                     height: 88,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFE43A6A).withOpacity(0.08),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.08),
                     ),
                     child: const Center(
                       child: Icon(
@@ -290,7 +290,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -302,7 +302,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Center(
@@ -329,7 +329,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                 Text(
                   'Reveal all instantly · free with Premium+',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 12,
                   ),
                   maxLines: 2,
@@ -405,7 +405,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
             if (isBlurred)
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Container(color: Colors.black.withOpacity(0.2)),
+                child: Container(color: Colors.black.withValues(alpha: 0.2)),
               ),
 
             // Gradient overlay for text readability at bottom
@@ -417,7 +417,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                   colors: [
                     Colors.transparent,
                     Colors.transparent,
-                    Colors.black.withOpacity(0.8),
+                    Colors.black.withValues(alpha: 0.8),
                   ],
                 ),
               ),
@@ -463,7 +463,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -589,10 +589,10 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                             width: 0.5,
                           ),
                         ),
@@ -623,7 +623,7 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.4),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.4),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),

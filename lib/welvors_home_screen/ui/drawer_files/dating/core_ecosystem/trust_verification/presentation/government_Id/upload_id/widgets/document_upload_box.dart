@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 
 class DocumentUploadBox extends StatelessWidget {
   final String title;
@@ -27,7 +26,7 @@ class DocumentUploadBox extends StatelessWidget {
         // options: RoundedRectDottedBorderOptions(
         radius: const Radius.circular(12),
         dashPattern: const [3, 2],
-        color: AppColors.pinkDeep.withOpacity(0.4),
+        color: AppColors.pinkDeep.withValues(alpha: 0.4),
         strokeWidth: 1.5,
         padding: EdgeInsets.zero,
         // ),

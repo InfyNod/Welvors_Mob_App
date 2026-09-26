@@ -190,16 +190,16 @@ class WalletBenefitsBottomSheet extends StatelessWidget {
         // Removed border to make it look cleaner and more professional
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(
-              0.10,
+            color: Colors.black.withValues(
+              alpha: 0.10,
             ), // Darkened for more visibility
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(
-              0.05,
+            color: Colors.black.withValues(
+              alpha: 0.05,
             ), // Darkened for more visibility
             blurRadius: 4,
             spreadRadius: 0,

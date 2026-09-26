@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
 
 class RoseTwinkleOverlay extends StatefulWidget {
-  const RoseTwinkleOverlay();
+  const RoseTwinkleOverlay({super.key});
 
   @override
   State<RoseTwinkleOverlay> createState() => _RoseTwinkleOverlayState();

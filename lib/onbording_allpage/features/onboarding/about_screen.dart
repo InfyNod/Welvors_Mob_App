@@ -108,7 +108,7 @@ class _AboutScreenState extends State<AboutScreen> with AutomaticKeepAliveClient
                                   'Building products by day,\nplanning my next trek by night.\nLooking for someone equally\ndriven and equally curious...',
                               hintMaxLines: 4,
                               hintStyle: AppText.body.copyWith(
-                                color: AppColors.muted.withOpacity(0.6),
+                                color: AppColors.muted.withValues(alpha: 0.6),
                                 fontSize: 15,
                                 height: 1.4,
                               ),

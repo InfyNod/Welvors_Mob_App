@@ -85,7 +85,7 @@ class _RosesScreenState extends State<RosesScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -183,7 +183,7 @@ class _RosesScreenState extends State<RosesScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -198,9 +198,9 @@ class _RosesScreenState extends State<RosesScreen> {
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
-              Colors.black.withOpacity(0.3),
-              const Color(0xFFE0182C).withOpacity(0.35),
-              const Color(0xFFE0182C).withOpacity(0.45),
+              Colors.black.withValues(alpha: 0.3),
+              const Color(0xFFE0182C).withValues(alpha: 0.35),
+              const Color(0xFFE0182C).withValues(alpha: 0.45),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -217,7 +217,7 @@ class _RosesScreenState extends State<RosesScreen> {
                 Text(
                   'STAND OUT',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
@@ -239,7 +239,7 @@ class _RosesScreenState extends State<RosesScreen> {
             Text(
               'Roses get 3× more replies. Your profile\nshows on top with a star.',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -274,10 +274,10 @@ class _RosesScreenState extends State<RosesScreen> {
                           horizontal: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Column(
@@ -342,68 +342,12 @@ class _RosesScreenState extends State<RosesScreen> {
             Text(
               'Each rose puts your profile on top with a star · never expires',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 11,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildImpactSection() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildImpactCard('24', 'SENT', const Color(0xFFE0182C)),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildImpactCard('9', 'MATCHED', const Color(0xFF34A853)),
-        ),
-        const SizedBox(width: 12),
-        Expanded(child: _buildImpactCard('37%', 'SUCCESS RATE', Colors.black)),
-      ],
-    );
-  }
-
-  Widget _buildImpactCard(String value, String label, Color valueColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 16,
-            spreadRadius: 2,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              color: valueColor,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -425,7 +369,7 @@ class _RosesScreenState extends State<RosesScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -537,7 +481,7 @@ class _RosesScreenState extends State<RosesScreen> {
         if (!isLast)
           Divider(
             height: 1,
-            color: Colors.grey.withOpacity(0.15),
+            color: Colors.grey.withValues(alpha: 0.15),
             indent: 56, // Align with text
             endIndent: 16,
           ),
@@ -641,7 +585,7 @@ class _RosesScreenState extends State<RosesScreen> {
               boxShadow: [
                 if (!isSelected)
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -742,7 +686,7 @@ class _RosesScreenState extends State<RosesScreen> {
                                   : index == 2
                                   ? Colors.black
                                   : const Color(0xFFE0182C))
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -775,7 +719,7 @@ class _RosesScreenState extends State<RosesScreen> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F9FA),
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+        border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

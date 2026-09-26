@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../post_a_plan/activity_1.dart';
 import '../history/top_history_screen.dart';
 import '../my_plans/my_plan_screen.dart';
-import '../history/card_history.dart';
 import '../../date_api_service/date_now_api_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -353,7 +352,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFDE2957).withOpacity(0.1),
+                        color: const Color(0xFFDE2957).withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -480,7 +479,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                                         decoration: BoxDecoration(
                                           color: const Color(
                                             0xFFFA6A85,
-                                          ).withOpacity(0.1),
+                                          ).withValues(alpha: 0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         child: const Icon(
@@ -663,7 +662,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -699,8 +698,8 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withOpacity(0.1),
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.1),
+                        Colors.black.withValues(alpha: 0.7),
                       ],
                     ),
                   ),
@@ -906,7 +905,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   decoration: BoxDecoration(
                     border: Border(
                       left: BorderSide(
-                        color: const Color(0xFFFA6A85).withOpacity(0.3),
+                        color: const Color(0xFFFA6A85).withValues(alpha: 0.3),
                         width: 3,
                       ),
                     ),
@@ -961,7 +960,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         ? LinearGradient(
                             colors: [
                               const Color(0xFFE8F5E9),
-                              const Color(0xFFC8E6C9).withOpacity(0.5),
+                              const Color(0xFFC8E6C9).withValues(alpha: 0.5),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -969,7 +968,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         : LinearGradient(
                             colors: [
                               const Color(0xFFFFF3E0),
-                              const Color(0xFFFFE0B2).withOpacity(0.5),
+                              const Color(0xFFFFE0B2).withValues(alpha: 0.5),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -977,8 +976,8 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isApproved
-                          ? const Color(0xFFA5D6A7).withOpacity(0.5)
-                          : const Color(0xFFFFCC80).withOpacity(0.5),
+                          ? const Color(0xFFA5D6A7).withValues(alpha: 0.5)
+                          : const Color(0xFFFFCC80).withValues(alpha: 0.5),
                       width: 1,
                     ),
                   ),
@@ -1017,7 +1016,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                color: const Color(0xFFFA6A85).withOpacity(0.5),
+                                color: const Color(0xFFFA6A85).withValues(alpha: 0.5),
                               ),
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -1075,7 +1074,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                color: const Color(0xFFFA6A85).withOpacity(0.5),
+                                color: const Color(0xFFFA6A85).withValues(alpha: 0.5),
                               ),
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -1164,7 +1163,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   height: 64,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFA6A85).withOpacity(0.1),
+                    color: const Color(0xFFFA6A85).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Text('💔', style: TextStyle(fontSize: 28)),
@@ -1395,7 +1394,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                   height: 64,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFA6A85).withOpacity(0.1),
+                    color: const Color(0xFFFA6A85).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Text(
@@ -1620,7 +1619,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.7),
+                          Colors.black.withValues(alpha: 0.7),
                         ],
                       ),
                     ),

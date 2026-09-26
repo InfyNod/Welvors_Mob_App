@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:lottie/lottie.dart';
 import '../../export.dart';
-import '../trust_verfication/home.dart';
 
 class VideoVerificationScreen extends StatefulWidget {
   const VideoVerificationScreen({super.key});
@@ -134,7 +133,7 @@ class _VideoVerificationScreenState extends State<VideoVerificationScreen>
                           height: MediaQuery.of(context).size.height,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(.45),
+                            color: Colors.white.withValues(alpha: 0.45),
                           ),
                         ),
 

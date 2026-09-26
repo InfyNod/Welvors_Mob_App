@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 import 'Invite_screen.dart';
 
 class AboutHostAndFAQSection extends StatelessWidget {
@@ -45,10 +44,10 @@ class AboutHostAndFAQSection extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: Colors.black.withValues(alpha: 0.15),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -70,7 +69,7 @@ class AboutHostAndFAQSection extends StatelessWidget {
                         : null,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -164,12 +163,12 @@ class AboutHostAndFAQSection extends StatelessWidget {
             border: Border.all(color: Colors.white, width: 2),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE43A6A).withOpacity(0.15),
+                color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                 blurRadius: 24,
                 offset: const Offset(0, 10),
               ),
               BoxShadow(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 blurRadius: 10,
                 offset: const Offset(-5, -5),
               ),
@@ -231,7 +230,7 @@ class AboutHostAndFAQSection extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
                     elevation: 8,
-                    shadowColor: const Color(0xFFE43A6A).withOpacity(0.5),
+                    shadowColor: const Color(0xFFE43A6A).withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -279,13 +278,13 @@ class AboutHostAndFAQSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
+                    color: Colors.black.withValues(alpha: 0.10),
                     blurRadius: 20,
                     spreadRadius: 0,
                     offset: const Offset(0, 8),
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 4,
                     spreadRadius: 0,
                     offset: const Offset(0, 2),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class BasicDetailsSection extends StatelessWidget {
   const BasicDetailsSection({super.key});
@@ -24,7 +25,9 @@ class BasicDetailsSection extends StatelessWidget {
         }
         return age;
       }
-    } catch (e) {}
+    } catch (e) {
+      AppLogger.w('BasicDetailsSection', 'Failed to calculate age from DOB: $e');
+    }
     return 28;
   }
 
@@ -66,7 +69,7 @@ class BasicDetailsSection extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

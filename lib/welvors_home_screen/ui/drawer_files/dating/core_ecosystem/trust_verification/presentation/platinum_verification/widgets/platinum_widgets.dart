@@ -2,7 +2,6 @@ import '../../../export.dart';
 import '../bloc/platinum_verification_bloc.dart';
 import '../bloc/platinum_verification_event.dart';
 import '../bloc/platinum_verification_state.dart';
-import 'package:dotted_border/dotted_border.dart';
 // --------------------------------------------------
 // APP BAR
 // --------------------------------------------------

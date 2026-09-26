@@ -52,7 +52,7 @@ class _CommitmentScreenView extends StatelessWidget {
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -134,7 +134,7 @@ class _CommitmentScreenView extends StatelessWidget {
                           color: const Color(0xFFFDFDFD),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
+                              color: Colors.black.withValues(alpha: 0.02),
                               offset: const Offset(0, -4),
                               blurRadius: 16,
                             ),
@@ -204,7 +204,7 @@ class _CommitmentScreenView extends StatelessWidget {
         border: Border.all(color: const Color(0xFFFFD1DC), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFD1DC).withOpacity(0.4),
+            color: const Color(0xFFFFD1DC).withValues(alpha: 0.4),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -217,7 +217,7 @@ class _CommitmentScreenView extends StatelessWidget {
             right: -24,
             child: Icon(
               Icons.favorite,
-              color: const Color(0xFFFFE4EB).withOpacity(0.6),
+              color: const Color(0xFFFFE4EB).withValues(alpha: 0.6),
               size: 140,
             ),
           ),
@@ -234,7 +234,7 @@ class _CommitmentScreenView extends StatelessWidget {
                     border: Border.all(color: Colors.white, width: 3),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFC73A5E).withOpacity(0.25),
+                        color: const Color(0xFFC73A5E).withValues(alpha: 0.25),
                         blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
@@ -319,7 +319,7 @@ class _CommitmentScreenView extends StatelessWidget {
         border: Border.all(color: const Color(0xFFFFD1DC), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFD1DC).withOpacity(0.4),
+            color: const Color(0xFFFFD1DC).withValues(alpha: 0.4),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -333,7 +333,7 @@ class _CommitmentScreenView extends StatelessWidget {
             right: -24,
             child: Icon(
               Icons.favorite,
-              color: const Color(0xFFFFE4EB).withOpacity(0.6),
+              color: const Color(0xFFFFE4EB).withValues(alpha: 0.6),
               size: 140,
             ),
           ),
@@ -353,7 +353,7 @@ class _CommitmentScreenView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(32),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFC73A5E).withOpacity(0.25),
+                            color: const Color(0xFFC73A5E).withValues(alpha: 0.25),
                             blurRadius: 20,
                             offset: const Offset(0, 4),
                           ),
@@ -879,7 +879,7 @@ class _CommitmentScreenView extends StatelessWidget {
         children: [
           const Icon(
             Icons.info_outline,
-            color: const Color(0xFF6A655F),
+            color: Color(0xFF6A655F),
             size: 16,
           ),
           const SizedBox(width: 12),

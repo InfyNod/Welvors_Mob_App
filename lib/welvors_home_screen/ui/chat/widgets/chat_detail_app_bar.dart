@@ -225,7 +225,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                               width: 400,
                               height: 400,
                               fit: BoxFit.cover,
-                              placeholder: (_, __) => const SizedBox(
+                              placeholder: (_, _) => const SizedBox(
                                 width: 400,
                                 height: 400,
                                 child: ColoredBox(color: AppColors.soft),
@@ -300,7 +300,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: CachedNetworkImage(
             imageUrl: url,
             fit: BoxFit.cover,
-            placeholder: (_, __) => const ColoredBox(
+            placeholder: (_, _) => const ColoredBox(
               color: AppColors.soft,
               child: SizedBox.expand(),
             ),

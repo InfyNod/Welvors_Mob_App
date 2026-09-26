@@ -80,11 +80,11 @@ class _CareerScreenState extends State<CareerScreen>
       ambitionsFuture,
     ]);
 
-    final professions = results[0] as Map<String, int>;
-    final experiences = results[1] as Map<String, int>;
-    final employmentTypes = results[2] as Map<String, int>;
-    final salaryRanges = results[3] as Map<String, int>;
-    final ambitions = results[4] as Map<String, int>;
+    final professions = results[0];
+    final experiences = results[1];
+    final employmentTypes = results[2];
+    final salaryRanges = results[3];
+    final ambitions = results[4];
 
     if (mounted) {
       setState(() {
@@ -267,7 +267,7 @@ class _CareerScreenState extends State<CareerScreen>
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: AppColors.pinkDeep.withOpacity(0.3),
+                            color: AppColors.pinkDeep.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -403,7 +403,7 @@ class _CareerScreenState extends State<CareerScreen>
               ),
               icon: Icon(
                 Icons.keyboard_arrow_down,
-                color: AppColors.ink.withOpacity(0.5),
+                color: AppColors.ink.withValues(alpha: 0.5),
               ),
               items: options.map((String option) {
                 return DropdownMenuItem<String>(
@@ -496,7 +496,7 @@ class _CareerScreenState extends State<CareerScreen>
                   readOnly: true,
                   suffixIcon: Icon(
                     Icons.calendar_today_outlined,
-                    color: AppColors.pinkDeep.withOpacity(0.9),
+                    color: AppColors.pinkDeep.withValues(alpha: 0.9),
                     size: 20,
                   ),
                   onTap: () {
@@ -515,11 +515,11 @@ class _CareerScreenState extends State<CareerScreen>
                             height: 340,
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.95),
+                              color: Colors.white.withValues(alpha: 0.95),
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -546,8 +546,8 @@ class _CareerScreenState extends State<CareerScreen>
                                     selectionOverlay: Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(12),
-                                        color: AppColors.pinkSoft.withOpacity(
-                                          0.3,
+                                        color: AppColors.pinkSoft.withValues(
+                                          alpha: 0.3,
                                         ),
                                       ),
                                     ),

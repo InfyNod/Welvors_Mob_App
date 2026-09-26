@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../filter_bloc/filter_bloc.dart';
 import '../filter_bloc/filter_event.dart';
-import 'package:http/http.dart' as __http;
-import 'dart:convert' as dart_convert;
 import '../service/service_filter.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
@@ -20,7 +18,6 @@ class _LookingForScreenState extends State<LookingForScreen> {
 
   bool _isLoading = true;
   String _headerTitle = "What are you here for?";
-  String _headerSubtitle = "However you love, you belong here";
 
   @override
   void initState() {
@@ -38,7 +35,6 @@ class _LookingForScreenState extends State<LookingForScreen> {
         if (mounted) {
           setState(() {
             _headerTitle = data['title'];
-            _headerSubtitle = data['subtitle'];
             _options = data['options'];
             _isLoading = false;
           });
@@ -84,7 +80,7 @@ class _LookingForScreenState extends State<LookingForScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
+                  color: Colors.black.withValues(alpha: 0.02),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -183,7 +179,7 @@ class _LookingForScreenState extends State<LookingForScreen> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.04) : Colors.white,
+          color: isSelected ? const Color(0xFFE43A6A).withValues(alpha: 0.04) : Colors.white,
           border: Border.all(
             color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
             width: isSelected ? 1.5 : 1.0,
@@ -191,7 +187,7 @@ class _LookingForScreenState extends State<LookingForScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: isSelected ? [
             BoxShadow(
-              color: const Color(0xFFE43A6A).withOpacity(0.08),
+              color: const Color(0xFFE43A6A).withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             )
@@ -331,7 +327,7 @@ class _LookingForScreenState extends State<LookingForScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -395,7 +391,7 @@ class _LookingForScreenState extends State<LookingForScreen> {
                   child: Center(child: Text("No options found")),
                 )
               else
-                ..._options.map((opt) => _buildOptionCard(opt)).toList(),
+                ..._options.map((opt) => _buildOptionCard(opt)),
               _buildInfoCard(),
               const SizedBox(height: 100), // Bottom padding
             ],

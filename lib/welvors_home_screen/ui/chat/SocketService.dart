@@ -78,7 +78,7 @@ class SocketService {
     AppLogger.i('SocketService', 'Creating connection');
     AppLogger.i('SocketService', 'SOCKET URL: $_baseUrl');
 
-    final bearerr = '$rawToken';
+    final bearerr = rawToken;
 
     socket = IO.io(
       _baseUrl,

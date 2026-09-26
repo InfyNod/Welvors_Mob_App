@@ -33,6 +33,7 @@ enum ChatMessageType {
 // CHAT MESSAGE
 // ============================================================================
 
+// ignore: must_be_immutable
 class ChatMessage extends Equatable {
   final String id;
   final String text;
@@ -488,7 +489,7 @@ class ChatMessage extends Equatable {
           gift?['giftName'] ??
           gift?['gift_name'] ??
           gift?['name'] ??
-          giftMaster?['name'] ??
+          giftMaster['name'] ??
           socketGiftMetadata['giftName'] ??
           socketGiftMetadata['gift_name'],
     );
@@ -511,7 +512,7 @@ class ChatMessage extends Equatable {
           gift?['gift_coins'] ??
           gift?['coins'] ??
           gift?['pricePaid'] ??
-          giftMaster?['coinCost'] ??
+          giftMaster['coinCost'] ??
           socketGiftMetadata['giftCoins'] ??
           socketGiftMetadata['gift_coins'],
     );
@@ -525,7 +526,7 @@ class ChatMessage extends Equatable {
           json['giftImageUrl'] ??
           (gift is Map ? gift!['image'] : null) ??
           nestedGift['image'] ??
-          giftMaster?['image'] ??
+          giftMaster['image'] ??
           socketGiftMetadata['giftImage'] ??
           socketGiftMetadata['giftImageUrl'],
     );
@@ -1655,7 +1656,7 @@ class ChatMessage extends Equatable {
 
       receiverId: receiverId ?? this.receiverId,
 
-      typemsg: textmsg ?? this.typemsg,
+      typemsg: textmsg ?? typemsg,
 
       type: type ?? this.type,
 

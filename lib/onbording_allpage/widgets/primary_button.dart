@@ -22,7 +22,7 @@ class PrimaryButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppDimens.rInput),
           border: on ? null : Border.all(color: AppColors.line, width: 1.5),
           boxShadow: on ? [BoxShadow(
-            color: AppColors.pinkDeep.withOpacity(0.3),
+            color: AppColors.pinkDeep.withValues(alpha: 0.3),
             blurRadius: 20, offset: const Offset(0, 8))] : null,
         ),
         child: isLoading 
