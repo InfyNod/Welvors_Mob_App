@@ -28,4 +28,32 @@ class DatePlanApiService {
       return null;
     }
   }
+
+  Future<bool> buyDatePlanPack(String packageId) async {
+    const String topUpUrl = 'https://api.welvors.com/api/user/date-plan/wallet/top-up';
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.post(
+        Uri.parse(topUpUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'packageId': packageId,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error buying date plan pack: $e');
+      return false;
+    }
+  }
 }

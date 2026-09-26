@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'date_plan_wallet.dart';
 import 'date_plans_payment_processing_dialog.dart';
+import 'service_date.dart';
 
 class GetDatePlansDrawer extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -163,19 +164,35 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the bottom sheet
-                    final itemsToAdd = int.parse(widget.selectedPackage['title'].toString());
-                    final newBalance = DatePlanWallet.availablePlans + itemsToAdd;
-                    DatePlansPaymentProcessingDialog.show(
-                      context: context,
-                      selectedPackage: widget.selectedPackage,
-                      newBalance: newBalance,
-                      onDone: () {
-                        DatePlanWallet.availablePlans = newBalance;
-                        widget.onPurchased();
-                      },
-                    );
+                  onPressed: () async {
+                    final apiService = DatePlanApiService();
+                    final packId = widget.selectedPackage['id']?.toString() ?? widget.selectedPackage['_id']?.toString() ?? '';
+                    
+                    final success = await apiService.buyDatePlanPack(packId);
+                    
+                    if (!mounted) return;
+                    
+                    if (success) {
+                      Navigator.pop(context); // Close the bottom sheet
+                      final itemsToAdd = int.parse(widget.selectedPackage['title'].toString().replaceAll(RegExp(r'[^0-9]'), ''));
+                      final newBalance = DatePlanWallet.availablePlans + itemsToAdd;
+                      DatePlansPaymentProcessingDialog.show(
+                        context: context,
+                        selectedPackage: widget.selectedPackage,
+                        newBalance: newBalance,
+                        onDone: () {
+                          DatePlanWallet.availablePlans = newBalance;
+                          widget.onPurchased();
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to top up wallet. Please try again.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF18C28), // Brand Yellow/Orange
