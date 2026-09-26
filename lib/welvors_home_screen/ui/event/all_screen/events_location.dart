@@ -129,7 +129,7 @@ class _EventsLocationSheetState extends State<EventsLocationSheet> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide(
-                    color: const Color(0xFFE85A7A).withOpacity(0.5),
+                    color: const Color(0xFFE85A7A).withValues(alpha: 0.5),
                     width: 1.5,
                   ),
                 ),

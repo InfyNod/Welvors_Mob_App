@@ -4,7 +4,7 @@ class ConsentCheckbox extends StatelessWidget {
   final bool accepted;
   final VoidCallback onTap;
 
-  const ConsentCheckbox({required this.accepted, required this.onTap});
+  const ConsentCheckbox({super.key, required this.accepted, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

@@ -62,7 +62,7 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -99,13 +99,13 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 16,
                     spreadRadius: 0,
                     offset: const Offset(0, 8),
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     spreadRadius: 0,
                     offset: const Offset(0, 2),
@@ -312,19 +312,19 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isPrimary
-              ? const Color(0xFFFA6A85).withOpacity(0.5)
+              ? const Color(0xFFFA6A85).withValues(alpha: 0.5)
               : Colors.transparent,
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 4,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -448,13 +448,13 @@ class _BankUpiScreenState extends State<BankUpiScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 4,
             spreadRadius: 0,
             offset: const Offset(0, 2),

@@ -1,7 +1,7 @@
 import '../../../export.dart';
 
 class DocumentStep extends StatelessWidget {
-  const DocumentStep();
+  const DocumentStep({super.key});
 
   @override
   Widget build(BuildContext context) {

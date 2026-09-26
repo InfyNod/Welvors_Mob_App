@@ -11,7 +11,7 @@ class SuggestionLine {
 class SaySomethingBetterSheet extends StatefulWidget {
   final ValueChanged<String> onPick;
 
-  const SaySomethingBetterSheet({required this.onPick});
+  const SaySomethingBetterSheet({super.key, required this.onPick});
 
   @override
   State<SaySomethingBetterSheet> createState() =>

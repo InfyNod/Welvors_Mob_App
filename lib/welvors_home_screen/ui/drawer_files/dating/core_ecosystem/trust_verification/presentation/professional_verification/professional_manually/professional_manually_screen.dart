@@ -4,7 +4,6 @@ import '../../instant_verification/widget/aadhaarVerifiedScreen.dart';
 import 'bloc/professional_event.dart';
 import 'bloc/professional_state.dart';
 import 'professional_confirm_box.dart';
-import 'professional_submit_button.dart';
 import 'professional_text_field.dart';
 import 'professional_upload_box.dart';
 

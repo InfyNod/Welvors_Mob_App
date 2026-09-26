@@ -40,7 +40,7 @@ class _WhoMessageScreenState extends State<WhoMessageScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -143,8 +143,9 @@ class _WhoMessageScreenState extends State<WhoMessageScreen> {
         });
 
         String apiValue;
-        if (id == 'matches') apiValue = 'MATCHES_ONLY';
-        else if (id == 'verified') apiValue = 'VERIFIED_ONLY';
+        if (id == 'matches') {
+          apiValue = 'MATCHES_ONLY';
+        } else if (id == 'verified') apiValue = 'VERIFIED_ONLY';
         else apiValue = 'PAID_ONLY';
 
         final success = await AccountSettingService.updatePrivacyControls({
@@ -179,14 +180,14 @@ class _WhoMessageScreenState extends State<WhoMessageScreen> {
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: const Color(0xFFE43A6A).withOpacity(0.15),
+                color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                 blurRadius: 20,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               )
             else
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 10,
                 spreadRadius: 0,
                 offset: const Offset(0, 4),
@@ -252,7 +253,7 @@ class _WhoMessageScreenState extends State<WhoMessageScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.4) : Colors.transparent,
+                    color: isSelected ? const Color(0xFFE43A6A).withValues(alpha: 0.4) : Colors.transparent,
                     blurRadius: isSelected ? 8 : 0,
                     offset: isSelected ? const Offset(0, 2) : Offset.zero,
                   ),

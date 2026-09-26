@@ -169,7 +169,7 @@ class InterestsSection extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFFE43A6A).withOpacity(0.5),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.5),
                           width: 1.5,
                         ),
                       ),
@@ -341,17 +341,19 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
         child: buildCustomAppBar(context, 'Edit Interests', () async {
           if (_hasUnsavedChanges()) {
             final result = await showUnsavedChangesDialog(context);
-            if (result == true) {
-              // Save
-              final savedResult = _selectedInterests
-                  .map((i) => '${i.emoji} ${i.label}')
-                  .toList();
-              Navigator.pop(context, savedResult);
-              return false;
-            } else if (result == false) {
-              // Discard
-              Navigator.pop(context);
-              return false;
+            if (context.mounted) {
+              if (result == true) {
+                // Save
+                final savedResult = _selectedInterests
+                    .map((i) => '${i.emoji} ${i.label}')
+                    .toList();
+                Navigator.pop(context, savedResult);
+                return false;
+              } else if (result == false) {
+                // Discard
+                Navigator.pop(context);
+                return false;
+              }
             }
             return false; // Cancelled
           }
@@ -506,7 +508,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                     }
                   }
 
-                  if (mounted) {
+                  if (context.mounted) {
                     setState(() => _isLoading = false);
                     if (firstError != null) {
                       ScaffoldMessenger.of(
@@ -528,7 +530,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: _pinkDeep.withOpacity(0.3),
+                        color: _pinkDeep.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -578,7 +580,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: _pinkDeep.withOpacity(0.2),
+                    color: _pinkDeep.withValues(alpha: 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -629,7 +631,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
-          color: isExpanded ? _pinkSoft.withOpacity(0.4) : Colors.white,
+          color: isExpanded ? _pinkSoft.withValues(alpha: 0.4) : Colors.white,
           border: Border.all(
             color: isExpanded || selectedCount > 0
                 ? _pinkDeep
@@ -641,7 +643,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
               ? []
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -658,7 +660,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                     height: 48,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(categoryName).withOpacity(0.15),
+                      color: _getCategoryColor(categoryName).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Text(
@@ -748,7 +750,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: _pinkDeep.withOpacity(0.2),
+                                    color: _pinkDeep.withValues(alpha: 0.2),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),

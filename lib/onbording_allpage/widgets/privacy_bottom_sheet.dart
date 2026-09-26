@@ -36,7 +36,7 @@ class _PrivacyBottomSheetWidget extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.ink.withOpacity(0.12),
+                color: AppColors.ink.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -89,7 +89,7 @@ class _PrivacyBottomSheetWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.ink.withOpacity(0.12),
+                        color: AppColors.ink.withValues(alpha: 0.12),
                       ),
                     ),
                     child: const Icon(
@@ -104,12 +104,12 @@ class _PrivacyBottomSheetWidget extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          Divider(height: 1, color: AppColors.ink.withOpacity(0.08)),
+          Divider(height: 1, color: AppColors.ink.withValues(alpha: 0.08)),
 
           // Content
           Expanded(
             child: RawScrollbar(
-              thumbColor: AppColors.ink.withOpacity(0.4),
+              thumbColor: AppColors.ink.withValues(alpha: 0.4),
               radius: const Radius.circular(4),
               thickness: 4,
               child: ListView(
@@ -161,7 +161,7 @@ class _PrivacyBottomSheetWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFFF9F7F4),
               border: Border(
-                top: BorderSide(color: AppColors.ink.withOpacity(0.08)),
+                top: BorderSide(color: AppColors.ink.withValues(alpha: 0.08)),
               ),
             ),
             child: PrimaryButton(
@@ -196,7 +196,7 @@ class _Section extends StatelessWidget {
             content,
             style: AppText.body.copyWith(
               fontSize: 13,
-              color: AppColors.ink.withOpacity(0.75),
+              color: AppColors.ink.withValues(alpha: 0.75),
               height: 1.6,
             ),
           ),

@@ -155,7 +155,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -209,7 +209,7 @@ class _TicketScreenState extends State<TicketScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 20,
                   offset: const Offset(0, -10),
                 ),
@@ -231,7 +231,7 @@ class _TicketScreenState extends State<TicketScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
                       ),
@@ -283,12 +283,12 @@ class _TicketScreenState extends State<TicketScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE43A6A).withOpacity(0.12),
+            color: const Color(0xFFE43A6A).withValues(alpha: 0.12),
             blurRadius: 32,
             offset: const Offset(0, 16),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -308,10 +308,10 @@ class _TicketScreenState extends State<TicketScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1CAF5E).withOpacity(0.1),
+                    color: const Color(0xFF1CAF5E).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFF1CAF5E).withOpacity(0.3),
+                      color: const Color(0xFF1CAF5E).withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -370,12 +370,12 @@ class _TicketScreenState extends State<TicketScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFFE43A6A).withOpacity(0.15),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                       width: 2,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.1),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -392,7 +392,7 @@ class _TicketScreenState extends State<TicketScreen> {
                           return Icon(
                             Icons.qr_code_2,
                             size: 110,
-                            color: Colors.black87.withOpacity(0.85),
+                            color: Colors.black87.withValues(alpha: 0.85),
                           );
                         },
                       ),
@@ -467,15 +467,15 @@ class _TicketScreenState extends State<TicketScreen> {
                       ),
                       border: Border(
                         top: BorderSide(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           width: 1,
                         ),
                         right: BorderSide(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           width: 1,
                         ),
                         bottom: BorderSide(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           width: 1,
                         ),
                       ),
@@ -497,15 +497,15 @@ class _TicketScreenState extends State<TicketScreen> {
                       ),
                       border: Border(
                         top: BorderSide(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           width: 1,
                         ),
                         left: BorderSide(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           width: 1,
                         ),
                         bottom: BorderSide(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           width: 1,
                         ),
                       ),
@@ -532,7 +532,7 @@ class _TicketScreenState extends State<TicketScreen> {
                         color: const Color(0xFFFFF0F3),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFFE43A6A).withOpacity(0.1),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                           width: 1,
                         ),
                       ),
@@ -619,7 +619,7 @@ class _TicketScreenState extends State<TicketScreen> {
                     ),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: const Color(0xFFE43A6A).withOpacity(0.05),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.05),
                     ),
                   ),
                   child: Column(
@@ -692,13 +692,13 @@ class ShareModalContent extends StatefulWidget {
   final String status;
 
   const ShareModalContent({
-    Key? key,
+    super.key,
     required this.tickets,
     required this.title,
     required this.date,
     required this.location,
     required this.status,
-  }) : super(key: key);
+  });
 
   @override
   State<ShareModalContent> createState() => ShareModalContentState();
@@ -741,6 +741,7 @@ class ShareModalContentState extends State<ShareModalContent> {
       ).create();
       await imagePath.writeAsBytes(imageBytes);
 
+      if (!mounted) return;
       final box = context.findRenderObject() as RenderBox?;
       final sharePositionOrigin = box != null
           ? box.localToGlobal(Offset.zero) & box.size
@@ -772,6 +773,7 @@ class ShareModalContentState extends State<ShareModalContent> {
       final directory = await getTemporaryDirectory();
 
       for (int i = 0; i < widget.tickets.length; i++) {
+        if (!mounted) return;
         final Uint8List imageBytes = await _screenshotController
             .captureFromWidget(
               InheritedTheme.captureAll(
@@ -799,6 +801,7 @@ class ShareModalContentState extends State<ShareModalContent> {
         imageFiles.add(XFile(imagePath.path));
       }
 
+      if (!mounted) return;
       final box = context.findRenderObject() as RenderBox?;
       final sharePositionOrigin = box != null
           ? box.localToGlobal(Offset.zero) & box.size
@@ -903,7 +906,7 @@ class ShareModalContentState extends State<ShareModalContent> {
                 Text(
                   'Swipe to select a ticket',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 14,
                   ),
                 ),
@@ -946,12 +949,12 @@ class ShareModalContentState extends State<ShareModalContent> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withValues(alpha: 0.6),
                     blurRadius: 24,
                     offset: const Offset(0, 12),
                   ),
                   BoxShadow(
-                    color: const Color(0xFFE43A6A).withOpacity(0.2),
+                    color: const Color(0xFFE43A6A).withValues(alpha: 0.2),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),

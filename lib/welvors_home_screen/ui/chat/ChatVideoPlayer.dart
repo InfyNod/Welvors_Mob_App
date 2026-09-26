@@ -7,7 +7,7 @@ import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatVideoPlayer extends StatefulWidget {
   final String url;
-  const ChatVideoPlayer({required this.url});
+  const ChatVideoPlayer({super.key, required this.url});
 
   @override
   State<ChatVideoPlayer> createState() => _ChatVideoPlayerState();

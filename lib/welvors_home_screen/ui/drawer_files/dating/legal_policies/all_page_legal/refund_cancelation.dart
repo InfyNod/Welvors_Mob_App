@@ -110,7 +110,7 @@ class _RefundCancellationScreenState extends State<RefundCancellationScreen> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFE43A6A).withOpacity(0.3),
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -226,7 +226,7 @@ class _RefundCancellationScreenState extends State<RefundCancellationScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -347,7 +347,7 @@ class _RefundCancellationScreenState extends State<RefundCancellationScreen> {
                       border: Border.all(color: Colors.pink.shade100, width: 1),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.pink.withOpacity(0.05),
+                          color: Colors.pink.withValues(alpha: 0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),

@@ -109,7 +109,7 @@ class _HeightScreenState extends State<HeightScreen> {
               inactiveTrackColor: Colors.grey.shade300,
               trackHeight: 6.0,
               thumbColor: Colors.white,
-              overlayColor: const Color(0xFFE43A6A).withOpacity(0.15),
+              overlayColor: const Color(0xFFE43A6A).withValues(alpha: 0.15),
               rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
               rangeThumbShape: const RoundRangeSliderThumbShape(
                 enabledThumbRadius: 11,
@@ -246,7 +246,7 @@ class _HeightScreenState extends State<HeightScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

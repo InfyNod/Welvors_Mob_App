@@ -45,7 +45,7 @@ class LocationSection extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -166,7 +166,7 @@ class LocationSection extends StatelessWidget {
           }
 
           Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high,
+            locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
           );
           
           List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);

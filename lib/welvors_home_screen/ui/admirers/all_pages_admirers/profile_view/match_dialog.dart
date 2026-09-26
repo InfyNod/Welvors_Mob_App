@@ -27,7 +27,7 @@ class MatchDialog extends StatelessWidget {
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.6),
+      barrierColor: Colors.black.withValues(alpha: 0.6),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Scaffold(
@@ -73,7 +73,7 @@ class MatchDialog extends StatelessWidget {
         border: Border.all(color: const Color(0xFFFFD1DC), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFD1DC).withOpacity(0.4),
+            color: const Color(0xFFFFD1DC).withValues(alpha: 0.4),
             blurRadius: 30,
             offset: const Offset(0, 12),
           ),
@@ -137,7 +137,7 @@ class MatchDialog extends StatelessWidget {
                       border: Border.all(color: Colors.white, width: 3),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFC73A5E).withOpacity(0.25),
+                          color: const Color(0xFFC73A5E).withValues(alpha: 0.25),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
@@ -174,7 +174,7 @@ class MatchDialog extends StatelessWidget {
                       border: Border.all(color: Colors.white, width: 3),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFC73A5E).withOpacity(0.25),
+                          color: const Color(0xFFC73A5E).withValues(alpha: 0.25),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
@@ -233,7 +233,7 @@ class MatchDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.4),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.4),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -347,7 +347,7 @@ class _BeatingHeartState extends State<_BeatingHeart>
           border: Border.all(color: Colors.white, width: 3),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFE43A6A).withOpacity(0.5),
+              color: const Color(0xFFE43A6A).withValues(alpha: 0.5),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

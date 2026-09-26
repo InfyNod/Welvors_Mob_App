@@ -18,7 +18,7 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE43A6A).withOpacity(0.1),
+                color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -135,7 +135,7 @@ Widget buildCustomAppBar(
             border: Border.all(color: Colors.grey.shade200),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -213,6 +213,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
     if (!hasChanges) return true;
 
     final result = await showUnsavedChangesDialog(context);
+    if (!mounted) return false;
     if (result == true) {
       final text = _controller.text.trim();
       if (widget.validator != null) {
@@ -222,7 +223,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
           return false; // Prevent pop
         }
       }
-      if (mounted) Navigator.pop(context, text);
+      Navigator.pop(context, text);
       return false; // Already popped
     }
     return result == false; // Pop without saving
@@ -545,7 +546,7 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFFE43A6A).withOpacity(0.05)
+                                ? const Color(0xFFE43A6A).withValues(alpha: 0.05)
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
@@ -584,7 +585,7 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                                           color: isSelected
                                               ? const Color(
                                                   0xFFE43A6A,
-                                                ).withOpacity(0.8)
+                                                ).withValues(alpha: 0.8)
                                               : Colors.black54,
                                         ),
                                       ),
@@ -1149,7 +1150,7 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                             return Container(
                               decoration: BoxDecoration(
                                 color: isSelectedReligion
-                                    ? const Color(0xFFE43A6A).withOpacity(0.03)
+                                    ? const Color(0xFFE43A6A).withValues(alpha: 0.03)
                                     : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
@@ -1228,7 +1229,7 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                                         height: 1,
                                         color: const Color(
                                           0xFFE43A6A,
-                                        ).withOpacity(0.2),
+                                        ).withValues(alpha: 0.2),
                                       ),
                                       Container(
                                         width: double.infinity,
@@ -1376,8 +1377,7 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
 class EditLanguageScreen extends StatefulWidget {
   final List<int> initialLanguageIds;
 
-  const EditLanguageScreen({Key? key, required this.initialLanguageIds})
-    : super(key: key);
+  const EditLanguageScreen({super.key, required this.initialLanguageIds});
 
   @override
   State<EditLanguageScreen> createState() => _EditLanguageScreenState();
@@ -1497,7 +1497,7 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
                                   color: isSelected
                                       ? const Color(
                                           0xFFE43A6A,
-                                        ).withOpacity(0.05)
+                                        ).withValues(alpha: 0.05)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(

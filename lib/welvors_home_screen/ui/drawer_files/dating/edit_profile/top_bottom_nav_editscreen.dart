@@ -12,8 +12,6 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/career_ambition.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/family.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/intrested.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/preview/preview_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -166,7 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               color: const Color(0xFFF8F9FA), // Match scaffold background
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
+                  color: Colors.black.withValues(alpha: 0.02),
                   blurRadius: 10,
                   offset: const Offset(0, -5),
                 ),
@@ -232,7 +230,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

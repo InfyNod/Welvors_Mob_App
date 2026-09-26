@@ -91,7 +91,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.pinkSoft.withOpacity(0.5)
+              ? AppColors.pinkSoft.withValues(alpha: 0.5)
               : Colors.white,
           border: Border.all(
             color: isSelected ? AppColors.pinkDeep : AppColors.line,
@@ -207,7 +207,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                       fontSize: 12,
                       color: isSelected
                           ? AppColors.pinkDeep
-                          : AppColors.ink.withOpacity(0.5),
+                          : AppColors.ink.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -224,7 +224,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Divider(color: AppColors.pinkDeep.withOpacity(0.2), height: 1),
+        Divider(color: AppColors.pinkDeep.withValues(alpha: 0.2), height: 1),
         Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -247,7 +247,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.pinkSoft.withOpacity(0.6),
+                      color: AppColors.pinkSoft.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -266,7 +266,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _orientationOptions.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   return _buildOrientationCard(_orientationOptions[index]);
                 },
@@ -342,7 +342,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                   subtitle: 'Show me men',
                   icon: Icons.male,
                   iconColor: AppColors.blue,
-                  iconBg: AppColors.blue.withOpacity(0.15),
+                  iconBg: AppColors.blue.withValues(alpha: 0.15),
                   isSelected: _selectedPreference == 'Man',
                   onTap: () {
                     setState(() {
@@ -364,7 +364,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                   subtitle: 'Show me non-binary people',
                   icon: Icons.transgender,
                   iconColor: AppColors.gold,
-                  iconBg: AppColors.gold.withOpacity(0.15),
+                  iconBg: AppColors.gold.withValues(alpha: 0.15),
                   isSelected: _selectedPreference == 'Non-binary',
                   onTap: () {
                     setState(() {
@@ -402,8 +402,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                     // Backend Prisma schema expects the Gender enum, usually uppercase like 'WOMEN', 'MEN', 'NON_BINARY'
                     String interestedInValue = 'NON_BINARY';
                     if (_selectedPreference == 'Man') interestedInValue = 'MEN';
-                    if (_selectedPreference == 'Women')
+                    if (_selectedPreference == 'Women') {
                       interestedInValue = 'WOMEN';
+                    }
 
                     String sexualOrientationValue = 'NOT_LISTED';
                     if (_selectedSubPreferences.isNotEmpty) {

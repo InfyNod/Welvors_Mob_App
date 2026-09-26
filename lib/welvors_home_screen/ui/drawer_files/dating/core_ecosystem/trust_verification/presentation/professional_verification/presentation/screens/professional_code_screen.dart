@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../export.dart';
 import '../../../instant_verification/widget/aadhaarVerifiedScreen.dart';
 import '../widgets/professional_info_box.dart';
@@ -129,7 +127,7 @@ class ProfessionalCodeScreen extends StatelessWidget {
                   border: Border.all(color: Colors.grey.shade200),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

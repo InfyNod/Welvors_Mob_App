@@ -38,21 +38,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     super.dispose();
   }
 
-  void _showComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'Coming Soon!',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.black87,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
   Future<void> _launchEmail() async {
     final Uri emailUri = Uri(
       scheme: 'mailto',
@@ -106,7 +91,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -241,13 +226,13 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.10),
+                          color: Colors.black.withValues(alpha: 0.10),
                           blurRadius: 16,
                           spreadRadius: 0,
                           offset: const Offset(0, 8),
                         ),
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 4,
                           spreadRadius: 0,
                           offset: const Offset(0, 2),
@@ -316,13 +301,13 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.10),
+              color: Colors.black.withValues(alpha: 0.10),
               blurRadius: 16,
               spreadRadius: 0,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               spreadRadius: 0,
               offset: const Offset(0, 2),
@@ -390,46 +375,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMoreItem({
-    required String emoji,
-    required Color iconBgColor,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Row(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              alignment: Alignment.center,
-              child: Text(emoji, style: const TextStyle(fontSize: 20)),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-            Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20),
           ],
         ),
       ),

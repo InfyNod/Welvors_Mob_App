@@ -16,7 +16,6 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
   final List<String> _selectedReligion = [];
 
   bool _isLoading = true;
-  List<dynamic> _apiData = [];
   
   // Example structure we might build:
   // _parsedReligions = [{'id': '1', 'name': 'Hindu', 'communities': [{'id':'2', 'name':'Brahmin'}]}]
@@ -31,7 +30,6 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
     if (data != null && mounted) {
       _parseData(data);
       setState(() {
-        _apiData = data;
         _isLoading = false;
       });
     } else if (mounted) {
@@ -175,7 +173,7 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.3),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         )
@@ -291,7 +289,7 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                    color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                                     blurRadius: 6,
                                     offset: const Offset(0, 3),
                                   )
@@ -313,7 +311,7 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
               ],
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -386,7 +384,7 @@ class _ReligionCommunityScreenState extends State<ReligionCommunityScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

@@ -41,7 +41,7 @@ class _BoostHistoryScreenState extends State<BoostHistoryScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -184,7 +184,7 @@ class _BoostHistoryScreenState extends State<BoostHistoryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -202,7 +202,7 @@ class _BoostHistoryScreenState extends State<BoostHistoryScreen> {
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),
@@ -235,7 +235,7 @@ class _BoostHistoryScreenState extends State<BoostHistoryScreen> {
         boxShadow: isSuperBoost
             ? [
                 BoxShadow(
-                  color: const Color(0xFFFFD54F).withOpacity(0.2),
+                  color: const Color(0xFFFFD54F).withValues(alpha: 0.2),
                   blurRadius: 10,
                   spreadRadius: 1,
                 ),
@@ -386,7 +386,7 @@ class _BoostHistoryScreenState extends State<BoostHistoryScreen> {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFEBB14E).withOpacity(0.3),
+                    color: const Color(0xFFEBB14E).withValues(alpha: 0.3),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),

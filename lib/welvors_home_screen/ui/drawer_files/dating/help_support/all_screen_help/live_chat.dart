@@ -31,7 +31,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     });
   }
 
-  List<Map<String, dynamic>> _messages = [
+  final List<Map<String, dynamic>> _messages = [
     {
       'isSender': false,
       'text': "Hi! 👋 I'm Welvors Support. What can I\nhelp you with today?",
@@ -67,7 +67,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -150,7 +150,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                   const SizedBox(height: 32),
 
                   // Chat Message Bubbles
-                  ..._messages.map((msg) => _buildMessageBubble(msg)).toList(),
+                  ..._messages.map((msg) => _buildMessageBubble(msg)),
                 ],
               ),
             ),
@@ -268,8 +268,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
           boxShadow: [
             BoxShadow(
               color: isSender
-                  ? const Color(0xFFE43A6A).withOpacity(0.2)
-                  : Colors.black.withOpacity(0.03),
+                  ? const Color(0xFFE43A6A).withValues(alpha: 0.2)
+                  : Colors.black.withValues(alpha: 0.03),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -370,7 +370,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
           color: const Color(0xFFFFF0F3), // Light pink background
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: const Color(0xFFE43A6A).withOpacity(0.5),
+            color: const Color(0xFFE43A6A).withValues(alpha: 0.5),
             width: 1.2,
           ),
         ),

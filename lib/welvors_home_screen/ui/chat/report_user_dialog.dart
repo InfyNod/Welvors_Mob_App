@@ -63,7 +63,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
 
     try {
       await widget.onSubmit?.call(reason, description, alsoBlock);
-      AppLogger.d('ReportUserDialog', "navneet>>>>>>${alsoBlock}");
+      AppLogger.d('ReportUserDialog', "navneet>>>>>>$alsoBlock");
     } catch (e) {
       AppLogger.d('ReportUserDialog', "navneet22");
 

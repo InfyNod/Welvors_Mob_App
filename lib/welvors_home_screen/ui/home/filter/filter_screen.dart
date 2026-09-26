@@ -37,17 +37,6 @@ class _FilterScreenState extends State<FilterScreen> {
 
   String _activeBrowsePool = 'Premium+ only';
   String _activeVipBrowsePool = 'Both';
-  final Set<String> _selectedLookingFor = {'Any'};
-
-  void _toggleLookingFor(String label) {
-    setState(() {
-      if (_selectedLookingFor.contains(label)) {
-        _selectedLookingFor.remove(label);
-      } else {
-        _selectedLookingFor.add(label);
-      }
-    });
-  }
 
   String _formatHeight(double cm) {
     int totalInches = (cm / 2.54).round();
@@ -79,7 +68,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -113,8 +102,6 @@ class _FilterScreenState extends State<FilterScreen> {
                   _isOnlineNow = false;
                   _showWhoLikedMe = false;
                   _membersOnly = false;
-                  _selectedLookingFor.clear();
-                  _selectedLookingFor.add('Any');
                 });
               },
               child: Container(
@@ -421,10 +408,10 @@ class _FilterScreenState extends State<FilterScreen> {
                                   ),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: Colors.purple.withOpacity(0.3),
+                                      color: Colors.purple.withValues(alpha: 0.3),
                                     ),
                                     borderRadius: BorderRadius.circular(12),
-                                    color: Colors.purple.withOpacity(0.05),
+                                    color: Colors.purple.withValues(alpha: 0.05),
                                   ),
                                   child: RichText(
                                     text: const TextSpan(
@@ -576,13 +563,6 @@ class _FilterScreenState extends State<FilterScreen> {
         builder: (context, constraints) {
           final itemWidth = constraints.maxWidth / 2;
 
-          Color activeBorderColor = Colors.transparent;
-          if (_selectedTier == 'Premium+') {
-            activeBorderColor = const Color(0xFFE43A6A).withOpacity(0.3);
-          } else if (_selectedTier == 'VIP & Elite') {
-            activeBorderColor = const Color(0xFF9C27B0).withOpacity(0.3);
-          }
-
           return Stack(
             children: [
               AnimatedPositioned(
@@ -609,8 +589,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     boxShadow: [
                       BoxShadow(
                         color: _selectedTier == 'Premium+'
-                            ? const Color(0xFFDE2957).withOpacity(0.4)
-                            : const Color(0xFF9C27B0).withOpacity(0.4),
+                            ? const Color(0xFFDE2957).withValues(alpha: 0.4)
+                            : const Color(0xFF9C27B0).withValues(alpha: 0.4),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -762,13 +742,13 @@ class _FilterScreenState extends State<FilterScreen> {
               BoxShadow(
                 color: const Color(
                   0xFFE43A6A,
-                ).withOpacity(0.04), // subtle pinkish glow
+                ).withValues(alpha: 0.04), // subtle pinkish glow
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -844,13 +824,13 @@ class _FilterScreenState extends State<FilterScreen> {
               BoxShadow(
                 color: const Color(
                   0xFF9C27B0,
-                ).withOpacity(0.04), // subtle purple glow
+                ).withValues(alpha: 0.04), // subtle purple glow
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -872,7 +852,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.purple.shade50.withOpacity(0.5),
+                        color: Colors.purple.shade50.withValues(alpha: 0.5),
                         border: Border.all(color: Colors.purple.shade100),
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -900,7 +880,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -938,7 +918,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: Colors.purple.shade50.withOpacity(0.5),
+                      color: Colors.purple.shade50.withValues(alpha: 0.5),
                       border: Border.all(
                         color: Colors.purple.shade100,
                         width: 1,
@@ -985,7 +965,7 @@ class _FilterScreenState extends State<FilterScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        border: Border.all(color: color.withOpacity(0.6)),
+        border: Border.all(color: color.withValues(alpha: 0.6)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -1029,7 +1009,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -1111,7 +1091,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -1178,83 +1158,6 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Widget _buildSelectableWrapChip(
-    String label, {
-    bool? isSelectedParam,
-    bool disabled = false,
-    String? premiumStyle,
-  }) {
-    final isSelected =
-        isSelectedParam ?? (!disabled && _selectedLookingFor.contains(label));
-    final isVip = premiumStyle == 'VIP';
-    final isElite = premiumStyle == 'Elite';
-    final isPremium = isVip || isElite;
-
-    return GestureDetector(
-      onTap: disabled ? null : () => _toggleLookingFor(label),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: isPremium ? null : Colors.white,
-          gradient: isPremium
-              ? LinearGradient(
-                  colors: isSelected
-                      ? (isElite
-                            ? [
-                                const Color(0xFF4A4A4A),
-                                const Color(0xFF1A1A1A),
-                              ] // Light Black to Dark Black Gradient
-                            : [
-                                const Color(0xFFAB47BC),
-                                const Color(0xFF2C2C2C),
-                              ]) // Purple/Charcoal
-                      : [Colors.white, Colors.white],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          border: Border.all(
-            color: isPremium
-                ? (isSelected
-                      ? (isElite
-                            ? const Color(0xFFFFE066).withOpacity(0.7)
-                            : Colors.transparent)
-                      : (disabled
-                            ? Colors.grey.shade100
-                            : Colors.grey.shade300))
-                : (isSelected
-                      ? const Color(0xFFE43A6A)
-                      : (disabled
-                            ? Colors.grey.shade100
-                            : Colors.grey.shade300)),
-          ),
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutCubic,
-          style: TextStyle(
-            color: (isSelected && isPremium)
-                ? (isElite
-                      ? const Color(0xFFFFE066)
-                      : Colors.white) // Gold text for Elite, White for Purple
-                : (isSelected
-                      ? const Color(0xFFE43A6A)
-                      : (disabled
-                            ? Colors.grey.shade300
-                            : Colors.grey.shade700)),
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            fontFamily: 'Inter',
-          ),
-          child: Text(label),
-        ),
-      ),
-    );
-  }
-
   Widget _buildLockedPremiumBox(Widget child) {
     return Container(
       decoration: BoxDecoration(
@@ -1263,7 +1166,7 @@ class _FilterScreenState extends State<FilterScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1309,7 +1212,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: isElite ? null : badgeColor.withOpacity(0.15),
+                  color: isElite ? null : badgeColor.withValues(alpha: 0.15),
                   gradient: isElite
                       ? const LinearGradient(
                           colors: [Color(0xFF4A4A4A), Color(0xFF1A1A1A)],
@@ -1318,7 +1221,7 @@ class _FilterScreenState extends State<FilterScreen> {
                         )
                       : null,
                   border: isElite
-                      ? Border.all(color: badgeColor.withOpacity(0.5))
+                      ? Border.all(color: badgeColor.withValues(alpha: 0.5))
                       : null,
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1485,7 +1388,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -1510,7 +1413,7 @@ class _FilterScreenState extends State<FilterScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             offset: const Offset(0, -4),
             blurRadius: 10,
           ),

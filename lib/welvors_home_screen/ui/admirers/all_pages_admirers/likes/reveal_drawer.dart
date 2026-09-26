@@ -175,7 +175,7 @@ class RevealDrawer extends StatelessWidget {
 
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFFBB538).withOpacity(0.4),
+                    color: const Color(0xFFFBB538).withValues(alpha: 0.4),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),

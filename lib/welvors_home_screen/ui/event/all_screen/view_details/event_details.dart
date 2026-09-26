@@ -9,7 +9,6 @@ import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/eve
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/your_pass_amenities.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_itinerary_location.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/abouthost_frequently.dart';
-import 'booking_confirm.dart';
 import '../service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
@@ -18,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'share_event_deatil.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   final String eventId;
@@ -50,7 +50,6 @@ class EventDetailsScreen extends StatefulWidget {
 }
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
-  bool _isLoading = true;
   Map<String, dynamic>? _eventData;
 
   @override
@@ -66,7 +65,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         if (data != null && data['success'] == true) {
           _eventData = data['data'];
         }
-        _isLoading = false;
       });
     }
   }
@@ -147,11 +145,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     final price = _eventData != null
         ? _getEventPrice(context, _eventData!)
         : widget.price;
-    final spotsLeft = _eventData?['leftSpot'] ?? widget.spotsLeft;
     final capacity =
         _eventData?['totalCapacity'] ?? _eventData?['capacity'] ?? 0;
-    final interested = _eventData?['interested'] ?? 0;
-    final isOfficial = _eventData?['officialPartner'] == true;
     final hostName = _eventData?['eventPartner']?['businessName'] ?? 'Host';
 
     String timeStr = date.contains('·') ? date.split('·').last.trim() : 'TBA';
@@ -189,7 +184,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 15,
               offset: const Offset(0, -5),
             ),
@@ -281,7 +276,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -352,14 +347,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 );
 
                 // Hide loading dialog
-                if (Navigator.canPop(context)) {
+                if (context.mounted && Navigator.canPop(context)) {
                   Navigator.pop(context);
                 }
+
+                if (!context.mounted) return;
 
                 // Save image temporarily
                 final directory = await getTemporaryDirectory();
                 final imagePath = await File('${directory.path}/event_share.png').create();
                 await imagePath.writeAsBytes(capturedImage);
+
+                if (!context.mounted) return;
 
                 // Share image + text
                 final box = context.findRenderObject() as RenderBox?;
@@ -373,7 +372,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 );
               } catch (e) {
                 // Hide loading dialog if error occurs
-                if (Navigator.canPop(context)) {
+                if (context.mounted && Navigator.canPop(context)) {
                   Navigator.pop(context);
                 }
                 AppLogger.e('EventDetailsScreen', 'Error sharing: $e');
@@ -398,7 +397,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   height: 300,
                   width: double.infinity,
                   child: imageUrl.startsWith('http')
-                      ? Image.network(imageUrl, fit: BoxFit.cover)
+                      ? AppCachedImage(imageUrl: imageUrl, fit: BoxFit.cover)
                       : Image.asset(imageUrl, fit: BoxFit.cover),
                 ),
                 Positioned(
@@ -410,7 +409,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: const Color(0xFFE43A6A),
@@ -464,7 +463,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             color: const Color(0xFFFFF0F3),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: const Color(0xFFE43A6A).withOpacity(0.3),
+                              color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                             ),
                           ),
                           child: const Center(
@@ -559,7 +558,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Colors.black.withValues(alpha: 0.08),
                               blurRadius: 12,
                               spreadRadius: 1,
                               offset: const Offset(0, 0),
@@ -646,9 +645,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9).withOpacity(0.6),
+        color: const Color(0xFFE8F5E9).withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF1CAF5E).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF1CAF5E).withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -705,24 +704,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   Widget _buildVerticalDivider() {
     return Container(height: 30, width: 1, color: Colors.grey.shade200);
   }
-
-  Widget _buildAvatar(double leftPos, String imgUrl) {
-    return Positioned(
-      left: leftPos,
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFFFF0F3), width: 2),
-        ),
-        child: CircleAvatar(radius: 10, backgroundImage: NetworkImage(imgUrl)),
-      ),
-    );
-  }
 }
 
 class _FillingFastCard extends StatefulWidget {
   final Map<String, dynamic> eventData;
-  const _FillingFastCard({super.key, required this.eventData});
+  const _FillingFastCard({required this.eventData});
 
   @override
   State<_FillingFastCard> createState() => _FillingFastCardState();
@@ -766,7 +752,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
 
     final Color mainColor = const Color(0xFFE43A6A);
     final Color bgColor = const Color(0xFFFFF0F3);
-    final Color borderColor = const Color(0xFFE43A6A).withOpacity(0.15);
+    final Color borderColor = const Color(0xFFE43A6A).withValues(alpha: 0.15);
     final Color textColor = const Color(0xFFDE2957);
     int menCapacity = eventData['menCapacity'] ?? 0;
     int womenCapacity = eventData['womenCapacity'] ?? 0;
@@ -788,7 +774,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
         border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: mainColor.withOpacity(0.04),
+            color: mainColor.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -833,7 +819,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: mainColor.withOpacity(0.3),
+                          color: mainColor.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -884,7 +870,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                     height: 6,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: mainColor.withOpacity(0.15),
+                      color: mainColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -904,7 +890,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: mainColor.withOpacity(0.4),
+                              color: mainColor.withValues(alpha: 0.4),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             ),
@@ -961,7 +947,7 @@ class _FillingFastCardState extends State<_FillingFastCard>
                           text: last24HoursText,
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
-                            color: textColor.withOpacity(0.8),
+                            color: textColor.withValues(alpha: 0.8),
                           ),
                         ),
                     ],

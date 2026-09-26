@@ -228,7 +228,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -353,7 +353,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFF8C6D1).withOpacity(0.3),
+            color: const Color(0xFFF8C6D1).withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -392,7 +392,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                       BoxShadow(
                         color: const Color(
                           0xFFE85A7A,
-                        ).withOpacity(0.4), // Pink glow
+                        ).withValues(alpha: 0.4), // Pink glow
                         blurRadius: 10,
                         spreadRadius: 1,
                         offset: const Offset(0, 2),
@@ -491,7 +491,7 @@ class _ReceivedRosesScreenState extends State<ReceivedRosesScreen> {
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFE85A7A).withOpacity(0.3),
+                                color: const Color(0xFFE85A7A).withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),

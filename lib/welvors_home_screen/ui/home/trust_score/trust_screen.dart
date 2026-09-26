@@ -22,11 +22,11 @@ class TrustScreen extends StatelessWidget {
                 color: Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFFF05C91).withOpacity(0.1),
+                  color: const Color(0xFFF05C91).withValues(alpha: 0.1),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF966EB4).withOpacity(0.10),
+                    color: const Color(0xFF966EB4).withValues(alpha: 0.10),
                     blurRadius: 30,
                     offset: const Offset(0, 4),
                   ),
@@ -68,14 +68,14 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Confirmed real contact details',
                   score: '+10',
                   emoji: '📱',
-                  iconBgColor: Colors.blue.withOpacity(0.1),
+                  iconBgColor: Colors.blue.withValues(alpha: 0.1),
                 ),
                 _buildVerificationItem(
                   title: 'Location check',
                   subtitle: 'City-level authenticity confirmed',
                   score: '+10',
                   emoji: '📍',
-                  iconBgColor: Colors.orange.withOpacity(0.1),
+                  iconBgColor: Colors.orange.withValues(alpha: 0.1),
                 ),
               ],
             ),
@@ -89,21 +89,21 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'A real person, matched to official ID',
                   score: '+10',
                   emoji: '🪪',
-                  iconBgColor: Colors.purple.withOpacity(0.1),
+                  iconBgColor: Colors.purple.withValues(alpha: 0.1),
                 ),
                 _buildVerificationItem(
                   title: 'Face match (selfie)',
                   subtitle: 'Selfie matched the ID photo',
                   score: '+5',
                   emoji: '🤳',
-                  iconBgColor: Colors.pink.withOpacity(0.1),
+                  iconBgColor: Colors.pink.withValues(alpha: 0.1),
                 ),
                 _buildVerificationItem(
                   title: 'Video liveness',
                   subtitle: 'Live video confirmed a present person',
                   score: '+5',
                   emoji: '🎥',
-                  iconBgColor: Colors.red.withOpacity(0.1),
+                  iconBgColor: Colors.red.withValues(alpha: 0.1),
                 ),
               ],
             ),
@@ -118,21 +118,21 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Confirmed she’s here for something serious',
                   score: '+7',
                   emoji: '💬',
-                  iconBgColor: Colors.pinkAccent.withOpacity(0.1),
+                  iconBgColor: Colors.pinkAccent.withValues(alpha: 0.1),
                 ),
                 _buildVerificationItem(
                   title: 'Education',
                   subtitle: 'College & qualification verified',
                   score: '+7',
                   emoji: '🎓',
-                  iconBgColor: Colors.indigo.withOpacity(0.1),
+                  iconBgColor: Colors.indigo.withValues(alpha: 0.1),
                 ),
                 _buildVerificationItem(
                   title: 'Profession',
                   subtitle: 'Job & company verified',
                   score: '+8',
                   emoji: '💼',
-                  iconBgColor: Colors.brown.withOpacity(0.1),
+                  iconBgColor: Colors.brown.withValues(alpha: 0.1),
                 ),
                 _buildVerificationItem(
                   title: 'Income',
@@ -140,7 +140,7 @@ class TrustScreen extends StatelessWidget {
                   score: 'Not yet',
                   emoji: '💰',
                   isVerified: false,
-                  iconBgColor: Colors.green.withOpacity(0.1),
+                  iconBgColor: Colors.green.withValues(alpha: 0.1),
                 ),
               ],
             ),
@@ -155,7 +155,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Court & police records — clean history',
                   score: '+12',
                   emoji: '🔍',
-                  iconBgColor: Colors.teal.withOpacity(0.1),
+                  iconBgColor: Colors.teal.withValues(alpha: 0.1),
                 ),
                 _buildVerificationItem(
                   title: 'Emergency contact',
@@ -163,7 +163,7 @@ class TrustScreen extends StatelessWidget {
                   score: 'Not yet',
                   emoji: '📞',
                   isVerified: false,
-                  iconBgColor: Colors.deepOrange.withOpacity(0.1),
+                  iconBgColor: Colors.deepOrange.withValues(alpha: 0.1),
                 ),
               ],
             ),
@@ -200,7 +200,7 @@ class TrustScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),
@@ -219,7 +219,7 @@ class TrustScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     width: 2,
                   ),
                   image: const DecorationImage(
@@ -259,7 +259,7 @@ class TrustScreen extends StatelessWidget {
                     Text(
                       '8 of 11 checks verified',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
@@ -279,7 +279,7 @@ class TrustScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE85A7A).withOpacity(0.6),
+                          color: const Color(0xFFE85A7A).withValues(alpha: 0.6),
                           blurRadius: 20,
                           spreadRadius: 4,
                         ),
@@ -296,7 +296,7 @@ class TrustScreen extends StatelessWidget {
                               strokeWidth: 6.5,
                               backgroundColor: Colors.transparent,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white.withOpacity(0.1),
+                                Colors.white.withValues(alpha: 0.1),
                               ),
                             ),
                           ),
@@ -395,7 +395,7 @@ class TrustScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E1730).withOpacity(0.2),
+            color: const Color(0xFF1E1730).withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -510,7 +510,7 @@ class TrustScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 20,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),

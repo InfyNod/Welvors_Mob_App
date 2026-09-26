@@ -138,7 +138,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 30,
                       offset: const Offset(0, 10),
                     ),
@@ -153,8 +153,8 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.pinkDeep.withOpacity(0.1),
-                            AppColors.pinkDeep.withOpacity(0.2),
+                            AppColors.pinkDeep.withValues(alpha: 0.1),
+                            AppColors.pinkDeep.withValues(alpha: 0.2),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -354,7 +354,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                             border: Border.all(color: Colors.grey.shade200),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
+                                color: Colors.black.withValues(alpha: 0.04),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -407,7 +407,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                           shape: BoxShape.circle,
                                           border: Border.all(
                                             color: AppColors.pinkDeep
-                                                .withOpacity(0.3),
+                                                .withValues(alpha: 0.3),
                                             width: 1.5,
                                           ),
                                         ),
@@ -425,8 +425,8 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                   color: AppColors.pinkDeep,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.pinkDeep.withOpacity(
-                                        0.4,
+                                      color: AppColors.pinkDeep.withValues(
+                                        alpha: 0.4,
                                       ),
                                       blurRadius: 24,
                                       offset: const Offset(0, 4),
@@ -566,15 +566,15 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                   height: 56,
                                   decoration: BoxDecoration(
                                     color: _isOtpSent
-                                        ? AppColors.pinkSoft.withOpacity(0.4)
+                                        ? AppColors.pinkSoft.withValues(alpha: 0.4)
                                         : Colors.white,
                                     border: Border.all(
                                       color: _isOtpSent
-                                          ? AppColors.pinkSoft.withOpacity(0.4)
+                                          ? AppColors.pinkSoft.withValues(alpha: 0.4)
                                           : (_phoneFocusNode.hasFocus
                                                 ? AppColors.pinkDeep
-                                                : AppColors.ink.withOpacity(
-                                                    0.12,
+                                                : AppColors.ink.withValues(
+                                                    alpha: 0.12,
                                                   )),
                                       width:
                                           _phoneFocusNode.hasFocus &&
@@ -590,7 +590,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                         ? [
                                             BoxShadow(
                                               color: AppColors.pinkDeep
-                                                  .withOpacity(0.15),
+                                                  .withValues(alpha: 0.15),
                                               blurRadius: 10,
                                               offset: const Offset(0, 3),
                                             ),
@@ -623,7 +623,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                       fontSize: 18,
                                       letterSpacing: 1.5,
                                       color: _isOtpSent
-                                          ? AppColors.ink.withOpacity(0.6)
+                                          ? AppColors.ink.withValues(alpha: 0.6)
                                           : AppColors.ink,
                                     ),
                                   ),
@@ -658,7 +658,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                       'Your number stays private — never shown on your profile or shared.',
                                       style: AppText.sub.copyWith(
                                         fontSize: 13,
-                                        color: AppColors.ink.withOpacity(0.8),
+                                        color: AppColors.ink.withValues(alpha: 0.8),
                                         height: 1.5,
                                       ),
                                     ),
@@ -676,7 +676,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                 Expanded(
                                   child: Container(
                                     height: 1,
-                                    color: AppColors.ink.withOpacity(0.3),
+                                    color: AppColors.ink.withValues(alpha: 0.3),
                                   ),
                                 ),
                                 Padding(
@@ -686,7 +686,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                   child: Text(
                                     'Enter the 6-digit code',
                                     style: AppText.sub.copyWith(
-                                      color: AppColors.ink.withOpacity(0.4),
+                                      color: AppColors.ink.withValues(alpha: 0.4),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -695,7 +695,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                 Expanded(
                                   child: Container(
                                     height: 1,
-                                    color: AppColors.ink.withOpacity(0.3),
+                                    color: AppColors.ink.withValues(alpha: 0.3),
                                   ),
                                 ),
                               ],
@@ -761,13 +761,13 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                           decoration: BoxDecoration(
                                             color: isFilled || isCurrent
                                                 ? AppColors.pinkSoft
-                                                      .withOpacity(0.4)
+                                                      .withValues(alpha: 0.4)
                                                 : Colors.white,
                                             border: Border.all(
                                               color: isFilled || isCurrent
                                                   ? AppColors.pinkDeep
-                                                  : AppColors.ink.withOpacity(
-                                                      0.12,
+                                                  : AppColors.ink.withValues(
+                                                      alpha: 0.12,
                                                     ),
                                               width: isFilled || isCurrent
                                                   ? 1.5
@@ -780,7 +780,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                                 ? [
                                                     BoxShadow(
                                                       color: AppColors.pinkDeep
-                                                          .withOpacity(0.15),
+                                                          .withValues(alpha: 0.15),
                                                       blurRadius: 8,
                                                       offset: const Offset(
                                                         0,
@@ -850,7 +850,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                 Expanded(
                                   child: Container(
                                     height: 1,
-                                    color: AppColors.line.withOpacity(0.6),
+                                    color: AppColors.line.withValues(alpha: 0.6),
                                   ),
                                 ),
                                 Padding(
@@ -861,7 +861,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                     'Have an invite code?',
                                     style: AppText.sub.copyWith(
                                       fontSize: 11,
-                                      color: AppColors.ink.withOpacity(0.4),
+                                      color: AppColors.ink.withValues(alpha: 0.4),
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -869,7 +869,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                 Expanded(
                                   child: Container(
                                     height: 1,
-                                    color: AppColors.line.withOpacity(0.6),
+                                    color: AppColors.line.withValues(alpha: 0.6),
                                   ),
                                 ),
                               ],
@@ -914,7 +914,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                         hintText:
                                             'Enter friend\'s code (optional)',
                                         hintStyle: AppText.body.copyWith(
-                                          color: AppColors.ink.withOpacity(0.4),
+                                          color: AppColors.ink.withValues(alpha: 0.4),
                                           fontSize: 15,
                                         ),
                                         border: InputBorder.none,
@@ -937,7 +937,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                   decoration: BoxDecoration(
                                     color: _isInviteCodeEntered
                                         ? AppColors.pinkDeep
-                                        : AppColors.pinkSoft.withOpacity(0.5),
+                                        : AppColors.pinkSoft.withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: TextButton(
@@ -992,7 +992,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                               'Your friend earns a reward when you activate a plan.',
                               style: AppText.sub.copyWith(
                                 fontSize: 11,
-                                color: AppColors.ink.withOpacity(0.5),
+                                color: AppColors.ink.withValues(alpha: 0.5),
                               ),
                             ),
                           ],
@@ -1017,7 +1017,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),
@@ -1057,14 +1057,14 @@ class _FeatureItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.pinkSoft.withOpacity(
-                  0.6,
+                color: AppColors.pinkSoft.withValues(
+                  alpha: 0.6,
                 ), // Light pink background
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
-                color: AppColors.ink.withOpacity(0.7),
+                color: AppColors.ink.withValues(alpha: 0.7),
                 size: 24,
               ), // Greyish icon
             ),
@@ -1075,7 +1075,7 @@ class _FeatureItem extends StatelessWidget {
               style: AppText.sub.copyWith(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink.withOpacity(0.8),
+                color: AppColors.ink.withValues(alpha: 0.8),
               ),
             ),
           ],

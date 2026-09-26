@@ -151,7 +151,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -287,12 +287,12 @@ class _WithdrawScreenState extends State<WithdrawScreen>
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 12,
                         offset: const Offset(0, 5),
                       ),
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -593,7 +593,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
               ? []
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -606,7 +606,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
               height: 32,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.white.withOpacity(0.6)
+                    ? Colors.white.withValues(alpha: 0.6)
                     : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -664,7 +664,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
               border: Border.all(color: const Color(0xFFFBE4E7), width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFE85A7A).withOpacity(0.08),
+                  color: const Color(0xFFE85A7A).withValues(alpha: 0.08),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -678,7 +678,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
                   child: Icon(
                     Icons.account_balance,
                     size: 90,
-                    color: const Color(0xFFE85A7A).withOpacity(0.05),
+                    color: const Color(0xFFE85A7A).withValues(alpha: 0.05),
                   ),
                 ),
                 Column(
@@ -725,7 +725,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
                       'Lifetime successfully processed',
                       style: TextStyle(
                         fontSize: 12,
-                        color: const Color(0xFFD84B6D).withOpacity(0.7),
+                        color: const Color(0xFFD84B6D).withValues(alpha: 0.7),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -805,12 +805,12 @@ class _WithdrawScreenState extends State<WithdrawScreen>
                       receivedAmount: item['receivedAmount'],
                     ),
                   );
-                }).toList(),
+                }),
                 const SizedBox(height: 12),
               ],
             ),
             );
-          }).toList(),
+          }),
           
           const SizedBox(height: 40),
         ],
@@ -881,7 +881,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
         border: Border.all(color: Colors.grey.shade100, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.015),
+            color: Colors.black.withValues(alpha: 0.015),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

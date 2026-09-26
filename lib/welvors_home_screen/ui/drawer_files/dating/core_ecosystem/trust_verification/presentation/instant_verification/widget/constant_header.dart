@@ -1,7 +1,7 @@
 import '../../../export.dart';
 
 class ConsentHeader extends StatelessWidget {
-  const ConsentHeader();
+  const ConsentHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -8,10 +8,8 @@ import '../../widgets/primary_button.dart';
 import '../../widgets/stat_pill.dart';
 import '../../widgets/terms_bottom_sheet.dart';
 import '../../widgets/privacy_bottom_sheet.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 import 'verify_number_screen.dart';
-import 'onboarding_flow_screen.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -77,7 +75,7 @@ class _LandingScreenState extends State<LandingScreen> {
                 'Real connections with people who want\nthe same things you do. No biodata, no\nfamily pressure — just you, on your own\ntimeline.',
                 textAlign: TextAlign.center,
                 style: AppText.body.copyWith(
-                  color: AppColors.ink.withOpacity(0.65),
+                  color: AppColors.ink.withValues(alpha: 0.65),
                   height: 1.5,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -120,9 +118,9 @@ class _LandingScreenState extends State<LandingScreen> {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: _isTermsAccepted ? AppColors.pinkSoft.withOpacity(0.3) : const Color(0xFFF9F9F9),
+                    color: _isTermsAccepted ? AppColors.pinkSoft.withValues(alpha: 0.3) : const Color(0xFFF9F9F9),
                     border: Border.all(
-                      color: _isTermsAccepted ? AppColors.pinkDeep.withOpacity(0.4) : const Color(0xFFEBE6DF), 
+                      color: _isTermsAccepted ? AppColors.pinkDeep.withValues(alpha: 0.4) : const Color(0xFFEBE6DF), 
                       width: 1.5
                     ),
                     borderRadius: BorderRadius.circular(16),
@@ -145,7 +143,7 @@ class _LandingScreenState extends State<LandingScreen> {
                           borderRadius: BorderRadius.circular(6),
                           boxShadow: _isTermsAccepted ? [
                             BoxShadow(
-                              color: AppColors.pinkDeep.withOpacity(0.3),
+                              color: AppColors.pinkDeep.withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             )
@@ -161,7 +159,7 @@ class _LandingScreenState extends State<LandingScreen> {
                           text: TextSpan(
                             style: AppText.body.copyWith(
                               fontSize: 13,
-                              color: AppColors.ink.withOpacity(0.8),
+                              color: AppColors.ink.withValues(alpha: 0.8),
                               height: 1.5,
                             ),
                             children: [

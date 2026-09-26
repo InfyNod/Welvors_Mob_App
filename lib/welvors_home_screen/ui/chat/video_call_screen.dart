@@ -39,7 +39,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   ? CachedNetworkImage(
                       imageUrl: widget.user.image,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => _videoFallback(),
+                      placeholder: (_, _) => _videoFallback(),
                       errorWidget: (_, _, _) => _videoFallback(),
                     )
                   : _videoFallback(),

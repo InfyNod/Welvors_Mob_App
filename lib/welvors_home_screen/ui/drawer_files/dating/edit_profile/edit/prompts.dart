@@ -69,7 +69,7 @@ class PromptsSection extends StatelessWidget {
                     244,
                     167,
                     187,
-                  ).withOpacity(0.5),
+                  ).withValues(alpha: 0.5),
                   strokeWidth: 1.5,
                   dashPattern: const [6, 4],
                   borderType: BorderType.RRect,
@@ -122,12 +122,12 @@ class PromptsSection extends StatelessWidget {
           ), // Faint blush background like reference image
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFFE43A6A).withOpacity(0.15), // Softer border
+            color: const Color(0xFFE43A6A).withValues(alpha: 0.15), // Softer border
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -158,7 +158,7 @@ class PromptsSection extends StatelessWidget {
                     child: Icon(
                       Icons.edit_outlined,
                       size: 18,
-                      color: const Color(0xFFE43A6A).withOpacity(0.8),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.8),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -257,9 +257,9 @@ class PromptsSection extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
+        bool isLoading = false;
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            bool isLoading = false;
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.only(
@@ -427,7 +427,7 @@ class PromptsSection extends StatelessWidget {
                           boxShadow: [
                             if (!isLoading)
                               BoxShadow(
-                                color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -480,7 +480,6 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
 
   List<dynamic> _categoriesData = [];
   bool _isLoading = true;
-  String? _selectedCategoryId;
   int _selectedCategoryIndex = 0;
 
   @override
@@ -498,9 +497,6 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
           return prompts != null && prompts.isNotEmpty;
         }).toList();
 
-        if (_categoriesData.isNotEmpty) {
-          _selectedCategoryId = _categoriesData.first['id'];
-        }
         _isLoading = false;
       });
     }
@@ -564,7 +560,7 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: isSelected
-                                    ? const Color(0xFFE43A6A).withOpacity(0.2)
+                                    ? const Color(0xFFE43A6A).withValues(alpha: 0.2)
                                     : Colors.transparent,
                                 width: 1.5,
                               ),
@@ -573,7 +569,7 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                                       BoxShadow(
                                         color: const Color(
                                           0xFFE43A6A,
-                                        ).withOpacity(0.1),
+                                        ).withValues(alpha: 0.1),
                                         blurRadius: 10,
                                         offset: const Offset(0, 4),
                                       ),
@@ -663,7 +659,7 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                                   ? []
                                   : [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.02),
+                                        color: Colors.black.withValues(alpha: 0.02),
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       ),
@@ -812,7 +808,7 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: _pinkDeep.withOpacity(0.3),
+                          color: _pinkDeep.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),

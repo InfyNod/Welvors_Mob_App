@@ -1,7 +1,7 @@
 import '../../../export.dart';
 
 class SharedDataCard extends StatelessWidget {
-  const SharedDataCard();
+  const SharedDataCard({super.key});
 
   @override
   Widget build(BuildContext context) {

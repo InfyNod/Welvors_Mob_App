@@ -181,7 +181,7 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.pinkDeep.withOpacity(0.1),
+                        color: AppColors.pinkDeep.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -251,12 +251,12 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                             245,
                             179,
                             193,
-                          ).withOpacity(0.9),
+                          ).withValues(alpha: 0.9),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.pinkSoft.withOpacity(0.15),
+                            color: AppColors.pinkSoft.withValues(alpha: 0.15),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -341,12 +341,12 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                             245,
                             179,
                             193,
-                          ).withOpacity(0.9),
+                          ).withValues(alpha: 0.9),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.pinkSoft.withOpacity(0.1),
+                            color: AppColors.pinkSoft.withValues(alpha: 0.1),
                             blurRadius: 24,
                             offset: const Offset(0, 8),
                           ),
@@ -390,7 +390,7 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                                       ),
                                       Divider(
                                         height: 32,
-                                        color: AppColors.pinkSoft.withOpacity(0.9),
+                                        color: AppColors.pinkSoft.withValues(alpha: 0.9),
                                       ),
                                     ],
                                   );
@@ -446,7 +446,7 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                                       Text(
                                         '+ $_welcomeCoins Welcome Coins one-time',
                                         style: AppText.body.copyWith(
-                                          color: Colors.white.withOpacity(0.85),
+                                          color: Colors.white.withValues(alpha: 0.85),
                                           fontSize: 13,
                                         ),
                                       ),
@@ -520,7 +520,7 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                           border: Border.all(color: Colors.white),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.pinkSoft.withOpacity(0.08),
+                              color: AppColors.pinkSoft.withValues(alpha: 0.08),
                               blurRadius: 20,
                               offset: const Offset(0, 4),
                             ),
@@ -579,7 +579,7 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.pinkSoft.withOpacity(0.2),
+                                color: AppColors.pinkSoft.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(

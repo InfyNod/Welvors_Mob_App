@@ -257,14 +257,17 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
 
           List<String> locParts = [];
           if (profileData['area'] != null &&
-              profileData['area'].toString().isNotEmpty)
+              profileData['area'].toString().isNotEmpty) {
             locParts.add(extractString(profileData['area']));
+          }
           if (profileData['city'] != null &&
-              profileData['city'].toString().isNotEmpty)
+              profileData['city'].toString().isNotEmpty) {
             locParts.add(extractString(profileData['city']));
+          }
           if (profileData['state'] != null &&
-              profileData['state'].toString().isNotEmpty)
+              profileData['state'].toString().isNotEmpty) {
             locParts.add(extractString(profileData['state']));
+          }
           String combinedLocation = locParts.join(', ');
 
           // Create base profile. We use fallback values in case the API doesn't provide them.
@@ -407,11 +410,11 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                 color: Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFFF05C91).withOpacity(0.1),
+                  color: const Color(0xFFF05C91).withValues(alpha: 0.1),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF966EB4).withOpacity(0.10),
+                    color: const Color(0xFF966EB4).withValues(alpha: 0.10),
                     blurRadius: 30,
                     offset: const Offset(0, 4),
                   ),

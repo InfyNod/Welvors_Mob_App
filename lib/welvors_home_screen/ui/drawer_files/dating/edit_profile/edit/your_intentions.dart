@@ -91,7 +91,7 @@ class _YourIntentionsSectionState extends State<YourIntentionsSection> {
                   border: Border.all(color: Colors.grey.shade200),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withValues(alpha: 0.02),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -232,7 +232,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE43A6A).withOpacity(0.1),
+                  color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -349,7 +349,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
                   border: Border.all(color: Colors.grey.shade200),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -422,7 +422,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
                                   color: isSelected
                                       ? const Color(
                                           0xFFE43A6A,
-                                        ).withOpacity(0.05)
+                                        ).withValues(alpha: 0.05)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
@@ -460,7 +460,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
                                                 color: isSelected
                                                     ? const Color(
                                                         0xFFE43A6A,
-                                                      ).withOpacity(0.8)
+                                                      ).withValues(alpha: 0.8)
                                                     : Colors.black54,
                                               ),
                                             ),

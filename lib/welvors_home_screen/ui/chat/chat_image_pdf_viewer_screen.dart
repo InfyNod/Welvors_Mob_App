@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class ChatImageViewerScreen extends StatelessWidget {
   final String imageUrl;
@@ -22,22 +22,9 @@ class ChatImageViewerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final image = _isLocal
         ? Image.file(File(imageUrl), fit: BoxFit.contain)
-        : Image.network(
-            imageUrl,
+        : AppCachedImage(
+            imageUrl: imageUrl,
             fit: BoxFit.contain,
-            loadingBuilder: (context, child, progress) {
-              if (progress == null) return child;
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              );
-            },
-            errorBuilder: (_, __, ___) => const Center(
-              child: Icon(
-                Icons.broken_image_outlined,
-                color: Colors.white,
-                size: 64,
-              ),
-            ),
           );
 
     return Scaffold(
@@ -59,7 +46,7 @@ class ChatImageViewerScreen extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_event.dart';
-import 'super_boost_screen.dart';
 import 'super_boost_payment_processing_dialog.dart';
 
 class GetSuperBoostsDrawer extends StatefulWidget {

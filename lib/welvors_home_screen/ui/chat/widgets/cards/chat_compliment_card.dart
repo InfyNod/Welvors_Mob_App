@@ -69,8 +69,8 @@ class ChatComplimentCard extends StatelessWidget {
                     CachedNetworkImage(
                       imageUrl: message.complimentImageUrl!,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(color: const Color(0xffdbe7f2)),
-                      errorWidget: (_, __, ___) => Container(color: const Color(0xffdbe7f2)),
+                      placeholder: (_, _) => Container(color: const Color(0xffdbe7f2)),
+                      errorWidget: (_, _, _) => Container(color: const Color(0xffdbe7f2)),
                     ),
                     Positioned(
                       left: 14,

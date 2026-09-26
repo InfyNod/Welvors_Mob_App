@@ -75,7 +75,7 @@ class _EventItineraryAndLocationSectionState
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
+                        color: Colors.black.withValues(alpha: 0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -137,7 +137,7 @@ class _EventItineraryAndLocationSectionState
                                       isLast: isLastVisible,
                                     );
                                   })
-                                  .toList(),
+                                  ,
                               if (items.length > 1)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
@@ -266,8 +266,6 @@ class _EventItineraryAndLocationSectionState
     final String title = item['title']?.toString() ?? '';
     final String subtitle = item['description']?.toString() ?? '';
 
-    final String? dayNumber = item['dayNumber']?.toString();
-    final String? date = item['date']?.toString();
     final String? elevation = item['elevation']?.toString();
     final String? distance = item['distance']?.toString();
     final String? meals = item['meals']?.toString();
@@ -432,7 +430,7 @@ class _EventItineraryAndLocationSectionState
                 height: 200,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     width: 3,
                   ),
                   borderRadius: BorderRadius.circular(200),
@@ -447,7 +445,7 @@ class _EventItineraryAndLocationSectionState
                 height: 300,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     width: 3,
                   ),
                   borderRadius: BorderRadius.circular(200),
@@ -459,7 +457,7 @@ class _EventItineraryAndLocationSectionState
               child: Container(
                 width: 3,
                 height: 200,
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
               ),
             ),
             // Location Pin

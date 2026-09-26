@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/retry.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_dimens.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/autotext.dart';
 
 import '../bloc/membership_plan_bloc.dart';
 import '../bloc/membership_plan_event.dart';
@@ -69,7 +67,7 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -211,85 +209,6 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return SizedBox(
-      height: 72,
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-            child: InkWell(
-              onTap: () => Navigator.pop(context),
-              borderRadius: BorderRadius.circular(24),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade200),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.black87,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'Choose your plan',
-            style: AppText.h2.copyWith(
-              fontSize: 20,
-              color: AppColors.ink,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const Spacer(),
-          // _roundIconButton(
-          //   icon: Icons.question_mark_rounded,
-          //   onTap: () => _showHelp(context),
-          // ),
-        ],
-      ),
-    );
-  }
-
-  Widget _roundIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: () => Navigator.pop(context),
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.arrow_back_ios_new,
-          color: Colors.black87,
-          size: 16,
-        ),
-      ),
-    );
-  }
-
   Widget _buildTabs(
     BuildContext context,
     MembershipPlanState state,
@@ -394,9 +313,9 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(.08),
+              color: Colors.white.withValues(alpha: .08),
               borderRadius: BorderRadius.circular(13),
-              border: Border.all(color: Colors.white.withOpacity(.15)),
+              border: Border.all(color: Colors.white.withValues(alpha: .15)),
             ),
             alignment: Alignment.center,
             child: const Text('📋', style: TextStyle(fontSize: 28)),
@@ -420,7 +339,7 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
                     style: TextStyle(
                       fontSize: 12,
                       height: 1.4,
-                      color: Colors.white.withOpacity(.7),
+                      color: Colors.white.withValues(alpha: .7),
                     ),
                   ),
                 ],
@@ -466,7 +385,7 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: buttonColor.withOpacity(.30),
+                color: buttonColor.withValues(alpha: .30),
                 blurRadius: 22,
                 offset: const Offset(0, 10),
               ),
@@ -529,37 +448,6 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
         builder: (_) =>
             MembershipCheckoutScreen(plan: plan, duration: duration),
       ),
-    );
-  }
-
-  void _showHelp(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.canvas,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) {
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Membership plans', style: AppText.h1),
-              const SizedBox(height: 10),
-              Text(
-                'Choose the membership that best matches your dating and privacy needs.',
-                style: AppText.body.copyWith(
-                  color: AppColors.muted,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
     );
   }
 }

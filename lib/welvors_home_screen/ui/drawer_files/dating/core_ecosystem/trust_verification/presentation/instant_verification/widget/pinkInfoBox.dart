@@ -30,7 +30,7 @@ class PinkInfoBox extends StatelessWidget {
 class GreenInfoBox extends StatelessWidget {
   final String text;
 
-  const GreenInfoBox({required this.text});
+  const GreenInfoBox({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {

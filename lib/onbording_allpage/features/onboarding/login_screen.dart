@@ -202,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: Border.all(color: Colors.grey.shade200),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
+                                color: Colors.black.withValues(alpha: 0.04),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -358,11 +358,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   height: 56,
                                   decoration: BoxDecoration(
                                     color: _isOtpSent
-                                        ? AppColors.pinkSoft.withOpacity(0.4)
+                                        ? AppColors.pinkSoft.withValues(alpha: 0.4)
                                         : Colors.white,
                                     border: Border.all(
                                       color: _isOtpSent
-                                          ? AppColors.pinkSoft.withOpacity(0.4)
+                                          ? AppColors.pinkSoft.withValues(alpha: 0.4)
                                           : (_phoneFocusNode.hasFocus
                                                 ? AppColors.pinkDeep
                                                 : AppColors.line),
@@ -380,7 +380,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ? [
                                             BoxShadow(
                                               color: AppColors.pinkDeep
-                                                  .withOpacity(0.15),
+                                                  .withValues(alpha: 0.15),
                                               blurRadius: 10,
                                               offset: const Offset(0, 3),
                                             ),
@@ -413,7 +413,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontSize: 18,
                                       letterSpacing: 1.5,
                                       color: _isOtpSent
-                                          ? AppColors.ink.withOpacity(0.6)
+                                          ? AppColors.ink.withValues(alpha: 0.6)
                                           : AppColors.ink,
                                     ),
                                   ),
@@ -440,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Text(
                                     'Enter the 6-digit code',
                                     style: AppText.sub.copyWith(
-                                      color: AppColors.ink.withOpacity(0.4),
+                                      color: AppColors.ink.withValues(alpha: 0.4),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -512,7 +512,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           decoration: BoxDecoration(
                                             color: isFilled || isCurrent
                                                 ? AppColors.pinkSoft
-                                                      .withOpacity(0.4)
+                                                      .withValues(alpha: 0.4)
                                                 : Colors.white,
                                             border: Border.all(
                                               color: isFilled || isCurrent
@@ -527,7 +527,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 ? [
                                                     BoxShadow(
                                                       color: AppColors.pinkDeep
-                                                          .withOpacity(0.15),
+                                                          .withValues(alpha: 0.15),
                                                       blurRadius: 8,
                                                       offset: const Offset(
                                                         0,

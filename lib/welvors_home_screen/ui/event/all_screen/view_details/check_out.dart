@@ -9,6 +9,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/
 import 'package:intl/intl.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String eventId;
@@ -223,15 +224,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     int womenCount = !isUserMan ? 1 : 0;
 
     for (var p in _partners) {
-      if (p.isMan == true)
+      if (p.isMan == true) {
         menCount++;
-      else if (p.isMan == false)
+      } else if (p.isMan == false) {
         womenCount++;
+      }
     }
 
     List<Map<String, dynamic>> tickets = [];
-    if (womenCount > 0)
+    if (womenCount > 0) {
       tickets.add({'ticketType': 'WOMEN', 'quantity': womenCount});
+    }
     if (menCount > 0) tickets.add({'ticketType': 'MEN', 'quantity': menCount});
 
     final response = await EventApiService.calculateCheckout(
@@ -250,17 +253,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   // Partner Tickets State
-  List<PartnerTicket> _partners = [];
+  final List<PartnerTicket> _partners = [];
   double _womanPrice = 1250.0;
   double _manPrice = 1800.0;
-
-  double get _baseTotal {
-    if (_bookingPreview != null && _bookingPreview!['ticketAmount'] != null) {
-      return double.tryParse(_bookingPreview!['ticketAmount'].toString()) ??
-          0.0;
-    }
-    return 0.0;
-  }
 
   double get _gst {
     if (_bookingPreview != null && _bookingPreview!['gstAmount'] != null) {
@@ -272,14 +267,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   double get _platformFee {
     if (_bookingPreview != null && _bookingPreview!['platformFee'] != null) {
       return double.tryParse(_bookingPreview!['platformFee'].toString()) ?? 0.0;
-    }
-    return 0.0;
-  }
-
-  double get _discountAmount {
-    if (_bookingPreview != null && _bookingPreview!['discountAmount'] != null) {
-      return double.tryParse(_bookingPreview!['discountAmount'].toString()) ??
-          0.0;
     }
     return 0.0;
   }
@@ -332,7 +319,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -387,19 +374,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.15),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                           blurRadius: 24,
                           spreadRadius: 2,
                           offset: const Offset(0, 8),
                         ),
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
                       ],
                       border: Border.all(
-                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
@@ -413,23 +400,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: widget.imageUrl.startsWith('http')
-                                  ? Image.network(
-                                      widget.imageUrl,
+                                  ? AppCachedImage(
+                                      imageUrl: widget.imageUrl,
                                       width: 48,
                                       height: 48,
                                       fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              Container(
-                                                width: 48,
-                                                height: 48,
-                                                color: Colors.grey.shade200,
-                                                child: const Icon(
-                                                  Icons.image,
-                                                  size: 24,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
                                     )
                                   : Image.asset(
                                       widget.imageUrl,
@@ -519,7 +494,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               subtitle: p.isMan == true ? "(Man)" : "(Woman)",
                             ),
                           );
-                        }).toList(),
+                        }),
                         _buildPriceRow(
                           'Platform fee',
                           _currencyFormat.format(_platformFee),
@@ -611,7 +586,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    '${_couponCode} applied',
+                                    '$_couponCode applied',
                                     style: const TextStyle(
                                       fontSize: 13,
                                       color: Color.fromRGBO(44, 175, 107, 1),
@@ -644,7 +619,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       ? Colors.transparent
                                       : const Color(
                                           0xFFE43A6A,
-                                        ).withOpacity(0.2),
+                                        ).withValues(alpha: 0.2),
                                   height: 1,
                                 ),
                               ),
@@ -704,7 +679,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 16,
                   offset: const Offset(0, -8),
                 ),
@@ -743,16 +718,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 final isUserMan =
                                     (userGender == 'man' ||
                                     userGender == 'men');
-                                if (isUserMan)
+                                if (isUserMan) {
                                   menTicketCount++;
-                                else
+                                } else {
                                   womenTicketCount++;
+                                }
 
                                 for (var p in _partners) {
-                                  if (p.isMan == true)
+                                  if (p.isMan == true) {
                                     menTicketCount++;
-                                  else if (p.isMan == false)
+                                  } else if (p.isMan == false) {
                                     womenTicketCount++;
+                                  }
                                 }
 
                                 final response =
@@ -762,7 +739,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       womenTicketCount: womenTicketCount,
                                     );
 
-                                if (mounted) {
+                                if (context.mounted) {
                                       if (response != null &&
                                           response['success'] == true) {
                                         final data = response['data'];
@@ -770,24 +747,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         // Save booking ID to pass to success screen
                                         _currentBookingId = data['eventBooking']?['id'] ?? data['id'] ?? data['bookingId'] ?? data['booking']?['id'];
 
+                                      final razorpayKey = data['razorpayKeyId'] as String?;
+                                      if (razorpayKey == null || razorpayKey.isEmpty) {
+                                        AppLogger.e('CheckoutScreen', 'Razorpay key missing from backend order response');
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('Payment gateway configuration error. Please try again.')),
+                                          );
+                                          setState(() {
+                                            _isProcessingPayment = false;
+                                          });
+                                        }
+                                        return;
+                                      }
+
+                                      final profileState = context.read<ProfileEditCubit>().state;
+                                      final userEmail = profileState.email.isNotEmpty ? profileState.email : null;
+                                      final userContact = data['contact']?.toString() ?? data['mobile']?.toString();
+
                                       var options = {
-                                        'key':
-                                            data['razorpayKeyId'] ??
-                                            'rzp_test_TX7SxmIJ0n6rJW',
+                                        'key': razorpayKey,
                                         'amount': (data['amount'] as num).toInt(),
-                                      'name': 'Welvors',
-                                      'description': 'Event Booking',
-                                      'order_id': data['razorpayOrderId'],
-                                      'prefill': {
-                                        'contact': '9999999999', // Kept dummy because ProfileEditCubit doesn't have mobile
-                                        'email': context.read<ProfileEditCubit>().state.email.isNotEmpty 
-                                            ? context.read<ProfileEditCubit>().state.email 
-                                            : 'user@welvors.com',
-                                      },
-                                      'retry': {
-                                        'enabled': true,
-                                        'max_count': 1,
-                                      },
+                                        'name': 'Welvors',
+                                        'description': 'Event Booking',
+                                        'order_id': data['razorpayOrderId'],
+                                        'prefill': {
+                                          if (userContact != null && userContact.isNotEmpty) 'contact': userContact,
+                                          if (userEmail != null && userEmail.isNotEmpty) 'email': userEmail,
+                                        },
+                                        'retry': {
+                                          'enabled': true,
+                                          'max_count': 1,
+                                        },
                                       'send_sms_hash': true,
                                       'theme': {'color': '#E43A6A'},
                                       'external': {
@@ -814,15 +805,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     setState(() {
                                       _isProcessingPayment = false;
                                     });
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          response?['message'] ??
-                                              'Failed to create order',
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            response?['message'] ??
+                                                'Failed to create order',
+                                          ),
+                                          backgroundColor: Colors.red,
                                         ),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
+                                      );
+                                    }
                                   }
                                 }
                               },
@@ -918,7 +911,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -948,7 +941,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   int idx = entry.key;
                   PartnerTicket p = entry.value;
                   return _buildPartnerForm(idx, p);
-                }).toList(),
+                }),
                 // Add button
                 InkWell(
                   onTap: () {
@@ -960,7 +953,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   borderRadius: BorderRadius.circular(12),
                   child: CustomPaint(
                     painter: DashedBorderPainter(
-                      color: const Color(0xFFE43A6A).withOpacity(0.5),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.5),
                       strokeWidth: 1.5,
                       gap: 6.0,
                     ),
@@ -969,7 +962,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: const Color(0xFFE43A6A).withOpacity(0.05),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.05),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1047,7 +1040,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFFE43A6A).withOpacity(0.08),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.08),
                         ),
                         child: const Icon(
                           Icons.close,
@@ -1148,7 +1141,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: partner.isMan == false
-                          ? const Color(0xFFE43A6A).withOpacity(0.08)
+                          ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
                           : Colors.white,
                       border: Border.all(
                         color: partner.isMan == false
@@ -1187,7 +1180,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: partner.isMan == true
-                          ? const Color(0xFFE43A6A).withOpacity(0.08)
+                          ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
                           : Colors.white,
                       border: Border.all(
                         color: partner.isMan == true

@@ -66,19 +66,19 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
 
     if (mounted) {
       setState(() {
-        _professionsMap = results[0] as Map<String, int>;
+        _professionsMap = results[0];
         _professionOptions = _professionsMap.keys.toList();
 
-        _experiencesMap = results[1] as Map<String, int>;
+        _experiencesMap = results[1];
         _experienceOptions = _experiencesMap.keys.toList();
 
-        _employmentTypesMap = results[2] as Map<String, int>;
+        _employmentTypesMap = results[2];
         _employmentTypeOptions = _employmentTypesMap.keys.toList();
 
-        _salaryRangesMap = results[3] as Map<String, int>;
+        _salaryRangesMap = results[3];
         _salaryRangeOptions = _salaryRangesMap.keys.toList();
 
-        _ambitionsMap = results[4] as Map<String, int>;
+        _ambitionsMap = results[4];
         _ambitionLevelOptions = _ambitionsMap.keys.toList();
 
         _isLoading = false;

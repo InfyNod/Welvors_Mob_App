@@ -6,6 +6,7 @@ import 'cancel/track_refund_status.dart';
 import 'service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class MyTicketScreen extends StatefulWidget {
   const MyTicketScreen({super.key});
@@ -153,7 +154,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -175,7 +176,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                   border: Border.all(color: Colors.grey.shade200),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withValues(alpha: 0.02),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -239,7 +240,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                   border: Border.all(color: Colors.grey.shade200),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -626,7 +627,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             spreadRadius: 1,
             offset: const Offset(0, 4),
@@ -650,16 +651,16 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                         colorFilter: greyscaleFilter,
                         child: Opacity(
                           opacity: 0.8,
-                          child: Image.network(
-                            imageUrl,
+                          child: AppCachedImage(
+                            imageUrl: imageUrl,
                             height: 140,
                             width: double.infinity,
                             fit: BoxFit.cover,
                           ),
                         ),
                       )
-                    : Image.network(
-                        imageUrl,
+                    : AppCachedImage(
+                        imageUrl: imageUrl,
                         height: 140,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -869,7 +870,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFE85A7A).withOpacity(0.15),
+                                color: const Color(0xFFE85A7A).withValues(alpha: 0.15),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -1065,7 +1066,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                                         (isCancelled
                                                 ? Colors.grey
                                                 : const Color(0xFFE85A7A))
-                                            .withOpacity(0.3),
+                                            .withValues(alpha: 0.3),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
                                   ),

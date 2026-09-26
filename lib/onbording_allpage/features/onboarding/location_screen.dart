@@ -230,7 +230,7 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.pinkDeep.withOpacity(0.2),
+                          color: AppColors.pinkDeep.withValues(alpha: 0.2),
                           blurRadius: 16,
                           spreadRadius: 4,
                         ),
@@ -261,12 +261,12 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
                     ],
-                    border: Border.all(color: AppColors.line.withOpacity(0.5)),
+                    border: Border.all(color: AppColors.line.withValues(alpha: 0.5)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -419,7 +419,7 @@ class _LocationScreenState extends State<LocationScreen> with AutomaticKeepAlive
                                       )
                                     : CupertinoSwitch(
                                         value: _useCurrentLocation,
-                                        activeColor: CupertinoColors.activeGreen,
+                                        activeTrackColor: CupertinoColors.activeGreen,
                                         onChanged: (val) {
                                           setState(() {
                                             _useCurrentLocation = val;

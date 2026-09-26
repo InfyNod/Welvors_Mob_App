@@ -69,7 +69,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.pinkSoft.withOpacity(0.5) : Colors.white,
+          color: isSelected ? AppColors.pinkSoft.withValues(alpha: 0.5) : Colors.white,
           border: Border.all(
             color: isSelected ? AppColors.pinkDeep : AppColors.line,
             width: 1.5,
@@ -208,7 +208,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: isSelected ? [
                           BoxShadow(
-                            color: const Color(0xFFE43A6A).withOpacity(0.3),
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           )
@@ -256,7 +256,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -326,7 +326,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                 subtitle: 'Show me men',
                 icon: Icons.male,
                 iconColor: AppColors.blue,
-                iconBg: AppColors.blue.withOpacity(0.15),
+                iconBg: AppColors.blue.withValues(alpha: 0.15),
                 isSelected: _selectedShowMe == 'MEN',
                 onTap: () {
                   setState(() {
@@ -341,7 +341,7 @@ class _ShowMeScreenState extends State<ShowMeScreen> {
                 subtitle: 'Show me non-binary people',
                 icon: Icons.transgender,
                 iconColor: AppColors.gold,
-                iconBg: AppColors.gold.withOpacity(0.15),
+                iconBg: AppColors.gold.withValues(alpha: 0.15),
                 isSelected: _selectedShowMe == 'NON_BINARY',
                 onTap: () {
                   setState(() {

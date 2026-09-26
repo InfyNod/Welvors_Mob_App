@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../post_a_plan/activity_1.dart';
@@ -60,14 +59,14 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
   }
 
   String durationStr = rawPlan['duration']?.toString() ?? '120';
-  if (durationStr == '120')
+  if (durationStr == '120') {
     durationStr = '2 hours';
-  else if (durationStr == '60')
+  } else if (durationStr == '60')
     durationStr = '1 hour';
   else if (durationStr == '180')
     durationStr = '3 hours';
 
-  String _extractLabel(dynamic field, String fallback) {
+  String extractLabel(dynamic field, String fallback) {
     if (field is Map) {
       return field['label']?.toString() ??
           field['name']?.toString() ??
@@ -78,9 +77,9 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
 
   String limitStr = rawPlan['participantLimit']?.toString() ?? '1';
   String groupSizeVal = '1 person';
-  if (limitStr == '2')
+  if (limitStr == '2') {
     groupSizeVal = '2 people';
-  else if (limitStr != '1' && limitStr != '0')
+  } else if (limitStr != '1' && limitStr != '0')
     groupSizeVal = 'Small group';
 
   return PostPlanState(
@@ -98,10 +97,10 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
     whenDate: rawPlan['eventDate']?.toString() ?? 'Today',
     time: parsedTime,
     howLong: durationStr,
-    whoPays: _extractLabel(rawPlan['whoPays'], '🤝 Split'),
+    whoPays: extractLabel(rawPlan['whoPays'], '🤝 Split'),
     groupSize: groupSizeVal,
-    whoCanRequest: _extractLabel(rawPlan['joinRequestGender'], 'Anyone'),
-    visibility: _extractLabel(rawPlan['visibility'], 'Premium 👑'),
+    whoCanRequest: extractLabel(rawPlan['joinRequestGender'], 'Anyone'),
+    visibility: extractLabel(rawPlan['visibility'], 'Premium 👑'),
     finalWhoCanJoin: groupSizeVal,
     verifiedMembersOnly: true,
     autoApproveRequests: false,
@@ -160,7 +159,7 @@ void showManageBottomSheet(
                 height: 64,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFA6A85).withOpacity(0.1),
+                  color: const Color(0xFFFA6A85).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: emoji.startsWith('http')
@@ -171,7 +170,7 @@ void showManageBottomSheet(
                           width: 40,
                           height: 40,
                           fit: BoxFit.cover,
-                          placeholder: (_, __) => Container(
+                          placeholder: (_, _) => Container(
                             width: 40,
                             height: 40,
                             color: Colors.grey.shade200,
@@ -250,7 +249,7 @@ void showManageBottomSheet(
                 titleColor: const Color(0xFFDE2957),
                 subtitle:
                     '${(plan['requests'] as List?)?.length ?? 3} people will be notified',
-                backgroundColor: const Color(0xFFFA6A85).withOpacity(0.08),
+                backgroundColor: const Color(0xFFFA6A85).withValues(alpha: 0.08),
                 onTap: () {
                   Navigator.pop(context);
                   showCancelPlanBottomSheet(context, plan, onPlanClosed);
@@ -383,7 +382,7 @@ void showReviewBottomSheet(
                     height: 64,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFA6A85).withOpacity(0.1),
+                      color: const Color(0xFFFA6A85).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: emoji.startsWith('http')
@@ -394,7 +393,7 @@ void showReviewBottomSheet(
                               width: 40,
                               height: 40,
                               fit: BoxFit.cover,
-                              placeholder: (_, __) => Container(
+                              placeholder: (_, _) => Container(
                                 width: 40,
                                 height: 40,
                                 color: Colors.grey.shade200,
@@ -470,7 +469,7 @@ void showReviewBottomSheet(
                             ),
                             decoration: BoxDecoration(
                               color: selectedOption == 'yes'
-                                  ? const Color(0xFFFA6A85).withOpacity(0.08)
+                                  ? const Color(0xFFFA6A85).withValues(alpha: 0.08)
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(20),
                               border: selectedOption == 'yes'
@@ -485,7 +484,7 @@ void showReviewBottomSheet(
                               boxShadow: [
                                 if (selectedOption != 'yes')
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.13),
+                                    color: Colors.black.withValues(alpha: 0.13),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -530,7 +529,7 @@ void showReviewBottomSheet(
                             ),
                             decoration: BoxDecoration(
                               color: selectedOption == 'no'
-                                  ? const Color(0xFFFA6A85).withOpacity(0.08)
+                                  ? const Color(0xFFFA6A85).withValues(alpha: 0.08)
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(20),
                               border: selectedOption == 'no'
@@ -545,7 +544,7 @@ void showReviewBottomSheet(
                               boxShadow: [
                                 if (selectedOption != 'no')
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.13),
+                                    color: Colors.black.withValues(alpha: 0.13),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -748,7 +747,7 @@ void showWhoCameBottomSheet(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFFFA6A85).withOpacity(0.08)
+                              ? const Color(0xFFFA6A85).withValues(alpha: 0.08)
                               : Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: isSelected
@@ -763,7 +762,7 @@ void showWhoCameBottomSheet(
                           boxShadow: [
                             if (!isSelected)
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.black.withValues(alpha: 0.08),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),
@@ -1145,7 +1144,7 @@ void showFeedbackBottomSheet(
                                       color: isSelected
                                           ? const Color(
                                               0xFFFA6A85,
-                                            ).withOpacity(0.1)
+                                            ).withValues(alpha: 0.1)
                                           : Colors.white,
                                       border: Border.all(
                                         color: isSelected
@@ -1329,7 +1328,7 @@ void showThanksBottomSheet(
           Icons.star_rounded,
           color: index < rating
               ? const Color(0xFFFFB800)
-              : const Color(0xFFFA6A85).withOpacity(0.05),
+              : const Color(0xFFFA6A85).withValues(alpha: 0.05),
           size: 20,
         );
       }),
@@ -1481,7 +1480,7 @@ void showThanksBottomSheet(
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
-                              color: const Color(0xFFFA6A85).withOpacity(0.3),
+                              color: const Color(0xFFFA6A85).withValues(alpha: 0.3),
                             ),
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -1651,7 +1650,7 @@ void showReportIssueBottomSheet(
                               width: 64,
                               height: 64,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFA6A85).withOpacity(0.1),
+                                color: const Color(0xFFFA6A85).withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: const Center(
@@ -1707,7 +1706,7 @@ void showReportIssueBottomSheet(
                                       color: isSelected
                                           ? const Color(
                                               0xFFFA6A85,
-                                            ).withOpacity(0.1)
+                                            ).withValues(alpha: 0.1)
                                           : Colors.white,
                                       border: Border.all(
                                         color: isSelected
@@ -1944,7 +1943,7 @@ void showNoOneCameBottomSheet(
               Icons.star_rounded,
               color: index < rating
                   ? const Color(0xFFFFB800)
-                  : const Color(0xFFFA6A85).withOpacity(0.1),
+                  : const Color(0xFFFA6A85).withValues(alpha: 0.1),
               size: 36,
             ),
           ),
@@ -2100,7 +2099,7 @@ void showNoOneCameBottomSheet(
                                         color: isSelected
                                             ? const Color(
                                                 0xFFFA6A85,
-                                              ).withOpacity(0.1)
+                                              ).withValues(alpha: 0.1)
                                             : Colors.white,
                                         border: Border.all(
                                           color: isSelected
@@ -2314,7 +2313,7 @@ void showCancelPlanBottomSheet(
                         width: 64,
                         height: 64,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFA6A85).withOpacity(0.1),
+                          color: const Color(0xFFFA6A85).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Center(

@@ -4,7 +4,7 @@ import '../../../export.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class BottomSection extends StatelessWidget {
-  const BottomSection();
+  const BottomSection({super.key});
 
   @override
   Widget build(BuildContext context) {

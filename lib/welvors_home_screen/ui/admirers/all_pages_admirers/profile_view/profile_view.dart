@@ -34,12 +34,12 @@ class AdmirerProfileView extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             offset: const Offset(0, -10),
             blurRadius: 10,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             offset: const Offset(0, -2),
             blurRadius: 6,
           ),
@@ -57,7 +57,7 @@ class AdmirerProfileView extends StatelessWidget {
               iconColor: const Color(0xFF4A4A4A),
               backgroundColor: Colors.white,
               borderColor: const Color(0xFFEAEAEA),
-              shadowColor: Colors.black.withOpacity(0.08),
+              shadowColor: Colors.black.withValues(alpha: 0.08),
               iconSize: 24,
               padding: 14,
               onTap: () {
@@ -73,7 +73,7 @@ class AdmirerProfileView extends StatelessWidget {
               label: 'Match',
               iconColor: Colors.white,
               backgroundColor: const Color(0xFFE43A6A), // Premium Pink
-              shadowColor: const Color(0xFFE43A6A).withOpacity(0.4),
+              shadowColor: const Color(0xFFE43A6A).withValues(alpha: 0.4),
               iconSize: 26,
               padding: 16,
               onTap: () {
@@ -193,7 +193,7 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: widget.shadowColor.withOpacity(0.5),
+                color: widget.shadowColor.withValues(alpha: 0.5),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),

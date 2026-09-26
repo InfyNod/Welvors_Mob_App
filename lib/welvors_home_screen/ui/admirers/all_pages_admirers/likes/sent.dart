@@ -98,7 +98,7 @@ class _SentLikesScreenState extends State<SentLikesScreen> {
                     height: 88,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFE43A6A).withOpacity(0.08),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.08),
                     ),
                     child: const Center(
                       child: Icon(
@@ -144,12 +144,12 @@ class _SentLikesScreenState extends State<SentLikesScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Color(card['statusTextColor'] ?? 0xFF9E9E9E).withOpacity(0.3),
+          color: Color(card['statusTextColor'] ?? 0xFF9E9E9E).withValues(alpha: 0.3),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -543,7 +543,7 @@ class _AnimatedRoseButtonState extends State<AnimatedRoseButton>
             boxShadow: isActive
                 ? [
                     BoxShadow(
-                      color: const Color(0xFFE43A6A).withOpacity(0.4),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.4),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),

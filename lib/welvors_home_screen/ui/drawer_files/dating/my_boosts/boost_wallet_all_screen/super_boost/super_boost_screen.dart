@@ -75,7 +75,7 @@ class _SuperBoostWalletScreenState extends State<SuperBoostWalletScreen> {
                         color: const Color(0xFFFFF8E1),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(0xFFFFC107).withOpacity(0.5),
+                          color: const Color(0xFFFFC107).withValues(alpha: 0.5),
                         ),
                       ),
                       child: const Row(
@@ -143,7 +143,7 @@ class _SuperBoostWalletScreenState extends State<SuperBoostWalletScreen> {
                     '✦',
                     style: TextStyle(
                       fontSize: 60,
-                      color: const Color(0xFFFFC107).withOpacity(0.15),
+                      color: const Color(0xFFFFC107).withValues(alpha: 0.15),
                       height: 1.0,
                     ),
                   ),
@@ -198,7 +198,7 @@ class _SuperBoostWalletScreenState extends State<SuperBoostWalletScreen> {
                             decoration: BoxDecoration(
                               color: const Color(
                                 0xFFFFC107,
-                              ).withOpacity(0.2), // Yellow tint
+                              ).withValues(alpha: 0.2), // Yellow tint
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: const Text(
@@ -338,7 +338,7 @@ class _SuperBoostWalletScreenState extends State<SuperBoostWalletScreen> {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

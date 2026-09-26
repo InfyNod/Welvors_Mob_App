@@ -17,7 +17,6 @@ class PerformanceScreen extends StatefulWidget {
 
 class _PerformanceScreenState extends State<PerformanceScreen> {
   Timer? _timer;
-  late Duration _totalDuration;
   bool _isCompleted = false;
   Duration _remaining = Duration.zero;
   bool _isLoading = true;
@@ -104,7 +103,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -158,7 +157,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),
@@ -265,7 +264,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE43A6A).withOpacity(0.15),
+            color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -315,7 +314,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                   Text(
                     'Your profile visibility is boosted',
                     style: TextStyle(
-                      color: const Color(0xFFE43A6A).withOpacity(0.9),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.9),
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -337,7 +336,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                   Text(
                     'REMAINING',
                     style: TextStyle(
-                      color: const Color(0xFFE43A6A).withOpacity(0.7),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.7),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
@@ -437,12 +436,12 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withValues(alpha: 0.10),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -519,12 +518,12 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withValues(alpha: 0.10),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -740,12 +739,12 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.10),
+                color: Colors.black.withValues(alpha: 0.10),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -821,12 +820,12 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withValues(alpha: 0.10),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

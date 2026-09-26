@@ -131,7 +131,7 @@ class _NotificationScreenContentState
                 backgroundColor: const Color(0xFFFDFCF9),
                 surfaceTintColor: Colors.white,
                 scrolledUnderElevation: 3,
-                shadowColor: Colors.black.withOpacity(0.2),
+                shadowColor: Colors.black.withValues(alpha: 0.2),
                 pinned: true,
 
                 leadingWidth: 64,
@@ -445,13 +445,13 @@ class _NotificationScreenContentState
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.06),
+                                color: Colors.black.withValues(alpha: 0.06),
                                 blurRadius: 16,
                                 spreadRadius: 1,
                                 offset: const Offset(0, 6),
                               ),
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
+                                color: Colors.black.withValues(alpha: 0.03),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),

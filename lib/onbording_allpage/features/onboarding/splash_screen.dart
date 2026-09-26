@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
-import 'onboarding_flow_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -125,7 +123,7 @@ class _SplashScreenState extends State<SplashScreen>
                   center: Alignment.center,
                   radius: 1.0,
                   colors: [
-                    AppColors.pinkSoft.withOpacity(0.8), // Soft pink glow matching theme
+                    AppColors.pinkSoft.withValues(alpha: 0.8), // Soft pink glow matching theme
                     AppColors.canvas,
                   ],
                   stops: const [0.0, 1.0],

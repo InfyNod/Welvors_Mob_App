@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../my_ticket.dart';
-import 'dart:convert';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/service_event/event_api_service.dart';
 import '../ticket_screen.dart';
 
@@ -102,7 +100,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -207,9 +205,6 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     const Center(child: CircularProgressIndicator())
                   else if (_bookingDetails?['booking']?['tickets'] != null)
                     ...(_bookingDetails!['booking']['tickets'] as List).map((ticket) {
-                      final qrDataUrl = ticket['qrCodeUrl'] as String?;
-                      final base64String = qrDataUrl?.split(',').last;
-                      
                       return Container(
                         margin: const EdgeInsets.only(bottom: 22),
                         width: double.infinity,
@@ -219,7 +214,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withValues(alpha: 0.04),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -268,7 +263,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                           ],
                         ),
                       );
-                    }).toList()
+                    })
                   else
                     Center(
                       child: Padding(
@@ -306,7 +301,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -378,7 +373,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -503,7 +498,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
               color: Colors.white, // Matches Scaffold background
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 20,
                   offset: const Offset(0, -10),
                 ),
@@ -527,7 +522,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.3),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 6),
                         ),

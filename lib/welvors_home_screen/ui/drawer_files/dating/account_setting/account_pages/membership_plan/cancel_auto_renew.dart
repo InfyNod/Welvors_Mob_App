@@ -13,7 +13,7 @@ void showCancelAutoRenewBottomSheet(BuildContext context, VoidCallback onCancell
 
 class _CancelAutoRenewSheet extends StatefulWidget {
   final VoidCallback onCancelled;
-  const _CancelAutoRenewSheet({super.key, required this.onCancelled});
+  const _CancelAutoRenewSheet({required this.onCancelled});
 
   @override
   State<_CancelAutoRenewSheet> createState() => _CancelAutoRenewSheetState();
@@ -106,7 +106,7 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.05) : Colors.white,
+                      color: isSelected ? const Color(0xFFE43A6A).withValues(alpha: 0.05) : Colors.white,
                       border: Border.all(
                         color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,
                         width: isSelected ? 1.5 : 1,
@@ -139,7 +139,7 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE43A6A),
-                  disabledBackgroundColor: const Color(0xFFE43A6A).withOpacity(0.5),
+                  disabledBackgroundColor: const Color(0xFFE43A6A).withValues(alpha: 0.5),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -200,7 +200,7 @@ void showCancelWarningBottomSheet(BuildContext context, String reason, VoidCallb
 class _CancelWarningSheet extends StatelessWidget {
   final String reason;
   final VoidCallback onCancelled;
-  const _CancelWarningSheet({super.key, required this.reason, required this.onCancelled});
+  const _CancelWarningSheet({required this.reason, required this.onCancelled});
 
   @override
   Widget build(BuildContext context) {
@@ -290,8 +290,8 @@ class _CancelWarningSheet extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE43A6A).withOpacity(0.05), // Very light pink
-                border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.3)),
+                color: const Color(0xFFE43A6A).withValues(alpha: 0.05), // Very light pink
+                border: Border.all(color: const Color(0xFFE43A6A).withValues(alpha: 0.3)),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -429,7 +429,7 @@ void showCancelConfirmationBottomSheet(BuildContext context, String reason, Void
 class _CancelConfirmationSheet extends StatelessWidget {
   final String reason;
   final VoidCallback onCancelled;
-  const _CancelConfirmationSheet({super.key, required this.reason, required this.onCancelled});
+  const _CancelConfirmationSheet({required this.reason, required this.onCancelled});
 
   @override
   Widget build(BuildContext context) {

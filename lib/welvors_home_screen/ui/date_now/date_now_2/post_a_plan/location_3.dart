@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -12,10 +11,10 @@ class Location3View extends StatefulWidget {
   final VoidCallback onBack;
 
   const Location3View({
-    Key? key,
+    super.key,
     required this.onContinue,
     required this.onBack,
-  }) : super(key: key);
+  });
 
   @override
   State<Location3View> createState() => _Location3ViewState();
@@ -78,8 +77,9 @@ class _Location3ViewState extends State<Location3View> {
 
       // Duration parsing
       int? duration;
-      if (_selectedHowLong == '30 min') duration = 30;
-      else if (_selectedHowLong == '1 hour') duration = 60;
+      if (_selectedHowLong == '30 min') {
+        duration = 30;
+      } else if (_selectedHowLong == '1 hour') duration = 60;
       else if (_selectedHowLong == '2 hours') duration = 120;
       else if (_selectedHowLong == 'Flexible') duration = 0;
 
@@ -288,7 +288,7 @@ class _Location3ViewState extends State<Location3View> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE43A6A).withOpacity(0.06),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.06),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: const Color(0xFFE43A6A),
@@ -345,7 +345,7 @@ class _Location3ViewState extends State<Location3View> {
                               child: Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.05),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -493,7 +493,7 @@ class _Location3ViewState extends State<Location3View> {
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE43A6A).withOpacity(0.06),
+                              color: const Color(0xFFE43A6A).withValues(alpha: 0.06),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Center(
@@ -668,7 +668,7 @@ class _Location3ViewState extends State<Location3View> {
                         ),
                         decoration: BoxDecoration(
                           color: _selectedTime != null
-                              ? const Color(0xFFE43A6A).withOpacity(0.06)
+                              ? const Color(0xFFE43A6A).withValues(alpha: 0.06)
                               : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -849,7 +849,7 @@ class _Location3ViewState extends State<Location3View> {
                           isLocked: isLocked,
                         ),
                       );
-                    }).toList(),
+                    }),
                     const SizedBox(height: 0),
                   ],
                 ),
@@ -1002,7 +1002,7 @@ class _Location3ViewState extends State<Location3View> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFE43A6A).withOpacity(0.08)
+              ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
               : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -1036,7 +1036,7 @@ class _Location3ViewState extends State<Location3View> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFE43A6A).withOpacity(0.08)
+              ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
               : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
@@ -1086,7 +1086,7 @@ class _Location3ViewState extends State<Location3View> {
               ? []
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),

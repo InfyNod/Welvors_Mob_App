@@ -73,7 +73,7 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
             ? const Color(0xFF2C2C2C)
             : const Color(0xFFFFF0F5);
         final iconBgColor = isSuperBoost
-            ? const Color(0xFFFFC107).withOpacity(0.15)
+            ? const Color(0xFFFFC107).withValues(alpha: 0.15)
             : const Color(0xFFE43A6A);
         final iconColor = isSuperBoost ? const Color(0xFFFFC107) : Colors.white;
         final textColor = isSuperBoost ? Colors.white : Colors.black87;

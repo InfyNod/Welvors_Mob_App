@@ -576,7 +576,7 @@ class _LocationMapScreenState extends State<LocationMapScreen> {
                               foregroundColor: Colors.white,
 
                               disabledBackgroundColor: AppColors.primary
-                                  .withOpacity(0.5),
+                                  .withValues(alpha: 0.5),
 
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),

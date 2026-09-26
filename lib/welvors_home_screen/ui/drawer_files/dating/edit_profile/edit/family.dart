@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 import 'package:velvors/config/env_config.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
@@ -28,15 +27,6 @@ class _FamilySectionState extends State<FamilySection> {
   List<Map<String, dynamic>> _nativePlaceOptionsMap = [];
   List<Map<String, dynamic>> _familyIncomeOptionsMap = [];
 
-  int? _familyTypeId;
-  int? _fatherOccupationId;
-  int? _fatherOrganisationId;
-  int? _motherOccupationId;
-  int? _motherOrganisationId;
-  int? _familyHomeId;
-  int? _nativePlaceId;
-  int? _familyIncomeId;
-  
   Map<String, dynamic> _brothersData = {'count': 0, 'details': []};
   Map<String, dynamic> _sistersData = {'count': 0, 'details': []};
 
@@ -127,14 +117,6 @@ class _FamilySectionState extends State<FamilySection> {
         _familyIncomeOptionsMap = familyIncome;
         
         final state = context.read<ProfileEditCubit>().state;
-        _familyTypeId = _getIdFor(state.familyType, _familyTypeOptionsMap);
-        _fatherOccupationId = _getIdFor(state.father, _fatherOccupationOptionsMap);
-        // Father organisation is normally embedded in state.father if formatted, but let's just rely on state if it's there.
-        // For simple fields:
-        _familyHomeId = _getIdFor(state.familyHome, _familyHomeOptionsMap);
-        _nativePlaceId = _getIdFor(state.nativePlace, _nativePlaceOptionsMap);
-        _familyIncomeId = _getIdFor(state.familyIncome, _familyIncomeOptionsMap);
-        
         _brothersData = state.brothersData ?? {};
         _sistersData = state.sistersData ?? {};
 
@@ -548,73 +530,6 @@ class _FamilySectionState extends State<FamilySection> {
     );
   }
 
-  Widget _buildTextFieldItem({
-    required BuildContext context,
-    required String label,
-    required String value,
-    required Function(String) onSelect,
-    bool isMultiline = false,
-    int? maxLength,
-  }) {
-    return InkWell(
-      onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditTextInputScreen(
-              title: label,
-              headerText: label,
-              subHeaderText: 'Please enter your ${label.toLowerCase()}',
-              label: label,
-              currentValue: value,
-              maxLines: isMultiline ? 5 : 1,
-              maxLength: maxLength,
-            ),
-          ),
-        );
-        if (result != null) {
-          onSelect(result);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 10,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.0,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    value.isNotEmpty ? value : 'Add',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: value.isNotEmpty ? Colors.black87 : Colors.grey,
-                    ),
-                    maxLines: isMultiline ? 2 : 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -706,7 +621,7 @@ class _SiblingFlowScreenState extends State<SiblingFlowScreen> {
                           border: Border.all(color: Colors.grey.shade300, width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -914,7 +829,7 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE43A6A).withOpacity(0.1),
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -993,7 +908,7 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
                                 border: Border.all(color: Colors.grey.shade200),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.02),
+                                    color: Colors.black.withValues(alpha: 0.02),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -1037,13 +952,13 @@ class MultiStepParentPickerScreen extends StatefulWidget {
   final String currentOrganization;
 
   const MultiStepParentPickerScreen({
-    Key? key,
+    super.key,
     required this.title,
     required this.occupationOptions,
     required this.organizationOptions,
     required this.currentOccupation,
     required this.currentOrganization,
-  }) : super(key: key);
+  });
 
   @override
   State<MultiStepParentPickerScreen> createState() => _MultiStepParentPickerScreenState();
@@ -1155,7 +1070,7 @@ class _MultiStepParentPickerScreenState extends State<MultiStepParentPickerScree
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                                 decoration: BoxDecoration(
-                                  color: isSelected ? const Color(0xFFE43A6A).withOpacity(0.05) : Colors.white,
+                                  color: isSelected ? const Color(0xFFE43A6A).withValues(alpha: 0.05) : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
                                     color: isSelected ? const Color(0xFFE43A6A) : Colors.grey.shade200,

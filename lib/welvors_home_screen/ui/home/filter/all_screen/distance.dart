@@ -50,7 +50,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -117,7 +117,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
                   inactiveTrackColor: Colors.grey.shade100,
                   trackHeight: 6.0,
                   thumbColor: Colors.white,
-                  overlayColor: const Color(0xFFE43A6A).withOpacity(0.15),
+                  overlayColor: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                   trackShape: const RoundedRectSliderTrackShape(),
                   thumbShape: const RoundSliderThumbShape(
                     enabledThumbRadius: 11,
@@ -218,7 +218,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
                                     BoxShadow(
                                       color: const Color(
                                         0xFFE43A6A,
-                                      ).withOpacity(0.3),
+                                      ).withValues(alpha: 0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -297,16 +297,16 @@ class _DistanceScreenState extends State<DistanceScreen> {
         gradient: LinearGradient(
           colors: [
             const Color(0xFFFFF0F5),
-            const Color(0xFFFCE4EC).withOpacity(0.5),
+            const Color(0xFFFCE4EC).withValues(alpha: 0.5),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.15)),
+        border: Border.all(color: const Color(0xFFE43A6A).withValues(alpha: 0.15)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE43A6A).withOpacity(0.05),
+            color: const Color(0xFFE43A6A).withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -339,14 +339,14 @@ class _DistanceScreenState extends State<DistanceScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: ringColor.withOpacity(opacity * 0.3),
+                      color: ringColor.withValues(alpha: opacity * 0.3),
                       width: thickness,
                     ),
                     boxShadow: [
                       if (index ==
                           0) // Soft glowing effect on the innermost ring
                         BoxShadow(
-                          color: ringColor.withOpacity(0.15),
+                          color: ringColor.withValues(alpha: 0.15),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -431,7 +431,7 @@ class _DistanceScreenState extends State<DistanceScreen> {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

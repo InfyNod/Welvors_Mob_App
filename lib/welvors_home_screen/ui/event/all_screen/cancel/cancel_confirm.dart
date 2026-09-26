@@ -29,7 +29,7 @@ class CancelConfirmScreen extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
+                    color: Colors.black.withValues(alpha: 0.12),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -73,7 +73,7 @@ class CancelConfirmScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.15),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -168,7 +168,7 @@ class CancelConfirmScreen extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
+                          color: Colors.black.withValues(alpha: 0.12),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -383,7 +383,7 @@ class CancelConfirmScreen extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
+                          color: Colors.black.withValues(alpha: 0.12),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -463,13 +463,13 @@ class CancelConfirmScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.10),
+                            color: Colors.black.withValues(alpha: 0.10),
                             blurRadius: 20,
                             spreadRadius: 0,
                             offset: const Offset(0, 8),
                           ),
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 4,
                             spreadRadius: 0,
                             offset: const Offset(0, 2),
@@ -544,7 +544,7 @@ class CancelConfirmScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFFE43A6A),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         elevation: 6,
-                        shadowColor: const Color(0xFFE43A6A).withOpacity(0.5),
+                        shadowColor: const Color(0xFFE43A6A).withValues(alpha: 0.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -578,7 +578,7 @@ class CancelConfirmScreen extends StatelessWidget {
                         surfaceTintColor: Colors.transparent,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         elevation: 4,
-                        shadowColor: Colors.black.withOpacity(0.1),
+                        shadowColor: Colors.black.withValues(alpha: 0.1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: BorderSide(
@@ -613,7 +613,7 @@ class CancelConfirmScreen extends StatelessWidget {
                         surfaceTintColor: Colors.transparent,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         elevation: 4,
-                        shadowColor: Colors.black.withOpacity(0.1),
+                        shadowColor: Colors.black.withValues(alpha: 0.1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: BorderSide(

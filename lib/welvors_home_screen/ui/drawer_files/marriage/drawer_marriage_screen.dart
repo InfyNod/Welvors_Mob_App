@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 class MarriageScreen extends StatefulWidget {
   final VoidCallback? onNavigateToDating;
 
-  const MarriageScreen({Key? key, this.onNavigateToDating}) : super(key: key);
+  const MarriageScreen({super.key, this.onNavigateToDating});
 
   @override
   State<MarriageScreen> createState() => _MarriageScreenState();
@@ -103,7 +103,7 @@ class _MarriageScreenState extends State<MarriageScreen> {
                 boxShadow: _isNotified
                     ? [
                         BoxShadow(
-                          color: const Color(0xFFE85A7A).withOpacity(0.5),
+                          color: const Color(0xFFE85A7A).withValues(alpha: 0.5),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -135,7 +135,7 @@ class _MarriageScreenState extends State<MarriageScreen> {
                       ),
                       elevation: 0,
                     ).copyWith(
-                      overlayColor: MaterialStateProperty.all(
+                      overlayColor: WidgetStateProperty.all(
                         Colors.transparent,
                       ),
                     ),

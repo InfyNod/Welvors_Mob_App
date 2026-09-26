@@ -77,17 +77,6 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
     final String discountPercentage =
         eventData?['discountPercentage']?.toString() ?? '';
 
-    IconData genderIcon = Icons.female;
-    String genderLabel = 'Woman';
-
-    if (gender == 'man') {
-      genderIcon = Icons.male;
-      genderLabel = 'Man';
-    } else if (gender != 'woman') {
-      genderIcon = Icons.transgender;
-      genderLabel = 'Other';
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -119,19 +108,19 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE43A6A).withOpacity(0.15),
+                color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
             border: Border.all(
-              color: const Color(0xFFE43A6A).withOpacity(0.3),
+              color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
@@ -156,7 +145,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: const Color(
                                     0xFFE43A6A,
-                                  ).withOpacity(0.1),
+                                  ).withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
@@ -211,7 +200,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                           height: 1.5,
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE43A6A).withOpacity(0.3),
+                              color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                             ),
                           ),
                         ),
@@ -279,7 +268,7 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
                                     BoxShadow(
                                       color: const Color(
                                         0xFFE43A6A,
-                                      ).withOpacity(0.3),
+                                      ).withValues(alpha: 0.3),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -352,34 +341,6 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSafetyItem(IconData icon, String text) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(6),
-          decoration: const BoxDecoration(
-            color: Color(0xFFFFF0F3),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, size: 14, color: const Color(0xFFE43A6A)),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
   IconData _getAmenityIcon(String? iconName) {
     switch (iconName?.toLowerCase()) {
       case 'drink':
@@ -425,12 +386,12 @@ class YourPassAndAmenitiesSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

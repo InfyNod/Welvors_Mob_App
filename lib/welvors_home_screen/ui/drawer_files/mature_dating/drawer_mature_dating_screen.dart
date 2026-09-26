@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 class MatureDatingScreen extends StatefulWidget {
   final VoidCallback? onNavigateToDating;
   
-  const MatureDatingScreen({Key? key, this.onNavigateToDating}) : super(key: key);
+  const MatureDatingScreen({super.key, this.onNavigateToDating});
 
   @override
   State<MatureDatingScreen> createState() => _MatureDatingScreenState();
@@ -102,7 +102,7 @@ class _MatureDatingScreenState extends State<MatureDatingScreen> {
                 boxShadow: _isNotified
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF9C27B0).withOpacity(0.5),
+                          color: const Color(0xFF9C27B0).withValues(alpha: 0.5),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         )
@@ -133,7 +133,7 @@ class _MatureDatingScreenState extends State<MatureDatingScreen> {
                   ),
                   elevation: 0,
                 ).copyWith(
-                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  overlayColor: WidgetStateProperty.all(Colors.transparent),
                 ),
                 icon: Icon(
                   _isNotified ? Icons.notifications_active : Icons.notifications_none,

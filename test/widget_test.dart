@@ -1,30 +1,29 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:velvors/main.dart';
+import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const WelvorsApp(initialRoute: '/landing'));
+  setUp(() {
+    dotenv.loadFromString(envString: 'BASE_URL=https://api.welvors.com/\nAPI_BASE_URL=https://api.welvors.com/api/\n');
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  group('Core Architecture Unit Tests', () {
+    test('EnvConfig URL sanitization trims trailing slash', () {
+      expect(EnvConfig.baseUrl, 'https://api.welvors.com');
+      expect(EnvConfig.apiBaseUrl, 'https://api.welvors.com/api');
+      expect(EnvConfig.baseUrl.endsWith('/'), isFalse);
+      expect(EnvConfig.apiBaseUrl.endsWith('/'), isFalse);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('AppLogger initializes and formats logs without crashing', () {
+      AppLogger.init();
+      expect(() => AppLogger.d('TestTag', 'Debug message'), returnsNormally);
+      expect(() => AppLogger.i('TestTag', 'Info message'), returnsNormally);
+      expect(() => AppLogger.w('TestTag', 'Warning message'), returnsNormally);
+      expect(() => AppLogger.v('TestTag', 'Verbose message'), returnsNormally);
+      expect(() => AppLogger.e('TestTag', 'Error message'), returnsNormally);
+      expect(() => AppLogger.json('TestTag', {'key': 'value'}), returnsNormally);
+    });
   });
 }

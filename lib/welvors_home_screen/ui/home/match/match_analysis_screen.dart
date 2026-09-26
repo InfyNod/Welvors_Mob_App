@@ -27,11 +27,11 @@ class MatchAnalysisScreen extends StatelessWidget {
                 color: Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFFF05C91).withOpacity(0.1),
+                  color: const Color(0xFFF05C91).withValues(alpha: 0.1),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF966EB4).withOpacity(0.10),
+                    color: const Color(0xFF966EB4).withValues(alpha: 0.10),
                     blurRadius: 30,
                     offset: const Offset(0, 4),
                   ),
@@ -133,12 +133,12 @@ class MatchAnalysisScreen extends StatelessWidget {
         color: const Color(0xFFFFF7FC),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: const Color(0xFFF05C91).withOpacity(0.15),
+          color: const Color(0xFFF05C91).withValues(alpha: 0.15),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF966EB4).withOpacity(0.18),
+            color: const Color(0xFF966EB4).withValues(alpha: 0.18),
             blurRadius: 32,
             offset: const Offset(0, 12),
           ),
@@ -169,7 +169,7 @@ class MatchAnalysisScreen extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF966EB4).withOpacity(0.15),
+                          color: const Color(0xFF966EB4).withValues(alpha: 0.15),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
@@ -193,7 +193,7 @@ class MatchAnalysisScreen extends StatelessWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF966EB4).withOpacity(0.15),
+                          color: const Color(0xFF966EB4).withValues(alpha: 0.15),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
@@ -216,7 +216,7 @@ class MatchAnalysisScreen extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFF05C91).withOpacity(0.18),
+                  color: const Color(0xFFF05C91).withValues(alpha: 0.18),
                   blurRadius: 18,
                   spreadRadius: 0,
                 ),
@@ -238,7 +238,7 @@ class MatchAnalysisScreen extends StatelessWidget {
                           strokeWidth: 12,
                           backgroundColor: Colors.transparent,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            const Color(0xFFE8D9FF).withOpacity(0.5),
+                            const Color(0xFFE8D9FF).withValues(alpha: 0.5),
                           ),
                         ),
                       ),
@@ -492,7 +492,7 @@ class MatchAnalysisScreen extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE8D9FF), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF966EB4).withOpacity(0.05),
+            color: const Color(0xFF966EB4).withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -642,7 +642,7 @@ class MatchAnalysisScreen extends StatelessWidget {
         color: const Color(0xFFFFFDFC),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF966EB4).withOpacity(0.08),
+            color: const Color(0xFF966EB4).withValues(alpha: 0.08),
             blurRadius: 30,
             offset: const Offset(0, -10),
           ),
@@ -700,7 +700,7 @@ class MatchAnalysisScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFE85A7A).withOpacity(0.3),
+                      color: const Color(0xFFE85A7A).withValues(alpha: 0.3),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -771,7 +771,7 @@ class _BlinkingHeartState extends State<_BlinkingHeart>
           border: Border.all(color: Colors.white, width: 2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFF05C91).withOpacity(0.3),
+              color: const Color(0xFFF05C91).withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),

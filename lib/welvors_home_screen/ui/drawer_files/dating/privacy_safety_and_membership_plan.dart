@@ -13,7 +13,7 @@ class PrivacySafetyAndMembership extends StatefulWidget {
 
 class _PrivacySafetyAndMembershipState
     extends State<PrivacySafetyAndMembership> {
-  bool _isSafetyModeOn = false;
+  final bool _isSafetyModeOn = false;
 
   @override
   Widget build(BuildContext context) {

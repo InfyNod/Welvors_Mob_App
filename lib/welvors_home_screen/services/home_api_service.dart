@@ -45,7 +45,7 @@ class HomeApiService {
         body: request.body.isNotEmpty ? request.body : null,
       );
 
-      final streamedResponse = await request.send();
+      final streamedResponse = await request.send().timeout(const Duration(seconds: 15));
       final response = await http.Response.fromStream(streamedResponse);
 
       AppLogger.apiResponse(
@@ -87,7 +87,7 @@ class HomeApiService {
           'Expires': '0',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);

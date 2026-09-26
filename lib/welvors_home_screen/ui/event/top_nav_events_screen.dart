@@ -8,6 +8,7 @@ import 'all_screen/events_cards.dart';
 import 'all_screen/events_location.dart';
 import 'all_screen/my_ticket.dart';
 import 'filter_events.dart';
+import 'package:velvors/config/app_cached_image.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -225,7 +226,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFDE2957).withOpacity(0.3),
+                              color: const Color(0xFFDE2957).withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -377,8 +378,8 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                                 category['image']!.startsWith(
                                                   'http',
                                                 )
-                                                ? Image.network(
-                                                    category['image']!,
+                                                ? AppCachedImage(
+                                                    imageUrl: category['image']!,
                                                     fit: BoxFit.cover,
                                                     height: double.infinity,
                                                   )

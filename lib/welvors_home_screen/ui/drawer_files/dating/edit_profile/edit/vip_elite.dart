@@ -73,7 +73,7 @@ class NetworkingIntentSection extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -166,7 +166,7 @@ class NetworkingIntentSection extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFE43A6A).withOpacity(0.15),
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -214,7 +214,7 @@ class NetworkingIntentSection extends StatelessWidget {
         color: const Color(0xFFFFF6F8), // Faint pink background
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFE43A6A).withOpacity(0.15),
+          color: const Color(0xFFE43A6A).withValues(alpha: 0.15),
           width: 1,
         ),
       ),
@@ -438,7 +438,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
                   border: Border.all(color: Colors.grey.shade200, width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withValues(alpha: 0.02),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -519,7 +519,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
                                     BoxShadow(
                                       color: const Color(
                                         0xFFE43A6A,
-                                      ).withOpacity(0.3),
+                                      ).withValues(alpha: 0.3),
                                       blurRadius: 6,
                                       offset: const Offset(0, 3),
                                     ),
@@ -543,7 +543,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
                   const SizedBox(height: 30),
                 ],
               );
-            }).toList(),
+            }),
 
             // In Your Words Section
             Text(
@@ -595,7 +595,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
                 onPressed: () async {
                   setState(() => _isLoading = true);
                   final success = await _saveChangesToBackend();
-                  if (success && mounted) {
+                  if (success && context.mounted) {
                     Navigator.pop(context);
                   } else if (mounted) {
                     setState(() => _isLoading = false);

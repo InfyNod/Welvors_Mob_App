@@ -122,7 +122,7 @@ class _PopMsgForUpdateState extends State<PopMsgForUpdate>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE43A6A).withOpacity(0.1),
+                  color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: const Color(0xFFE43A6A), size: 24),
@@ -176,7 +176,7 @@ class _PopMsgForUpdateState extends State<PopMsgForUpdate>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFFE43A6A).withOpacity(0.15),
+                    const Color(0xFFE43A6A).withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -193,7 +193,7 @@ class _PopMsgForUpdateState extends State<PopMsgForUpdate>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFFE43A6A).withOpacity(0.1),
+                    const Color(0xFFE43A6A).withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                 ),
@@ -214,12 +214,12 @@ class _PopMsgForUpdateState extends State<PopMsgForUpdate>
                       borderRadius: BorderRadius.circular(32),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFE43A6A).withOpacity(0.08),
+                          color: const Color(0xFFE43A6A).withValues(alpha: 0.08),
                           blurRadius: 40,
                           offset: const Offset(0, 20),
                         ),
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -243,7 +243,7 @@ class _PopMsgForUpdateState extends State<PopMsgForUpdate>
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFE43A6A).withOpacity(0.4),
+                                  color: const Color(0xFFE43A6A).withValues(alpha: 0.4),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -333,7 +333,7 @@ class _PopMsgForUpdateState extends State<PopMsgForUpdate>
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                                    color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                                     blurRadius: 15,
                                     offset: const Offset(0, 8),
                                   ),

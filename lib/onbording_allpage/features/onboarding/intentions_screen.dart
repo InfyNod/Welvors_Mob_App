@@ -75,7 +75,7 @@ class _IntentionsScreenState extends State<IntentionsScreen> with AutomaticKeepA
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.pinkSoft.withOpacity(0.5)
+              ? AppColors.pinkSoft.withValues(alpha: 0.5)
               : Colors.white,
           border: Border.all(
             color: isSelected ? AppColors.pinkDeep : AppColors.line,

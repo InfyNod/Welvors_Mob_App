@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:ui';
 // import 'dart:convert';
 import '../service_event/event_api_service.dart';
 import '../../../date_now/date_api_service/date_now_api_service.dart';
@@ -142,6 +141,7 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
           widget.datePlanId!,
           matchId,
         );
+        if (!mounted) return;
         if (result == null || result['success'] != true) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -156,6 +156,7 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
           eventId: widget.eventId!,
           receiverId: matchId,
         );
+        if (!mounted) return;
         if (result == null || result['success'] != true) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -167,6 +168,7 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
         }
       }
 
+      if (!mounted) return;
       setState(() {
         invitedMatches.add(matchId);
       });
@@ -196,7 +198,7 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -253,7 +255,7 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
                             ), // Soft pink background
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: const Color(0xFFE43A6A).withOpacity(0.1),
+                              color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                             ),
                           ),
                           child: Row(
@@ -372,7 +374,7 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
                             color: const Color(0xFFE8F9F0),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: const Color(0xFF3A7F58).withOpacity(0.3),
+                              color: const Color(0xFF3A7F58).withValues(alpha: 0.3),
                             ),
                           ),
                           child: Row(
@@ -478,13 +480,13 @@ class _InviteMatchScreenState extends State<InviteMatchScreen> {
                   ? []
                   : [
                       BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.2),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.2),
                         blurRadius: 6,
                         offset: const Offset(0, 4),
                       ),
                     ],
               border: isInvited
-                  ? Border.all(color: const Color(0xFF2CAF6B).withOpacity(0.3))
+                  ? Border.all(color: const Color(0xFF2CAF6B).withValues(alpha: 0.3))
                   : null,
             ),
             child: Row(

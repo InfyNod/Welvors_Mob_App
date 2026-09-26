@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../service_account_Setting.dart';
 import 'pdf_generator.dart';
@@ -342,7 +340,7 @@ class _InvoiceSheetContentState extends State<_InvoiceSheetContent> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A),
-                    disabledBackgroundColor: const Color(0xFFE43A6A).withOpacity(0.6),
+                    disabledBackgroundColor: const Color(0xFFE43A6A).withValues(alpha: 0.6),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),

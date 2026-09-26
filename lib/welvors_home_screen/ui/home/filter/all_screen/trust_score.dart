@@ -45,7 +45,7 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFC72449).withOpacity(0.3),
+            color: const Color(0xFFC72449).withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -69,7 +69,7 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
                       value: value / 100,
                       strokeWidth: 4,
                       strokeCap: StrokeCap.round,
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         Colors.white,
                       ),
@@ -99,7 +99,7 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -117,7 +117,7 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
                   'You can browse members verified up to 20 - reach 21 to unlock the next layer',
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     height: 1.4,
                   ),
                 ),
@@ -175,7 +175,7 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
               enabledThumbRadius: 10,
               elevation: 4,
             ),
-            overlayColor: const Color(0xFFE43A6A).withOpacity(0.2),
+            overlayColor: const Color(0xFFE43A6A).withValues(alpha: 0.2),
             overlayShape: const RoundSliderOverlayShape(overlayRadius: 20.0),
             activeTickMarkColor: Colors.transparent,
             inactiveTickMarkColor: Colors.transparent,
@@ -321,7 +321,7 @@ class _TrustScoreScreenState extends State<TrustScoreScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

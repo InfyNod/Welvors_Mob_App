@@ -31,13 +31,13 @@ class ShareTicketCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFE43A6A).withOpacity(0.4),
+              color: const Color(0xFFE43A6A).withValues(alpha: 0.4),
               blurRadius: 40,
               spreadRadius: -10,
               offset: const Offset(0, 20),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -67,7 +67,7 @@ class ShareTicketCard extends StatelessWidget {
                     height: 160,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFE43A6A).withOpacity(0.5),
+                      color: const Color(0xFFE43A6A).withValues(alpha: 0.5),
                     ),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
@@ -83,7 +83,7 @@ class ShareTicketCard extends StatelessWidget {
                     height: 140,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFFA6A85).withOpacity(0.3),
+                      color: const Color(0xFFFA6A85).withValues(alpha: 0.3),
                     ),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
@@ -135,10 +135,10 @@ class ShareTicketCard extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1CAF5E).withOpacity(0.2),
+                              color: const Color(0xFF1CAF5E).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: const Color(0xFF1CAF5E).withOpacity(0.5),
+                                color: const Color(0xFF1CAF5E).withValues(alpha: 0.5),
                                 width: 1,
                               ),
                             ),
@@ -185,7 +185,7 @@ class ShareTicketCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -198,7 +198,7 @@ class ShareTicketCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -208,12 +208,19 @@ class ShareTicketCard extends StatelessWidget {
                           data: ticketIdStr,
                           version: QrVersions.auto,
                           size: 130.0,
-                          foregroundColor: const Color(0xFF181A1F),
+                          eyeStyle: const QrEyeStyle(
+                            eyeShape: QrEyeShape.square,
+                            color: Color(0xFF181A1F),
+                          ),
+                          dataModuleStyle: const QrDataModuleStyle(
+                            dataModuleShape: QrDataModuleShape.square,
+                            color: Color(0xFF181A1F),
+                          ),
                           errorStateBuilder: (cxt, err) {
                             return Icon(
                               Icons.qr_code_2,
                               size: 130,
-                              color: Colors.black87.withOpacity(0.85),
+                              color: Colors.black87.withValues(alpha: 0.85),
                             );
                           },
                         ),
@@ -226,10 +233,10 @@ class ShareTicketCard extends StatelessWidget {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             width: 1,
                           ),
                         ),
@@ -244,7 +251,7 @@ class ShareTicketCard extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w800,
-                                    color: Colors.white.withOpacity(0.5),
+                                    color: Colors.white.withValues(alpha: 0.5),
                                     letterSpacing: 1.0,
                                   ),
                                 ),
@@ -267,7 +274,7 @@ class ShareTicketCard extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w800,
-                                    color: Colors.white.withOpacity(0.5),
+                                    color: Colors.white.withValues(alpha: 0.5),
                                     letterSpacing: 1.0,
                                   ),
                                 ),

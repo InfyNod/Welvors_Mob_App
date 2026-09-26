@@ -123,7 +123,7 @@ class _RequestsSectionState extends State<RequestsSection> {
         border: Border.all(color: const Color(0xFFF0E5D1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -152,7 +152,7 @@ class _RequestsSectionState extends State<RequestsSection> {
                 decoration: BoxDecoration(
                   color: const Color(
                     0xFFFFD1DC,
-                  ).withOpacity(0.5), // Soft pink bg
+                  ).withValues(alpha: 0.5), // Soft pink bg
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -201,7 +201,7 @@ class _RequestsSectionState extends State<RequestsSection> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFD1DC).withOpacity(0.3),
+                  color: const Color(0xFFFFD1DC).withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(

@@ -68,10 +68,10 @@ class CompletionAndPhotosSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE43A6A).withOpacity(0.08)), // Subtle pink border
+        border: Border.all(color: const Color(0xFFE43A6A).withValues(alpha: 0.08)), // Subtle pink border
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -218,7 +218,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
               : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -229,7 +229,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
             if (photo.isUploading)
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(
@@ -243,7 +243,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -314,7 +314,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         ),
@@ -336,7 +336,7 @@ class CompletionAndPhotosSection extends StatelessWidget {
         borderType: BorderType.RRect,
         radius: const Radius.circular(12),
         dashPattern: const [6, 4],
-        color: const Color(0xFFE43A6A).withOpacity(0.4),
+        color: const Color(0xFFE43A6A).withValues(alpha: 0.4),
         strokeWidth: 1.5,
         padding: EdgeInsets.zero,
         child: Container(

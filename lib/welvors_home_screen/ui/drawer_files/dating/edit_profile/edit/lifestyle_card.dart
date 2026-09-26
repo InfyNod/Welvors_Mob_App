@@ -64,7 +64,7 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -100,7 +100,6 @@ class _LifestyleSectionState extends State<LifestyleSection> {
     ProfileEditState state,
     Map<String, dynamic> q,
   ) {
-    final String qId = q['id'];
     final String title = q['title'] ?? '';
     final bool isMulti =
         (q['isMulti'] == true) || (title.toLowerCase() == 'pets');
@@ -147,7 +146,7 @@ class _LifestyleSectionState extends State<LifestyleSection> {
               ),
             ),
           );
-          if (result != null && mounted) {
+          if (result != null && context.mounted) {
             String? optionId;
             for (var opt in options) {
               if (opt['label'] == result) {
@@ -166,9 +165,9 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                 questionKey: qKey,
                 optionIds: [optionId],
               );
-              if (error == null && mounted) {
+              if (error == null && context.mounted) {
                 context.read<ProfileEditCubit>().loadProfile();
-              } else if (mounted) {
+              } else if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(error ?? 'Failed to save')),
                 );
@@ -207,7 +206,7 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE43A6A).withOpacity(0.1),
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -352,7 +351,7 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                                       BoxShadow(
                                         color: const Color(
                                           0xFFE43A6A,
-                                        ).withOpacity(0.3),
+                                        ).withValues(alpha: 0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),
