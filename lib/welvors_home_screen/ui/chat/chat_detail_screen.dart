@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart' show XFile;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -388,6 +390,66 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
           'https://placehold.co/320x220?text=${Uri.encodeComponent(label)}',
     );
     _toast('GIF sent ✓');
+  }
+
+  Future<void> _onKeyboardContentInserted(
+    KeyboardInsertedContent content,
+  ) async {
+    try {
+      AppLogger.d('ChatDetailScreen',
+          '⌨️ KEYBOARD CONTENT INSERTED: mimeType=${content.mimeType}, hasData=${content.data != null}, uri=${content.uri}');
+
+      Uint8List? bytes = content.data;
+      if ((bytes == null || bytes.isEmpty) && content.uri.isNotEmpty) {
+        final uri = Uri.tryParse(content.uri);
+        if (uri != null) {
+          if (uri.scheme == 'http' || uri.scheme == 'https') {
+            final res = await http.get(uri);
+            if (res.statusCode == 200) {
+              bytes = res.bodyBytes;
+            }
+          } else if (uri.scheme == 'file') {
+            final f = File(uri.toFilePath());
+            if (await f.exists()) {
+              bytes = await f.readAsBytes();
+            }
+          }
+        }
+      }
+
+      if (bytes == null || bytes.isEmpty) {
+        AppLogger.w('ChatDetailScreen', '⚠️ No bytes found in keyboard inserted content');
+        _toast('Unable to send media from keyboard');
+        return;
+      }
+
+      // Determine extension based on MIME type
+      String ext = 'png';
+      final mime = content.mimeType.toLowerCase();
+      if (mime.contains('gif')) {
+        ext = 'gif';
+      } else if (mime.contains('jpeg') || mime.contains('jpg')) {
+        ext = 'jpg';
+      } else if (mime.contains('webp')) {
+        ext = 'webp';
+      } else if (mime.contains('png')) {
+        ext = 'png';
+      }
+
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File(
+        '${tempDir.path}/keyboard_${DateTime.now().millisecondsSinceEpoch}.$ext',
+      );
+      await tempFile.writeAsBytes(bytes, flush: true);
+
+      await _attachmentService.uploadAndSendImage(
+        XFile(tempFile.path, mimeType: content.mimeType),
+      );
+    } catch (e, st) {
+      AppLogger.e('ChatDetailScreen', '❌ KEYBOARD CONTENT INSERTION ERROR: $e');
+      AppLogger.d('ChatDetailScreen', '$st');
+      _toast('Failed to send keyboard sticker/GIF');
+    }
   }
 
   void _onGiftItemSelected(GiftItem gift) {
@@ -2171,6 +2233,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       onEffectSelected: _onEffectSelected,
       onGifSelected: _onGifSelected,
       onGiftSelected: _onGiftItemSelected,
+      onContentInserted: _onKeyboardContentInserted,
     );
   }
 

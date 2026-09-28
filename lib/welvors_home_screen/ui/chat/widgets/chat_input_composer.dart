@@ -32,6 +32,7 @@ class ChatInputComposer extends StatelessWidget {
   final void Function(String emoji, String label) onEffectSelected;
   final void Function(String url, String category) onGifSelected;
   final void Function(GiftItem gift) onGiftSelected;
+  final void Function(KeyboardInsertedContent content)? onContentInserted;
 
   const ChatInputComposer({
     super.key,
@@ -59,6 +60,7 @@ class ChatInputComposer extends StatelessWidget {
     required this.onEffectSelected,
     required this.onGifSelected,
     required this.onGiftSelected,
+    this.onContentInserted,
   });
 
   int _getLineCount() {
@@ -147,6 +149,17 @@ class ChatInputComposer extends StatelessWidget {
                               }
                             },
                             onChanged: onTypingChanged,
+                            contentInsertionConfiguration: onContentInserted != null
+                                ? ContentInsertionConfiguration(
+                                    allowedMimeTypes: const <String>[
+                                      'image/png',
+                                      'image/gif',
+                                      'image/jpeg',
+                                      'image/webp',
+                                    ],
+                                    onContentInserted: onContentInserted!,
+                                  )
+                                : null,
                             decoration: InputDecoration(
                               hintText: 'Message',
                               hintStyle: AppText.body.copyWith(
