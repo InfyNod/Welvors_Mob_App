@@ -93,16 +93,19 @@ class _ChatUnmatchSheetState extends State<ChatUnmatchSheet> {
       );
 
       if (!mounted) return;
-      Navigator.pop(context);
+      Navigator.of(context).pop();
       widget.onUnmatched();
-      widget.showToast('User unmatched successfully');
+      Future.delayed(const Duration(milliseconds: 150), () {
+        widget.showToast('User unmatched successfully');
+      });
     } catch (e) {
       AppLogger.e('ChatUnmatchSheet', '❌ UNMATCH API ERROR: $e');
       if (!mounted) return;
-      setState(() {
-        _isLoading = false;
+      Navigator.of(context).pop();
+      final errorMsg = e.toString().replaceFirst('Exception: ', '');
+      Future.delayed(const Duration(milliseconds: 150), () {
+        widget.showToast(errorMsg);
       });
-      widget.showToast(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
