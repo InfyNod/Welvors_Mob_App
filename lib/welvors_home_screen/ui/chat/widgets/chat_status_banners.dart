@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 
 /// Banner shown when a user is blocked in the conversation
 class ChatBlockedBanner extends StatelessWidget {
@@ -146,31 +144,53 @@ class ChatUnmatchedBanner extends StatelessWidget {
 
 /// Progress banner showing replies needed to unlock her gift
 class ChatGiftUnlockProgressBanner extends StatelessWidget {
-  const ChatGiftUnlockProgressBanner({super.key});
+  final int repliesSoFar;
+  final int repliesNeeded;
+  final VoidCallback? onTap;
+
+  const ChatGiftUnlockProgressBanner({
+    super.key,
+    this.repliesSoFar = 14,
+    this.repliesNeeded = 25,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    const int repliesSoFar = 14;
-    const int repliesNeeded = 25;
-    const double progress = repliesSoFar / repliesNeeded;
-    final int repliesRemaining = repliesNeeded - repliesSoFar;
+    final double progress = (repliesSoFar / (repliesNeeded > 0 ? repliesNeeded : 25)).clamp(0.0, 1.0);
+    final int repliesRemaining = (repliesNeeded - repliesSoFar).clamp(0, repliesNeeded);
 
-    return SizedBox(
-      height: 75,
-      child: Padding(
-        key: const ValueKey('gift_unlock_progress'),
-        padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            bottom: BorderSide(color: Color(0xFFEFECE6), width: 1),
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text('🎁', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 6),
-                    Text('GIFT UNLOCK PROGRESS', style: AppText.eyebrow),
+                    const SizedBox(width: 8),
+                    Text(
+                      'GIFT UNLOCK PROGRESS',
+                      style: AppText.eyebrow.copyWith(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.3,
+                        color: const Color(0xFF8A8680),
+                      ),
+                    ),
                   ],
                 ),
                 Container(
@@ -179,35 +199,58 @@ class ChatGiftUnlockProgressBanner extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: Mycolor.pinkffeef2,
+                    color: const Color(0xFFFFEEF2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '$repliesSoFar / $repliesNeeded',
-                    style: AppText.eyebrow.copyWith(color: AppColors.primary),
+                    style: const TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFE85A7A),
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: const LinearProgressIndicator(
-                value: progress,
-                minHeight: 7,
-                backgroundColor: AppColors.soft,
-                valueColor: AlwaysStoppedAnimation(AppColors.primary),
+            const SizedBox(height: 8),
+            Container(
+              height: 7,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFBEBEF),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: progress,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFE85A7A), Color(0xFFC73A5E)],
+                    ),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 9),
+            const SizedBox(height: 7),
             Row(
               children: [
-                const Text('🎀', style: TextStyle(fontSize: 13)),
-                const SizedBox(width: 8),
+                const Icon(Icons.grid_view_rounded, size: 13, color: Color(0xFFE85A7A)),
+                const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    '$repliesRemaining more replies to unlock her gift',
-                    style: AppText.body.copyWith(color: AppColors.ink60),
+                    repliesRemaining <= 0
+                        ? 'Gift unlocked · enough replies!'
+                        : '$repliesRemaining more replies to unlock her gift',
+                    style: const TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF5F5C56),
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -231,62 +274,106 @@ class ChatRelationshipProgressBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 75,
-      child: Padding(
-        key: const ValueKey('relationship_progress'),
-        padding: const EdgeInsets.fromLTRB(16, 5, 16, 0),
+    return InkWell(
+      onTap: onJourneyTap,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            bottom: BorderSide(color: Color(0xFFEFECE6), width: 1),
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text('💗', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 6),
-                    Text('RELATIONSHIP PROGRESS', style: AppText.eyebrow),
+                    const SizedBox(width: 8),
+                    Text(
+                      'RELATIONSHIP PROGRESS',
+                      style: AppText.eyebrow.copyWith(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.3,
+                        color: const Color(0xFF8A8680),
+                      ),
+                    ),
                   ],
                 ),
-                InkWell(
-                  onTap: onJourneyTap,
-                  child: Text(
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF4E0),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
                     'LEVEL 4 ›',
-                    style: AppText.eyebrow.copyWith(color: AppColors.primary),
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF8A5A10),
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: const LinearProgressIndicator(
-                value: .72,
-                minHeight: 7,
-                backgroundColor: AppColors.soft,
-                valueColor: AlwaysStoppedAnimation(AppColors.primary),
+            const SizedBox(height: 8),
+            Container(
+              height: 7,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5EEDF),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: 0.64,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFF0C24B), Color(0xFFE08A2B)],
+                    ),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 9),
+            const SizedBox(height: 7),
             Row(
               children: [
                 const Icon(
                   Icons.check_circle_outline,
-                  size: 16,
-                  color: AppColors.gold,
+                  size: 14,
+                  color: Color(0xFFE08A2B),
                 ),
-                const SizedBox(width: 8),
-                Text(
+                const SizedBox(width: 6),
+                const Text(
                   'Last milestone: ',
-                  style: AppText.body.copyWith(color: AppColors.ink60),
+                  style: TextStyle(
+                    fontFamily: 'DM Sans',
+                    fontSize: 11.5,
+                    color: Color(0xFF5F5C56),
+                  ),
                 ),
                 Expanded(
                   child: Text(
                     'Level 3 · First Meet',
-                    style: AppText.body.copyWith(
-                      color: AppColors.primary,
+                    style: const TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 11.5,
                       fontWeight: FontWeight.w800,
+                      color: Color(0xFFE85A7A),
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),

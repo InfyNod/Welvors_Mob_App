@@ -166,8 +166,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   String get _livePackageType => _profileDetails?.packageType ?? 'FREE';
 
-  num get _liveMatchScore => _profileDetails?.matchScore ?? 0;
-
   // Top banner alternates between "Gift Unlock Progress" and
   // "Relationship Progress" every few seconds.
   int _bannerIndex = 0;
@@ -517,12 +515,28 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     }
   }
 
+  void _startVoiceCall() {
+    _toast('Voice call coming soon! 📞');
+  }
+
+  void _startVideoCall() {
+    _toast('Video call coming soon! 📹');
+  }
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
+    _tabController = TabController(length: 5, vsync: this, initialIndex: 0);
 
     tab = 0;
+
+    _bannerRotationTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (mounted) {
+        setState(() {
+          _bannerIndex = _bannerIndex == 0 ? 1 : 0;
+        });
+      }
+    });
 
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
@@ -562,6 +576,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     _isUserOnline = widget.user.online;
 
     scrollController.addListener(_handleMessageScroll);
+    _messageFocusNode.addListener(_onInputStateChanged);
+    controller.addListener(_onInputStateChanged);
 
     _playerCompleteSubscription = _audioPlayer.onPlayerComplete.listen(
       (_) {
@@ -1222,11 +1238,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     _olderMessagesTimeout?.cancel();
     _audioRecorder.dispose();
     _audioPlayer.dispose();
+    controller.removeListener(_onInputStateChanged);
     controller.dispose();
     scrollController.removeListener(_handleMessageScroll);
     scrollController.dispose();
+    _messageFocusNode.removeListener(_onInputStateChanged);
     _messageFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onInputStateChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _startRecording() async {
@@ -1766,6 +1790,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
           livePackageType: _livePackageType,
           isUserOnline: _isUserOnline,
           onBackTap: () => Navigator.of(context).maybePop(),
+          onVoiceCallTap: _startVoiceCall,
+          onVideoCallTap: _startVideoCall,
           onMoreTap: () {
             Sidedrawer(
               context: context,
@@ -1801,6 +1827,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         body: SafeArea(
           child: Column(
             children: [
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                child: _topProgressBanner(),
+              ),
               _tabs(),
               Expanded(
                 child: _isUnmatched
@@ -1883,8 +1914,78 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   //     return false; // ❌ error par bhi false
   //   }
   // }
+  Widget _topProgressBanner() {
+    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final bool isTyping =
+        _messageFocusNode.hasFocus || controller.text.trim().isNotEmpty;
+    if (_isUnmatched ||
+        _isBlocked ||
+        _hideBanner ||
+        isKeyboardOpen ||
+        isTyping) {
+      return const SizedBox.shrink();
+    }
+    return BlocBuilder<ChatBloc, ChatState>(
+      buildWhen: (previous, current) =>
+          previous.messages[_messageKey] != current.messages[_messageKey],
+      builder: (context, state) {
+        final messages = state.messages[_messageKey] ?? const <ChatMessage>[];
+
+        // Find the latest rose or gift message that has progress
+        ChatMessage? activeMessage;
+        for (final m in messages) {
+          if ((m.type == ChatMessageType.rose || m.type == ChatMessageType.gift) &&
+              m.messageTarget != null &&
+              m.messageTarget! > 0) {
+            activeMessage = m;
+            break;
+          }
+        }
+
+        final int repliesSoFar = activeMessage?.messageProgress ?? 14;
+        final int repliesNeeded = activeMessage?.messageTarget ?? 25;
+
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 350),
+          child: _bannerIndex == 0
+              ? ChatGiftUnlockProgressBanner(
+                  key: ValueKey('gift_progress_${repliesSoFar}_$repliesNeeded'),
+                  repliesSoFar: repliesSoFar,
+                  repliesNeeded: repliesNeeded,
+                  onTap: () {
+                    setState(() {
+                      _bannerIndex = 1;
+                    });
+                  },
+                )
+              : ChatRelationshipProgressBanner(
+                  key: const ValueKey('relationship_progress'),
+                  onJourneyTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => YourJourneyScreen(
+                          function: () {
+                            _openRelationshipTagSheet(true);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        );
+      },
+    );
+  }
+
   Widget _giftUnlockProgress() {
-    return const ChatGiftUnlockProgressBanner();
+    return ChatGiftUnlockProgressBanner(
+      onTap: () {
+        setState(() {
+          _bannerIndex = 1;
+        });
+      },
+    );
   }
 
   Widget _relationshipProgress() {
@@ -1942,9 +2043,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
             .where(
               (m) =>
                   m.type == ChatMessageType.dateInvite ||
-                  m.type == ChatMessageType.eventInvite ||
                   m.type == ChatMessageType.DATECONFIRMED,
             )
+            .length;
+
+        final eventsCount = messages
+            .where((m) => m.type == ChatMessageType.eventInvite)
             .length;
 
         return ChatFilterTabs(
@@ -1977,6 +2081,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
           giftsCount: giftsCount,
           complimentsCount: complimentsCount,
           dateInvitesCount: dateInvitesCount,
+          eventsCount: eventsCount,
         );
       },
     );
@@ -2012,7 +2117,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
               case 3:
                 return m.type == ChatMessageType.dateInvite ||
-                    m.type == ChatMessageType.eventInvite;
+                    m.type == ChatMessageType.DATECONFIRMED;
+
+              case 4:
+                return m.type == ChatMessageType.eventInvite;
 
               default:
                 return true;
@@ -2021,12 +2129,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
           // No messages in selected filter
           if (filtered.isEmpty) {
-            return Center(
-              child: Text(
-                'Nothing here yet',
-                style: AppText.body.copyWith(color: AppColors.muted),
-              ),
-            );
+            return _buildTabEmptyState(tab);
           }
 
           // ============================================================
@@ -2107,6 +2210,111 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildTabEmptyState(int selectedTab) {
+    IconData icon;
+    Color iconColor;
+    Color iconBgColor;
+    String title;
+    String subtitle;
+
+    final peerFirstName = widget.user.name.trim().isNotEmpty
+        ? widget.user.name.trim().split(' ').first
+        : 'them';
+
+    switch (selectedTab) {
+      case 1: // Gifts
+        icon = Icons.card_giftcard_rounded;
+        iconColor = const Color(0xFFE85A7A);
+        iconBgColor = const Color(0xFFFFEEF2);
+        title = 'No Gifts Sent or Received';
+        subtitle =
+            'Send a rose or a special surprise to unlock exclusive replies!';
+        break;
+      case 2: // Compliments
+        icon = Icons.favorite_rounded;
+        iconColor = const Color(0xFFE0567E);
+        iconBgColor = const Color(0xFFFDE8EF);
+        title = 'No Compliments Yet';
+        subtitle =
+            'Compliment something lovely about $peerFirstName to make their day!';
+        break;
+      case 3: // Date Invites
+        icon = Icons.calendar_month_rounded;
+        iconColor = const Color(0xFFE08A2B);
+        iconBgColor = const Color(0xFFFFF4E6);
+        title = 'No Date Invites Yet';
+        subtitle =
+            'Plan a romantic coffee date or dinner to meet $peerFirstName in person!';
+        break;
+      case 4: // Events
+        icon = Icons.confirmation_number_rounded;
+        iconColor = const Color(0xFF6B4EE6);
+        iconBgColor = const Color(0xFFF0ECFF);
+        title = 'No Event Invites Yet';
+        subtitle =
+            'Discover exciting upcoming events and invite $peerFirstName to join you!';
+        break;
+      default: // All
+        icon = Icons.chat_bubble_outline_rounded;
+        iconColor = const Color(0xFF8A8680);
+        iconBgColor = const Color(0xFFF5F3EF);
+        title = 'No Messages Yet';
+        subtitle = 'Say hi to start the conversation!';
+        break;
+    }
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 34,
+                color: iconColor,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'DM Sans',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E1E1E),
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 280),
+              child: Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'DM Sans',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF8A8680),
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -12,6 +12,8 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isUserOnline;
   final VoidCallback onMoreTap;
   final VoidCallback? onBackTap;
+  final VoidCallback? onVoiceCallTap;
+  final VoidCallback? onVideoCallTap;
 
   const ChatDetailAppBar({
     super.key,
@@ -22,6 +24,8 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.isUserOnline,
     required this.onMoreTap,
     this.onBackTap,
+    this.onVoiceCallTap,
+    this.onVideoCallTap,
   });
 
   @override
@@ -43,7 +47,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           _buildAvatarWithStatus(
             context,
             liveImage,
-            size: 44,
+            size: 40,
             name: liveName,
             age: liveAge.toString(),
             isOnline: isUserOnline,
@@ -52,17 +56,19 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
                       child: Text(
                         liveAge > 0 ? '$liveName, $liveAge' : liveName,
-                        style: AppText.h2,
+                        style: AppText.h2.copyWith(fontSize: 16),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 7),
+                    const SizedBox(width: 6),
                     _buildBadge(livePackageType.toUpperCase()),
                   ],
                 ),
@@ -82,6 +88,8 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                       isUserOnline ? 'Online' : 'Offline',
                       style: AppText.body.copyWith(
                         color: isUserOnline ? AppColors.green : AppColors.muted,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -92,11 +100,61 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
+        if (onVoiceCallTap != null)
+          _buildActionButton(
+            icon: Icons.call_outlined,
+            onTap: onVoiceCallTap!,
+          ),
+        if (onVideoCallTap != null) ...[
+          const SizedBox(width: 4),
+          _buildActionButton(
+            icon: Icons.videocam_outlined,
+            onTap: onVideoCallTap!,
+          ),
+        ],
+        const SizedBox(width: 2),
         IconButton(
           onPressed: onMoreTap,
-          icon: const Icon(Icons.more_vert, color: AppColors.ink),
+          icon: const Icon(Icons.more_vert, color: AppColors.ink, size: 22),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
         ),
+        const SizedBox(width: 8),
       ],
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    double size = 36,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFFEFECE6), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            size: 18,
+            color: const Color(0xFFE85A7A),
+          ),
+        ),
+      ),
     );
   }
 
