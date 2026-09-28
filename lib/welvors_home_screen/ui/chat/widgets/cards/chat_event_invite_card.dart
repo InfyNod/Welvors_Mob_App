@@ -59,6 +59,43 @@ class ChatEventInviteCard extends StatelessWidget {
     return 'Free';
   }
 
+  void _openEventDetails(BuildContext context) {
+    final featureTags =
+        (message.eventSafetyFeatures as List? ?? [])
+            .asMap()
+            .entries
+            .map((entry) {
+              final index = entry.key;
+              final feature = entry.value;
+              return {
+                'id': feature is Map
+                    ? feature['id']?.toString() ?? ''
+                    : '',
+                'label': feature is Map
+                    ? feature['label']?.toString() ?? ''
+                    : feature.toString(),
+                'displayOrder': index,
+              };
+            })
+            .toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailsScreen(
+          eventId: (message.eventId ?? '').toString(),
+          title: (message.eventTitle ?? '').toString(),
+          date: (message.eventDate ?? '').toString(),
+          location: (message.eventFullAddress ?? message.inviteVenue ?? '').toString(),
+          imageUrl: (message.eventHeroImage ?? '').toString(),
+          status: (message.eventType ?? '').toString(),
+          price: getEventPrice(context, message),
+          featureTags: featureTags,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasStats =
@@ -69,9 +106,12 @@ class ChatEventInviteCard extends StatelessWidget {
         left: message.isMine ? 20 : 0,
         right: message.isMine ? 0 : 20,
       ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 18),
-        clipBehavior: Clip.antiAlias,
+      child: GestureDetector(
+        onTap: () => _openEventDetails(context),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 18),
+          clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -491,42 +531,7 @@ class ChatEventInviteCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: () {
-                              final featureTags =
-                                  (message.eventSafetyFeatures as List? ?? [])
-                                      .asMap()
-                                      .entries
-                                      .map((entry) {
-                                        final index = entry.key;
-                                        final feature = entry.value;
-                                        return {
-                                          'id': feature is Map
-                                              ? feature['id']?.toString() ?? ''
-                                              : '',
-                                          'label': feature is Map
-                                              ? feature['label']?.toString() ?? ''
-                                              : feature.toString(),
-                                          'displayOrder': index,
-                                        };
-                                      })
-                                      .toList();
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EventDetailsScreen(
-                                    eventId: message.eventId.toString(),
-                                    title: message.eventTitle.toString(),
-                                    date: message.eventDate.toString(),
-                                    location: message.eventFullAddress.toString(),
-                                    imageUrl: message.eventHeroImage.toString(),
-                                    status: message.eventType.toString(),
-                                    price: getEventPrice(context, message),
-                                    featureTags: featureTags,
-                                  ),
-                                ),
-                              );
-                            },
+                            onTap: () => _openEventDetails(context),
                             child: Container(
                               height: 40,
                               width: MediaQuery.of(context).size.width * 0.80,
@@ -570,6 +575,7 @@ class ChatEventInviteCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

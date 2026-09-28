@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:velvors/onbording_allpage/theme/app_colors.dart';
-import 'package:velvors/onbording_allpage/theme/app_text.dart';
 
-/// Horizontal filter tabs for chat categories (All, Gifts, Compliments, Date Invites)
+/// Horizontal pill/chip filter tabs for chat categories (All, Gifts, Compliments, Date Invites, Events)
 class ChatFilterTabs extends StatelessWidget {
   final int selectedTab;
   final ValueChanged<int> onTabSelected;
@@ -11,6 +9,7 @@ class ChatFilterTabs extends StatelessWidget {
   final int giftsCount;
   final int complimentsCount;
   final int dateInvitesCount;
+  final int eventsCount;
 
   const ChatFilterTabs({
     super.key,
@@ -21,28 +20,37 @@ class ChatFilterTabs extends StatelessWidget {
     required this.giftsCount,
     required this.complimentsCount,
     required this.dateInvitesCount,
+    this.eventsCount = 0,
   });
 
   String _countLabel(int count) => count > 0 ? '$count' : '';
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: tabScrollController,
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 10),
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFEFECE6), width: 1),
+        ),
+      ),
+      child: SingleChildScrollView(
+        controller: tabScrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildTab('💬 All', '', 0),
-            const SizedBox(width: 18),
+            const SizedBox(width: 8),
             _buildTab('🎁 Gifts', _countLabel(giftsCount), 1),
-            const SizedBox(width: 18),
-            _buildTab('💖 Compliments', _countLabel(complimentsCount), 2),
-            const SizedBox(width: 18),
+            const SizedBox(width: 8),
+            _buildTab('💝 Compliments', _countLabel(complimentsCount), 2),
+            const SizedBox(width: 8),
             _buildTab('📅 Date Invites', _countLabel(dateInvitesCount), 3),
+            const SizedBox(width: 8),
+            _buildTab('🎟 Events', _countLabel(eventsCount), 4),
           ],
         ),
       ),
@@ -55,17 +63,26 @@ class ChatFilterTabs extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => onTabSelected(index),
+      behavior: HitTestBehavior.opaque,
       child: KeyedSubtree(
         key: tabKey,
-        child: Container(
-          padding: const EdgeInsets.only(bottom: 6, top: 10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
           decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: selected ? const Color(0xFFE43A6A) : Colors.transparent,
-                width: 3,
-              ),
+            color: selected ? const Color(0xFFE85A7A) : Colors.white,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: selected ? const Color(0xFFE85A7A) : const Color(0xFFEFECE6),
+              width: 1.5,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -74,21 +91,31 @@ class ChatFilterTabs extends StatelessWidget {
                 title,
                 maxLines: 1,
                 softWrap: false,
-                style: AppText.h2.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: selected ? const Color(0xFFE43A6A) : AppColors.ink60,
+                style: TextStyle(
+                  fontFamily: 'DM Sans',
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? Colors.white : const Color(0xFF5F5C56),
                 ),
               ),
               if (count.isNotEmpty) ...[
-                const SizedBox(width: 4),
-                Text(
-                  count,
-                  maxLines: 1,
-                  style: AppText.pill.copyWith(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: selected ? const Color(0xFFE43A6A) : AppColors.muted,
+                const SizedBox(width: 5),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? Colors.white.withValues(alpha: 0.30)
+                        : const Color(0xFFF5F2EC),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    count,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: selected ? Colors.white : const Color(0xFF8A8680),
+                    ),
                   ),
                 ),
               ],
