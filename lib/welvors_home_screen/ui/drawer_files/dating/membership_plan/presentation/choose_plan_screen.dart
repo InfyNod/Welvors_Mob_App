@@ -332,10 +332,8 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PlanHeroCard(
-          plan: plan,
-          selectedDuration: selectedDuration,
-        ),
+        const SizedBox(height: 20),
+        PlanHeroCard(plan: plan, selectedDuration: selectedDuration),
         const SizedBox(height: 10),
         if (plan.tier == MembershipTier.elite) _buildEliteNotice(),
         if (plan.tier == MembershipTier.elite) const SizedBox(height: 16),
@@ -449,11 +447,17 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
     final bool elite = plan.tier == MembershipTier.elite;
     final bool vip = plan.tier == MembershipTier.vip;
 
-    final Color buttonColor = elite
-        ? Colors.black
+    final LinearGradient buttonGradient = elite
+        ? const LinearGradient(colors: [Color(0xFF2C2C2C), Color(0xFF050505)], begin: Alignment.centerLeft, end: Alignment.centerRight)
         : vip
-        ? const Color(0xFFC28A26)
-        : AppColors.pink1;
+        ? const LinearGradient(colors: [Color(0xFFE0AA3E), Color(0xFFA67620)], begin: Alignment.centerLeft, end: Alignment.centerRight)
+        : const LinearGradient(colors: [Color(0xFFD63B5F), Color(0xFFF0516A)], begin: Alignment.centerLeft, end: Alignment.centerRight);
+
+    final Color shadowColor = elite
+        ? Colors.black.withOpacity(0.3)
+        : vip
+        ? const Color(0xFFA67620).withOpacity(0.3)
+        : const Color(0xFFD63B5F).withOpacity(0.3);
 
     final String action = elite
         ? 'Request'
@@ -469,11 +473,11 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
           decoration: BoxDecoration(
-            color: buttonColor,
+            gradient: buttonGradient,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: buttonColor.withOpacity(.30),
+                color: shadowColor,
                 blurRadius: 22,
                 offset: const Offset(0, 10),
               ),
@@ -498,12 +502,13 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
                       style: AppText.button.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
+                        color: elite ? const Color(0xFFE7CD7B) : Colors.white,
                       ),
                     ),
 
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_rounded,
-                      color: Colors.white,
+                      color: elite ? const Color(0xFFE7CD7B) : Colors.white,
                       size: 18,
                     ),
                   ],

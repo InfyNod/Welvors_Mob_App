@@ -235,12 +235,12 @@ class _PrivacySafetyAndMembershipState
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFFBE4E7),
+          color: const Color(0xFFD63B5F).withOpacity(0.3),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE85A7A).withOpacity(0.12),
+            color: const Color(0xFFD63B5F).withOpacity(0.12),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -299,7 +299,7 @@ class _PrivacySafetyAndMembershipState
                             ),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [Color(0xFFE85A7A), Color(0xFFFF758C)],
+                                colors: [Color(0xFFD63B5F), Color(0xFFF0516A)],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
@@ -365,14 +365,14 @@ class _PrivacySafetyAndMembershipState
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFE85A7A), Color(0xFFFF758C)],
+                  colors: [Color(0xFFD63B5F), Color(0xFFF0516A)],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFE85A7A).withOpacity(0.3),
+                    color: const Color(0xFFD63B5F).withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -403,12 +403,12 @@ class _PrivacySafetyAndMembershipState
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFFFF4E0),
+          color: const Color(0xFFE0AA3E).withOpacity(0.3),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFC8933A).withOpacity(0.12),
+            color: const Color(0xFFA67620).withOpacity(0.12),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -467,7 +467,7 @@ class _PrivacySafetyAndMembershipState
                             ),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [Color(0xFFE5C07B), Color(0xFFC8933A)],
+                                colors: [Color(0xFFE0AA3E), Color(0xFFA67620)],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
@@ -532,14 +532,14 @@ class _PrivacySafetyAndMembershipState
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFF3C669), Color(0xFFC8933A)],
+                  colors: [Color(0xFFE0AA3E), Color(0xFFA67620)],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFC8933A).withOpacity(0.3),
+                    color: const Color(0xFFA67620).withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),

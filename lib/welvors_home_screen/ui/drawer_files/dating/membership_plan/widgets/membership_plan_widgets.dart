@@ -139,7 +139,14 @@ class PlanHeroCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [plan.primaryColor, plan.secondaryColor],
         ),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: plan.primaryColor.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -427,11 +434,13 @@ class _DurationSelectorState extends State<DurationSelector> {
           final duration = plan.durations[index];
           final selected = index == widget.selectedIndex;
 
-          final borderColor = plan.tier == MembershipTier.premiumPlus
-              ? AppColors.pink
+          final borderColor = plan.primaryColor;
+
+          final shadowColor = plan.tier == MembershipTier.premiumPlus
+              ? borderColor.withOpacity(0.15)
               : plan.tier == MembershipTier.vip
-              ? const Color(0xFFD39A36)
-              : Colors.black;
+              ? borderColor.withOpacity(0.15)
+              : Colors.black.withOpacity(0.08);
 
           return GestureDetector(
             onTap: () {
@@ -458,17 +467,23 @@ class _DurationSelectorState extends State<DurationSelector> {
                   decoration: BoxDecoration(
                     color: selected
                         ? plan.tier == MembershipTier.premiumPlus
-                              ? const Color(0xFFFFE7EC)
+                              ? const Color(0xFFFFF5F7)
                               : plan.tier == MembershipTier.vip
-                              ? const Color(0xFFFFF5DD)
-                              : const Color(0xFFF2F2F0)
+                              ? const Color(0xFFFFFDF5)
+                              : const Color(0xFFFAFAFA)
                         : Colors.white,
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
                       color: selected ? borderColor : AppColors.line,
-                      width: selected ? 3 : 1.5,
+                      width: selected ? 2.5 : 1.5,
                     ),
-                    boxShadow: selected ? AppColors.shadow : null,
+                    boxShadow: selected ? [
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
+                      )
+                    ] : null,
                   ),
                   child: Stack(
                     children: [
@@ -537,14 +552,14 @@ class _DurationSelectorState extends State<DurationSelector> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 2,
+                        vertical: 4,
                       ),
                       decoration: BoxDecoration(
                         color: borderColor,
                         borderRadius: BorderRadius.circular(999),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: borderColor.withOpacity(0.4),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),
@@ -587,6 +602,18 @@ class WeeklyBenefitsWidget extends StatelessWidget {
         ? const Color(0xFFA66F0A)
         : const Color(0xFFC29A38);
 
+        final Color borderColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFFBE4E7)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFFFF4E0)
+        : const Color(0xFFF2F2F2);
+
+    final Color shadowColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFE85A7A).withOpacity(0.08)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFC8933A).withOpacity(0.08)
+        : Colors.black.withOpacity(0.05);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -612,7 +639,14 @@ class WeeklyBenefitsWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.line),
+                  border: Border.all(color: borderColor, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: shadowColor,
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -673,14 +707,32 @@ class FeatureSectionCard extends StatelessWidget {
         ? const Color(0xFFFFF4DC)
         : const Color(0xFFF0EFEB);
 
+    final Color borderColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFFBE4E7)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFFFF4E0)
+        : const Color(0xFFF2F2F2);
+
+    final Color shadowColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFE85A7A).withOpacity(0.08)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFC8933A).withOpacity(0.08)
+        : Colors.black.withOpacity(0.05);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.line),
-        boxShadow: AppColors.shadow,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderColor, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
