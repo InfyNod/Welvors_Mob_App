@@ -325,10 +325,17 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
     MembershipPlanState state,
     MembershipPlanModel plan,
   ) {
+    final selectedDuration = plan.durations.isNotEmpty
+        ? plan.durations[state.selectedDurationIndex]
+        : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PlanHeroCard(plan: plan),
+        PlanHeroCard(
+          plan: plan,
+          selectedDuration: selectedDuration,
+        ),
         const SizedBox(height: 10),
         if (plan.tier == MembershipTier.elite) _buildEliteNotice(),
         if (plan.tier == MembershipTier.elite) const SizedBox(height: 16),

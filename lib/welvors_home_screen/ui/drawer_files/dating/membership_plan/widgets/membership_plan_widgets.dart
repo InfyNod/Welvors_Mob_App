@@ -122,8 +122,9 @@ class PlanTabs extends StatelessWidget {
 
 class PlanHeroCard extends StatelessWidget {
   final MembershipPlanModel plan;
+  final PlanDuration? selectedDuration;
 
-  const PlanHeroCard({super.key, required this.plan});
+  const PlanHeroCard({super.key, required this.plan, this.selectedDuration});
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +243,7 @@ class PlanHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                plan.monthlyPrice,
+                selectedDuration != null ? selectedDuration!.price : plan.monthlyPrice,
                 style: GoogleFonts.playfairDisplay(
                   fontSize: 25,
                   fontWeight: FontWeight.w700,
@@ -253,7 +254,9 @@ class PlanHeroCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 1),
                 child: Text(
-                  plan.tier == MembershipTier.elite ? '/ year' : '/ month',
+                  selectedDuration != null 
+                    ? (selectedDuration!.months == 1 ? '/ month' : '/ ${selectedDuration!.months} months')
+                    : (plan.tier == MembershipTier.elite ? '/ year' : '/ month'),
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     color: Colors.white.withOpacity(.85),
@@ -263,7 +266,23 @@ class PlanHeroCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          if (plan.yearlySaving.isNotEmpty)
+          if (selectedDuration != null && selectedDuration!.saving.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(.18),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                selectedDuration!.saving.toUpperCase(),
+                style: GoogleFonts.dmSans(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          else if (selectedDuration == null && plan.yearlySaving.isNotEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
               decoration: BoxDecoration(

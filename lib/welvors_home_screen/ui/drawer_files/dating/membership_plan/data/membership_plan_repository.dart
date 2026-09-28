@@ -542,20 +542,83 @@ class MembershipPlanRepository {
         final badgeLabel = pkg['badgeLabel']?.toString();
         final features = pkg['features'] as List<dynamic>?;
         
+        List<PlanDuration>? dynamicDurations;
+        if (id.isNotEmpty) {
+          dynamicDurations = await _fetchPackagePrices(id);
+        }
+
         if (slug == 'premium') {
-          mergedPremium = _mergeWithApi(defaultPremium, id, name, price, features, badgeLabel);
+          mergedPremium = _mergeWithApi(defaultPremium, id, name, price, features, badgeLabel, dynamicDurations);
         } else if (slug == 'vip') {
-          mergedVip = _mergeWithApi(defaultVip, id, name, price, features, badgeLabel);
+          mergedVip = _mergeWithApi(defaultVip, id, name, price, features, badgeLabel, dynamicDurations);
         } else if (slug == 'vip-elite' || slug == 'vip_elite' || slug == 'elite') {
-          mergedElite = _mergeWithApi(defaultElite, id, name, price, features, badgeLabel);
+          mergedElite = _mergeWithApi(defaultElite, id, name, price, features, badgeLabel, dynamicDurations);
         }
       }
 
       return [mergedPremium, mergedVip, mergedElite];
   }
 
+  Future<List<PlanDuration>?> _fetchPackagePrices(String id) async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.get(
+        Uri.parse('https://api.welvors.com/api/package/get/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true && data['data'] != null && data['data']['prices'] != null) {
+          final prices = data['data']['prices'] as List<dynamic>;
+          List<PlanDuration> durations = [];
+          for (var p in prices) {
+            final pId = p['id']?.toString() ?? '';
+            final months = p['months'] as int? ?? 1;
+            final price = p['price'] as int? ?? 0;
+            final originalPrice = p['originalPrice'] as int? ?? price;
+            final discountPercent = p['discountPercent'] as int? ?? 0;
+            final isHighlighted = p['isHighlighted'] as bool? ?? false;
+            final active = p['active'] as bool? ?? true;
+            
+            if (!active) continue;
+
+            final title = months == 1 ? '1 MONTH' : '$months MONTHS';
+            final perMonthPrice = (price / months).round();
+            
+            durations.add(PlanDuration(
+              id: pId,
+              months: months,
+              originalPrice: originalPrice,
+              title: title,
+              price: '₹$price',
+              perMonth: '₹$perMonthPrice/mo',
+              saving: discountPercent > 0 ? 'SAVE $discountPercent%' : '',
+              selected: isHighlighted,
+            ));
+          }
+          // Sort by months (1, 3, 6, 12)
+          durations.sort((a, b) => a.months.compareTo(b.months));
+          return durations;
+        }
+      }
+    } catch (e) {
+      print('Error fetching package prices for $id: $e');
+    }
+    return null;
+  }
+
   MembershipPlanModel _mergeWithApi(
-      MembershipPlanModel base, String id, String name, String price, List<dynamic>? features, String? badgeLabel) {
+      MembershipPlanModel base, 
+      String id, 
+      String name, 
+      String price, 
+      List<dynamic>? features, 
+      String? badgeLabel, 
+      List<PlanDuration>? dynamicDurations) {
     
     // We update the monthlyPrice and ID from the API.
     final newPriceStr = price.isNotEmpty ? '₹$price' : base.monthlyPrice;
@@ -574,7 +637,7 @@ class MembershipPlanRepository {
       primaryColor: base.primaryColor,
       secondaryColor: base.secondaryColor,
       textColor: base.textColor,
-      durations: base.durations,
+      durations: dynamicDurations ?? base.durations,
       weeklyBenefits: base.weeklyBenefits,
       sections: base.sections,
       rawFeatures: features,
