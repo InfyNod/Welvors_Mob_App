@@ -35,533 +35,148 @@ class MembershipPlanRepository {
       id: '',
       tier: MembershipTier.premiumPlus,
       name: 'Premium+',
-        badge: 'PREMIUM PLUS',
-        emoji: '🔥',
-        description: 'Find better matches. Date safer. Connect faster.',
-        monthlyPrice: '₹499',
-        yearlyPrice: '₹3,999/year',
-        yearlySaving: 'save 33%',
-        primaryColor: AppColors.pink,
-        secondaryColor: AppColors.pinkDeep,
-        textColor: Colors.white,
-        durations: [
-          PlanDuration(
-            title: '1 MONTH',
-            price: '₹498',
-            perMonth: '₹499/mo',
-            saving: "",
-            selected: true,
-          ),
-          PlanDuration(
-            title: '3 MONTHS',
-            price: '₹1,299',
-            perMonth: '₹433/mo',
-            saving: 'SAVE 13%',
-            selected: true,
-          ),
-          PlanDuration(
-            title: '6 MONTHS',
-            price: '₹2,399',
-            perMonth: '₹400/mo',
-            saving: 'SAVE 20%',
-          ),
-        ],
-        weeklyBenefits: WeeklyBenefits(
-          datePlans: '1',
-          boosts: '1',
-          compliments: '3',
-          coins: '50',
-        ),
-        sections: [
-          PlanSection(
-            title: 'MATCH & DISCOVERY',
-            emoji: '❤️',
-            features: [
-              PlanFeature(
-                title: 'Unlimited likes',
-                subtitle: 'No daily cap on swipes',
-              ),
-              PlanFeature(
-                title: 'AI Compatibility Score',
-                subtitle: 'See match % before liking',
-              ),
-              PlanFeature(
-                title: 'See who liked you',
-                subtitle: 'Secret Admirers revealed',
-              ),
-              PlanFeature(
-                title: 'Advanced preference filters',
-                subtitle: 'Verification, lifestyle, intent & more',
-              ),
-              PlanFeature(
-                title: 'Rewind last swipe',
-                subtitle: 'Undo an accidental pass',
-              ),
-              PlanFeature(
-                title: 'Priority visibility',
-                subtitle: 'Shown earlier in discovery',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'CHAT & MESSAGING',
-            emoji: '💬',
-            features: [
-              PlanFeature(
-                title: 'Unlimited chat requests',
-                subtitle: 'Message without limits',
-              ),
-              PlanFeature(
-                title: 'Voice & video calls',
-                subtitle: 'In-app secure calling',
-              ),
-              PlanFeature(
-                title: 'AI icebreakers',
-                subtitle: 'Smart opener suggestions',
-              ),
-              PlanFeature(
-                title: 'Read receipts',
-                subtitle: 'Know when messages are seen',
-              ),
-              PlanFeature(
-                title: 'Send & receive gifts & compliments',
-                subtitle: 'Roses, gifts and compliments in chat',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'TRUST & VERIFICATION',
-            emoji: '🛡️',
-            features: [
-              PlanFeature(
-                title: 'ID verification badge',
-                subtitle: 'Government-ID verified',
-              ),
-              PlanFeature(
-                title: 'Education verification',
-                subtitle: 'Degree & college confirmed',
-              ),
-              PlanFeature(
-                title: 'Profession verification',
-                subtitle: 'Job & company confirmed',
-              ),
-              PlanFeature(
-                title: 'Fraud & scam protection',
-                subtitle: 'Proactive risk checks',
-              ),
-              PlanFeature(
-                title: 'Profile authenticity checks',
-                subtitle: 'Anti-catfish screening',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'PRIVACY',
-            emoji: '🔒',
-            features: [
-              PlanFeature(
-                title: 'SafeFace photo privacy',
-                subtitle: 'Blur photos until you reveal',
-              ),
-              PlanFeature(
-                title: 'AI Avatar Studio',
-                subtitle: 'Generate profile avatars',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'STATUS & BADGES',
-            emoji: '🏆',
-            features: [
-              PlanFeature(
-                title: 'AI Match score chip',
-                subtitle: 'Compatibility % on your profile',
-              ),
-              PlanFeature(
-                title: 'Trust Score chip + verified tick',
-                subtitle: 'On-profile trust % and verified checkmark',
-              ),
-              PlanFeature(
-                title: 'Fast-reply chip',
-                subtitle: 'Average reply time shown',
-              ),
-              PlanFeature(
-                title: 'Tier badge on profile',
-                subtitle: 'Show your membership',
-              ),
-              PlanFeature(title: 'Marriage Intent badge'),
-            ],
-          ),
-          PlanSection(
-            title: 'REAL-LIFE & EVENTS',
-            emoji: '🎉',
-            features: [
-              PlanFeature(
-                title: 'Date Now invites',
-                subtitle: 'Spontaneous live meetups',
-              ),
-              PlanFeature(
-                title: 'Singles events access',
-                subtitle: 'Curated offline events',
-              ),
-              PlanFeature(
-                title: 'Safe meeting spots',
-                subtitle: 'Verified public venues',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'PERKS & REWARDS',
-            emoji: '🎁',
-            features: [
-              PlanFeature(
-                title: 'Welcome coins',
-                subtitle: '₹250 wallet coins on join',
-              ),
-              PlanFeature(
-                title: 'Premium gift access',
-                subtitle: 'Exclusive gift catalog',
-              ),
-              PlanFeature(
-                title: 'Refer & earn bonus',
-                subtitle: 'Wallet rewards for referrals',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'FOREVER LOVE PROGRAMME',
-            emoji: '💍',
-            features: [
-              PlanFeature(
-                title: '₹5 Lakh foreign trip reward',
-                subtitle: 'Date 3 years on Welvors & get married',
-              ),
-              PlanFeature(
-                title: '₹5,000/month shopping reward',
-                subtitle: 'Paid for 3 years after your marriage',
-              ),
-            ],
-          ),
-        ],
-      );
+      badge: 'PREMIUM PLUS',
+      emoji: '🔥',
+      description: 'Find better matches. Date safer. Connect faster.',
+      monthlyPrice: '₹499',
+      yearlyPrice: '₹3,999/year',
+      yearlySaving: 'save 33%',
+      primaryColor: AppColors.pink,
+      secondaryColor: AppColors.pinkDeep,
+      textColor: Colors.white,
+      durations: [],
+      weeklyBenefits: WeeklyBenefits(items: []),
+      sections: [],
+    );
 
-      final defaultVip = MembershipPlanModel(
-        id: '',
-        tier: MembershipTier.vip,
-        name: 'VIP',
-        badge: 'VIP MEMBERSHIP',
-        emoji: '👑',
-        description:
-            'Exclusive access for premium singles seeking elevated connections.',
-        monthlyPrice: '₹1,999',
-        yearlyPrice: '₹14,999/year',
-        yearlySaving: 'save 37%',
-        primaryColor: Color(0xFFE8A53D),
-        secondaryColor: Color(0xFFA36D0C),
-        textColor: Colors.white,
-        durations: [
-          PlanDuration(
-            title: '1 MONTH',
-            price: '₹1,999',
-            perMonth: '₹1,999/mo',
-          ),
-          PlanDuration(
-            title: '3 MONTHS',
-            price: '₹5,499',
-            perMonth: '₹1,833/mo',
-            saving: 'SAVE 8%',
-          ),
-          PlanDuration(
-            title: '6 MONTHS',
-            price: '₹9,999',
-            perMonth: '₹1,666/mo',
-            saving: 'SAVE 16%',
-            selected: true,
-          ),
-        ],
-        weeklyBenefits: WeeklyBenefits(
-          datePlans: '3',
-          boosts: '3',
-          compliments: '10',
-          coins: '500',
-        ),
-        sections: [
-          PlanSection(
-            title: 'ELITE ACCESS',
-            emoji: '💎',
-            features: [
-              PlanFeature(
-                title: 'VIP-only member pool',
-                subtitle: 'Browse premium verified profiles',
-              ),
-              PlanFeature(
-                title: 'Priority visibility',
-                subtitle: 'Shown first to other VIPs',
-              ),
-              PlanFeature(
-                title: 'Priority messages',
-                subtitle: 'Skip the queue with VIP members',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'MATCH & DISCOVERY',
-            emoji: '❤️',
-            features: [
-              PlanFeature(
-                title: 'Unlimited likes',
-                subtitle: 'No daily cap on swipes',
-              ),
-              PlanFeature(
-                title: 'AI Compatibility Score',
-                subtitle: 'See match % before liking',
-              ),
-              PlanFeature(
-                title: 'See who liked you',
-                subtitle: 'Secret Admirers revealed',
-              ),
-              PlanFeature(
-                title: 'Advanced preference filters',
-                subtitle: 'VIP-grade filtering',
-              ),
-              PlanFeature(
-                title: 'Rewind last swipe',
-                subtitle: 'Undo an accidental pass',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'CHAT & MESSAGING',
-            emoji: '💬',
-            features: [
-              PlanFeature(title: 'Unlimited chat requests'),
-              PlanFeature(title: 'Voice & video calls'),
-              PlanFeature(title: 'AI icebreakers'),
-              PlanFeature(title: 'Read receipts'),
-              PlanFeature(title: 'Send & receive gifts & compliments'),
-            ],
-          ),
-          PlanSection(
-            title: 'STATUS & PRIVACY',
-            emoji: '🏆',
-            features: [
-              PlanFeature(title: 'Gold VIP badge'),
-              PlanFeature(title: '"Seeking Elite" tag'),
-              PlanFeature(
-                title: 'Ghost / incognito mode',
-                subtitle: 'Browse privately',
-              ),
-              PlanFeature(title: 'SafeFace photo privacy'),
-            ],
-          ),
-          PlanSection(
-            title: 'ADVANCED TRUST',
-            emoji: '🛡️',
-            features: [
-              PlanFeature(title: 'ID verification badge'),
-              PlanFeature(title: 'Education verification'),
-              PlanFeature(title: 'Profession verification'),
-              PlanFeature(
-                title: 'Platinum verification',
-                subtitle: 'Highest trust tier',
-              ),
-              PlanFeature(title: 'Profile authenticity checks'),
-            ],
-          ),
-          PlanSection(
-            title: 'PREMIUM EXPERIENCES',
-            emoji: '✨',
-            features: [
-              PlanFeature(
-                title: 'Luxury date planning',
-                subtitle: 'Fine dining, premium venues',
-              ),
-              PlanFeature(
-                title: 'VIP events access',
-                subtitle: 'Rooftop socials, private mixers',
-              ),
-              PlanFeature(
-                title: 'Adventure experiences',
-                subtitle: 'Treks, retreats, travel meetups',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'NETWORKING & GROWTH',
-            emoji: '💼',
-            features: [
-              PlanFeature(
-                title: 'Career networking',
-                subtitle: 'Connect with professionals',
-              ),
-              PlanFeature(title: 'Mentorship requests'),
-              PlanFeature(title: 'Startup & business connections'),
-            ],
-          ),
-          PlanSection(
-            title: 'VIP PERKS',
-            emoji: '🎁',
-            features: [
-              PlanFeature(
-                title: 'Welcome coins',
-                subtitle: '₹500 wallet bonus',
-              ),
-              PlanFeature(title: 'Premium gift access'),
-              PlanFeature(
-                title: 'Seasonal rewards',
-                subtitle: 'Exclusive limited-time perks',
-              ),
-              PlanFeature(title: 'Refer & earn bonus'),
-            ],
-          ),
-        ],
-      );
+    final defaultVip = MembershipPlanModel(
+      id: '',
+      tier: MembershipTier.vip,
+      name: 'VIP',
+      badge: 'VIP MEMBERSHIP',
+      emoji: '👑',
+      description:
+          'Exclusive access for premium singles seeking elevated connections.',
+      monthlyPrice: '₹1,999',
+      yearlyPrice: '₹14,999/year',
+      yearlySaving: 'save 37%',
+      primaryColor: Color(0xFFE8A53D),
+      secondaryColor: Color(0xFFA36D0C),
+      textColor: Colors.white,
+      durations: [],
+      weeklyBenefits: WeeklyBenefits(items: []),
+      sections: [],
+    );
 
-      final defaultElite = MembershipPlanModel(
-        id: '',
-        tier: MembershipTier.elite,
-        name: 'VIP Elite',
-        badge: 'PRIVATE MEMBERSHIP',
-        emoji: '💠',
-        description: 'Invitation only. Only 100 members accepted per city.',
-        monthlyPrice: '₹49,999',
-        yearlyPrice: '₹49,999/year',
-        yearlySaving: '',
-        primaryColor: Color(0xFF171717),
-        secondaryColor: Color(0xFF050505),
-        textColor: Colors.white,
-        durations: [
-          PlanDuration(
-            title: '1 MONTH TRIAL',
-            price: '₹6,999',
-            perMonth: 'Per month',
-          ),
-          PlanDuration(
-            title: '3 MONTHS',
-            price: '₹18,999',
-            perMonth: '₹6,333/mo',
-            saving: 'SAVE 10%',
-          ),
-          PlanDuration(
-            title: 'LIFETIME',
-            price: '₹1,99,999',
-            perMonth: 'Lifetime',
-            selected: true,
-          ),
-        ],
-        weeklyBenefits: WeeklyBenefits(
-          datePlans: '10',
-          boosts: '10',
-          compliments: '30',
-          coins: '2000',
-        ),
-        sections: [
-          PlanSection(
-            title: 'EVERYTHING IN VIP',
-            emoji: '✓',
-            features: [
-              PlanFeature(
-                title: 'All VIP features included',
-                subtitle: 'Plus elite-only access below',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'MAXIMUM PRIVACY',
-            emoji: '🔒',
-            features: [
-              PlanFeature(
-                title: 'Elite-only discovery feed',
-                subtitle: 'Invitation-only pool',
-              ),
-              PlanFeature(
-                title: 'Visibility control',
-                subtitle: 'Elite only / Elite + VIP — you decide',
-              ),
-              PlanFeature(title: 'Hidden photos until mutual interest'),
-              PlanFeature(title: 'Approximate location privacy'),
-              PlanFeature(
-                title: 'Screenshot alerts',
-                subtitle: 'Know if someone screenshots',
-              ),
-            ],
-          ),
-          PlanSection(
-            title: 'CURATED ELITE MATCHING',
-            emoji: '🎯',
-            features: [
-              PlanFeature(title: 'Lifestyle & ambition compatibility'),
-              PlanFeature(title: 'Curated premium recommendations'),
-              PlanFeature(title: 'High-trust member ecosystem'),
-            ],
-          ),
-          PlanSection(
-            title: 'ELITE STATUS',
-            emoji: '👑',
-            features: [
-              PlanFeature(title: 'Gold Crown (Elite) badge'),
-              PlanFeature(title: 'Platinum verified profile'),
-              PlanFeature(title: 'Highest trust-tier verification'),
-            ],
-          ),
-          PlanSection(
-            title: 'WHITE-GLOVE EXPERIENCES',
-            emoji: '✨',
-            features: [
-              PlanFeature(
-                title: 'Personal date concierge',
-                subtitle: 'White-glove planning',
-              ),
-              PlanFeature(title: 'Premium itinerary planning'),
-              PlanFeature(title: 'Luxury venue recommendations'),
-              PlanFeature(title: 'Members-only curated gatherings'),
-            ],
-          ),
-          PlanSection(
-            title: 'GLOBAL EXPERIENCES',
-            emoji: '✈️',
-            features: [
-              PlanFeature(title: 'International premium dates'),
-              PlanFeature(title: 'Luxury travel recommendations'),
-              PlanFeature(title: 'Exclusive global events'),
-            ],
-          ),
-        ],
-      );
+    final defaultElite = MembershipPlanModel(
+      id: '',
+      tier: MembershipTier.elite,
+      name: 'VIP Elite',
+      badge: 'PRIVATE MEMBERSHIP',
+      emoji: '💠',
+      description: 'Invitation only. Only 100 members accepted per city.',
+      monthlyPrice: '₹49,999',
+      yearlyPrice: '₹49,999/year',
+      yearlySaving: '',
+      primaryColor: Color(0xFF171717),
+      secondaryColor: Color(0xFF050505),
+      textColor: Colors.white,
+      durations: [],
+      weeklyBenefits: WeeklyBenefits(items: []),
+      sections: [],
+    );
 
-      // Now map API data to our models
-      MembershipPlanModel mergedPremium = defaultPremium;
-      MembershipPlanModel mergedVip = defaultVip;
-      MembershipPlanModel mergedElite = defaultElite;
+    // Now map API data to our models
+    MembershipPlanModel mergedPremium = defaultPremium;
+    MembershipPlanModel mergedVip = defaultVip;
+    MembershipPlanModel mergedElite = defaultElite;
 
-      for (var pkg in apiPackages) {
-        final slug = pkg['slug']?.toString().toLowerCase() ?? '';
-        final id = pkg['id']?.toString() ?? '';
-        final price = pkg['price']?.toString() ?? '';
-        final rawName = pkg['name']?.toString() ?? '';
-        final name = rawName.replaceAll('_', ' ');
-        final badgeLabel = pkg['badgeLabel']?.toString();
-        final tagline = pkg['tagline']?.toString();
-        final features = pkg['features'] as List<dynamic>?;
-        
-        List<PlanDuration>? dynamicDurations;
-        if (id.isNotEmpty) {
-          dynamicDurations = await _fetchPackagePrices(id);
-        }
+    for (var pkg in apiPackages) {
+      final slug = pkg['slug']?.toString().toLowerCase() ?? '';
+      final id = pkg['id']?.toString() ?? '';
+      final price = pkg['price']?.toString() ?? '';
+      final rawName = pkg['name']?.toString() ?? '';
+      final name = rawName.replaceAll('_', ' ');
+      final badgeLabel = pkg['badgeLabel']?.toString();
+      final tagline = pkg['tagline']?.toString();
+      final features = pkg['features'] as List<dynamic>?;
+      final limits = pkg['limits'] as List<dynamic>?;
 
-        if (slug == 'premium') {
-          mergedPremium = _mergeWithApi(defaultPremium, id, name, price, features, badgeLabel, dynamicDurations, tagline);
-        } else if (slug == 'vip') {
-          mergedVip = _mergeWithApi(defaultVip, id, name, price, features, badgeLabel, dynamicDurations, tagline);
-        } else if (slug == 'vip-elite' || slug == 'vip_elite' || slug == 'elite') {
-          mergedElite = _mergeWithApi(defaultElite, id, name, price, features, badgeLabel, dynamicDurations, tagline);
+      List<PlanDuration>? dynamicDurations;
+      List<dynamic>? dynamicLimits;
+      if (id.isNotEmpty) {
+        final details = await _fetchPackageDetails(id);
+        if (details != null) {
+          dynamicDurations = details['durations'] as List<PlanDuration>?;
+          dynamicLimits = details['limits'] as List<dynamic>?;
         }
       }
 
-      return [mergedPremium, mergedVip, mergedElite];
+      final limitsToParse = dynamicLimits ?? limits;
+
+      if (slug == 'premium') {
+        final dynamicBenefits = _parseWeeklyBenefits(
+          limitsToParse,
+          defaultPremium.weeklyBenefits,
+        );
+        final dynamicSections = _parseSections(limitsToParse);
+        mergedPremium = _mergeWithApi(
+          defaultPremium,
+          id,
+          name,
+          price,
+          features,
+          badgeLabel,
+          dynamicDurations,
+          tagline,
+          dynamicBenefits,
+          dynamicSections,
+        );
+      } else if (slug == 'vip') {
+        final dynamicBenefits = _parseWeeklyBenefits(
+          limitsToParse,
+          defaultVip.weeklyBenefits,
+        );
+        final dynamicSections = _parseSections(limitsToParse);
+        mergedVip = _mergeWithApi(
+          defaultVip,
+          id,
+          name,
+          price,
+          features,
+          badgeLabel,
+          dynamicDurations,
+          tagline,
+          dynamicBenefits,
+          dynamicSections,
+        );
+      } else if (slug == 'vip-elite' ||
+          slug == 'vip_elite' ||
+          slug == 'elite') {
+        final dynamicBenefits = _parseWeeklyBenefits(
+          limitsToParse,
+          defaultElite.weeklyBenefits,
+        );
+        final dynamicSections = _parseSections(limitsToParse);
+        mergedElite = _mergeWithApi(
+          defaultElite,
+          id,
+          name,
+          price,
+          features,
+          badgeLabel,
+          dynamicDurations,
+          tagline,
+          dynamicBenefits,
+          dynamicSections,
+        );
+      }
+    }
+
+    return [mergedPremium, mergedVip, mergedElite];
   }
 
-  Future<List<PlanDuration>?> _fetchPackagePrices(String id) async {
+  Future<Map<String, dynamic>?> _fetchPackageDetails(String id) async {
     try {
       final token = await TokenHelper.getToken() ?? "";
       final response = await http.get(
@@ -574,58 +189,176 @@ class MembershipPlanRepository {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['success'] == true && data['data'] != null && data['data']['prices'] != null) {
-          final prices = data['data']['prices'] as List<dynamic>;
-          List<PlanDuration> durations = [];
-          for (var p in prices) {
-            final pId = p['id']?.toString() ?? '';
-            final months = p['months'] as int? ?? 1;
-            final price = p['price'] as int? ?? 0;
-            final originalPrice = p['originalPrice'] as int? ?? price;
-            final discountPercent = p['discountPercent'] as int? ?? 0;
-            final isHighlighted = p['isHighlighted'] as bool? ?? false;
-            final active = p['active'] as bool? ?? true;
-            
-            if (!active) continue;
+        if (data['success'] == true && data['data'] != null) {
+          final packageData = data['data'];
 
-            final title = months == 1 ? '1 MONTH' : '$months MONTHS';
-            final perMonthPrice = (price / months).round();
-            
-            durations.add(PlanDuration(
-              id: pId,
-              months: months,
-              originalPrice: originalPrice,
-              title: title,
-              price: '₹$price',
-              perMonth: '₹$perMonthPrice/mo',
-              saving: discountPercent > 0 ? 'SAVE $discountPercent%' : '',
-              selected: isHighlighted,
-            ));
+          List<PlanDuration> durations = [];
+          if (packageData['prices'] != null) {
+            final prices = packageData['prices'] as List<dynamic>;
+            for (var p in prices) {
+              final pId = p['id']?.toString() ?? '';
+              final months = p['months'] as int? ?? 1;
+              final price = p['price'] as int? ?? 0;
+              final originalPrice = p['originalPrice'] as int? ?? price;
+              final discountPercent = p['discountPercent'] as int? ?? 0;
+              final isHighlighted = p['isHighlighted'] as bool? ?? false;
+              final active = p['active'] as bool? ?? true;
+
+              if (!active) continue;
+
+              final title = months == 1 ? '1 MONTH' : '$months MONTHS';
+              final perMonthPrice = (price / months).round();
+
+              durations.add(
+                PlanDuration(
+                  id: pId,
+                  months: months,
+                  originalPrice: originalPrice,
+                  title: title,
+                  price: '₹$price',
+                  perMonth: '₹$perMonthPrice/mo',
+                  saving: discountPercent > 0 ? 'SAVE $discountPercent%' : '',
+                  selected: isHighlighted,
+                ),
+              );
+            }
+            // Sort by months (1, 3, 6, 12)
+            durations.sort((a, b) => a.months.compareTo(b.months));
           }
-          // Sort by months (1, 3, 6, 12)
-          durations.sort((a, b) => a.months.compareTo(b.months));
-          return durations;
+
+          return {
+            'durations': durations.isNotEmpty ? durations : null,
+            'limits': packageData['limits'] as List<dynamic>?,
+          };
         }
       }
     } catch (e) {
-      print('Error fetching package prices for $id: $e');
+      print('Error fetching package details for $id: $e');
     }
     return null;
   }
 
+  List<PlanSection> _parseSections(List<dynamic>? limits) {
+    if (limits == null || limits.isEmpty) return [];
+
+    final Map<String, (String, String)> categoryMap = {
+      'MATCH_DISCOVERY': ('MATCH & DISCOVERY', '❤️'),
+      'STATUS_BADGES': ('STATUS & BADGES', '🏆'),
+      'NETWORKING_GROWTH': ('NETWORKING & GROWTH', '💼'),
+      'PERKS': ('PERKS & REWARDS', '🎁'),
+      'CHAT': ('CHAT & MESSAGING', '💬'),
+      'PRIVACY': ('PRIVACY', '🔒'),
+      'TRUST': ('TRUST & VERIFICATION', '🛡️'),
+      'REAL_LIFE_EVENTS': ('REAL-LIFE & EVENTS', '🎉'),
+      'PREMIUM_EXPERIENCES': ('PREMIUM EXPERIENCES', '✨'),
+      'GLOBAL_EXPERIENCES': ('GLOBAL EXPERIENCES', '🌎'),
+      'EXECUTIVE_NETWORK': ('EXECUTIVE NETWORK', '🤝'),
+      'WHITE_GLOVE_EXPERIENCES': ('WHITE-GLOVE EXPERIENCES', '🎩'),
+      'MAXIMUM_PRIVACY': ('MAXIMUM PRIVACY', '🕵️'),
+      'ELITE_STATUS': ('ELITE STATUS', '💎'),
+      'CURATED_ELITE_MATCHING': ('ELITE MATCHING', '🎯'),
+    };
+
+    final Map<String, List<PlanFeature>> groupedFeatures = {};
+
+    for (var l in limits) {
+      if (l['enabled'] != true) continue;
+      final feature = l['feature'];
+      if (feature == null) continue;
+
+      final category = feature['category']?.toString() ?? 'OTHER';
+      final title = feature['title']?.toString() ?? '';
+      final subtitle = feature['description']?.toString() ?? '';
+
+      if (!groupedFeatures.containsKey(category)) {
+        groupedFeatures[category] = [];
+      }
+      groupedFeatures[category]!.add(
+        PlanFeature(title: title, subtitle: subtitle),
+      );
+    }
+
+    List<PlanSection> parsedSections = [];
+    for (var entry in groupedFeatures.entries) {
+      final category = entry.key;
+      final mapping =
+          categoryMap[category] ?? (category.replaceAll('_', ' '), '✨');
+      parsedSections.add(
+        PlanSection(
+          title: mapping.$1,
+          emoji: mapping.$2,
+          features: entry.value,
+        ),
+      );
+    }
+
+    return parsedSections;
+  }
+
+  WeeklyBenefits _parseWeeklyBenefits(
+    List<dynamic>? limits,
+    WeeklyBenefits baseBenefits,
+  ) {
+    if (limits == null || limits.isEmpty) return baseBenefits;
+
+    // Define which codes we want to show and their mappings
+    final targetCodes = {
+      'WEEKLY_DATE_PLANS': ('🗓️', 'Date plans / wk'),
+      'WEEKLY_BOOSTS': ('🚀', 'Boosts / wk'),
+      'WEEKLY_COMPLIMENTS': ('💝', 'Compliments / wk'),
+      'WELCOME_COINS': ('🪙', 'Coins / one-time'),
+      'ROSES': ('🌟', 'Roses / wk'),
+      'REWINDS': ('↩️', 'Rewinds / day'),
+      'UNLIMITED_LIKES': ('❤️', 'Likes / one-time'),
+    };
+
+    List<WeeklyBenefitItem> parsedItems = [];
+
+    for (var l in limits) {
+      if (l['enabled'] != true) continue;
+
+      final feature = l['feature'];
+      if (feature == null) continue;
+
+      final code = feature['code']?.toString() ?? '';
+
+      // Only include if it's one of our target consumable features
+      if (targetCodes.containsKey(code)) {
+        final unlimited = l['unlimited'] == true;
+        final limitValue = l['limit']?.toString() ?? '0';
+        final displayValue = unlimited ? '∞' : limitValue;
+
+        final mapping = targetCodes[code]!;
+        parsedItems.add(
+          WeeklyBenefitItem(
+            emoji: mapping.$1,
+            value: displayValue,
+            subtitle: mapping.$2,
+          ),
+        );
+      }
+    }
+
+    if (parsedItems.isEmpty) return baseBenefits;
+
+    return WeeklyBenefits(items: parsedItems);
+  }
+
   MembershipPlanModel _mergeWithApi(
-      MembershipPlanModel base, 
-      String id, 
-      String name, 
-      String price, 
-      List<dynamic>? features, 
-      String? badgeLabel, 
-      List<PlanDuration>? dynamicDurations,
-      String? tagline) {
-    
+    MembershipPlanModel base,
+    String id,
+    String name,
+    String price,
+    List<dynamic>? features,
+    String? badgeLabel,
+    List<PlanDuration>? dynamicDurations,
+    String? tagline,
+    WeeklyBenefits? dynamicBenefits,
+    List<PlanSection>? dynamicSections,
+  ) {
     // We update the monthlyPrice and ID from the API.
     final newPriceStr = price.isNotEmpty ? '₹$price' : base.monthlyPrice;
-    
+
     return MembershipPlanModel(
       id: id.isNotEmpty ? id : base.id,
       tier: base.tier,
@@ -633,7 +366,9 @@ class MembershipPlanRepository {
       badge: base.badge,
       badgeLabel: badgeLabel,
       emoji: base.emoji,
-      description: tagline != null && tagline.isNotEmpty ? tagline : base.description,
+      description: tagline != null && tagline.isNotEmpty
+          ? tagline
+          : base.description,
       monthlyPrice: newPriceStr,
       yearlyPrice: base.yearlyPrice,
       yearlySaving: base.yearlySaving,
@@ -641,8 +376,10 @@ class MembershipPlanRepository {
       secondaryColor: base.secondaryColor,
       textColor: base.textColor,
       durations: dynamicDurations ?? base.durations,
-      weeklyBenefits: base.weeklyBenefits,
-      sections: base.sections,
+      weeklyBenefits: dynamicBenefits ?? base.weeklyBenefits,
+      sections: dynamicSections != null && dynamicSections.isNotEmpty
+          ? dynamicSections
+          : base.sections,
       rawFeatures: features,
     );
   }

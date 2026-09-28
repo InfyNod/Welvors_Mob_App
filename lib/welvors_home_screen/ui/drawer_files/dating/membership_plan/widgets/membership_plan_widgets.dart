@@ -243,7 +243,9 @@ class PlanHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                selectedDuration != null ? selectedDuration!.price : plan.monthlyPrice,
+                selectedDuration != null
+                    ? selectedDuration!.price
+                    : plan.monthlyPrice,
                 style: GoogleFonts.playfairDisplay(
                   fontSize: 25,
                   fontWeight: FontWeight.w700,
@@ -254,9 +256,13 @@ class PlanHeroCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 1),
                 child: Text(
-                  selectedDuration != null 
-                    ? (selectedDuration!.months == 1 ? '/ month' : '/ ${selectedDuration!.months} months')
-                    : (plan.tier == MembershipTier.elite ? '/ year' : '/ month'),
+                  selectedDuration != null
+                      ? (selectedDuration!.months == 1
+                            ? '/ month'
+                            : '/ ${selectedDuration!.months} months')
+                      : (plan.tier == MembershipTier.elite
+                            ? '/ year'
+                            : '/ month'),
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     color: Colors.white.withOpacity(.85),
@@ -581,13 +587,6 @@ class WeeklyBenefitsWidget extends StatelessWidget {
         ? const Color(0xFFA66F0A)
         : const Color(0xFFC29A38);
 
-    final items = [
-      ('🗓️', benefits.datePlans, 'Date plans / wk'),
-      ('🚀', benefits.boosts, 'Boosts / wk'),
-      ('💝', benefits.compliments, 'Compliments / wk'),
-      ('🪙', benefits.coins, 'Coins / wk'),
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -600,11 +599,14 @@ class WeeklyBenefitsWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        Row(
-          children: items.map((item) {
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          child: Row(
+            children: benefits.items.map((item) {
+              return Container(
+                width: 85,
+                margin: const EdgeInsets.only(right: 12),
                 height: 100,
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                 decoration: BoxDecoration(
@@ -613,11 +615,12 @@ class WeeklyBenefitsWidget extends StatelessWidget {
                   border: Border.all(color: AppColors.line),
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(item.$1, style: const TextStyle(fontSize: 15)),
+                    Text(item.emoji, style: const TextStyle(fontSize: 15)),
                     const SizedBox(height: 4),
                     Text(
-                      item.$2,
+                      item.value,
                       style: GoogleFonts.playfairDisplay(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -626,7 +629,7 @@ class WeeklyBenefitsWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      item.$3,
+                      item.subtitle,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         fontSize: 9,
@@ -637,9 +640,9 @@ class WeeklyBenefitsWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

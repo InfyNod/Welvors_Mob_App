@@ -64,17 +64,23 @@ class PlanDuration {
   });
 }
 
+class WeeklyBenefitItem {
+  final String emoji;
+  final String value;
+  final String subtitle;
+
+  const WeeklyBenefitItem({
+    required this.emoji,
+    required this.value,
+    required this.subtitle,
+  });
+}
+
 class WeeklyBenefits {
-  final String datePlans;
-  final String boosts;
-  final String compliments;
-  final String coins;
+  final List<WeeklyBenefitItem> items;
 
   const WeeklyBenefits({
-    required this.datePlans,
-    required this.boosts,
-    required this.compliments,
-    required this.coins,
+    this.items = const [],
   });
 }
 
