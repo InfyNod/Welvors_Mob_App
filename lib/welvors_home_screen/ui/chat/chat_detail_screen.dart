@@ -2319,11 +2319,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   void _openUnmatchSheet() {
+    final targetUserId = widget.user.userId.trim().isNotEmpty
+        ? widget.user.userId.trim()
+        : ((_liveuserId != null && _liveuserId!.trim().isNotEmpty)
+            ? _liveuserId!.trim()
+            : widget.user.id.trim());
+
     ChatUnmatchSheet.show(
       context,
-      userName: widget.user.name,
-      userAge: widget.user.age.toString(),
-      otherUserId: widget.user.userId,
+      userName: _liveName.isNotEmpty ? _liveName : widget.user.name,
+      userAge: _liveAge > 0 ? _liveAge.toString() : widget.user.age.toString(),
+      otherUserId: targetUserId,
       onUnmatched: () {
         if (mounted) {
           setState(() {
