@@ -538,8 +538,10 @@ class MembershipPlanRepository {
         final slug = pkg['slug']?.toString().toLowerCase() ?? '';
         final id = pkg['id']?.toString() ?? '';
         final price = pkg['price']?.toString() ?? '';
-        final name = pkg['name']?.toString() ?? '';
+        final rawName = pkg['name']?.toString() ?? '';
+        final name = rawName.replaceAll('_', ' ');
         final badgeLabel = pkg['badgeLabel']?.toString();
+        final tagline = pkg['tagline']?.toString();
         final features = pkg['features'] as List<dynamic>?;
         
         List<PlanDuration>? dynamicDurations;
@@ -548,11 +550,11 @@ class MembershipPlanRepository {
         }
 
         if (slug == 'premium') {
-          mergedPremium = _mergeWithApi(defaultPremium, id, name, price, features, badgeLabel, dynamicDurations);
+          mergedPremium = _mergeWithApi(defaultPremium, id, name, price, features, badgeLabel, dynamicDurations, tagline);
         } else if (slug == 'vip') {
-          mergedVip = _mergeWithApi(defaultVip, id, name, price, features, badgeLabel, dynamicDurations);
+          mergedVip = _mergeWithApi(defaultVip, id, name, price, features, badgeLabel, dynamicDurations, tagline);
         } else if (slug == 'vip-elite' || slug == 'vip_elite' || slug == 'elite') {
-          mergedElite = _mergeWithApi(defaultElite, id, name, price, features, badgeLabel, dynamicDurations);
+          mergedElite = _mergeWithApi(defaultElite, id, name, price, features, badgeLabel, dynamicDurations, tagline);
         }
       }
 
@@ -618,7 +620,8 @@ class MembershipPlanRepository {
       String price, 
       List<dynamic>? features, 
       String? badgeLabel, 
-      List<PlanDuration>? dynamicDurations) {
+      List<PlanDuration>? dynamicDurations,
+      String? tagline) {
     
     // We update the monthlyPrice and ID from the API.
     final newPriceStr = price.isNotEmpty ? '₹$price' : base.monthlyPrice;
@@ -630,7 +633,7 @@ class MembershipPlanRepository {
       badge: base.badge,
       badgeLabel: badgeLabel,
       emoji: base.emoji,
-      description: base.description,
+      description: tagline != null && tagline.isNotEmpty ? tagline : base.description,
       monthlyPrice: newPriceStr,
       yearlyPrice: base.yearlyPrice,
       yearlySaving: base.yearlySaving,
