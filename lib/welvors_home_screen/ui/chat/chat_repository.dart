@@ -1278,7 +1278,10 @@ class ChatRepository {
       throw Exception('Conversation user details API returned success=false');
     }
 
-    return ConversationProfileDetails.fromJson(decoded);
+    return ConversationProfileDetails.fromJson(
+      decoded,
+      currentUserId: _userIdFromJwt(token),
+    );
   }
 
   /// Map real API/socket response data into the same UI model used by the demo data.

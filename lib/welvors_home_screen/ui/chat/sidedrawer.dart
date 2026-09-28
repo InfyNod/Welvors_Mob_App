@@ -35,6 +35,8 @@ class Sidedrawer {
     required this.bannerIndex,
     required this.messageKey,
     required this.isBlocked,
+    this.isBlockedByMe = false,
+    this.confirmUnblockUser,
     required this.userName,
     required this.conversationId,
     required this.avatar,
@@ -65,6 +67,8 @@ class Sidedrawer {
   final int bannerIndex;
   final String messageKey;
   final bool isBlocked;
+  final bool isBlockedByMe;
+  final VoidCallback? confirmUnblockUser;
   final String userName;
   final String conversationId;
 
@@ -920,26 +924,33 @@ class Sidedrawer {
                             ),
 
                             // ==========================================
-                            // BLOCK USER
+                            // BLOCK / UNBLOCK USER
                             // ==========================================
                             if (!isBlocked)
                               sheetTile(
                                 Icons.block,
-
                                 'Block $userName',
-
                                 null,
-
                                 color: Mycolor.pinkffeef2,
-
                                 titleColor: const Color(0xffe15555),
-
                                 iconcolor: const Color(0xffe15555),
-
                                 textColor: const Color(0xffe15555),
-
                                 onTap: () {
                                   Navigator.pop(sheetContext, 'block');
+                                },
+                              )
+                            else if (isBlockedByMe && confirmUnblockUser != null)
+                              sheetTile(
+                                Icons.lock_open,
+                                'Unblock $userName',
+                                null,
+                                color: Mycolor.pinkffeef2,
+                                titleColor: const Color(0xFFE83D72),
+                                iconcolor: const Color(0xFFE83D72),
+                                textColor: const Color(0xFFE83D72),
+                                onTap: () {
+                                  Navigator.pop(sheetContext);
+                                  confirmUnblockUser!();
                                 },
                               ),
 
