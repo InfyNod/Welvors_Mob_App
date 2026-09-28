@@ -352,8 +352,11 @@ class ChatDialogs {
     );
   }
 
-  /// Displays non-dismissible loading dialog while media is sending.
-  static void showImageSendLoader(BuildContext context) {
+  /// Displays non-dismissible loading dialog while media/file is sending.
+  static void showMediaSendLoader(
+    BuildContext context, {
+    String message = 'Sending...',
+  }) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -363,23 +366,27 @@ class ChatDialogs {
           canPop: false,
           child: Center(
             child: Container(
-              width: 140,
+              width: 150,
               height: 140,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(
+                  const CircularProgressIndicator(
                     color: Colors.white,
                     strokeWidth: 3,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
-                    'Sending image...',
-                    style: TextStyle(
+                    message,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -393,5 +400,13 @@ class ChatDialogs {
         );
       },
     );
+  }
+
+  /// Displays non-dismissible loading dialog while media is sending.
+  static void showImageSendLoader(
+    BuildContext context, {
+    String message = 'Sending image...',
+  }) {
+    showMediaSendLoader(context, message: message);
   }
 }

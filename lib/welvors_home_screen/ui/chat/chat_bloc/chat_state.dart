@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:velvors/config/env_config.dart';
 
 enum ChatMessageDirection { sender, receiver }
 
@@ -753,6 +754,81 @@ class ChatMessage extends Equatable {
     final dateplanid = _string(datePlan?['id']);
 
     // ========================================================
+    // REPLY EXTRACTION
+    // ========================================================
+
+    final replyObj = json['reply'] is Map
+        ? Map<String, dynamic>.from(json['reply'] as Map)
+        : (json['replyTo'] is Map
+            ? Map<String, dynamic>.from(json['replyTo'] as Map)
+            : (json['reply_to'] is Map
+                ? Map<String, dynamic>.from(json['reply_to'] as Map)
+                : (json['parentMessage'] is Map
+                    ? Map<String, dynamic>.from(json['parentMessage'] as Map)
+                    : (json['repliedMessage'] is Map
+                        ? Map<String, dynamic>.from(json['repliedMessage'] as Map)
+                        : null))));
+
+    final replyMetadata = json['metadata'] is Map
+        ? Map<String, dynamic>.from(json['metadata'] as Map)
+        : null;
+
+    final parsedReplyToId = _string(
+      json['replyToId'] ??
+          json['reply_to_id'] ??
+          json['replyToMessageId'] ??
+          (json['replyTo'] is String ? json['replyTo'] : null) ??
+          (json['reply_to'] is String ? json['reply_to'] : null) ??
+          replyObj?['id'] ??
+          replyObj?['_id'] ??
+          replyObj?['messageId'] ??
+          replyMetadata?['replyToId'] ??
+          replyMetadata?['replyTo'] ??
+          replyMetadata?['replyToMessageId'],
+    );
+
+    final parsedReplyText = _string(
+      json['replyText'] ??
+          json['reply_text'] ??
+          replyObj?['text'] ??
+          replyObj?['content'] ??
+          replyObj?['message'] ??
+          replyMetadata?['replyText'] ??
+          replyMetadata?['text'],
+    );
+
+    final parsedReplyImageUrl = _string(
+      json['replyImageUrl'] ??
+          json['reply_image_url'] ??
+          replyObj?['imageUrl'] ??
+          replyObj?['image_url'] ??
+          (replyObj?['mediaType'] == 'IMAGE' || replyObj?['messageType'] == 'IMAGE'
+              ? (replyObj?['mediaUrl'] ?? replyObj?['media_url'])
+              : null) ??
+          replyMetadata?['replyImageUrl'],
+    );
+
+    final parsedReplyFileUrl = _string(
+      json['replyFileUrl'] ??
+          json['reply_file_url'] ??
+          replyObj?['fileUrl'] ??
+          replyObj?['file_url'] ??
+          (replyObj?['mediaType'] == 'FILE' || replyObj?['messageType'] == 'FILE'
+              ? (replyObj?['mediaUrl'] ?? replyObj?['media_url'])
+              : null) ??
+          replyMetadata?['replyFileUrl'],
+    );
+
+    final parsedReplyType = _messageTypeNullable(
+      json['replyType'] ??
+          json['reply_type'] ??
+          replyObj?['type'] ??
+          replyObj?['messageType'] ??
+          replyObj?['message_type'] ??
+          replyMetadata?['replyType'],
+    );
+
+    // ========================================================
     // RETURN MESSAGE
     // ========================================================
 
@@ -788,7 +864,7 @@ class ChatMessage extends Equatable {
       imageUrl:
           type == ChatMessageType.gift || type == ChatMessageType.ENGAGEMENT
           ? parsedGiftImageUrl
-          : _string(
+          : _normalizeMediaUrl(
               json['imageUrl'] ??
                   json['image_url'] ??
                   json['mediaUrl'] ??
@@ -799,7 +875,7 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // VIDEO
       // ------------------------------------------------------
-      videoUrl: _string(
+      videoUrl: _normalizeMediaUrl(
         json['videoUrl'] ??
             json['video_url'] ??
             (type == ChatMessageType.video
@@ -810,7 +886,7 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // AUDIO
       // ------------------------------------------------------
-      audioUrl: _string(
+      audioUrl: _normalizeMediaUrl(
         json['audioUrl'] ??
             json['audio_url'] ??
             (type == ChatMessageType.audio
@@ -821,10 +897,10 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // FILE
       // ------------------------------------------------------
-      fileUrl: _string(
+      fileUrl: _normalizeMediaUrl(
         json['fileUrl'] ??
             json['file_url'] ??
-            (type == ChatMessageType.document
+            ((type == ChatMessageType.document || type == ChatMessageType.audio)
                 ? (json['mediaUrl'] ?? json['media_url'])
                 : null),
       ),
@@ -869,15 +945,15 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // REPLY
       // ------------------------------------------------------
-      replyToId: _string(json['replyToId'] ?? json['reply_to_id']),
+      replyToId: parsedReplyToId,
 
-      replyText: _string(json['replyText'] ?? json['reply_text']),
+      replyText: parsedReplyText,
 
-      replyImageUrl: _string(json['replyImageUrl'] ?? json['reply_image_url']),
+      replyImageUrl: parsedReplyImageUrl,
 
-      replyFileUrl: _string(json['replyFileUrl'] ?? json['reply_file_url']),
+      replyFileUrl: parsedReplyFileUrl,
 
-      replyType: _messageTypeNullable(json['replyType'] ?? json['reply_type']),
+      replyType: parsedReplyType,
 
       // ------------------------------------------------------
       // GIFT
@@ -1454,6 +1530,32 @@ class ChatMessage extends Equatable {
     return result;
   }
 
+  static String? _normalizeMediaUrl(dynamic value) {
+    final str = _string(value);
+    if (str == null || str.isEmpty) return null;
+    if (str.startsWith('http://') || str.startsWith('https://')) return str;
+    if (str.startsWith('file://')) return str;
+    if (str.startsWith('/data/') ||
+        str.startsWith('/storage/') ||
+        str.startsWith('/var/') ||
+        RegExp(r'^[a-zA-Z]:[\\/]').hasMatch(str)) {
+      return str;
+    }
+    if (str.startsWith('/uploads') ||
+        str.startsWith('uploads') ||
+        str.startsWith('/media') ||
+        str.startsWith('media') ||
+        str.startsWith('/api') ||
+        str.startsWith('api') ||
+        str.startsWith('/')) {
+      final base = EnvConfig.baseUrl.isNotEmpty ? EnvConfig.baseUrl : EnvConfig.apiBaseUrl;
+      final cleanBase = base.replaceAll(RegExp(r'/+$'), '');
+      final cleanRel = str.startsWith('/') ? str : '/$str';
+      return '$cleanBase$cleanRel';
+    }
+    return str;
+  }
+
   // ==========================================================
   // FROM JSON LIST
   // ==========================================================
@@ -1482,6 +1584,43 @@ class ChatMessage extends Equatable {
         );
       } catch (_) {
         // Ignore malformed individual message.
+      }
+    }
+
+    // Resolve missing reply preview data if replyToId points to a known message in the list
+    final messageById = <String, ChatMessage>{
+      for (final m in messages) m.id: m,
+    };
+    for (int i = 0; i < messages.length; i++) {
+      final m = messages[i];
+      if (m.replyToId != null && m.replyToId!.isNotEmpty) {
+        final parent = messageById[m.replyToId];
+        if (parent != null) {
+          final resolvedText = (m.replyText != null && m.replyText!.isNotEmpty)
+              ? m.replyText
+              : (parent.text.isNotEmpty
+                  ? parent.text
+                  : (parent.imageUrl != null ? 'Photo' : (parent.typemsg ?? 'Message')));
+          final resolvedImage = (m.replyImageUrl != null && m.replyImageUrl!.isNotEmpty)
+              ? m.replyImageUrl
+              : parent.imageUrl;
+          final resolvedFile = (m.replyFileUrl != null && m.replyFileUrl!.isNotEmpty)
+              ? m.replyFileUrl
+              : parent.fileUrl;
+          final resolvedType = m.replyType ?? parent.type;
+
+          if (resolvedText != m.replyText ||
+              resolvedImage != m.replyImageUrl ||
+              resolvedFile != m.replyFileUrl ||
+              resolvedType != m.replyType) {
+            messages[i] = m.copyWith(
+              replyText: resolvedText,
+              replyImageUrl: resolvedImage,
+              replyFileUrl: resolvedFile,
+              replyType: resolvedType,
+            );
+          }
+        }
       }
     }
 

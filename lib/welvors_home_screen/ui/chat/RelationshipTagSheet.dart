@@ -4,8 +4,13 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosyste
 
 class RelationshipTagSheet extends StatefulWidget {
   final void Function(String tag, String message) onSend;
+  final String? userName;
 
-  const RelationshipTagSheet({super.key, required this.onSend});
+  const RelationshipTagSheet({
+    super.key,
+    required this.onSend,
+    this.userName,
+  });
 
   @override
   State<RelationshipTagSheet> createState() => _RelationshipTagSheetState();
@@ -214,7 +219,7 @@ class _RelationshipTagSheetState extends State<RelationshipTagSheet> {
 
                 Center(
                   child: Text(
-                    'Aanya will receive a notification to confirm',
+                    '${(widget.userName != null && widget.userName!.trim().isNotEmpty) ? widget.userName!.trim() : "Your match"} will receive a notification to confirm',
                     textAlign: TextAlign.center,
                     style: AppText.sub.copyWith(color: AppColors.muted),
                   ),

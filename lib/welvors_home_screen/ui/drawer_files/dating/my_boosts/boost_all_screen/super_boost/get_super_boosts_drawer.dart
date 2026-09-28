@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_event.dart';
 import 'super_boost_payment_processing_dialog.dart';
+import '../../service_all_flow.dart';
 
 class GetSuperBoostsDrawer extends StatefulWidget {
   final Map<String, dynamic> selectedPackage;
@@ -14,7 +15,11 @@ class GetSuperBoostsDrawer extends StatefulWidget {
     required this.onPurchased,
   });
 
-  static void show(BuildContext context, Map<String, dynamic> package, VoidCallback onPurchased) {
+  static void show(
+    BuildContext context,
+    Map<String, dynamic> package,
+    VoidCallback onPurchased,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -46,7 +51,12 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.only(top: 12, left: 20, right: 20, bottom: 16),
+          padding: const EdgeInsets.only(
+            top: 12,
+            left: 20,
+            right: 20,
+            bottom: 16,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,13 +83,10 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
               const SizedBox(height: 4),
               Text(
                 'Review your pack and choose how to pay.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade500,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
               ),
               const SizedBox(height: 16),
-              
+
               // Package Summary Card
               Container(
                 padding: const EdgeInsets.all(12),
@@ -90,7 +97,10 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                 ),
                 child: Row(
                   children: [
-                    const Text('✦', style: TextStyle(fontSize: 24, color: Color(0xFFCBA164))),
+                    const Text(
+                      '✦',
+                      style: TextStyle(fontSize: 24, color: Color(0xFFCBA164)),
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -116,7 +126,9 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                       ),
                     ),
                     Text(
-                      widget.selectedPackage['totalPrice'] != null ? widget.selectedPackage['totalPrice'].split(' ')[0] : '',
+                      widget.selectedPackage['totalPrice'] != null
+                          ? widget.selectedPackage['totalPrice'].split(' ')[0]
+                          : '',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -126,7 +138,7 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 20),
               const Text(
                 'PAY USING',
@@ -138,7 +150,7 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               // Payment Methods
               _buildPaymentOption(
                 id: 'wallet',
@@ -157,31 +169,61 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                 title: 'Card',
                 subtitle: 'Credit / Debit',
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Pay Button
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final rootContext = Navigator.of(context).context;
-                    final boostBloc = context.read<BoostBloc>();
-                    final itemsToAdd = int.parse(widget.selectedPackage['title']);
-                    final newBalance = boostBloc.state.superBoostBalance + itemsToAdd;
-                    
-                    Navigator.pop(context); // Close the bottom sheet
-                    
-                    SuperBoostPaymentProcessingDialog.show(
-                      context: rootContext,
-                      selectedPackage: widget.selectedPackage,
-                      newBalance: newBalance,
-                      onDone: () {
-                        boostBloc.add(AddSuperBoostEvent(itemsToAdd));
-                        widget.onPurchased();
-                      },
-                    );
+                  onPressed: () async {
+                    final apiService = BoostAllApiService();
+                    final raw = widget.selectedPackage['raw'];
+                    final packId =
+                        widget.selectedPackage['id']?.toString() ??
+                        widget.selectedPackage['_id']?.toString() ??
+                        raw?['id']?.toString() ??
+                        raw?['_id']?.toString() ??
+                        '';
+
+                    final success = await apiService.buyBoostPack(packId);
+
+                    if (!mounted) return;
+
+                    if (success) {
+                      final rootContext = Navigator.of(context).context;
+                      final boostBloc = context.read<BoostBloc>();
+                      final itemsToAdd = int.parse(
+                        widget.selectedPackage['title'].toString().replaceAll(
+                          RegExp(r'[^0-9]'),
+                          '',
+                        ),
+                      );
+                      final newBalance =
+                          boostBloc.state.superBoostBalance + itemsToAdd;
+
+                      Navigator.pop(context); // Close the bottom sheet
+
+                      SuperBoostPaymentProcessingDialog.show(
+                        context: rootContext,
+                        selectedPackage: widget.selectedPackage,
+                        newBalance: newBalance,
+                        onDone: () {
+                          boostBloc.add(AddSuperBoostEvent(itemsToAdd));
+                          widget.onPurchased();
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Failed to top up wallet. Please try again.',
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black, // Brand Black
@@ -200,7 +242,6 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                   ),
                 ),
               ),
-              
             ],
           ),
         ),
@@ -214,7 +255,7 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
     required String subtitle,
   }) {
     final isSelected = _selectedPaymentMethod == id;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -248,10 +289,7 @@ class _GetSuperBoostsDrawerState extends State<GetSuperBoostsDrawer> {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],
               ),

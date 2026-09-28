@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:velvors/welvors_home_screen/services/token_helper.dart';
+
 import '../model/membership_plan_model.dart';
 
 class MembershipPlanRepository {
   Future<List<MembershipPlanModel>> fetchPlans() async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
+    List<dynamic> apiPackages = [];
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.get(
+        Uri.parse('https://api.welvors.com/api/package/get/cards'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    return const [
-      MembershipPlanModel(
-        tier: MembershipTier.premiumPlus,
-        name: 'Premium+',
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          apiPackages = data['data'] ?? [];
+        }
+      }
+    } catch (e) {
+      print('Error fetching membership plans: $e');
+    }
+
+    // Default hardcoded base models
+    final defaultPremium = MembershipPlanModel(
+      id: '',
+      tier: MembershipTier.premiumPlus,
+      name: 'Premium+',
         badge: 'PREMIUM PLUS',
         emoji: '🔥',
         description: 'Find better matches. Date safer. Connect faster.',
@@ -219,9 +243,10 @@ class MembershipPlanRepository {
             ],
           ),
         ],
-      ),
+      );
 
-      MembershipPlanModel(
+      final defaultVip = MembershipPlanModel(
+        id: '',
         tier: MembershipTier.vip,
         name: 'VIP',
         badge: 'VIP MEMBERSHIP',
@@ -390,9 +415,10 @@ class MembershipPlanRepository {
             ],
           ),
         ],
-      ),
+      );
 
-      MembershipPlanModel(
+      final defaultElite = MembershipPlanModel(
+        id: '',
         tier: MembershipTier.elite,
         name: 'VIP Elite',
         badge: 'PRIVATE MEMBERSHIP',
@@ -501,7 +527,57 @@ class MembershipPlanRepository {
             ],
           ),
         ],
-      ),
-    ];
+      );
+
+      // Now map API data to our models
+      MembershipPlanModel mergedPremium = defaultPremium;
+      MembershipPlanModel mergedVip = defaultVip;
+      MembershipPlanModel mergedElite = defaultElite;
+
+      for (var pkg in apiPackages) {
+        final slug = pkg['slug']?.toString().toLowerCase() ?? '';
+        final id = pkg['id']?.toString() ?? '';
+        final price = pkg['price']?.toString() ?? '';
+        final name = pkg['name']?.toString() ?? '';
+        final badgeLabel = pkg['badgeLabel']?.toString();
+        final features = pkg['features'] as List<dynamic>?;
+        
+        if (slug == 'premium') {
+          mergedPremium = _mergeWithApi(defaultPremium, id, name, price, features, badgeLabel);
+        } else if (slug == 'vip') {
+          mergedVip = _mergeWithApi(defaultVip, id, name, price, features, badgeLabel);
+        } else if (slug == 'vip-elite' || slug == 'vip_elite' || slug == 'elite') {
+          mergedElite = _mergeWithApi(defaultElite, id, name, price, features, badgeLabel);
+        }
+      }
+
+      return [mergedPremium, mergedVip, mergedElite];
+  }
+
+  MembershipPlanModel _mergeWithApi(
+      MembershipPlanModel base, String id, String name, String price, List<dynamic>? features, String? badgeLabel) {
+    
+    // We update the monthlyPrice and ID from the API.
+    final newPriceStr = price.isNotEmpty ? '₹$price' : base.monthlyPrice;
+    
+    return MembershipPlanModel(
+      id: id.isNotEmpty ? id : base.id,
+      tier: base.tier,
+      name: name.isNotEmpty ? name : base.name,
+      badge: base.badge,
+      badgeLabel: badgeLabel,
+      emoji: base.emoji,
+      description: base.description,
+      monthlyPrice: newPriceStr,
+      yearlyPrice: base.yearlyPrice,
+      yearlySaving: base.yearlySaving,
+      primaryColor: base.primaryColor,
+      secondaryColor: base.secondaryColor,
+      textColor: base.textColor,
+      durations: base.durations,
+      weeklyBenefits: base.weeklyBenefits,
+      sections: base.sections,
+      rawFeatures: features,
+    );
   }
 }

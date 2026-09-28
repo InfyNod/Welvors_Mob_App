@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:velvors/config/app_cached_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../services/logger_service.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
 import 'reveal_drawer.dart';
 import '../profile_view/profile_view.dart';
-import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import '../../free_limite_screen.dart';
 
 class ReceivedLikesScreen extends StatefulWidget {
   const ReceivedLikesScreen({super.key});
@@ -127,105 +128,39 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<AdmirersBloc, AdmirersState>(
       builder: (context, state) {
-        if (state is AdmirersLoading || state is AdmirersInitial) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
-          );
-        } else if (state is AdmirersLoaded) {
-          final allCards = state.likes;
-          final likeCards = allCards
-              .where((c) => !_removedCardIds.contains(c['id']))
-              .toList();
+        final likeCards = state is AdmirersLoaded
+            ? state.likes
+                .where((card) => !_removedCardIds.contains(card['id']))
+                .toList()
+            : <Map<String, dynamic>>[];
 
-          return RefreshIndicator(
-            color: const Color(0xFFE43A6A),
-            onRefresh: () async {
-              setState(() {
-                _removedCardIds.clear();
-              });
-              context.read<AdmirersBloc>().add(LoadAdmirersData());
-              await Future.delayed(const Duration(milliseconds: 1500));
-            },
-            child: likeCards.isEmpty
-                ? _buildEmptyState()
-                : SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
-                    ),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 16),
-                        _buildReceivedGrid(likeCards),
-                        _buildPremiumBanner(),
-                        const SizedBox(height: 24), // Bottom padding for scrolling
-                      ],
-                    ),
+        return RefreshIndicator(
+          color: const Color(0xFFE43A6A),
+          onRefresh: () async {
+            context.read<AdmirersBloc>().add(LoadAdmirersData());
+            await Future.delayed(const Duration(milliseconds: 1500));
+          },
+          child: likeCards.isEmpty
+              ? const FreeLimitScreen()
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
                   ),
-          );
-        }
-        return const SizedBox();
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      _buildReceivedGrid(likeCards),
+                      if (likeCards.isNotEmpty) _buildPremiumBanner(),
+                      const SizedBox(height: 24), // Bottom padding for scrolling
+                    ],
+                  ),
+                ),
+        );
       },
     );
   }
 
-  Widget _buildEmptyState() {
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(
-        parent: AlwaysScrollableScrollPhysics(),
-      ),
-      slivers: [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 40.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 88,
-                    height: 88,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFFE43A6A).withValues(alpha: 0.08),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.favorite_border_rounded,
-                        size: 44,
-                        color: Color(0xFFE43A6A),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'No Received Likes Yet',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF1F1F1F),
-                      letterSpacing: -0.3,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'When people like your profile, they will appear here.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.4,
-                      color: Colors.grey.shade600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildReceivedGrid(List<Map<String, dynamic>> likeCards) {
     return GridView.builder(

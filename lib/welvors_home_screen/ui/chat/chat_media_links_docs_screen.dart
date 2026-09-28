@@ -35,7 +35,7 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
   void initState() {
     super.initState();
 
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override

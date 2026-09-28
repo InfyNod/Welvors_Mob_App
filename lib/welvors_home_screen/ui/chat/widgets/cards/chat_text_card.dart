@@ -54,7 +54,8 @@ class ChatTextCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            if (message.replyText != null)
+            if ((message.replyText != null && message.replyText!.trim().isNotEmpty) ||
+                (message.replyToId != null && message.replyToId!.trim().isNotEmpty))
               ChatQuotedMessageWidget(
                 message: message,
                 peerName: peerName,

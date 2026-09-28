@@ -21,9 +21,10 @@ class ChatQuotedMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isImage = ChatFormatUtils.hasReplyImage(message);
+    final isHeroComplimentDemo = message.id == 'message_reply_photo' ||
+        (message.coinAmount != null && message.locationLabel == 'hero photo');
 
-    if (isImage) {
+    if (isHeroComplimentDemo) {
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
@@ -207,6 +208,8 @@ class ChatQuotedMessageWidget extends StatelessWidget {
       );
     }
 
+    final isImage = ChatFormatUtils.hasReplyImage(message);
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -269,7 +272,7 @@ class ChatQuotedMessageWidget extends StatelessWidget {
                   Text(
                     message.replyText?.trim().isNotEmpty == true
                         ? message.replyText!
-                        : 'Message',
+                        : (isImage ? '📷 Photo' : 'Message'),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppText.sub.copyWith(
@@ -282,6 +285,17 @@ class ChatQuotedMessageWidget extends StatelessWidget {
                 ],
               ),
             ),
+            if (isImage) ...[
+              const SizedBox(width: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: 42,
+                  height: 42,
+                  child: _buildReplyImage(message),
+                ),
+              ),
+            ],
             const SizedBox(width: 5),
             Icon(
               Icons.chevron_right_rounded,

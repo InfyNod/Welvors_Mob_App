@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/model/membership_plan_model.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/choose_plan_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/data/membership_plan_repository.dart';
 
 class PrivacySafetyAndMembership extends StatefulWidget {
   const PrivacySafetyAndMembership({super.key});
@@ -13,7 +14,26 @@ class PrivacySafetyAndMembership extends StatefulWidget {
 
 class _PrivacySafetyAndMembershipState
     extends State<PrivacySafetyAndMembership> {
-  final bool _isSafetyModeOn = false;
+  bool _isSafetyModeOn = false;
+  List<MembershipPlanModel> _plans = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPlans();
+  }
+
+  Future<void> _fetchPlans() async {
+    final repo = MembershipPlanRepository();
+    final plans = await repo.fetchPlans();
+    if (mounted) {
+      setState(() {
+        _plans = plans;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,35 +203,48 @@ class _PrivacySafetyAndMembershipState
         ),
         const SizedBox(height: 12),
         // Horizontal Scrolling Cards
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          child: Row(
-            children: [
-              _buildPremiumPlusCard(),
-              const SizedBox(width: 16),
-              _buildVIPCard(),
-              const SizedBox(width: 16),
-              _buildVIPEliteCard(),
-            ],
-          ),
-        ),
+        _isLoading
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(color: AppColors.pink),
+                ),
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                child: Row(
+                  children: [
+                    if (_plans.isNotEmpty) _buildPremiumPlusCard(_plans[0]),
+                    const SizedBox(width: 16),
+                    if (_plans.length > 1) _buildVIPCard(_plans[1]),
+                    const SizedBox(width: 16),
+                    if (_plans.length > 2) _buildVIPEliteCard(_plans[2]),
+                  ],
+                ),
+              ),
       ],
     );
   }
 
-  Widget _buildPremiumPlusCard() {
+  Widget _buildPremiumPlusCard(MembershipPlanModel plan) {
     return Container(
-      width: 280, // Fixed width for horizontal scrolling
-      padding: const EdgeInsets.all(16), // Reduced padding to decrease height
+      width: 280,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: const Color(0xFFFBE4E7),
-          width: 1.5,
-        ), // Light pink border
-        boxShadow: AppColors.shadow,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFE85A7A).withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,61 +253,79 @@ class _PrivacySafetyAndMembershipState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFBE4E7), // Light red/pink circle
-                  borderRadius: BorderRadius.circular(12), // Rounded square
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFFF0F3), Color(0xFFFBE4E7)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFE85A7A).withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
-                child: const Text('🔥', style: TextStyle(fontSize: 22)),
+                child: Text(plan.emoji, style: const TextStyle(fontSize: 24)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'Premium+',
-                          style: TextStyle(
-                            fontSize: 16,
+                        Text(
+                          plan.name.replaceAll('_', ' '),
+                          style: const TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE85A7A),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'POPULAR',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
+                        if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFE85A7A), Color(0xFFFF758C)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              plan.badgeLabel!.toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         children: [
-                          const TextSpan(
-                            text: '₹499 ',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                          TextSpan(
+                            text: '${plan.monthlyPrice} ',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
                               color: Colors.black87,
                             ),
                           ),
@@ -282,6 +333,7 @@ class _PrivacySafetyAndMembershipState
                             text: '/ month',
                             style: TextStyle(
                               fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey.shade500,
                             ),
                           ),
@@ -293,37 +345,9 @@ class _PrivacySafetyAndMembershipState
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildFeatureRow(
-            'Unlimited likes & weekly boost',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'See who liked you',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Voice & video calls',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'ID verification badge',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Marriage Intent badge + ₹5L rewards',
-            const Color(0xFFE85A7A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+          ..._buildDynamicFeatures(plan, const Color(0xFFE85A7A), Colors.black87),
+          const SizedBox(height: 20),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -335,20 +359,33 @@ class _PrivacySafetyAndMembershipState
                 ),
               );
             },
+            borderRadius: BorderRadius.circular(14),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE85A7A),
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFE85A7A), Color(0xFFFF758C)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFE85A7A).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               alignment: Alignment.center,
               child: const Text(
                 'Upgrade now →',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -358,18 +395,24 @@ class _PrivacySafetyAndMembershipState
     );
   }
 
-  Widget _buildVIPCard() {
+  Widget _buildVIPCard(MembershipPlanModel plan) {
     return Container(
-      width: 280, // Fixed width
-      padding: const EdgeInsets.all(16), // Reduced padding
+      width: 280,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: const Color(0xFFFFF4E0),
-          width: 1.5,
-        ), // Light gold border
-        boxShadow: AppColors.shadow,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFC8933A).withOpacity(0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,63 +421,79 @@ class _PrivacySafetyAndMembershipState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF4E0), // Light gold background
-                  borderRadius: BorderRadius.circular(12), // Rounded square
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFFF8EA), Color(0xFFFFF4E0)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFC8933A).withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
-                child: const Text('👑', style: TextStyle(fontSize: 22)),
+                child: Text(plan.emoji, style: const TextStyle(fontSize: 24)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'VIP',
-                          style: TextStyle(
-                            fontSize: 16,
+                        Text(
+                          plan.name.replaceAll('_', ' '),
+                          style: const TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFC8933A,
-                            ), // Dark gold/brown background
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'EXCLUSIVE',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
+                        if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFE5C07B), Color(0xFFC8933A)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              plan.badgeLabel!.toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         children: [
-                          const TextSpan(
-                            text: '₹1,999 ',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                          TextSpan(
+                            text: '${plan.monthlyPrice} ',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
                               color: Colors.black87,
                             ),
                           ),
@@ -442,6 +501,7 @@ class _PrivacySafetyAndMembershipState
                             text: '/ month',
                             style: TextStyle(
                               fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey.shade500,
                             ),
                           ),
@@ -453,37 +513,9 @@ class _PrivacySafetyAndMembershipState
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildFeatureRow(
-            'VIP-only member pool',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Luxury date planning',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'VIP events & private mixers',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Education + profession verified',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Mentorship & networking access',
-            const Color(0xFFC8933A),
-            Colors.black87,
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+          ..._buildDynamicFeatures(plan, const Color(0xFFC8933A), Colors.black87),
+          const SizedBox(height: 20),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -494,20 +526,33 @@ class _PrivacySafetyAndMembershipState
                 ),
               );
             },
+            borderRadius: BorderRadius.circular(14),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFC8933A), // Gold color
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFF3C669), Color(0xFFC8933A)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFC8933A).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               alignment: Alignment.center,
               child: const Text(
                 'Apply for VIP →',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -517,14 +562,28 @@ class _PrivacySafetyAndMembershipState
     );
   }
 
-  Widget _buildVIPEliteCard() {
+  Widget _buildVIPEliteCard(MembershipPlanModel plan) {
     return Container(
-      width: 280, // Fixed width
-      padding: const EdgeInsets.all(16), // Reduced padding
+      width: 280,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF222222), // Dark premium background
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: AppColors.shadow,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2C2C2C), Color(0xFF111111)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFF444444),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -533,70 +592,87 @@ class _PrivacySafetyAndMembershipState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF333333), // Darker background
-                  borderRadius: BorderRadius.circular(12), // Rounded square
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF444444), Color(0xFF222222)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFF555555), width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
-                child: const Text('💫', style: TextStyle(fontSize: 22)),
+                child: Text(plan.emoji, style: const TextStyle(fontSize: 24)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'VIP Elite',
-                          style: TextStyle(
-                            fontSize: 16,
+                        Text(
+                          plan.name.replaceAll('_', ' '),
+                          style: const TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white, // White text for dark theme
+                            color: Colors.white,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE5C07B), // Gold background
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ), // More rounded badge
-                          ),
-                          child: const Text(
-                            'INVITE',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87, // Dark text
-                              letterSpacing: 0.5,
+                        if (plan.badgeLabel != null && plan.badgeLabel!.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFFF2D0), Color(0xFFE5C07B)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              plan.badgeLabel!.toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         children: [
-                          const TextSpan(
-                            text: '₹49,999 ',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFE5C07B), // Gold price
+                          TextSpan(
+                            text: '${plan.monthlyPrice} ',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFFE5C07B),
                             ),
                           ),
                           TextSpan(
-                            text: '/ year',
+                            text: '/ month',
                             style: TextStyle(
                               fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey.shade400,
                             ),
                           ),
@@ -608,37 +684,9 @@ class _PrivacySafetyAndMembershipState
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildFeatureRow(
-            'Elite-only discovery feed',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Personal date concierge',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Only 100 members per city',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'International retreats & luxury travel',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 6),
-          _buildFeatureRow(
-            'Founder & executive network',
-            const Color(0xFFE5C07B),
-            Colors.white,
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+          ..._buildDynamicFeatures(plan, const Color(0xFFE5C07B), Colors.white),
+          const SizedBox(height: 20),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -649,20 +697,33 @@ class _PrivacySafetyAndMembershipState
                 ),
               );
             },
+            borderRadius: BorderRadius.circular(14),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE5C07B), // Gold color
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFF2D0), Color(0xFFE5C07B)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFE5C07B).withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               alignment: Alignment.center,
               child: const Text(
                 'Request invite →',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87, // Dark text on gold button
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -690,5 +751,23 @@ class _PrivacySafetyAndMembershipState
         ),
       ],
     );
+  }
+
+  List<Widget> _buildDynamicFeatures(MembershipPlanModel plan, Color iconColor, Color textColor) {
+    List<String> allFeatures = [];
+    for (var section in plan.sections) {
+      for (var feature in section.features) {
+        allFeatures.add(feature.title);
+      }
+    }
+    
+    final displayFeatures = allFeatures.take(5).toList();
+    
+    return displayFeatures.map((feat) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 6.0),
+        child: _buildFeatureRow(feat, iconColor, textColor),
+      );
+    }).toList();
   }
 }
