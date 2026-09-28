@@ -29,6 +29,8 @@ class DrawerScreen extends StatefulWidget {
 class _DrawerScreenState extends State<DrawerScreen> {
   int _selectedTabIndex = 1; // 0 = Marriage, 1 = Dating, 2 = Mature Dating
   String _walletBalance = '₹0';
+  // ignore: unused_field
+  double _walletVal = 0.0;
   int _rosesBalance = 0;
   int _complimentsBalance = 0;
   int _boostsBalance = 0;
@@ -932,7 +934,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
