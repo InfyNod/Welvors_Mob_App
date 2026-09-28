@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
-void showCancelAutoRenewBottomSheet(BuildContext context, VoidCallback onCancelled) {
+void showCancelAutoRenewBottomSheet(BuildContext context, String planName, VoidCallback onCancelled) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return _CancelAutoRenewSheet(onCancelled: onCancelled);
+      return _CancelAutoRenewSheet(planName: planName, onCancelled: onCancelled);
     },
   );
 }
 
 class _CancelAutoRenewSheet extends StatefulWidget {
+  final String planName;
   final VoidCallback onCancelled;
-  const _CancelAutoRenewSheet({super.key, required this.onCancelled});
+  const _CancelAutoRenewSheet({super.key, required this.planName, required this.onCancelled});
 
   @override
   State<_CancelAutoRenewSheet> createState() => _CancelAutoRenewSheetState();
@@ -134,7 +135,7 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
                 onPressed: _selectedReason != null
                     ? () {
                         Navigator.pop(context);
-                        showCancelWarningBottomSheet(context, _selectedReason!, widget.onCancelled);
+                        showCancelWarningBottomSheet(context, _selectedReason!, widget.planName, widget.onCancelled);
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
@@ -169,9 +170,9 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Keep my VIP',
-                  style: TextStyle(
+                child: Text(
+                  'Keep my ${widget.planName}',
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -186,21 +187,22 @@ class _CancelAutoRenewSheetState extends State<_CancelAutoRenewSheet> {
   }
 }
 
-void showCancelWarningBottomSheet(BuildContext context, String reason, VoidCallback onCancelled) {
+void showCancelWarningBottomSheet(BuildContext context, String reason, String planName, VoidCallback onCancelled) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return _CancelWarningSheet(reason: reason, onCancelled: onCancelled);
+      return _CancelWarningSheet(reason: reason, planName: planName, onCancelled: onCancelled);
     },
   );
 }
 
 class _CancelWarningSheet extends StatelessWidget {
   final String reason;
+  final String planName;
   final VoidCallback onCancelled;
-  const _CancelWarningSheet({super.key, required this.reason, required this.onCancelled});
+  const _CancelWarningSheet({super.key, required this.reason, required this.planName, required this.onCancelled});
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +309,7 @@ class _CancelWarningSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Get your next 3 months of VIP at ₹999/mo instead of ₹1,999.',
+                    'Get your next 3 months of $planName at ₹999/mo instead of ₹1,999.',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade600,
@@ -348,7 +350,7 @@ class _CancelWarningSheet extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                    Navigator.pop(context);
-                   showCancelConfirmationBottomSheet(context, reason, onCancelled);
+                   showCancelConfirmationBottomSheet(context, reason, planName, onCancelled);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDF5A5A), // Softer Red
@@ -415,21 +417,22 @@ class _CancelWarningSheet extends StatelessWidget {
   }
 }
 
-void showCancelConfirmationBottomSheet(BuildContext context, String reason, VoidCallback onCancelled) {
+void showCancelConfirmationBottomSheet(BuildContext context, String reason, String planName, VoidCallback onCancelled) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return _CancelConfirmationSheet(reason: reason, onCancelled: onCancelled);
+      return _CancelConfirmationSheet(reason: reason, planName: planName, onCancelled: onCancelled);
     },
   );
 }
 
 class _CancelConfirmationSheet extends StatelessWidget {
   final String reason;
+  final String planName;
   final VoidCallback onCancelled;
-  const _CancelConfirmationSheet({super.key, required this.reason, required this.onCancelled});
+  const _CancelConfirmationSheet({super.key, required this.reason, required this.planName, required this.onCancelled});
 
   @override
   Widget build(BuildContext context) {
@@ -487,10 +490,10 @@ class _CancelConfirmationSheet extends StatelessWidget {
                     color: Colors.grey.shade600,
                     height: 1.4,
                   ),
-                  children: const [
-                    TextSpan(text: 'Your VIP stays active until '),
-                    TextSpan(text: '12 Aug 2026', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
-                    TextSpan(text: '. After that your account moves to Free — nothing is charged again.'),
+                  children: [
+                    TextSpan(text: 'Your $planName stays active until '),
+                    const TextSpan(text: '12 Aug 2026', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                    const TextSpan(text: '. After that your account moves to Free — nothing is charged again.'),
                   ],
                 ),
               ),

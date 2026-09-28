@@ -14,6 +14,7 @@ import 'account_pages/pause_delete_drawer.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
 import 'service_account_Setting.dart';
 import '../edit_profile/services/edit_profile_api_service.dart';
+import 'package:intl/intl.dart';
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -29,12 +30,21 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   bool _isAccountPaused = false;
 
   String _apiPhone = '+91 ••••• 43210';
+  
+  static String _cachedMembershipSubtitle = 'Fetching plan...';
+  static String _cachedMembershipEmoji = '💎';
+  static Color _cachedMembershipBgColor = const Color(0xFFE6F9FA);
+
+  String _membershipSubtitle = _cachedMembershipSubtitle;
+  String _membershipEmoji = _cachedMembershipEmoji;
+  Color _membershipBgColor = _cachedMembershipBgColor;
 
   @override
   void initState() {
     super.initState();
     _fetchCounts();
     _fetchProfileDetails();
+    _fetchMembershipPlan();
   }
 
   Future<void> _fetchProfileDetails() async {
@@ -90,6 +100,79 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         _bankCount = banks.length;
         _upiCount = upis.length;
       });
+    }
+  }
+
+  Future<void> _fetchMembershipPlan() async {
+    try {
+      final data = await AccountSettingService.getMembershipPlan();
+      if (data != null && mounted) {
+        final currentPlan = data['currentPlan'];
+        if (currentPlan != null) {
+          final planName = currentPlan['name'] ?? 'Free';
+          String emoji = '💎';
+          Color bgColor = const Color(0xFFE6F9FA);
+          if (planName.toString().toUpperCase().contains('PREMIUM')) {
+            emoji = '🔥';
+            bgColor = const Color(0xFFFBE4E7);
+          } else if (planName.toString().toUpperCase().contains('ELITE')) {
+            emoji = '💠';
+            bgColor = const Color(0xFFEEEEEE);
+          } else if (planName.toString().toUpperCase().contains('VIP')) {
+            emoji = '👑';
+            bgColor = const Color(0xFFFFF4E0);
+          }
+
+          final isAutoRenewCancelled = !(currentPlan['autoRenew'] ?? false);
+          final endDateStr = currentPlan['endDate'];
+          final formattedDate = _formatDate(endDateStr);
+          final prefix = isAutoRenewCancelled ? 'access until' : 'renews';
+          
+          setState(() {
+            _membershipSubtitle = '$planName • $prefix $formattedDate';
+            _membershipEmoji = emoji;
+            _membershipBgColor = bgColor;
+            
+            _cachedMembershipSubtitle = _membershipSubtitle;
+            _cachedMembershipEmoji = _membershipEmoji;
+            _cachedMembershipBgColor = _membershipBgColor;
+          });
+        } else {
+          setState(() {
+            _membershipSubtitle = 'No active plan';
+            _membershipEmoji = '🚫';
+            _membershipBgColor = const Color(0xFFF2F2F2);
+            _cachedMembershipSubtitle = 'No active plan';
+            _cachedMembershipEmoji = '🚫';
+            _cachedMembershipBgColor = const Color(0xFFF2F2F2);
+          });
+        }
+      } else {
+        setState(() {
+          _membershipSubtitle = 'No active plan';
+          _membershipEmoji = '🚫';
+          _membershipBgColor = const Color(0xFFF2F2F2);
+          _cachedMembershipSubtitle = 'No active plan';
+          _cachedMembershipEmoji = '🚫';
+          _cachedMembershipBgColor = const Color(0xFFF2F2F2);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _membershipSubtitle = 'Failed to load';
+        });
+      }
+    }
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (e) {
+      return dateStr;
     }
   }
 
@@ -299,10 +382,10 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 color: Color(0xFFF0F0F0),
               ),
               _buildListItem(
-                iconWidget: const Text('💎', style: TextStyle(fontSize: 18)),
-                iconBgColor: const Color(0xFFE6F9FA),
+                iconWidget: Text(_membershipEmoji, style: const TextStyle(fontSize: 18)),
+                iconBgColor: _membershipBgColor,
                 title: 'Membership Plan',
-                subtitle: 'VIP • renews 12 Aug 2026',
+                subtitle: _membershipSubtitle,
                 onTap: () {
                   Navigator.push(
                     context,

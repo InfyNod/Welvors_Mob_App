@@ -3,6 +3,8 @@ import 'invoice_drawer.dart';
 import 'cancel_auto_renew.dart';
 import '../../service_account_Setting.dart';
 import 'package:intl/intl.dart';
+import '../../../membership_plan/presentation/choose_plan_screen.dart';
+import '../../../membership_plan/model/membership_plan_model.dart';
 
 class MembershipPlanScreen extends StatefulWidget {
   const MembershipPlanScreen({super.key});
@@ -105,40 +107,56 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
           ? const Center(child: CircularProgressIndicator())
           : currentPlan == null 
               ? const Center(child: Text('No active plan'))
-              : SafeArea(
-                  child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Info Card
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 16,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 4,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    _buildInfoRow(
-                      emoji: '💎',
-                      bgColor: const Color(0xFFE6F9FA),
+              : Builder(
+                  builder: (context) {
+                    final planName = currentPlan?['name']?.toString().toUpperCase() ?? 'VIP';
+                    String emoji = '💎';
+                    Color bgColor = const Color(0xFFE6F9FA);
+                    if (planName.contains('PREMIUM')) {
+                      emoji = '🔥';
+                      bgColor = const Color(0xFFFBE4E7);
+                    } else if (planName.contains('ELITE')) {
+                      emoji = '💠';
+                      bgColor = const Color(0xFFEEEEEE);
+                    } else if (planName.contains('VIP')) {
+                      emoji = '👑';
+                      bgColor = const Color(0xFFFFF4E0);
+                    }
+                    
+                    return SafeArea(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Top Info Card
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.08),
+                                          blurRadius: 16,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.04),
+                                          blurRadius: 4,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        _buildInfoRow(
+                                          emoji: emoji,
+                                          bgColor: bgColor,
                       title: 'Current plan',
                       subtitle: currentPlan?['name'] ?? 'VIP',
                       trailingText: currentPlan?['status'] ?? 'Active',
@@ -167,7 +185,16 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ChoosePlanScreen(
+                          initialTier: MembershipTier.premiumPlus,
+                        ),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE43A6A), // Pinkish red
                     elevation: 0,
@@ -251,7 +278,7 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                   height: 52,
                   child: OutlinedButton(
                     onPressed: () {
-                      showCancelAutoRenewBottomSheet(context, () {
+                      showCancelAutoRenewBottomSheet(context, planName, () {
                         setState(() {
                           isAutoRenewCancelled = true;
                         });
@@ -413,9 +440,10 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }),
+  );
+}
 
   Widget _buildInfoRow({
     required String emoji,
