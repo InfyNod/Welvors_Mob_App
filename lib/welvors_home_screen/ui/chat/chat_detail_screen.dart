@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,6 +38,7 @@ import 'widgets/dialogs/chat_dialogs.dart';
 import 'widgets/sheets/chat_unmatch_sheet.dart';
 import 'widgets/sheets/chat_attachment_bottom_sheet.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/config/env_config.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -147,6 +149,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   String? _playingAudioPath;
   bool _isAudioPlaying = false;
+  StreamSubscription<void>? _playerCompleteSubscription;
+  StreamSubscription<PlayerState>? _playerStateSubscription;
 
   // Keeps a key for every rendered message so reply quotes can jump to the original.
   final Map<String, GlobalKey> _messageKeys = {};
@@ -463,6 +467,51 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     _isUserOnline = widget.user.online;
 
     scrollController.addListener(_handleMessageScroll);
+
+    _playerCompleteSubscription = _audioPlayer.onPlayerComplete.listen(
+      (_) {
+        if (!mounted) return;
+        setState(() {
+          _isAudioPlaying = false;
+          _playingAudioPath = null;
+        });
+      },
+      onError: (e) {
+        AppLogger.e('ChatDetailScreen', 'Audio player complete error: $e');
+        if (mounted) {
+          setState(() {
+            _isAudioPlaying = false;
+            _playingAudioPath = null;
+          });
+        }
+      },
+    );
+
+    _playerStateSubscription = _audioPlayer.onPlayerStateChanged.listen(
+      (state) {
+        if (!mounted) return;
+        final isPlaying = state == PlayerState.playing;
+        if (_isAudioPlaying != isPlaying) {
+          setState(() {
+            _isAudioPlaying = isPlaying;
+            if (!isPlaying &&
+                (state == PlayerState.stopped ||
+                    state == PlayerState.completed)) {
+              _playingAudioPath = null;
+            }
+          });
+        }
+      },
+      onError: (e) {
+        AppLogger.e('ChatDetailScreen', 'Audio player state error: $e');
+        if (mounted) {
+          setState(() {
+            _isAudioPlaying = false;
+            _playingAudioPath = null;
+          });
+        }
+      },
+    );
 
     final conversationId = widget.user.conversationId?.trim() ?? '';
 
@@ -1032,6 +1081,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       _isTyping = false;
     }
 
+    _playerCompleteSubscription?.cancel();
+    _playerStateSubscription?.cancel();
     _recordingTimer?.cancel();
     _bannerRotationTimer?.cancel();
     _olderMessagesTimeout?.cancel();
@@ -1114,13 +1165,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       final size = await file.length();
 
-      _attachmentService.sendAttachment(
-        type: ChatMessageType.audio,
-        text: '',
-        filePath: path,
-        audioUrl: path,
-        fileName: 'Voice message',
+      await _attachmentService.uploadAndSendFile(
+        file: file,
+        fileName: 'voice_${DateTime.now().millisecondsSinceEpoch}.m4a',
         fileSize: _attachmentService.formatFileSize(size),
+        type: ChatMessageType.audio,
       );
 
       _toast('Voice message sent ✓');
@@ -1160,14 +1209,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   Future<void> _toggleAudio(ChatMessage message) async {
-    final path = message.audioUrl ?? message.fileUrl;
-    if (path == null || path.isEmpty) {
+    final rawPath = (message.audioUrl ?? message.fileUrl)?.trim();
+    if (rawPath == null || rawPath.isEmpty) {
       _toast('Audio unavailable');
       return;
     }
 
     try {
-      if (_playingAudioPath == path && _isAudioPlaying) {
+      if (_playingAudioPath == rawPath && _isAudioPlaying) {
         await _audioPlayer.pause();
         if (!mounted) return;
         setState(() => _isAudioPlaying = false);
@@ -1176,22 +1225,140 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
       await _audioPlayer.stop();
 
-      if (path.startsWith('http://') || path.startsWith('https://')) {
-        await _audioPlayer.play(UrlSource(path));
-      } else {
-        await _audioPlayer.play(DeviceFileSource(path));
+      final source = await _resolveAudioSource(rawPath);
+      if (source == null) {
+        if (!mounted) return;
+        setState(() {
+          _isAudioPlaying = false;
+          _playingAudioPath = null;
+        });
+        _toast('Audio file not found');
+        return;
       }
+
+      AppLogger.d('ChatDetailScreen', '▶️ Playing audio: $rawPath via $source');
+      await _audioPlayer.play(source);
 
       if (!mounted) return;
       setState(() {
-        _playingAudioPath = path;
+        _playingAudioPath = rawPath;
         _isAudioPlaying = true;
       });
     } catch (e, stackTrace) {
       AppLogger.e('ChatDetailScreen', 'AUDIO PLAY ERROR: $e');
       debugPrintStack(stackTrace: stackTrace);
+      if (mounted) {
+        setState(() {
+          _isAudioPlaying = false;
+          _playingAudioPath = null;
+        });
+      }
       _toast('Unable to play audio');
     }
+  }
+
+  Future<Source?> _resolveAudioSource(String rawPath) async {
+    String path = rawPath.trim();
+    if (path.isEmpty) return null;
+
+    // 1. If path has file:// scheme, extract file system path
+    if (path.startsWith('file://')) {
+      try {
+        path = Uri.parse(path).toFilePath();
+      } catch (_) {
+        path = path.replaceFirst('file://', '');
+      }
+    }
+
+    // 2. Check if it's a local device file path (/data/..., /storage/..., /var/..., C:\...)
+    final bool isLocalPath = path.startsWith('/data/') ||
+        path.startsWith('/storage/') ||
+        path.startsWith('/var/') ||
+        path.startsWith('/private/') ||
+        RegExp(r'^[a-zA-Z]:[\\/]').hasMatch(path);
+
+    if (isLocalPath) {
+      try {
+        final file = File(path);
+        if (file.existsSync()) {
+          return DeviceFileSource(file.path);
+        }
+      } catch (_) {}
+      // Local device path whose file is no longer in local storage / cache.
+      // NEVER prepend server baseUrl to local device paths (/data/user/0/...)!
+      AppLogger.w('ChatDetailScreen', '⚠️ Local audio file no longer exists: $path');
+      return null;
+    }
+
+    // 3. Check if it is any other existing file on device
+    try {
+      final file = File(path);
+      if (file.existsSync()) {
+        return DeviceFileSource(file.path);
+      }
+    } catch (_) {}
+
+    // 4. Resolve to full network URL
+    String fullUrl;
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      fullUrl = path;
+    } else {
+      final base = EnvConfig.baseUrl.isNotEmpty ? EnvConfig.baseUrl : EnvConfig.apiBaseUrl;
+      final cleanBase = base.replaceAll(RegExp(r'/+$'), '');
+      final cleanRel = path.startsWith('/') ? path : '/$path';
+      fullUrl = '$cleanBase$cleanRel';
+    }
+
+    // 5. Download and cache remote audio locally so Android MediaPlayer doesn't fail on network stream
+    try {
+      final cachedFile = await _downloadAndCacheAudio(fullUrl);
+      if (cachedFile != null && cachedFile.existsSync()) {
+        return DeviceFileSource(cachedFile.path);
+      }
+    } catch (e) {
+      AppLogger.w('ChatDetailScreen', '⚠️ Audio caching failed, falling back to network stream: $e');
+    }
+
+    return UrlSource(Uri.encodeFull(fullUrl));
+  }
+
+  Future<File?> _downloadAndCacheAudio(String url) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final uri = Uri.tryParse(url);
+      final rawName = (uri?.pathSegments.isNotEmpty ?? false)
+          ? uri!.pathSegments.last
+          : 'audio_${url.hashCode.abs()}';
+      final cleanName = rawName.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+      final extension = cleanName.contains('.') ? '' : '.m4a';
+      final cacheFileName = 'cache_audio_${url.hashCode.abs()}_$cleanName$extension';
+      final file = File('${tempDir.path}/$cacheFileName');
+
+      if (await file.exists() && await file.length() > 0) {
+        return file;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      final headers = <String, String>{};
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] =
+            token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
+      }
+
+      final response = await http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
+        await file.writeAsBytes(response.bodyBytes, flush: true);
+        return file;
+      }
+      AppLogger.w('ChatDetailScreen', 'Download audio returned status ${response.statusCode}');
+    } catch (e) {
+      AppLogger.e('ChatDetailScreen', 'Download audio error: $e');
+    }
+    return null;
   }
 
   String _recordingTime() {

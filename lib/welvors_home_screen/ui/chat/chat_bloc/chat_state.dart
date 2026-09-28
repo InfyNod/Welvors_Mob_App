@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:velvors/config/env_config.dart';
 
 enum ChatMessageDirection { sender, receiver }
 
@@ -863,7 +864,7 @@ class ChatMessage extends Equatable {
       imageUrl:
           type == ChatMessageType.gift || type == ChatMessageType.ENGAGEMENT
           ? parsedGiftImageUrl
-          : _string(
+          : _normalizeMediaUrl(
               json['imageUrl'] ??
                   json['image_url'] ??
                   json['mediaUrl'] ??
@@ -874,7 +875,7 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // VIDEO
       // ------------------------------------------------------
-      videoUrl: _string(
+      videoUrl: _normalizeMediaUrl(
         json['videoUrl'] ??
             json['video_url'] ??
             (type == ChatMessageType.video
@@ -885,7 +886,7 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // AUDIO
       // ------------------------------------------------------
-      audioUrl: _string(
+      audioUrl: _normalizeMediaUrl(
         json['audioUrl'] ??
             json['audio_url'] ??
             (type == ChatMessageType.audio
@@ -896,10 +897,10 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       // FILE
       // ------------------------------------------------------
-      fileUrl: _string(
+      fileUrl: _normalizeMediaUrl(
         json['fileUrl'] ??
             json['file_url'] ??
-            (type == ChatMessageType.document
+            ((type == ChatMessageType.document || type == ChatMessageType.audio)
                 ? (json['mediaUrl'] ?? json['media_url'])
                 : null),
       ),
@@ -1527,6 +1528,32 @@ class ChatMessage extends Equatable {
     }
 
     return result;
+  }
+
+  static String? _normalizeMediaUrl(dynamic value) {
+    final str = _string(value);
+    if (str == null || str.isEmpty) return null;
+    if (str.startsWith('http://') || str.startsWith('https://')) return str;
+    if (str.startsWith('file://')) return str;
+    if (str.startsWith('/data/') ||
+        str.startsWith('/storage/') ||
+        str.startsWith('/var/') ||
+        RegExp(r'^[a-zA-Z]:[\\/]').hasMatch(str)) {
+      return str;
+    }
+    if (str.startsWith('/uploads') ||
+        str.startsWith('uploads') ||
+        str.startsWith('/media') ||
+        str.startsWith('media') ||
+        str.startsWith('/api') ||
+        str.startsWith('api') ||
+        str.startsWith('/')) {
+      final base = EnvConfig.baseUrl.isNotEmpty ? EnvConfig.baseUrl : EnvConfig.apiBaseUrl;
+      final cleanBase = base.replaceAll(RegExp(r'/+$'), '');
+      final cleanRel = str.startsWith('/') ? str : '/$str';
+      return '$cleanBase$cleanRel';
+    }
+    return str;
   }
 
   // ==========================================================

@@ -245,6 +245,13 @@ class ChatAttachmentService {
         throw Exception('Image URL not found in response');
       }
 
+      if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+        final base = EnvConfig.baseUrl.isNotEmpty ? EnvConfig.baseUrl : EnvConfig.apiBaseUrl;
+        final cleanBase = base.replaceAll(RegExp(r'/+$'), '');
+        final cleanRel = imageUrl.startsWith('/') ? imageUrl : '/$imageUrl';
+        imageUrl = '$cleanBase$cleanRel';
+      }
+
       AppLogger.i('ChatAttachmentService', '✅ FINAL IMAGE URL => $imageUrl');
 
       final reply = getReplyingTo();
@@ -382,9 +389,11 @@ class ChatAttachmentService {
     required String fileSize,
     required ChatMessageType type,
   }) async {
-    final conversationId = user.conversationId;
+    final conversationId = (user.conversationId?.trim().isNotEmpty ?? false)
+        ? user.conversationId!.trim()
+        : user.id.trim();
 
-    if (conversationId == null || conversationId.isEmpty) {
+    if (conversationId.isEmpty) {
       AppLogger.e('ChatAttachmentService', '❌ UPLOAD FILE: conversationId missing');
       return;
     }
@@ -471,6 +480,14 @@ class ChatAttachmentService {
 
       if (fileUrl == null || fileUrl.isEmpty) {
         throw Exception('File URL missing in response');
+      }
+
+      // Ensure relative URLs are resolved to full URLs for playback and download
+      if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
+        final base = EnvConfig.baseUrl.isNotEmpty ? EnvConfig.baseUrl : EnvConfig.apiBaseUrl;
+        final cleanBase = base.replaceAll(RegExp(r'/+$'), '');
+        final cleanRel = fileUrl.startsWith('/') ? fileUrl : '/$fileUrl';
+        fileUrl = '$cleanBase$cleanRel';
       }
 
       sendAttachment(
@@ -593,6 +610,13 @@ class ChatAttachmentService {
 
       if (videoUrl == null || videoUrl.isEmpty) {
         throw Exception('Video URL not found in response');
+      }
+
+      if (!videoUrl.startsWith('http://') && !videoUrl.startsWith('https://')) {
+        final base = EnvConfig.baseUrl.isNotEmpty ? EnvConfig.baseUrl : EnvConfig.apiBaseUrl;
+        final cleanBase = base.replaceAll(RegExp(r'/+$'), '');
+        final cleanRel = videoUrl.startsWith('/') ? videoUrl : '/$videoUrl';
+        videoUrl = '$cleanBase$cleanRel';
       }
 
       AppLogger.i('ChatAttachmentService', '✅ FINAL VIDEO URL => $videoUrl');
