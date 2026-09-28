@@ -39,6 +39,8 @@ import 'widgets/sheets/chat_unmatch_sheet.dart';
 import 'widgets/sheets/chat_attachment_bottom_sheet.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setting/service_account_Setting.dart';
+import 'package:velvors/welvors_home_screen/services/token_helper.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -48,8 +50,6 @@ class ChatDetailScreen extends StatefulWidget {
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
-
-bool _isBlocked = false;
 
 class _ChatDetailScreenState extends State<ChatDetailScreen>
     with SingleTickerProviderStateMixin {
@@ -108,6 +108,39 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   // _isUserOnline is immutable and therefore cannot refresh on socket events.
   late bool _isUserOnline;
   bool _isUnmatched = false;
+  bool _isBlocked = false;
+  bool _isBlockedByMe = false;
+  String? _currentUserId;
+
+  Future<bool> _checkIfUserBlockedByMe(String peerUserId) async {
+    try {
+      final blockedList = await AccountSettingService.getBlockedUsers();
+      if (blockedList != null && blockedList.isNotEmpty) {
+        final cleanPeerId = peerUserId.trim();
+        final widgetUserId = widget.user.userId.trim();
+        final widgetId = widget.user.id.trim();
+        final liveId = (_liveuserId ?? '').trim();
+        for (final item in blockedList) {
+          final id = (item is Map
+                  ? (item['id'] ?? item['userId'] ?? item['blockedId'] ?? item['blockedUserId'])
+                  : item)
+              ?.toString()
+              .trim();
+          if (id != null && id.isNotEmpty) {
+            if ((cleanPeerId.isNotEmpty && id == cleanPeerId) ||
+                (widgetUserId.isNotEmpty && id == widgetUserId) ||
+                (widgetId.isNotEmpty && id == widgetId) ||
+                (liveId.isNotEmpty && id == liveId)) {
+              return true;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      AppLogger.e('ChatDetailScreen', 'Error checking blocked list: $e');
+    }
+    return false;
+  }
 
   // Live, dynamic profile/user details for this conversation. Loaded once
   // via REST (GET /api/user/chat/{conversationId}/details) on open, then
@@ -513,6 +546,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       },
     );
 
+    TokenHelper.getToken().then((token) {
+      if (token != null && token.isNotEmpty) {
+        _currentUserId = ChatRepository.userIdFromToken(token);
+      }
+    });
+
     final conversationId = widget.user.conversationId?.trim() ?? '';
 
     AppLogger.d('ChatDetailScreen', '');
@@ -711,6 +750,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   Future<void> _loadConversationUserDetails(String conversationId) async {
     try {
+      if (_currentUserId == null || _currentUserId!.isEmpty) {
+        final token = await TokenHelper.getToken();
+        if (token != null && token.isNotEmpty) {
+          _currentUserId = ChatRepository.userIdFromToken(token);
+        }
+      }
+
       final details = await ChatRepository().fetchConversationUserDetails(
         conversationId,
       );
@@ -720,10 +766,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       if (!mounted) return;
       if (widget.user.conversationId?.trim() != conversationId.trim()) return;
 
+      bool isBlockedByMe = details.isBlockedByMe;
+      if (details.isBlocked && !isBlockedByMe && details.blockedBy == null) {
+        isBlockedByMe = await _checkIfUserBlockedByMe(details.userId);
+      }
+      if (!mounted) return;
+
       setState(() {
         _profileDetails = details;
         _isUserOnline = details.isOnline;
         _isBlocked = details.isBlocked;
+        _isBlockedByMe = isBlockedByMe;
       });
     } catch (e) {
       AppLogger.e('ChatDetailScreen', '❌ CHAT DETAIL: failed to load profile details: $e');
@@ -743,7 +796,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     AppLogger.i('ChatDetailScreen', '✅ profile:details LISTENER REGISTERED');
   }
 
-  void _onProfileDetails(dynamic data) {
+  Future<void> _onProfileDetails(dynamic data) async {
     AppLogger.d('ChatDetailScreen', '🔥 profile:details RAW => $data');
     AppLogger.d('ChatDetailScreen', '🔥 profile:details TYPE => ${data.runtimeType}');
 
@@ -762,7 +815,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     }
 
     try {
-      final details = ConversationProfileDetails.fromJson(payload);
+      if (_currentUserId == null || _currentUserId!.isEmpty) {
+        final token = await TokenHelper.getToken();
+        if (token != null && token.isNotEmpty) {
+          _currentUserId = ChatRepository.userIdFromToken(token);
+        }
+      }
+
+      final details = ConversationProfileDetails.fromJson(
+        payload,
+        currentUserId: _currentUserId,
+      );
 
       AppLogger.i('ChatDetailScreen', 
         '✅ profile:details PARSED'
@@ -777,7 +840,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         '\n'
         'online = ${details.isOnline}'
         '\n'
-        'blocked = ${details.isBlocked}',
+        'blocked = ${details.isBlocked}'
+        '\n'
+        'isBlockedByMe = ${details.isBlockedByMe}',
       );
 
       final currentConversationId = widget.user.conversationId?.trim() ?? '';
@@ -795,10 +860,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         return;
       }
 
+      bool isBlockedByMe = details.isBlockedByMe;
+      if (details.isBlocked && !isBlockedByMe && details.blockedBy == null) {
+        isBlockedByMe = await _checkIfUserBlockedByMe(details.userId);
+      }
+      if (!mounted) return;
+
       setState(() {
         _profileDetails = details;
         _isUserOnline = details.isOnline;
         _isBlocked = details.isBlocked;
+        _isBlockedByMe = isBlockedByMe;
       });
 
       AppLogger.i('ChatDetailScreen', '✅ profile:details UI UPDATED');
@@ -1623,6 +1695,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
               bannerIndex: _bannerIndex,
               messageKey: _messageKey,
               isBlocked: _isBlocked,
+              isBlockedByMe: _isBlockedByMe,
+              confirmUnblockUser: _confirmUnblockUser,
               userName: widget.user.name,
               conversationId:
                   (widget.user.conversationId?.trim().isNotEmpty == true)
@@ -1672,8 +1746,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   Widget _blockedMessage() {
     return ChatBlockedBanner(
-      userName: widget.user.name,
-      onUnblock: _confirmUnblockUser,
+      userName: _liveName.isNotEmpty ? _liveName : widget.user.name,
+      isBlockedByMe: _isBlockedByMe,
+      onUnblock: _isBlockedByMe ? _confirmUnblockUser : null,
     );
   }
 
@@ -1687,8 +1762,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       if (!mounted) return;
       setState(() {
         _isBlocked = false;
+        _isBlockedByMe = false;
       });
-      _toast('${widget.user.name} unblocked');
+      _toast('${_liveName.isNotEmpty ? _liveName : widget.user.name} unblocked');
       AppLogger.d('ChatDetailScreen', "check>>>>>$check");
       // if (check) {
       //   Navigator.pop(context);
@@ -2207,6 +2283,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
               setState(() {
                 if (alsoBlock) {
                   _isBlocked = true;
+                  _isBlockedByMe = true;
                 }
               });
             },
@@ -2219,10 +2296,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   Future<void> _confirmUnblockUser() async {
     final confirmed = await ChatDialogs.showUnblockUserDialog(
       context,
-      widget.user.name,
+      _liveName.isNotEmpty ? _liveName : widget.user.name,
     );
     if (confirmed == true && mounted) {
-      await _unblockUser(_liveuserId.toString(), true);
+      final targetUserId = (_liveuserId != null && _liveuserId!.isNotEmpty)
+          ? _liveuserId!
+          : (widget.user.userId.isNotEmpty ? widget.user.userId : widget.user.id);
+      await _unblockUser(targetUserId, true);
     }
   }
 
@@ -2238,11 +2318,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         return FractionallySizedBox(
           heightFactor: 0.7,
           child: BlockUserDialog(
-            userName: widget.user.name,
-            userAge: widget.user.age,
-            userId: widget.user.id.toString(),
+            userName: _liveName.isNotEmpty ? _liveName : widget.user.name,
+            userAge: _liveAge > 0 ? _liveAge : widget.user.age,
+            userId: (_liveuserId != null && _liveuserId!.isNotEmpty)
+                ? _liveuserId!
+                : widget.user.id.toString(),
             onBlock: (selectedOption) async {
-              final blockedId = widget.user.userId.trim();
+              final blockedId = widget.user.userId.trim().isNotEmpty
+                  ? widget.user.userId.trim()
+                  : ((_liveuserId != null && _liveuserId!.isNotEmpty)
+                      ? _liveuserId!.trim()
+                      : widget.user.id.trim());
               if (blockedId.isEmpty) {
                 _toast('User ID is missing');
                 throw Exception('User ID is missing');
@@ -2253,6 +2339,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
               if (!mounted) return;
               setState(() {
                 _isBlocked = true;
+                _isBlockedByMe = true;
               });
             },
           ),

@@ -3,15 +3,17 @@ import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 
-/// Banner shown when the user has blocked the peer
+/// Banner shown when a user is blocked in the conversation
 class ChatBlockedBanner extends StatelessWidget {
   final String userName;
-  final VoidCallback onUnblock;
+  final VoidCallback? onUnblock;
+  final bool isBlockedByMe;
 
   const ChatBlockedBanner({
     super.key,
     required this.userName,
-    required this.onUnblock,
+    this.onUnblock,
+    this.isBlockedByMe = true,
   });
 
   @override
@@ -19,7 +21,7 @@ class ChatBlockedBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(40, 10, 40, 16),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F5EF),
         borderRadius: BorderRadius.circular(20),
@@ -29,36 +31,43 @@ class ChatBlockedBanner extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'You blocked $userName',
+            isBlockedByMe
+                ? 'You blocked $userName'
+                : '$userName has blocked you',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.w700,
+              fontSize: 16,
               color: Color(0xFF252525),
             ),
           ),
-          const SizedBox(height: 10),
-          const Text(
-            'She can’t message you or see your profile.',
+          const SizedBox(height: 8),
+          Text(
+            isBlockedByMe
+                ? 'You can’t message each other while blocked.'
+                : 'You cannot send messages to this conversation.',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w400,
               color: Color(0xFF99958F),
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 6),
-          GestureDetector(
-            onTap: onUnblock,
-            child: const Text(
-              'Unblock',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFFE83D72),
+          if (isBlockedByMe && onUnblock != null) ...[
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: onUnblock,
+              child: const Text(
+                'Unblock',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFE83D72),
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

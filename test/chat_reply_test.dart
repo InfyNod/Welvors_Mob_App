@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_state.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/widgets/chat_status_banners.dart';
 
 void main() {
   group('Chat Reply Mechanism Tests', () {
@@ -142,6 +144,90 @@ void main() {
 
       final message = ChatMessage.fromJson(json, currentUserId: 'user_1');
       expect(message.audioUrl, equals(localPath));
+    });
+  });
+
+  group('Chat Block and Unblock Logic Tests', () {
+    test('ConversationProfileDetails sets isBlockedByMe=true when current user is blocker', () {
+      final json = {
+        'conversationId': 'conv_123',
+        'user': {
+          'id': 'peer_456',
+          'name': 'Bob',
+          'age': 25,
+          'isBlocked': true,
+        },
+        'blockedBy': 'my_user_id',
+      };
+
+      final details = ConversationProfileDetails.fromJson(
+        json,
+        currentUserId: 'my_user_id',
+      );
+
+      expect(details.isBlocked, isTrue);
+      expect(details.isBlockedByMe, isTrue);
+    });
+
+    test('ConversationProfileDetails sets isBlockedByMe=false when peer is blocker', () {
+      final json = {
+        'conversationId': 'conv_123',
+        'user': {
+          'id': 'peer_456',
+          'name': 'Bob',
+          'age': 25,
+          'isBlocked': true,
+        },
+        'blockedBy': 'peer_456',
+      };
+
+      final details = ConversationProfileDetails.fromJson(
+        json,
+        currentUserId: 'my_user_id',
+      );
+
+      expect(details.isBlocked, isTrue);
+      expect(details.isBlockedByMe, isFalse);
+    });
+
+    testWidgets('ChatBlockedBanner shows You blocked and Unblock button when isBlockedByMe is true', (tester) async {
+      bool unblockTapped = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChatBlockedBanner(
+              userName: 'Bob',
+              isBlockedByMe: true,
+              onUnblock: () => unblockTapped = true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('You blocked Bob'), findsOneWidget);
+      expect(find.text('You can’t message each other while blocked.'), findsOneWidget);
+      expect(find.text('Unblock'), findsOneWidget);
+
+      await tester.tap(find.text('Unblock'));
+      expect(unblockTapped, isTrue);
+    });
+
+    testWidgets('ChatBlockedBanner shows Bob has blocked you and NO Unblock button when isBlockedByMe is false', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ChatBlockedBanner(
+              userName: 'Bob',
+              isBlockedByMe: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Bob has blocked you'), findsOneWidget);
+      expect(find.text('You cannot send messages to this conversation.'), findsOneWidget);
+      expect(find.text('Unblock'), findsNothing);
     });
   });
 }

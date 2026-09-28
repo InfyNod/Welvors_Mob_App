@@ -2649,6 +2649,8 @@ class ConversationProfileDetails extends Equatable {
   final bool isOnline;
   final DateTime? lastSeenAt;
   final bool isBlocked;
+  final String? blockedBy;
+  final bool isBlockedByMe;
   final num matchScore;
   final String profileImage;
 
@@ -2661,11 +2663,16 @@ class ConversationProfileDetails extends Equatable {
     required this.isOnline,
     required this.lastSeenAt,
     required this.isBlocked,
+    this.blockedBy,
+    this.isBlockedByMe = false,
     required this.matchScore,
     required this.profileImage,
   });
 
-  factory ConversationProfileDetails.fromJson(Map<String, dynamic> json) {
+  factory ConversationProfileDetails.fromJson(
+    Map<String, dynamic> json, {
+    String? currentUserId,
+  }) {
     Map<String, dynamic> root = json;
 
     if (root['data'] is Map) {
@@ -2696,25 +2703,57 @@ class ConversationProfileDetails extends Equatable {
         ? null
         : DateTime.tryParse(lastSeenRaw.toString());
 
+    final blockedBy = (root['blockedBy'] ??
+            root['blocked_by'] ??
+            root['blockedById'] ??
+            root['blocked_by_id'] ??
+            user['blockedBy'] ??
+            user['blocked_by'] ??
+            user['blockedById'] ??
+            user['blocked_by_id'])
+        ?.toString()
+        .trim();
+
+    final isBlocked = user['isBlocked'] == true ||
+        root['isBlocked'] == true ||
+        root['is_blocked'] == true ||
+        (blockedBy != null && blockedBy.isNotEmpty);
+
+    final explicitIsBlockedByMe = root['isBlockedByMe'] ??
+        root['is_blocked_by_me'] ??
+        root['blockedByMe'] ??
+        root['blocked_by_me'] ??
+        user['isBlockedByMe'] ??
+        user['is_blocked_by_me'] ??
+        user['blockedByMe'] ??
+        user['blocked_by_me'];
+
+    final peerUserId = (user['userId'] ?? user['id'] ?? '').toString().trim();
+
+    bool isBlockedByMe = false;
+    if (explicitIsBlockedByMe != null) {
+      isBlockedByMe = explicitIsBlockedByMe == true ||
+          explicitIsBlockedByMe.toString().toLowerCase() == 'true';
+    } else if (blockedBy != null && blockedBy.isNotEmpty) {
+      if (currentUserId != null && currentUserId.trim().isNotEmpty) {
+        isBlockedByMe = (blockedBy == currentUserId.trim());
+      } else if (peerUserId.isNotEmpty) {
+        isBlockedByMe = (blockedBy != peerUserId);
+      }
+    }
+
     return ConversationProfileDetails(
       conversationId: conversationId,
-
-      userId: (user['userId'] ?? user['id'] ?? '').toString(),
-
+      userId: peerUserId,
       name: (user['name'] ?? user['fullName'] ?? '').toString(),
-
       age: age,
-
       packageType: (user['packageType'] ?? 'FREE').toString(),
-
       isOnline: user['isOnline'] == true,
-
       lastSeenAt: lastSeenAt,
-
-      isBlocked: user['isBlocked'] == true,
-
+      isBlocked: isBlocked,
+      blockedBy: (blockedBy != null && blockedBy.isNotEmpty) ? blockedBy : null,
+      isBlockedByMe: isBlockedByMe,
       matchScore: matchScore,
-
       profileImage: (user['profileImage'] ?? '').toString(),
     );
   }
@@ -2728,28 +2767,23 @@ class ConversationProfileDetails extends Equatable {
     bool? isOnline,
     DateTime? lastSeenAt,
     bool? isBlocked,
+    String? blockedBy,
+    bool? isBlockedByMe,
     num? matchScore,
     String? profileImage,
   }) {
     return ConversationProfileDetails(
       conversationId: conversationId ?? this.conversationId,
-
       userId: userId ?? this.userId,
-
       name: name ?? this.name,
-
       age: age ?? this.age,
-
       packageType: packageType ?? this.packageType,
-
       isOnline: isOnline ?? this.isOnline,
-
       lastSeenAt: lastSeenAt ?? this.lastSeenAt,
-
       isBlocked: isBlocked ?? this.isBlocked,
-
+      blockedBy: blockedBy ?? this.blockedBy,
+      isBlockedByMe: isBlockedByMe ?? this.isBlockedByMe,
       matchScore: matchScore ?? this.matchScore,
-
       profileImage: profileImage ?? this.profileImage,
     );
   }
@@ -2764,6 +2798,8 @@ class ConversationProfileDetails extends Equatable {
     isOnline,
     lastSeenAt,
     isBlocked,
+    blockedBy,
+    isBlockedByMe,
     matchScore,
     profileImage,
   ];
