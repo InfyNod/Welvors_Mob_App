@@ -576,6 +576,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     _isUserOnline = widget.user.online;
 
     scrollController.addListener(_handleMessageScroll);
+    _messageFocusNode.addListener(_onInputStateChanged);
+    controller.addListener(_onInputStateChanged);
 
     _playerCompleteSubscription = _audioPlayer.onPlayerComplete.listen(
       (_) {
@@ -1236,11 +1238,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     _olderMessagesTimeout?.cancel();
     _audioRecorder.dispose();
     _audioPlayer.dispose();
+    controller.removeListener(_onInputStateChanged);
     controller.dispose();
     scrollController.removeListener(_handleMessageScroll);
     scrollController.dispose();
+    _messageFocusNode.removeListener(_onInputStateChanged);
     _messageFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onInputStateChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _startRecording() async {
@@ -1817,7 +1827,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         body: SafeArea(
           child: Column(
             children: [
-              _topProgressBanner(),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                child: _topProgressBanner(),
+              ),
               _tabs(),
               Expanded(
                 child: _isUnmatched
@@ -1901,7 +1915,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   //   }
   // }
   Widget _topProgressBanner() {
-    if (_isUnmatched || _isBlocked || _hideBanner) return const SizedBox.shrink();
+    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final bool isTyping =
+        _messageFocusNode.hasFocus || controller.text.trim().isNotEmpty;
+    if (_isUnmatched ||
+        _isBlocked ||
+        _hideBanner ||
+        isKeyboardOpen ||
+        isTyping) {
+      return const SizedBox.shrink();
+    }
     return BlocBuilder<ChatBloc, ChatState>(
       buildWhen: (previous, current) =>
           previous.messages[_messageKey] != current.messages[_messageKey],
