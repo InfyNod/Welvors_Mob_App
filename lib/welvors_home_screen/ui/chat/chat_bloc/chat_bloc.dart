@@ -1067,6 +1067,40 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     return 'TEXT';
   }
 
+  String _socketTypeFromEnum(ChatMessageType type) {
+    switch (type) {
+      case ChatMessageType.image:
+        return 'IMAGE';
+      case ChatMessageType.video:
+        return 'VIDEO';
+      case ChatMessageType.audio:
+        return 'AUDIO';
+      case ChatMessageType.document:
+        return 'FILE';
+      case ChatMessageType.contact:
+        return 'CONTACT';
+      case ChatMessageType.location:
+        return 'LOCATION';
+      case ChatMessageType.gift:
+        return 'GIFT';
+      case ChatMessageType.effect:
+        return 'EFFECT';
+      case ChatMessageType.eventInvite:
+        return 'EVENT';
+      case ChatMessageType.DATECONFIRMED:
+        return 'DATE_CONFIRMED';
+      case ChatMessageType.rose:
+        return 'ROSE';
+      case ChatMessageType.compliment:
+        return 'COMPLIMENT';
+      case ChatMessageType.ENGAGEMENT:
+        return 'ENGAGEMENT';
+      case ChatMessageType.text:
+      default:
+        return 'TEXT';
+    }
+  }
+
   Future<void> _sendRelationshipTagProposal(
     SendRelationshipTagProposalEvent event,
     Emitter<ChatState> emit,
@@ -1326,6 +1360,69 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
 
     // ==========================================================
+    // 6.5 REPLY PAYLOAD
+    // ==========================================================
+
+    if ((event.replyToId ?? '').trim().isNotEmpty) {
+      final replyId = event.replyToId!.trim();
+      final replyTypeStr = event.replyType != null
+          ? _socketTypeFromEnum(event.replyType!)
+          : null;
+
+      socketPayload['replyTo'] = replyId;
+      socketPayload['replyToId'] = replyId;
+      socketPayload['replyToMessageId'] = replyId;
+
+      if ((event.replyText ?? '').trim().isNotEmpty) {
+        socketPayload['replyText'] = event.replyText!.trim();
+      }
+      if ((event.replyImageUrl ?? '').trim().isNotEmpty) {
+        socketPayload['replyImageUrl'] = event.replyImageUrl!.trim();
+      }
+      if ((event.replyFileUrl ?? '').trim().isNotEmpty) {
+        socketPayload['replyFileUrl'] = event.replyFileUrl!.trim();
+      }
+      if (replyTypeStr != null) {
+        socketPayload['replyType'] = replyTypeStr;
+      }
+
+      socketPayload['reply'] = {
+        'id': replyId,
+        'messageId': replyId,
+        if ((event.replyText ?? '').trim().isNotEmpty)
+          'text': event.replyText!.trim(),
+        if ((event.replyText ?? '').trim().isNotEmpty)
+          'content': event.replyText!.trim(),
+        if ((event.replyImageUrl ?? '').trim().isNotEmpty)
+          'imageUrl': event.replyImageUrl!.trim(),
+        if ((event.replyFileUrl ?? '').trim().isNotEmpty)
+          'fileUrl': event.replyFileUrl!.trim(),
+        if (replyTypeStr != null) 'type': replyTypeStr,
+      };
+
+      final metadata = socketPayload['metadata'] is Map
+          ? Map<String, dynamic>.from(socketPayload['metadata'] as Map)
+          : <String, dynamic>{};
+      metadata['replyTo'] = replyId;
+      metadata['replyToId'] = replyId;
+      metadata['replyToMessageId'] = replyId;
+      if ((event.replyText ?? '').trim().isNotEmpty) {
+        metadata['replyText'] = event.replyText!.trim();
+      }
+      if ((event.replyImageUrl ?? '').trim().isNotEmpty) {
+        metadata['replyImageUrl'] = event.replyImageUrl!.trim();
+      }
+      if ((event.replyFileUrl ?? '').trim().isNotEmpty) {
+        metadata['replyFileUrl'] = event.replyFileUrl!.trim();
+      }
+      if (replyTypeStr != null) {
+        metadata['replyType'] = replyTypeStr;
+      }
+      metadata['reply'] = socketPayload['reply'];
+      socketPayload['metadata'] = metadata;
+    }
+
+    // ==========================================================
     // 7. DEBUG LOG
     // ==========================================================
 
@@ -1338,6 +1435,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     AppLogger.d('ChatBloc', '🎬 videoUrl => ${event.videoUrl}');
     AppLogger.d('ChatBloc', '🎵 audioUrl => ${event.audioUrl}');
     AppLogger.d('ChatBloc', '📄 fileUrl => ${event.fileUrl}');
+
+    if ((event.replyToId ?? '').trim().isNotEmpty) {
+      AppLogger.d('ChatBloc', '↩️ replyToId => ${event.replyToId}');
+      AppLogger.d('ChatBloc', '↩️ replyText => ${event.replyText}');
+      AppLogger.d('ChatBloc', '↩️ replyType => ${event.replyType}');
+    }
 
     if (isContact) {
       AppLogger.d('ChatBloc', '👤 contactName => ${event.contactName}');
@@ -1657,9 +1760,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     final oldMessages = state.messages[key] ?? const <ChatMessage>[];
 
+    // If incoming message has a replyToId but missing preview data, resolve from loaded messages
+    ChatMessage resolvedIncoming = incoming;
+    if (resolvedIncoming.replyToId != null &&
+        resolvedIncoming.replyToId!.isNotEmpty &&
+        (resolvedIncoming.replyText == null || resolvedIncoming.replyText!.isEmpty)) {
+      final parentIndex = oldMessages.indexWhere(
+        (m) => m.id == resolvedIncoming.replyToId,
+      );
+      if (parentIndex != -1) {
+        final parent = oldMessages[parentIndex];
+        resolvedIncoming = resolvedIncoming.copyWith(
+          replyText: parent.text.isNotEmpty
+              ? parent.text
+              : (parent.imageUrl != null ? 'Photo' : (parent.typemsg ?? 'Message')),
+          replyImageUrl: resolvedIncoming.replyImageUrl ?? parent.imageUrl,
+          replyFileUrl: resolvedIncoming.replyFileUrl ?? parent.fileUrl,
+          replyType: resolvedIncoming.replyType ?? parent.type,
+        );
+      }
+    }
+
     final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
 
-    updatedMessages[key] = _mergeIncomingMessage(oldMessages, incoming);
+    updatedMessages[key] = _mergeIncomingMessage(oldMessages, resolvedIncoming);
 
     emit(state.copyWith(messages: updatedMessages));
   }
@@ -1961,10 +2085,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           // ========================================================
           // Reply metadata
           // ========================================================
-          replyToId: incoming.replyToId ?? local.replyToId,
-          replyText: incoming.replyText ?? local.replyText,
-          replyImageUrl: incoming.replyImageUrl ?? local.replyImageUrl,
-          replyFileUrl: incoming.replyFileUrl ?? local.replyFileUrl,
+          replyToId: (incoming.replyToId != null && incoming.replyToId!.isNotEmpty)
+              ? incoming.replyToId
+              : local.replyToId,
+          replyText: (incoming.replyText != null && incoming.replyText!.isNotEmpty)
+              ? incoming.replyText
+              : local.replyText,
+          replyImageUrl: (incoming.replyImageUrl != null && incoming.replyImageUrl!.isNotEmpty)
+              ? incoming.replyImageUrl
+              : local.replyImageUrl,
+          replyFileUrl: (incoming.replyFileUrl != null && incoming.replyFileUrl!.isNotEmpty)
+              ? incoming.replyFileUrl
+              : local.replyFileUrl,
           replyType: incoming.replyType ?? local.replyType,
 
           // Gift fields are protected from partial socket/API echoes.
@@ -2032,24 +2164,46 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ChatMessage oldMessage,
     ChatMessage newMessage,
   ) {
-    if (oldMessage.type != ChatMessageType.gift &&
-        newMessage.type != ChatMessageType.gift &&
-        oldMessage.giftId == null &&
-        newMessage.giftId == null) {
-      return newMessage;
+    ChatMessage merged = newMessage;
+    if (oldMessage.type == ChatMessageType.gift ||
+        newMessage.type == ChatMessageType.gift ||
+        oldMessage.giftId != null ||
+        newMessage.giftId != null) {
+      merged = merged.copyWith(
+        giftId: newMessage.giftId ?? oldMessage.giftId,
+        giftName: newMessage.giftName ?? oldMessage.giftName,
+        giftEmoji: newMessage.giftEmoji ?? oldMessage.giftEmoji,
+        giftCoins: _preferNonZero(newMessage.giftCoins, oldMessage.giftCoins),
+        giftClaimed: newMessage.giftClaimed || oldMessage.giftClaimed,
+        messageProgress: newMessage.messageProgress ?? oldMessage.messageProgress,
+        messageTarget: newMessage.messageTarget ?? oldMessage.messageTarget,
+        expiresIn: newMessage.expiresIn ?? oldMessage.expiresIn,
+        imageUrl: newMessage.imageUrl ?? oldMessage.imageUrl,
+      );
     }
 
-    return newMessage.copyWith(
-      giftId: newMessage.giftId ?? oldMessage.giftId,
-      giftName: newMessage.giftName ?? oldMessage.giftName,
-      giftEmoji: newMessage.giftEmoji ?? oldMessage.giftEmoji,
-      giftCoins: _preferNonZero(newMessage.giftCoins, oldMessage.giftCoins),
-      giftClaimed: newMessage.giftClaimed || oldMessage.giftClaimed,
-      messageProgress: newMessage.messageProgress ?? oldMessage.messageProgress,
-      messageTarget: newMessage.messageTarget ?? oldMessage.messageTarget,
-      expiresIn: newMessage.expiresIn ?? oldMessage.expiresIn,
-      imageUrl: newMessage.imageUrl ?? oldMessage.imageUrl,
-    );
+    // Preserve reply metadata if oldMessage had it but newMessage is missing it
+    if ((oldMessage.replyToId != null && oldMessage.replyToId!.isNotEmpty) &&
+        (newMessage.replyToId == null || newMessage.replyToId!.isEmpty)) {
+      merged = merged.copyWith(
+        replyToId: oldMessage.replyToId,
+        replyText: oldMessage.replyText,
+        replyImageUrl: oldMessage.replyImageUrl,
+        replyFileUrl: oldMessage.replyFileUrl,
+        replyType: oldMessage.replyType,
+      );
+    } else if (oldMessage.replyText != null &&
+        oldMessage.replyText!.isNotEmpty &&
+        (newMessage.replyText == null || newMessage.replyText!.isEmpty)) {
+      merged = merged.copyWith(
+        replyText: oldMessage.replyText,
+        replyImageUrl: newMessage.replyImageUrl ?? oldMessage.replyImageUrl,
+        replyFileUrl: newMessage.replyFileUrl ?? oldMessage.replyFileUrl,
+        replyType: newMessage.replyType ?? oldMessage.replyType,
+      );
+    }
+
+    return merged;
   }
 
   List<ChatMessage> _mergeMessages(

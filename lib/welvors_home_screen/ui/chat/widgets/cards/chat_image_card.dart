@@ -113,7 +113,8 @@ class ChatImageCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (message.replyToId != null)
+            if ((message.replyToId != null && message.replyToId!.trim().isNotEmpty) ||
+                (message.replyText != null && message.replyText!.trim().isNotEmpty))
               Positioned(
                 top: 10,
                 left: 10,
@@ -199,7 +200,11 @@ class ChatImageCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    isImage ? '📷 Photo' : message.replyText ?? '',
+                    isImage
+                        ? '📷 Photo'
+                        : (message.replyText?.trim().isNotEmpty == true
+                            ? message.replyText!
+                            : 'Message'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppText.sub.copyWith(
