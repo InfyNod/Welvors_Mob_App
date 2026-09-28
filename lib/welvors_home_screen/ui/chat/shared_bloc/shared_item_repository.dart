@@ -22,9 +22,9 @@ class SharedItemRepository {
     );
 
     final results = await Future.wait([
-      _getItems(conversationId: conversationId, type: 'MEDIA'),
-      _getItems(conversationId: conversationId, type: 'LINKS'),
-      _getItems(conversationId: conversationId, type: 'DOCUMENTS'),
+      _safeGetItems(conversationId: conversationId, type: 'MEDIA'),
+      _safeGetItems(conversationId: conversationId, type: 'DOCUMENTS'),
+      _safeGetItems(conversationId: conversationId, type: 'LINKS'),
     ]);
 
     return SharedItemsBundle(
@@ -32,6 +32,18 @@ class SharedItemRepository {
       documents: results[1],
       links: results[2],
     );
+  }
+
+  Future<List<SharedItem>> _safeGetItems({
+    required String conversationId,
+    required String type,
+  }) async {
+    try {
+      return await _getItems(conversationId: conversationId, type: type);
+    } catch (e) {
+      AppLogger.w('SharedItemRepository', 'Failed to fetch $type items: $e');
+      return <SharedItem>[];
+    }
   }
 
   Future<List<SharedItem>> _getItems({

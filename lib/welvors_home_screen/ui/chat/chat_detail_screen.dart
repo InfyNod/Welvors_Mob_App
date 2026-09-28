@@ -83,10 +83,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   bool _isImageSendLoaderOpen = false;
 
-  void _showImageSendLoader() {
+  void _showImageSendLoader([String? message]) {
     if (_isImageSendLoaderOpen || !mounted) return;
     _isImageSendLoaderOpen = true;
-    ChatDialogs.showImageSendLoader(context);
+    ChatDialogs.showMediaSendLoader(
+      context,
+      message: message ?? 'Sending image...',
+    );
   }
 
   void _hideImageSendLoader() {
@@ -1454,7 +1457,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
               messageKey: _messageKey,
               isBlocked: _isBlocked,
               userName: widget.user.name,
-              conversationId: "d8a02aa0-0f15-4c6a-bb82-5ace6aac183e",
+              conversationId:
+                  (widget.user.conversationId?.trim().isNotEmpty == true)
+                      ? widget.user.conversationId!.trim()
+                      : widget.user.id.trim(),
               avatar: (String image, double size, String name, String age) {
                 return _avatar(image, size: size, name: name, age: age);
               },
@@ -2121,12 +2127,40 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   // ============================================================
   // RELATIONSHIP TAG PROPOSAL SHEET
   // ============================================================
-  void _openRelationshipTagSheet(bool check) {
+  void _openRelationshipTagSheet(bool check) async {
     final chatBloc = context.read<ChatBloc>();
 
-    final receiverId = widget.user.userId.trim().isNotEmpty
-        ? widget.user.userId.trim()
-        : widget.user.id.trim();
+    String receiverId = (_profileDetails?.userId ?? '').trim();
+    if (receiverId.isEmpty) {
+      receiverId = widget.user.userId.trim();
+    }
+    if (receiverId.isEmpty) {
+      final convId = (widget.user.conversationId?.trim().isNotEmpty == true)
+          ? widget.user.conversationId!.trim()
+          : widget.user.id.trim();
+      if (convId.isNotEmpty) {
+        try {
+          final details =
+              await ChatRepository().fetchConversationUserDetails(convId);
+          if (mounted) {
+            setState(() {
+              _profileDetails = details;
+            });
+          }
+          receiverId = details.userId.trim();
+        } catch (e) {
+          AppLogger.w(
+            'ChatDetailScreen',
+            'Could not fetch profile details for receiverId: $e',
+          );
+        }
+      }
+    }
+    if (receiverId.isEmpty) {
+      receiverId = widget.user.id.trim();
+    }
+
+    if (!mounted) return;
 
     AppLogger.d('ChatDetailScreen', '💗 RELATIONSHIP RECEIVER: $receiverId');
 
@@ -2168,11 +2202,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                 await Future<void>.delayed(const Duration(milliseconds: 180));
 
                 if (!mounted) return;
-
-                final rootContext = context;
-                // if (Navigator.of(rootContext).canPop()) {
-                //   Navigator.of(rootContext).pop();
-                // }
 
                 // Reload the current conversation so the newly-created
                 // proposal is immediately visible in ChatDetailScreen.
@@ -2221,6 +2250,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
             },
             builder: (context, state) {
               return RelationshipTagSheet(
+                userName: _liveName,
                 onSend: (tag, message) {
                   AppLogger.d('ChatDetailScreen', '💗 RELATIONSHIP TAG: $tag');
                   AppLogger.d('ChatDetailScreen', '💗 RELATIONSHIP MESSAGE: $message');

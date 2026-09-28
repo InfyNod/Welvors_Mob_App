@@ -27,12 +27,19 @@ class ChatRepository {
     required String tag,
     required String message,
   }) async {
+    final cleanId = receiverId.trim();
+    final cleanTag = tag.trim();
+    final cleanMessage = message.trim();
+
     await _relationshipTagRequest(
       '${EnvConfig.apiBaseUrl}/user/relationship-tags/create-proposals',
       {
-        'receiverId': receiverId.trim(),
-        'tag': tag.trim(),
-        'message': message.trim(),
+        'receiverId': cleanId,
+        'recipientId': cleanId,
+        'userId': cleanId,
+        'tag': cleanTag,
+        'relationshipTag': cleanTag,
+        'message': cleanMessage,
       },
     );
   }

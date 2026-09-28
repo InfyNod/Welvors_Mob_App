@@ -1267,12 +1267,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       socketPayload['mediaUrl'] = event.videoUrl!.trim();
     }
 
-    if (isAudio && (event.audioUrl ?? '').trim().isNotEmpty) {
-      socketPayload['mediaUrl'] = event.audioUrl!.trim();
+    if (isAudio && ((event.audioUrl ?? event.fileUrl) ?? '').trim().isNotEmpty) {
+      socketPayload['mediaUrl'] = (event.audioUrl ?? event.fileUrl)!.trim();
     }
 
-    if (isFile && (event.fileUrl ?? '').trim().isNotEmpty) {
-      socketPayload['mediaUrl'] = event.fileUrl!.trim();
+    if (isFile && ((event.fileUrl ?? event.audioUrl) ?? '').trim().isNotEmpty) {
+      socketPayload['mediaUrl'] = (event.fileUrl ?? event.audioUrl)!.trim();
     }
 
     // ==========================================================
@@ -1419,12 +1419,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // ========================================================
       // AUDIO
       // ========================================================
-      audioUrl: event.audioUrl,
+      audioUrl: event.audioUrl ?? (isAudio ? event.fileUrl : null),
 
       // ========================================================
       // FILE / DOCUMENT
       // ========================================================
-      fileUrl: event.fileUrl,
+      fileUrl: event.fileUrl ?? (isFile ? event.audioUrl : null),
       fileName: event.fileName,
       fileSize: event.fileSize,
 

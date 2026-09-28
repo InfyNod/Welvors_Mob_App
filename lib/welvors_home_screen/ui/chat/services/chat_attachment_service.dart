@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +31,7 @@ class ChatAttachmentService {
   final VoidCallback onClearReply;
   final VoidCallback onScrollToBottom;
   final void Function(String message) showToast;
-  final VoidCallback onShowLoader;
+  final void Function([String? message]) onShowLoader;
   final VoidCallback onHideLoader;
 
   ChatAttachmentService({
@@ -55,7 +56,7 @@ class ChatAttachmentService {
 
       if (result == null || result.files.isEmpty) return;
 
-      onShowLoader();
+      onShowLoader('Sending media...');
       try {
         for (final picked in result.files) {
           final path = picked.path;
@@ -72,7 +73,8 @@ class ChatAttachmentService {
             'heic',
             'heif',
           }.contains(extension)) {
-            await uploadAndSendImage(xFile);
+            onShowLoader('Sending image...');
+            await uploadAndSendImage(xFile, manageLoader: false);
           } else if ({
             'mp4',
             'mov',
@@ -82,10 +84,12 @@ class ChatAttachmentService {
             'webm',
             '3gp',
           }.contains(extension)) {
+            onShowLoader('Sending video...');
             await uploadAndSendVideo(
               xFile,
               fileName: picked.name,
               fileSize: picked.size,
+              manageLoader: false,
             );
           } else {
             AppLogger.w('ChatAttachmentService', '⚠️ Unsupported gallery media: ${picked.name}');
@@ -135,7 +139,7 @@ class ChatAttachmentService {
     }
   }
 
-  Future<void> uploadAndSendImage(XFile image) async {
+  Future<void> uploadAndSendImage(XFile image, {bool manageLoader = true}) async {
     final conversationId = user.conversationId;
 
     if (conversationId == null || conversationId.isEmpty) {
@@ -143,6 +147,7 @@ class ChatAttachmentService {
       return;
     }
 
+    if (manageLoader) onShowLoader('Sending image...');
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -172,10 +177,13 @@ class ChatAttachmentService {
             token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       }
 
+      request.fields['conversation_id'] = conversationId;
+
       final multipartFile = await http.MultipartFile.fromPath(
         'file',
         compressedFile.path,
         filename: 'chat_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        contentType: MediaType('image', 'jpeg'),
       );
 
       request.files.add(multipartFile);
@@ -184,7 +192,8 @@ class ChatAttachmentService {
       AppLogger.d('ChatAttachmentService', '📤 REQUEST HEADERS => ${request.headers}');
       AppLogger.d('ChatAttachmentService', '📤 SENDING REQUEST...');
 
-      final streamedResponse = await request.send();
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 45));
       final response = await http.Response.fromStream(streamedResponse);
 
       AppLogger.d('ChatAttachmentService', '📤 RESPONSE STATUS => ${response.statusCode}');
@@ -200,16 +209,29 @@ class ChatAttachmentService {
 
       final Map<String, dynamic> decoded = jsonDecode(response.body);
 
-      if (decoded['status'] != true) {
+      final isSuccess = decoded['status'] == true ||
+          decoded['status'] == 200 ||
+          decoded['status'] == 'success' ||
+          decoded['success'] == true;
+
+      if (!isSuccess) {
         throw Exception(decoded['message'] ?? 'Image upload failed');
       }
 
       final data = decoded['data'];
-      if (data == null || data is! Map<String, dynamic>) {
-        throw Exception('Invalid image data returned');
+      String? imageUrl;
+      if (data is Map<String, dynamic>) {
+        imageUrl = (data['image_url'] ?? data['file_url'] ?? data['url'])
+            ?.toString()
+            .trim();
+      } else if (data is String) {
+        imageUrl = data.trim();
       }
-
-      final imageUrl = data['image_url']?.toString().trim();
+      imageUrl ??= (decoded['image_url'] ??
+              decoded['file_url'] ??
+              decoded['url'])
+          ?.toString()
+          .trim();
 
       if (imageUrl == null || imageUrl.isEmpty) {
         throw Exception('Image URL not found in response');
@@ -241,6 +263,8 @@ class ChatAttachmentService {
       AppLogger.e('ChatAttachmentService', '❌ IMAGE UPLOAD ERROR => $e');
       AppLogger.d('ChatAttachmentService', '$st');
       showToast('Image sending failed');
+    } finally {
+      if (manageLoader) onHideLoader();
     }
   }
 
@@ -283,12 +307,7 @@ class ChatAttachmentService {
 
       AppLogger.d('ChatAttachmentService', '📷 CAMERA PHOTO CAPTURED => ${finalFile.path}');
 
-      onShowLoader();
-      try {
-        await uploadAndSendImage(finalFile);
-      } finally {
-        onHideLoader();
-      }
+      await uploadAndSendImage(finalFile);
     } catch (e, st) {
       AppLogger.e('ChatAttachmentService', '❌ CAMERA CAPTURE ERROR => $e');
       AppLogger.d('ChatAttachmentService', '$st');
@@ -362,8 +381,9 @@ class ChatAttachmentService {
       return;
     }
 
+    final isAudio = type == ChatMessageType.audio;
     try {
-      onShowLoader();
+      onShowLoader(isAudio ? 'Sending audio...' : 'Sending document...');
 
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -379,14 +399,25 @@ class ChatAttachmentService {
             token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       }
 
-      request.fields['conversation_id'] = conversationId;
-      request.fields['file_type'] = attachmentContentType(fileName);
-
-      request.files.add(
-        await http.MultipartFile.fromPath('file', file.path, filename: fileName),
+      final mimeStr = attachmentContentType(fileName);
+      final mediaType = MediaType.parse(
+        mimeStr.contains('/') ? mimeStr : 'application/octet-stream',
       );
 
-      final streamedResponse = await request.send();
+      request.fields['conversation_id'] = conversationId;
+      request.fields['file_type'] = mimeStr;
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          file.path,
+          filename: fileName,
+          contentType: mediaType,
+        ),
+      );
+
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 45));
       final response = await http.Response.fromStream(streamedResponse);
 
       AppLogger.d('ChatAttachmentService', 'FILE UPLOAD RESPONSE: ${response.body}');
@@ -395,21 +426,44 @@ class ChatAttachmentService {
         throw Exception('Upload failed with status ${response.statusCode}');
       }
 
-      final decoded = jsonDecode(response.body);
+      final Map<String, dynamic> decoded = jsonDecode(response.body);
 
-      if (decoded['status'] != true) {
+      final isSuccess = decoded['status'] == true ||
+          decoded['status'] == 200 ||
+          decoded['status'] == 'success' ||
+          decoded['success'] == true;
+
+      if (!isSuccess) {
         throw Exception(decoded['message'] ?? 'File upload failed');
       }
 
-      final fileUrl = decoded['data']['file_url'] ?? decoded['data']['url'];
+      final data = decoded['data'];
+      String? fileUrl;
+      if (data is Map<String, dynamic>) {
+        fileUrl = (data['file_url'] ??
+                data['url'] ??
+                data['audio_url'] ??
+                data['document_url'])
+            ?.toString()
+            .trim();
+      } else if (data is String) {
+        fileUrl = data.trim();
+      }
+      fileUrl ??= (decoded['file_url'] ??
+              decoded['url'] ??
+              decoded['audio_url'] ??
+              decoded['document_url'])
+          ?.toString()
+          .trim();
 
-      if (fileUrl == null || fileUrl.toString().trim().isEmpty) {
+      if (fileUrl == null || fileUrl.isEmpty) {
         throw Exception('File URL missing in response');
       }
 
       sendAttachment(
         type: type,
-        filePath: fileUrl.toString().trim(),
+        filePath: fileUrl,
+        audioUrl: isAudio ? fileUrl : null,
         fileName: fileName,
         fileSize: fileSize,
       );
@@ -425,6 +479,7 @@ class ChatAttachmentService {
     XFile video, {
     required String fileName,
     required int fileSize,
+    bool manageLoader = true,
   }) async {
     final conversationId = user.conversationId;
 
@@ -433,6 +488,7 @@ class ChatAttachmentService {
       return;
     }
 
+    if (manageLoader) onShowLoader('Sending video...');
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
@@ -453,13 +509,19 @@ class ChatAttachmentService {
             token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       }
 
+      final mimeStr = videoContentType(fileName);
+      final mediaType = MediaType.parse(
+        mimeStr.contains('/') ? mimeStr : 'video/mp4',
+      );
+
       request.fields['conversation_id'] = conversationId;
-      request.fields['file_type'] = videoContentType(fileName);
+      request.fields['file_type'] = mimeStr;
 
       final multipartFile = await http.MultipartFile.fromPath(
         'file',
         video.path,
         filename: fileName,
+        contentType: mediaType,
       );
 
       request.files.add(multipartFile);
@@ -468,7 +530,8 @@ class ChatAttachmentService {
       AppLogger.d('ChatAttachmentService', '🎬 REQUEST HEADERS => ${request.headers}');
       AppLogger.d('ChatAttachmentService', '🎬 SENDING VIDEO UPLOAD REQUEST...');
 
-      final streamedResponse = await request.send();
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 45));
       final response = await http.Response.fromStream(streamedResponse);
 
       AppLogger.d('ChatAttachmentService', '🎬 RESPONSE STATUS => ${response.statusCode}');
@@ -484,16 +547,27 @@ class ChatAttachmentService {
 
       final Map<String, dynamic> decoded = jsonDecode(response.body);
 
-      if (decoded['status'] != true) {
+      final isSuccess = decoded['status'] == true ||
+          decoded['status'] == 200 ||
+          decoded['status'] == 'success' ||
+          decoded['success'] == true;
+
+      if (!isSuccess) {
         throw Exception(decoded['message'] ?? 'Video upload failed');
       }
 
       final data = decoded['data'];
-      if (data == null || data is! Map<String, dynamic>) {
-        throw Exception('Invalid video data returned');
+      String? videoUrl;
+      if (data is Map<String, dynamic>) {
+        videoUrl = (data['video_url'] ?? data['file_url'] ?? data['url'])
+            ?.toString()
+            .trim();
+      } else if (data is String) {
+        videoUrl = data.trim();
       }
-
-      final videoUrl = (data['video_url'] ?? data['file_url'] ?? data['url'])
+      videoUrl ??= (decoded['video_url'] ??
+              decoded['file_url'] ??
+              decoded['url'])
           ?.toString()
           .trim();
 
@@ -511,6 +585,7 @@ class ChatAttachmentService {
           conversationId: user.conversationId,
           type: ChatMessageType.video,
           fileUrl: videoUrl,
+          videoUrl: videoUrl,
           fileName: fileName,
           fileSize: formatFileSize(fileSize),
           typemsg: 'Video',
@@ -529,6 +604,8 @@ class ChatAttachmentService {
       AppLogger.e('ChatAttachmentService', '❌ VIDEO UPLOAD ERROR => $e');
       AppLogger.d('ChatAttachmentService', '$st');
       showToast('Video sending failed');
+    } finally {
+      if (manageLoader) onHideLoader();
     }
   }
 
