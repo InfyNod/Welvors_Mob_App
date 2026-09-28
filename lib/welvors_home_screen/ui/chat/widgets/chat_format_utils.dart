@@ -27,8 +27,34 @@ class ChatFormatUtils {
 
   /// Checks if message contains an image that should be rendered in quoted preview
   static bool hasReplyImage(ChatMessage message) {
-    return message.replyType == ChatMessageType.image ||
-        message.replyImageUrl != null ||
-        message.replyFileUrl != null;
+    if (message.replyType != null && message.replyType != ChatMessageType.image) {
+      return false;
+    }
+    if (message.replyImageUrl != null && message.replyImageUrl!.trim().isNotEmpty) {
+      return true;
+    }
+    if (message.replyFileUrl != null && message.replyFileUrl!.trim().isNotEmpty) {
+      final path = message.replyFileUrl!.toLowerCase();
+      return path.endsWith('.jpg') ||
+          path.endsWith('.jpeg') ||
+          path.endsWith('.png') ||
+          path.endsWith('.gif') ||
+          path.endsWith('.webp');
+    }
+    return message.replyType == ChatMessageType.image;
+  }
+
+  /// Checks if message contains audio that should be rendered in quoted preview
+  static bool hasReplyAudio(ChatMessage message) {
+    if (message.replyType == ChatMessageType.audio) return true;
+    if (message.replyFileUrl != null && message.replyFileUrl!.trim().isNotEmpty) {
+      final path = message.replyFileUrl!.toLowerCase();
+      return path.endsWith('.m4a') ||
+          path.endsWith('.mp3') ||
+          path.endsWith('.wav') ||
+          path.endsWith('.aac') ||
+          path.endsWith('.ogg');
+    }
+    return false;
   }
 }

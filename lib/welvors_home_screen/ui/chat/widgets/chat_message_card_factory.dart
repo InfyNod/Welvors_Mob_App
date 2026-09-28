@@ -97,6 +97,8 @@ class ChatMessageCardFactory extends StatelessWidget {
           message: message,
           isPlaying: isPlaying,
           onToggleAudio: onToggleAudio,
+          peerName: peerName,
+          onTapReply: onTapReply,
         );
 
       case ChatMessageType.document:

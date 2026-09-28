@@ -25,6 +25,8 @@ class ChatDocumentCard extends StatelessWidget {
           title: message.fileName ?? 'Document',
           subtitle: message.fileSize ?? 'Document',
           isMine: message.isMine,
+          time: message.time,
+          seen: message.seen,
         ),
       ),
     );

@@ -20,7 +20,27 @@ class ChatReplyComposerPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isImage = replyingTo.type == ChatMessageType.image;
+    final isImage = replyingTo.type == ChatMessageType.image ||
+        (replyingTo.imageUrl != null && replyingTo.imageUrl!.isNotEmpty);
+    final isAudio = replyingTo.type == ChatMessageType.audio ||
+        (replyingTo.audioUrl != null && replyingTo.audioUrl!.isNotEmpty);
+    final isVideo = replyingTo.type == ChatMessageType.video ||
+        (replyingTo.videoUrl != null && replyingTo.videoUrl!.isNotEmpty);
+
+    String previewLabel;
+    if (replyingTo.text.trim().isNotEmpty) {
+      previewLabel = replyingTo.text;
+    } else if (isImage) {
+      previewLabel = '📷 Photo';
+    } else if (isAudio) {
+      previewLabel = '🎤 Voice message';
+    } else if (isVideo) {
+      previewLabel = '🎥 Video';
+    } else if (replyingTo.type == ChatMessageType.document) {
+      previewLabel = '📄 ${replyingTo.fileName ?? "Document"}';
+    } else {
+      previewLabel = replyingTo.typemsg ?? 'Message';
+    }
 
     return Container(
       width: double.infinity,
@@ -52,6 +72,36 @@ class ChatReplyComposerPreview extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
+          ] else if (isAudio) ...[
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.primarySoft,
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: const Icon(
+                Icons.mic_rounded,
+                size: 22,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 8),
+          ] else if (isVideo) ...[
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.primarySoft,
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: const Icon(
+                Icons.videocam_rounded,
+                size: 22,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 8),
           ],
           Expanded(
             child: Column(
@@ -71,7 +121,7 @@ class ChatReplyComposerPreview extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isImage ? '📷 Photo' : replyingTo.text,
+                  previewLabel,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppText.sub.copyWith(

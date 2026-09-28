@@ -1600,7 +1600,15 @@ class ChatMessage extends Equatable {
               ? m.replyText
               : (parent.text.isNotEmpty
                   ? parent.text
-                  : (parent.imageUrl != null ? 'Photo' : (parent.typemsg ?? 'Message')));
+                  : (parent.imageUrl != null || parent.type == ChatMessageType.image
+                      ? '📷 Photo'
+                      : (parent.audioUrl != null || parent.type == ChatMessageType.audio
+                          ? '🎤 Voice message'
+                          : (parent.videoUrl != null || parent.type == ChatMessageType.video
+                              ? '🎥 Video'
+                              : (parent.fileUrl != null || parent.type == ChatMessageType.document
+                                  ? '📄 ${parent.fileName ?? "Document"}'
+                                  : (parent.typemsg ?? 'Message'))))));
           final resolvedImage = (m.replyImageUrl != null && m.replyImageUrl!.isNotEmpty)
               ? m.replyImageUrl
               : parent.imageUrl;

@@ -209,6 +209,12 @@ class ChatQuotedMessageWidget extends StatelessWidget {
     }
 
     final isImage = ChatFormatUtils.hasReplyImage(message);
+    final isAudio = ChatFormatUtils.hasReplyAudio(message) ||
+        message.replyType == ChatMessageType.audio ||
+        (message.replyText?.toLowerCase().contains('voice message') ?? false) ||
+        (message.replyText?.toLowerCase().contains('audio') ?? false);
+
+    final String quotedSender = message.isMine ? peerName : 'You';
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -256,7 +262,7 @@ class ChatQuotedMessageWidget extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          message.isMine ? 'You' : peerName,
+                          quotedSender,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppText.sub.copyWith(
@@ -272,7 +278,9 @@ class ChatQuotedMessageWidget extends StatelessWidget {
                   Text(
                     message.replyText?.trim().isNotEmpty == true
                         ? message.replyText!
-                        : (isImage ? '📷 Photo' : 'Message'),
+                        : (isImage
+                            ? '📷 Photo'
+                            : (isAudio ? '🎤 Voice message' : 'Message')),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppText.sub.copyWith(
@@ -293,6 +301,21 @@ class ChatQuotedMessageWidget extends StatelessWidget {
                   width: 42,
                   height: 42,
                   child: _buildReplyImage(message),
+                ),
+              ),
+            ] else if (isAudio) ...[
+              const SizedBox(width: 8),
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.mic_rounded,
+                  size: 22,
+                  color: AppColors.primary,
                 ),
               ),
             ],
