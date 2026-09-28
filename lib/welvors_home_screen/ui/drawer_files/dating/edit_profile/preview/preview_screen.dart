@@ -19,6 +19,9 @@ class PreviewHomeBloc extends Bloc<HomeEvent, HomeState> implements HomeBloc {
 
   @override
   bool get hasSwipedProfiles => false;
+
+  @override
+  int get swipedCount => 0;
 }
 
 class PreviewScreen extends StatefulWidget {

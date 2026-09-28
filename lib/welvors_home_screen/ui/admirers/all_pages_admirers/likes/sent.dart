@@ -5,6 +5,8 @@ import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'reveal_drawer.dart';
+import '../../free_limite_screen.dart';
 
 class SentLikesScreen extends StatefulWidget {
   const SentLikesScreen({super.key});
@@ -38,7 +40,7 @@ class _SentLikesScreenState extends State<SentLikesScreen> {
                 context.read<AdmirersBloc>().add(LoadAdmirersData());
                 await Future.delayed(const Duration(milliseconds: 1500));
               },
-              child: _buildEmptyState(),
+              child: const FreeLimitScreen(),
             );
           }
 

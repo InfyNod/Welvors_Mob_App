@@ -1,8 +1,11 @@
 // import 'dart:math';
 import 'dart:async';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:velvors/welvors_home_screen/ui/home/buttom_free_5.dart';
+import 'package:velvors/welvors_home_screen/ui/home/free_limit_pop.dart';
 import '../../services/logger_service.dart';
 import 'send_compliment/complimenting.dart';
 import 'match/match_analysis_screen.dart';
@@ -16,7 +19,6 @@ import '../../../onbording_allpage/theme/app_colors.dart';
 import '../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:screen_protector/screen_protector.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class SectionColor {
   final Color bg;
@@ -47,6 +49,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _hasShownFree5Popup = false;
+  bool _hasShownFree25Popup = false;
+
   @override
   void initState() {
     super.initState();
@@ -83,7 +88,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
+    return BlocConsumer<HomeBloc, HomeState>(
+      listener: (context, state) {
+        final swipedCount = context.read<HomeBloc>().swipedCount;
+        if ((swipedCount >= 25 || state.remainingSwipes <= 0) && !_hasShownFree25Popup) {
+          _hasShownFree25Popup = true;
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            barrierColor: Colors.black.withOpacity(0.6),
+            builder: (context) => const FreeLimitPopup(),
+          );
+        } else if (swipedCount == 5 && !_hasShownFree5Popup) {
+          _hasShownFree5Popup = true;
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            barrierColor: Colors.black.withOpacity(0.6),
+            builder: (context) => const BottomFree5Popup(),
+          );
+        }
+      },
       builder: (context, state) {
         if (state is HomeLoaded && state.profiles.isNotEmpty) {
           final currentProfile = state.profiles.first;
@@ -2371,7 +2396,6 @@ class _ProfileCardUI extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF18181B),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(

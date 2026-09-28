@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:velvors/config/app_cached_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../services/logger_service.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
 import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
 import 'reveal_drawer.dart';
 import '../profile_view/profile_view.dart';
-import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import '../../free_limite_screen.dart';
 
 class ReceivedLikesScreen extends StatefulWidget {
   const ReceivedLikesScreen({super.key});
@@ -125,46 +126,27 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AdmirersBloc, AdmirersState>(
-      builder: (context, state) {
-        if (state is AdmirersLoading || state is AdmirersInitial) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFFE43A6A)),
-          );
-        } else if (state is AdmirersLoaded) {
-          final allCards = state.likes;
-          final likeCards = allCards
-              .where((c) => !_removedCardIds.contains(c['id']))
-              .toList();
-
-          return RefreshIndicator(
-            color: const Color(0xFFE43A6A),
-            onRefresh: () async {
-              setState(() {
-                _removedCardIds.clear();
-              });
-              context.read<AdmirersBloc>().add(LoadAdmirersData());
-              await Future.delayed(const Duration(milliseconds: 1500));
-            },
-            child: likeCards.isEmpty
-                ? _buildEmptyState()
-                : SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
-                    ),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 16),
-                        _buildReceivedGrid(likeCards),
-                        _buildPremiumBanner(),
-                        const SizedBox(height: 24), // Bottom padding for scrolling
-                      ],
-                    ),
-                  ),
-          );
-        }
-        return const SizedBox();
+    return RefreshIndicator(
+      color: const Color(0xFFE43A6A),
+      onRefresh: () async {
+        context.read<AdmirersBloc>().add(LoadAdmirersData());
+        await Future.delayed(const Duration(milliseconds: 1500));
       },
+      child: _likeCards.isEmpty
+          ? const FreeLimitScreen()
+          : SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _buildReceivedGrid(),
+                  if (_likeCards.isNotEmpty) _buildPremiumBanner(),
+                  const SizedBox(height: 24), // Bottom padding for scrolling
+                ],
+              ),
+            ),
     );
   }
 

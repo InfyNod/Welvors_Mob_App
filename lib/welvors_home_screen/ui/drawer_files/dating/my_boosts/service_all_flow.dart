@@ -180,4 +180,36 @@ class BoostAllApiService {
       return null;
     }
   }
+
+  // API for both Normal Boost and Super Boost Wallet Top-up
+  Future<bool> buyBoostPack(String boostOptionId) async {
+    const String topUpUrl = 'https://api.welvors.com/api/user/boost/wallet/top-up';
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.post(
+        Uri.parse(topUpUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'boostOptionId': boostOptionId,
+        }),
+      );
+
+      print('Boost Top-Up Response Status: ${response.statusCode}');
+      print('Boost Top-Up Response Body: ${response.body}');
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error buying boost pack: $e');
+      return false;
+    }
+  }
 }
