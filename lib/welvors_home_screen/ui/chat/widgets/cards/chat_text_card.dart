@@ -21,7 +21,8 @@ class ChatTextCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isMine = message.isMine;
-    final isImage = ChatFormatUtils.hasReplyImage(message);
+    final isHeroComplimentDemo = message.id == 'message_reply_photo' ||
+        (message.coinAmount != null && message.locationLabel == 'hero photo');
 
     return Align(
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
@@ -32,11 +33,11 @@ class ChatTextCard extends StatelessWidget {
           right: isMine ? 0 : 30,
           bottom: 18,
         ),
-        padding: (isImage == false)
-            ? const EdgeInsets.fromLTRB(10, 10, 10, 8)
-            : EdgeInsets.zero,
+        padding: isHeroComplimentDemo
+            ? EdgeInsets.zero
+            : const EdgeInsets.fromLTRB(10, 10, 10, 8),
         decoration: BoxDecoration(
-          color: isImage
+          color: isHeroComplimentDemo
               ? AppColors.white
               : isMine
               ? AppColors.chatpinkcontanersender
@@ -61,26 +62,28 @@ class ChatTextCard extends StatelessWidget {
                 peerName: peerName,
                 onTap: onTapReply ?? () {},
               ),
-            if (isImage == false)
+            if (!isHeroComplimentDemo)
               Padding(
                 padding: const EdgeInsets.fromLTRB(6, 3, 3, 0),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Flexible(
-                      child: Text(
-                        message.text,
-                        softWrap: true,
-                        style: AppText.body.copyWith(
-                          fontSize: 14,
-                          height: 1.35,
-                          fontWeight: FontWeight.w300,
-                          color: isMine ? Colors.black : AppColors.ink,
+                    if (message.text.trim().isNotEmpty) ...[
+                      Flexible(
+                        child: Text(
+                          message.text,
+                          softWrap: true,
+                          style: AppText.body.copyWith(
+                            fontSize: 14,
+                            height: 1.35,
+                            fontWeight: FontWeight.w300,
+                            color: isMine ? Colors.black : AppColors.ink,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
+                      const SizedBox(width: 8),
+                    ],
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -95,21 +98,14 @@ class ChatTextCard extends StatelessWidget {
                         ),
                         if (isMine) ...[
                           const SizedBox(width: 4),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                ((message.isMine)
-                                    ? (message.seen ? ' ✓✓' : '  ✓')
-                                    : ""),
-                                style: AppText.body.copyWith(
-                                  color: message.seen
-                                      ? AppColors.primary
-                                      : Colors.black,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            message.seen ? ' ✓✓' : '  ✓',
+                            style: AppText.body.copyWith(
+                              color: message.seen
+                                  ? AppColors.primary
+                                  : Colors.black,
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
+import '../chat_format_utils.dart';
 
 /// Shared bubble layout for document and contact attachments
 class ChatAttachmentBubble extends StatelessWidget {
@@ -9,6 +10,8 @@ class ChatAttachmentBubble extends StatelessWidget {
   final String title;
   final String? subtitle;
   final bool isMine;
+  final String? time;
+  final bool? seen;
 
   const ChatAttachmentBubble({
     super.key,
@@ -17,6 +20,8 @@ class ChatAttachmentBubble extends StatelessWidget {
     required this.title,
     this.subtitle,
     required this.isMine,
+    this.time,
+    this.seen,
   });
 
   @override
@@ -35,42 +40,73 @@ class ChatAttachmentBubble extends StatelessWidget {
         ),
         boxShadow: AppColors.shadow,
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: iconColor),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: iconColor),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppText.body.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    if (subtitle != null && subtitle!.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppText.sub.copyWith(color: AppColors.muted),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
+          if (time != null && time!.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Row(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppText.body.copyWith(fontWeight: FontWeight.w700),
+                  ChatFormatUtils.formatMessageTime(time!),
+                  style: AppText.sub.copyWith(
+                    fontSize: 11,
+                    color: AppColors.muted,
+                  ),
                 ),
-                if (subtitle != null && subtitle!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                if (isMine && seen != null) ...[
+                  const SizedBox(width: 4),
                   Text(
-                    subtitle!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppText.sub.copyWith(color: AppColors.muted),
+                    seen! ? ' ✓✓' : '  ✓',
+                    style: AppText.body.copyWith(
+                      color: seen! ? AppColors.primary : Colors.black54,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ],
             ),
-          ),
+          ],
         ],
       ),
     );

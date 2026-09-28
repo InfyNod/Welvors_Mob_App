@@ -1526,6 +1526,23 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
     final reply = _replyingTo;
 
+    String? replyText = reply?.text;
+    if (replyText == null || replyText.trim().isEmpty) {
+      if (reply?.type == ChatMessageType.image || reply?.imageUrl != null) {
+        replyText = '📷 Photo';
+      } else if (reply?.type == ChatMessageType.audio || reply?.audioUrl != null) {
+        replyText = '🎤 Voice message';
+      } else if (reply?.type == ChatMessageType.video || reply?.videoUrl != null) {
+        replyText = '🎥 Video';
+      } else if (reply?.type == ChatMessageType.document || reply?.fileUrl != null) {
+        replyText = '📄 ${reply?.fileName ?? "Document"}';
+      } else if (reply?.type == ChatMessageType.contact) {
+        replyText = '👤 Contact: ${reply?.contactName ?? ""}';
+      } else if (reply?.type == ChatMessageType.location) {
+        replyText = '📍 Location: ${reply?.locationLabel ?? ""}';
+      }
+    }
+
     context.read<ChatBloc>().add(
       SendMessageEvent(
         chatId: widget.user.id,
@@ -1534,8 +1551,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         message: text,
         typemsg: "Text",
         replyToId: reply?.id,
-        replyText: reply?.text,
-        replyImageUrl: reply?.imageUrl,
+        replyText: replyText,
+        replyImageUrl: reply?.type == ChatMessageType.image
+            ? (reply?.imageUrl ?? reply?.fileUrl)
+            : null,
         replyFileUrl: reply?.fileUrl,
         replyType: reply?.type,
         inviteStatus: "PENDING",

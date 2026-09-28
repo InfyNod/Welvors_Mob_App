@@ -35,6 +35,8 @@ class ChatContactCard extends StatelessWidget {
           title: message.contactName.toString(),
           subtitle: message.contactPhoneNumber.toString(),
           isMine: message.isMine,
+          time: message.time,
+          seen: message.seen,
         ),
       ),
     );

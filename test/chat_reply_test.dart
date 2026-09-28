@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_state.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/widgets/chat_status_banners.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/widgets/chat_input_composer.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/widgets/cards/chat_text_card.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/widgets/cards/chat_audio_card.dart';
 
 void main() {
   group('Chat Reply Mechanism Tests', () {
@@ -284,6 +286,64 @@ void main() {
         textField.contentInsertionConfiguration!.allowedMimeTypes,
         containsAll(['image/gif', 'image/png', 'image/jpeg', 'image/webp']),
       );
+    });
+
+    testWidgets('ChatTextCard renders reply text, time, and seen ticks when replying to a photo', (tester) async {
+      final msg = ChatMessage(
+        id: 'reply_to_photo_1',
+        text: 'This is my reply text!',
+        time: DateTime.now().toIso8601String(),
+        isMine: true,
+        seen: true,
+        replyToId: 'photo_parent_1',
+        replyText: '📷 Photo',
+        replyImageUrl: 'https://example.com/photo.jpg',
+        replyType: ChatMessageType.image,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChatTextCard(
+              message: msg,
+              peerName: 'Alice',
+            ),
+          ),
+        ),
+      );
+
+      // Verify the quoted thumbnail text is rendered
+      expect(find.text('📷 Photo'), findsOneWidget);
+      // Verify the actual reply message text is rendered!
+      expect(find.text('This is my reply text!'), findsOneWidget);
+      // Verify seen checkmarks are rendered!
+      expect(find.text(' ✓✓'), findsOneWidget);
+    });
+
+    testWidgets('ChatAudioCard renders timestamp and seen ticks', (tester) async {
+      final audioMsg = ChatMessage(
+        id: 'audio_msg_1',
+        time: DateTime.now().toIso8601String(),
+        isMine: true,
+        seen: true,
+        type: ChatMessageType.audio,
+        audioUrl: 'https://example.com/voice.m4a',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChatAudioCard(
+              message: audioMsg,
+              isPlaying: false,
+              onToggleAudio: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Voice message'), findsOneWidget);
+      expect(find.text(' ✓✓'), findsOneWidget);
     });
   });
 }
