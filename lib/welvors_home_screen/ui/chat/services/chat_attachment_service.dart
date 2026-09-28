@@ -168,7 +168,7 @@ class ChatAttachmentService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${EnvConfig.apiBaseUrl}/chat/message/upload_image'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/chat/media/upload'),
       );
 
       request.headers['Accept'] = 'application/json';
@@ -177,6 +177,8 @@ class ChatAttachmentService {
             token.toLowerCase().startsWith('bearer ') ? token : 'Bearer $token';
       }
 
+      request.fields['mediaType'] = 'IMAGE';
+      request.fields['conversationId'] = conversationId;
       request.fields['conversation_id'] = conversationId;
 
       final multipartFile = await http.MultipartFile.fromPath(
@@ -203,8 +205,10 @@ class ChatAttachmentService {
         throw Exception('Image size is too large for server');
       }
 
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Upload failed with status ${response.statusCode}');
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception(
+          'Upload failed with status ${response.statusCode}: ${response.body}',
+        );
       }
 
       final Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -221,15 +225,19 @@ class ChatAttachmentService {
       final data = decoded['data'];
       String? imageUrl;
       if (data is Map<String, dynamic>) {
-        imageUrl = (data['image_url'] ?? data['file_url'] ?? data['url'])
+        imageUrl = (data['url'] ??
+                data['mediaUrl'] ??
+                data['image_url'] ??
+                data['file_url'])
             ?.toString()
             .trim();
       } else if (data is String) {
         imageUrl = data.trim();
       }
-      imageUrl ??= (decoded['image_url'] ??
-              decoded['file_url'] ??
-              decoded['url'])
+      imageUrl ??= (decoded['url'] ??
+              decoded['mediaUrl'] ??
+              decoded['image_url'] ??
+              decoded['file_url'])
           ?.toString()
           .trim();
 
@@ -390,7 +398,7 @@ class ChatAttachmentService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${EnvConfig.apiBaseUrl}/chat/message/upload_file'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/chat/media/upload'),
       );
 
       request.headers['Accept'] = 'application/json';
@@ -404,8 +412,9 @@ class ChatAttachmentService {
         mimeStr.contains('/') ? mimeStr : 'application/octet-stream',
       );
 
+      request.fields['mediaType'] = isAudio ? 'AUDIO' : 'FILE';
+      request.fields['conversationId'] = conversationId;
       request.fields['conversation_id'] = conversationId;
-      request.fields['file_type'] = mimeStr;
 
       request.files.add(
         await http.MultipartFile.fromPath(
@@ -422,8 +431,10 @@ class ChatAttachmentService {
 
       AppLogger.d('ChatAttachmentService', 'FILE UPLOAD RESPONSE: ${response.body}');
 
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Upload failed with status ${response.statusCode}');
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception(
+          'Upload failed with status ${response.statusCode}: ${response.body}',
+        );
       }
 
       final Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -440,8 +451,9 @@ class ChatAttachmentService {
       final data = decoded['data'];
       String? fileUrl;
       if (data is Map<String, dynamic>) {
-        fileUrl = (data['file_url'] ??
-                data['url'] ??
+        fileUrl = (data['url'] ??
+                data['mediaUrl'] ??
+                data['file_url'] ??
                 data['audio_url'] ??
                 data['document_url'])
             ?.toString()
@@ -449,8 +461,9 @@ class ChatAttachmentService {
       } else if (data is String) {
         fileUrl = data.trim();
       }
-      fileUrl ??= (decoded['file_url'] ??
-              decoded['url'] ??
+      fileUrl ??= (decoded['url'] ??
+              decoded['mediaUrl'] ??
+              decoded['file_url'] ??
               decoded['audio_url'] ??
               decoded['document_url'])
           ?.toString()
@@ -500,7 +513,7 @@ class ChatAttachmentService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${EnvConfig.apiBaseUrl}/chat/message/upload_video'),
+        Uri.parse('${EnvConfig.apiBaseUrl}/chat/media/upload'),
       );
 
       request.headers['Accept'] = 'application/json';
@@ -514,8 +527,9 @@ class ChatAttachmentService {
         mimeStr.contains('/') ? mimeStr : 'video/mp4',
       );
 
+      request.fields['mediaType'] = 'VIDEO';
+      request.fields['conversationId'] = conversationId;
       request.fields['conversation_id'] = conversationId;
-      request.fields['file_type'] = mimeStr;
 
       final multipartFile = await http.MultipartFile.fromPath(
         'file',
@@ -541,8 +555,10 @@ class ChatAttachmentService {
         throw Exception('Video size is too large for server');
       }
 
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Upload failed with status ${response.statusCode}');
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception(
+          'Upload failed with status ${response.statusCode}: ${response.body}',
+        );
       }
 
       final Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -559,15 +575,19 @@ class ChatAttachmentService {
       final data = decoded['data'];
       String? videoUrl;
       if (data is Map<String, dynamic>) {
-        videoUrl = (data['video_url'] ?? data['file_url'] ?? data['url'])
+        videoUrl = (data['url'] ??
+                data['mediaUrl'] ??
+                data['video_url'] ??
+                data['file_url'])
             ?.toString()
             .trim();
       } else if (data is String) {
         videoUrl = data.trim();
       }
-      videoUrl ??= (decoded['video_url'] ??
-              decoded['file_url'] ??
-              decoded['url'])
+      videoUrl ??= (decoded['url'] ??
+              decoded['mediaUrl'] ??
+              decoded['video_url'] ??
+              decoded['file_url'])
           ?.toString()
           .trim();
 
