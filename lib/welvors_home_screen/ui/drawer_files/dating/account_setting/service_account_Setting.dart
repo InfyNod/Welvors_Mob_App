@@ -242,6 +242,28 @@ class AccountSettingService {
     }
   }
 
+  static Future<bool> turnOffAutoRenew(String reason) async {
+    try {
+      final url = Uri.parse('$baseUrl/user/membership-plan/auto-renew/turn-off');
+      final response = await http.post(
+        url,
+        headers: await _headers,
+        body: jsonEncode({'reason': reason}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Auto renew turned off successfully');
+        return true;
+      } else {
+        debugPrint('Failed to turn off auto renew: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in turnOffAutoRenew: $e');
+      return false;
+    }
+  }
+
   static Future<Map<String, dynamic>?> getMembershipInvoice(String userPackageId) async {
     try {
       final url = Uri.parse('$baseUrl/user/membership-plan/invoice/$userPackageId');

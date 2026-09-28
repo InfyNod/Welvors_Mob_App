@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../service_account_Setting.dart';
 
 void showCancelAutoRenewBottomSheet(BuildContext context, String planName, VoidCallback onCancelled) {
   showModalBottomSheet(
@@ -198,11 +199,18 @@ void showCancelWarningBottomSheet(BuildContext context, String reason, String pl
   );
 }
 
-class _CancelWarningSheet extends StatelessWidget {
+class _CancelWarningSheet extends StatefulWidget {
   final String reason;
   final String planName;
   final VoidCallback onCancelled;
   const _CancelWarningSheet({super.key, required this.reason, required this.planName, required this.onCancelled});
+
+  @override
+  State<_CancelWarningSheet> createState() => _CancelWarningSheetState();
+}
+
+class _CancelWarningSheetState extends State<_CancelWarningSheet> {
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +317,7 @@ class _CancelWarningSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Get your next 3 months of $planName at ₹999/mo instead of ₹1,999.',
+                    'Get your next 3 months of ${widget.planName} at ₹999/mo instead of ₹1,999.',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade600,
@@ -348,25 +356,55 @@ class _CancelWarningSheet extends StatelessWidget {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () {
-                   Navigator.pop(context);
-                   showCancelConfirmationBottomSheet(context, reason, planName, onCancelled);
-                },
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        
+                        final success = await AccountSettingService.turnOffAutoRenew(widget.reason);
+                        
+                        if (mounted) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          
+                          if (success) {
+                            Navigator.pop(context);
+                            showCancelConfirmationBottomSheet(context, widget.reason, widget.planName, widget.onCancelled);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to cancel auto-renew. Please try again.')),
+                            );
+                          }
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDF5A5A), // Softer Red
+                  disabledBackgroundColor: const Color(0xFFDF5A5A).withOpacity(0.5),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Cancel auto-renew anyway',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                child: _isLoading 
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Cancel auto-renew anyway',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 12),
