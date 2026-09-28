@@ -147,24 +147,46 @@ class ChatAttachmentService {
       return;
     }
 
-    if (manageLoader) onShowLoader('Sending image...');
+    if (manageLoader) onShowLoader('Sending media...');
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
       AppLogger.d('ChatAttachmentService', '==========================================');
-      AppLogger.d('ChatAttachmentService', '📤 IMAGE UPLOAD START');
+      AppLogger.d('ChatAttachmentService', '📤 IMAGE/MEDIA UPLOAD START');
       AppLogger.d('ChatAttachmentService', '📤 ORIGINAL FILE => ${image.path}');
 
-      final compressedFile = await compressChatImage(image);
+      final bool isGif = image.path.toLowerCase().endsWith('.gif') ||
+          (image.mimeType?.toLowerCase().contains('gif') ?? false);
+      final bool isWebp = image.path.toLowerCase().endsWith('.webp') ||
+          (image.mimeType?.toLowerCase().contains('webp') ?? false);
 
-      if (compressedFile == null) {
-        throw Exception('Unable to compress image');
+      final File uploadFile;
+      final MediaType contentType;
+      final String filename;
+
+      if (isGif) {
+        uploadFile = File(image.path);
+        contentType = MediaType('image', 'gif');
+        filename = 'chat_${DateTime.now().millisecondsSinceEpoch}.gif';
+      } else if (isWebp) {
+        uploadFile = File(image.path);
+        contentType = MediaType('image', 'webp');
+        filename = 'chat_${DateTime.now().millisecondsSinceEpoch}.webp';
+      } else {
+        final compressedFile = await compressChatImage(image);
+
+        if (compressedFile == null) {
+          throw Exception('Unable to compress image');
+        }
+        uploadFile = compressedFile;
+        contentType = MediaType('image', 'jpeg');
+        filename = 'chat_${DateTime.now().millisecondsSinceEpoch}.jpg';
       }
 
-      final compressedSize = await compressedFile.length();
-      AppLogger.d('ChatAttachmentService', '📤 COMPRESSED FILE => ${compressedFile.path}');
-      AppLogger.d('ChatAttachmentService', '📤 COMPRESSED SIZE => ${(compressedSize / 1024).toStringAsFixed(2)} KB');
+      final uploadSize = await uploadFile.length();
+      AppLogger.d('ChatAttachmentService', '📤 UPLOAD FILE => ${uploadFile.path}');
+      AppLogger.d('ChatAttachmentService', '📤 UPLOAD SIZE => ${(uploadSize / 1024).toStringAsFixed(2)} KB');
 
       final request = http.MultipartRequest(
         'POST',
@@ -183,9 +205,9 @@ class ChatAttachmentService {
 
       final multipartFile = await http.MultipartFile.fromPath(
         'file',
-        compressedFile.path,
-        filename: 'chat_${DateTime.now().millisecondsSinceEpoch}.jpg',
-        contentType: MediaType('image', 'jpeg'),
+        uploadFile.path,
+        filename: filename,
+        contentType: contentType,
       );
 
       request.files.add(multipartFile);
@@ -234,6 +256,7 @@ class ChatAttachmentService {
       } else if (data is String) {
         imageUrl = data.trim();
       }
+
       imageUrl ??= (decoded['url'] ??
               decoded['mediaUrl'] ??
               decoded['image_url'] ??
@@ -262,7 +285,7 @@ class ChatAttachmentService {
           conversationId: user.conversationId,
           type: ChatMessageType.image,
           imageUrl: imageUrl,
-          typemsg: 'Image',
+          typemsg: isGif ? 'GIF' : (isWebp ? 'Sticker' : 'Image'),
           replyToId: reply?.id,
           replyText: reply?.text,
           replyImageUrl: reply?.imageUrl,

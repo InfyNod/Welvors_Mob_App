@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_state.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/widgets/chat_status_banners.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/widgets/chat_input_composer.dart';
 
 void main() {
   group('Chat Reply Mechanism Tests', () {
@@ -228,6 +229,61 @@ void main() {
       expect(find.text('Bob has blocked you'), findsOneWidget);
       expect(find.text('You cannot send messages to this conversation.'), findsOneWidget);
       expect(find.text('Unblock'), findsNothing);
+    });
+  });
+
+  group('Keyboard Rich Content Insertion Tests', () {
+    testWidgets('ChatInputComposer configures contentInsertionConfiguration for GIFs and Stickers', (tester) async {
+      final controller = TextEditingController();
+      final focusNode = FocusNode();
+      final textFieldKey = GlobalKey();
+      bool contentInsertedCalled = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChatInputComposer(
+              controller: controller,
+              messageFocusNode: focusNode,
+              textFieldKey: textFieldKey,
+              userName: 'Alice',
+              replyingTo: null,
+              onCancelReply: () {},
+              showExtrasPanel: false,
+              extrasInitialTab: 0,
+              onToggleExtrasPanel: () {},
+              onCloseExtrasPanel: () {},
+              onRemoveFocus: () {},
+              onOpenShareSheet: () {},
+              onOpenGiftPanel: () {},
+              onOpenSaySomethingBetter: () {},
+              onOpenCamera: () {},
+              onStartRecording: () {},
+              onSendText: () {},
+              onTypingChanged: (_) {},
+              onEmojiSelected: (_) {},
+              onStickerSelected: (_) {},
+              onMemeSelected: (_, __) {},
+              onEffectSelected: (_, __) {},
+              onGifSelected: (_, __) {},
+              onGiftSelected: (_) {},
+              onContentInserted: (content) {
+                contentInsertedCalled = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      final textFieldFinder = find.byType(TextField);
+      expect(textFieldFinder, findsOneWidget);
+
+      final textField = tester.widget<TextField>(textFieldFinder);
+      expect(textField.contentInsertionConfiguration, isNotNull);
+      expect(
+        textField.contentInsertionConfiguration!.allowedMimeTypes,
+        containsAll(['image/gif', 'image/png', 'image/jpeg', 'image/webp']),
+      );
     });
   });
 }
