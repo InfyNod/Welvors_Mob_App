@@ -295,7 +295,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   final NumberFormat _currencyFormat = NumberFormat.currency(
     symbol: '₹',
-    decimalDigits: 0,
+    decimalDigits: 2,
   );
 
   @override
