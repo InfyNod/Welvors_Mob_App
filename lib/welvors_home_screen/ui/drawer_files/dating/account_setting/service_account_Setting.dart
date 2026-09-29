@@ -5,6 +5,8 @@ import '../../../../services/token_helper.dart';
 import 'package:velvors/config/env_config.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
+import '../core_ecosystem/trust_verification/export.dart';
+
 class AccountSettingService {
   static String get baseUrl => EnvConfig.apiBaseUrl;
 
