@@ -37,7 +37,7 @@ void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   );
 }
 
-PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
+PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan, String day) {
   final activity = rawPlan['activity'] ?? {};
   final venue = rawPlan['venue'] ?? {};
 
@@ -94,7 +94,9 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
     locationName: venue['name']?.toString() ?? '',
     locationSubtitle: venue['address']?.toString() ?? '',
     landmark: '',
-    whenDate: rawPlan['eventDate']?.toString() ?? 'Today',
+    whenDate: day.isNotEmpty
+        ? day
+        : (rawPlan['eventDate']?.toString() ?? 'Today'),
     time: parsedTime,
     howLong: durationStr,
     whoPays: _extractLabel(rawPlan['whoPays'], '🤝 Split'),
@@ -205,7 +207,10 @@ void showManageBottomSheet(
                   if (plan.containsKey('originalState')) {
                     stateToEdit = plan['originalState'] as PostPlanState;
                   } else if (plan.containsKey('rawPlan')) {
-                    stateToEdit = _parseRawPlanToState(plan['rawPlan']);
+                    stateToEdit = _parseRawPlanToState(
+                      plan['rawPlan'],
+                      plan['day']?.toString() ?? 'Today',
+                    );
                   }
 
                   if (stateToEdit != null) {

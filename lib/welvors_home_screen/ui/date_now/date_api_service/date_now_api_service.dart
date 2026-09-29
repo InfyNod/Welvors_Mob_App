@@ -190,6 +190,8 @@ class DateNowApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
+      } else if (response.statusCode == 400 && response.body.contains('Plan is already published')) {
+        return json.decode(response.body); // Let caller handle or treat as success
       } else {
         debugPrint(
           'Failed to publish plan: ${response.statusCode} - ${response.body}',
