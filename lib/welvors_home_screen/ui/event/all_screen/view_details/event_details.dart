@@ -618,10 +618,23 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     itinerary: _eventData?['itinerary'] as List?,
                     locationTitle:
                         _eventData?['fullAddress']?.split(',').first ??
-                        'Location',
+                        (widget.location.isNotEmpty
+                            ? widget.location.split(',').first
+                            : 'Location'),
                     fullAddress:
                         _eventData?['fullAddress'] ??
-                        'Venue details will be shared',
+                        (widget.location.isNotEmpty
+                            ? widget.location
+                            : 'Venue details will be shared'),
+                    latitude: _eventData?['latitude'] != null
+                        ? double.tryParse(_eventData!['latitude'].toString())
+                        : null,
+                    longitude: _eventData?['longitude'] != null
+                        ? double.tryParse(_eventData!['longitude'].toString())
+                        : null,
+                    googleMapUrl: _eventData?['googleMapUrl']?.toString() ??
+                        _eventData?['mapUrl']?.toString() ??
+                        _eventData?['locationUrl']?.toString(),
                   ),
                   const SizedBox(height: 20),
                   AboutHostAndFAQSection(

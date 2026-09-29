@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/config/custom_snackbar.dart';
 
 class EventItineraryAndLocationSection extends StatefulWidget {
   final List<dynamic>? itinerary;
   final String? locationTitle;
   final String? fullAddress;
+  final double? latitude;
+  final double? longitude;
+  final String? googleMapUrl;
 
   const EventItineraryAndLocationSection({
     super.key,
     this.itinerary,
     this.locationTitle,
     this.fullAddress,
+    this.latitude,
+    this.longitude,
+    this.googleMapUrl,
   });
 
   @override
@@ -211,45 +220,78 @@ class _EventItineraryAndLocationSectionState
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.map_outlined,
-                  color: Color(0xFFE43A6A), // Pink icon
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _openGoogleMaps(),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (widget.locationTitle != null &&
-                          widget.locationTitle!.isNotEmpty) ...[
-                        Text(
-                          widget.locationTitle!,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF0F3),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: const Color(0xFFE43A6A).withValues(alpha: 0.2),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                      ],
-                      if (widget.fullAddress != null &&
-                          widget.fullAddress!.isNotEmpty)
-                        Text(
-                          widget.fullAddress!,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
-                            height: 1.4,
-                          ),
+                        child: const Icon(
+                          Icons.map_outlined,
+                          color: Color(0xFFE43A6A), // Pink icon
+                          size: 22,
                         ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (widget.locationTitle != null &&
+                                widget.locationTitle!.isNotEmpty) ...[
+                              Text(
+                                widget.locationTitle!,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                            ],
+                            if (widget.fullAddress != null &&
+                                widget.fullAddress!.isNotEmpty)
+                              Text(
+                                widget.fullAddress!,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade600,
+                                  height: 1.4,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.directions,
+                          color: Color(0xFFE43A6A),
+                          size: 18,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -352,7 +394,11 @@ class _EventItineraryAndLocationSectionState
                         if (location != null &&
                             location != 'null' &&
                             location.isNotEmpty)
-                          _buildItineraryChip(Icons.location_on, location),
+                          _buildItineraryChip(
+                            Icons.location_on,
+                            location,
+                            isLocation: true,
+                          ),
                         if (distance != null &&
                             distance != 'null' &&
                             distance.isNotEmpty)
@@ -381,13 +427,21 @@ class _EventItineraryAndLocationSectionState
     );
   }
 
-  Widget _buildItineraryChip(IconData icon, String label) {
-    return Container(
+  Widget _buildItineraryChip(
+    IconData icon,
+    String label, {
+    bool isLocation = false,
+  }) {
+    final chip = Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: isLocation ? const Color(0xFFFFF0F3) : const Color(0xFFF8F9FA),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isLocation
+              ? const Color(0xFFE43A6A).withValues(alpha: 0.3)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -396,79 +450,218 @@ class _EventItineraryAndLocationSectionState
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: isLocation ? const Color(0xFFE43A6A) : Colors.black87,
             ),
           ),
         ],
       ),
     );
+
+    if (isLocation) {
+      return InkWell(
+        onTap: () => _openGoogleMaps(customQuery: label),
+        borderRadius: BorderRadius.circular(6),
+        child: chip,
+      );
+    }
+    return chip;
   }
 
   Widget _buildStylizedMap() {
-    return Container(
-      width: double.infinity,
-      height: 140,
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFD4E6EC), // Light blue map background
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Dummy map lines for styling
-            Positioned(
-              left: -50,
-              top: 20,
-              child: Container(
-                width: 500,
-                height: 200,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.4),
-                    width: 3,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _openGoogleMaps(),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: double.infinity,
+            height: 140,
+            decoration: BoxDecoration(
+              color: const Color(0xFFD4E6EC), // Light blue map background
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Dummy map lines for styling
+                  Positioned(
+                    left: -50,
+                    top: 20,
+                    child: Container(
+                      width: 500,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          width: 3,
+                        ),
+                        borderRadius: BorderRadius.circular(200),
+                      ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(200),
-                ),
-              ),
-            ),
-            Positioned(
-              right: -100,
-              bottom: -50,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.4),
-                    width: 3,
+                  Positioned(
+                    right: -100,
+                    bottom: -50,
+                    child: Container(
+                      width: 300,
+                      height: 300,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          width: 3,
+                        ),
+                        borderRadius: BorderRadius.circular(200),
+                      ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(200),
-                ),
+                  Positioned(
+                    left: 50,
+                    child: Container(
+                      width: 3,
+                      height: 200,
+                      color: Colors.white.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  // Location Pin
+                  const Icon(
+                    Icons.location_on,
+                    color: Color(0xFFE43A6A), // Pink pin
+                    size: 40,
+                  ),
+                  // Floating "Open in Maps" badge
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.12),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.near_me,
+                            color: Color(0xFFE43A6A),
+                            size: 13,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            'Open Maps',
+                            style: TextStyle(
+                              color: Color(0xFFE43A6A),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Positioned(
-              left: 50,
-              child: Container(
-                width: 3,
-                height: 200,
-                color: Colors.white.withValues(alpha: 0.4),
-              ),
-            ),
-            // Location Pin
-            const Icon(
-              Icons.location_on,
-              color: Color(0xFFE43A6A), // Pink pin
-              size: 40,
-            ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _openGoogleMaps({String? customQuery}) async {
+    // 1. If custom query is provided (e.g. from itinerary stop)
+    if (customQuery != null && customQuery.trim().isNotEmpty) {
+      final query = Uri.encodeComponent(customQuery.trim());
+      final url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$query',
+      );
+      await _launchMapUrl(url);
+      return;
+    }
+
+    // 2. Direct map URL if available
+    final mapUrl = widget.googleMapUrl;
+    if (mapUrl != null &&
+        mapUrl.trim().isNotEmpty &&
+        mapUrl.startsWith('http')) {
+      final uri = Uri.tryParse(mapUrl.trim());
+      if (uri != null) {
+        final success = await _launchMapUrl(uri);
+        if (success) return;
+      }
+    }
+
+    // 3. Latitude & Longitude if available
+    if (widget.latitude != null && widget.longitude != null) {
+      final url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${widget.latitude},${widget.longitude}',
+      );
+      await _launchMapUrl(url);
+      return;
+    }
+
+    // 4. Fallback to address string
+    final address = (widget.fullAddress != null &&
+            widget.fullAddress!.trim().isNotEmpty &&
+            widget.fullAddress != 'Venue details will be shared')
+        ? widget.fullAddress!.trim()
+        : widget.locationTitle?.trim();
+
+    if (address != null && address.isNotEmpty && address != 'Location') {
+      final query = Uri.encodeComponent(address);
+      final url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$query',
+      );
+      await _launchMapUrl(url);
+      return;
+    }
+
+    if (mounted) {
+      CustomSnackBar.showInfo(
+        context,
+        'Location details will be shared closer to the event date.',
+        title: 'Location Notice',
+      );
+    }
+  }
+
+  Future<bool> _launchMapUrl(Uri uri) async {
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+      return true;
+    } catch (e) {
+      AppLogger.e('EventItineraryAndLocation', 'Could not open map: $e');
+      if (mounted) {
+        CustomSnackBar.showError(
+          context,
+          'Unable to open map application. Please try again.',
+          title: 'Map Error',
+        );
+      }
+      return false;
+    }
   }
 }
