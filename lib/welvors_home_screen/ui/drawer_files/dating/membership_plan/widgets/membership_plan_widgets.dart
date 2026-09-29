@@ -106,8 +106,9 @@ class PlanTabs extends StatelessWidget {
 
 class PlanHeroCard extends StatelessWidget {
   final MembershipPlanModel plan;
+  final PlanDuration? selectedDuration;
 
-  const PlanHeroCard({super.key, required this.plan});
+  const PlanHeroCard({super.key, required this.plan, this.selectedDuration});
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +123,14 @@ class PlanHeroCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [plan.primaryColor, plan.secondaryColor],
         ),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: plan.primaryColor.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,7 +234,9 @@ class PlanHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                plan.monthlyPrice,
+                selectedDuration != null
+                    ? selectedDuration!.price
+                    : plan.monthlyPrice,
                 style: GoogleFonts.playfairDisplay(
                   fontSize: 25,
                   fontWeight: FontWeight.w700,
@@ -237,7 +247,13 @@ class PlanHeroCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 1),
                 child: Text(
-                  plan.tier == MembershipTier.elite ? '/ year' : '/ month',
+                  selectedDuration != null
+                      ? (selectedDuration!.months == 1
+                            ? '/ month'
+                            : '/ ${selectedDuration!.months} months')
+                      : (plan.tier == MembershipTier.elite
+                            ? '/ year'
+                            : '/ month'),
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     color: Colors.white.withValues(alpha: .85),
@@ -247,7 +263,23 @@ class PlanHeroCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          if (plan.yearlySaving.isNotEmpty)
+          if (selectedDuration != null && selectedDuration!.saving.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(.18),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                selectedDuration!.saving.toUpperCase(),
+                style: GoogleFonts.dmSans(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          else if (selectedDuration == null && plan.yearlySaving.isNotEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
               decoration: BoxDecoration(
@@ -382,11 +414,13 @@ class _DurationSelectorState extends State<DurationSelector> {
           final duration = plan.durations[index];
           final selected = index == widget.selectedIndex;
 
-          final borderColor = plan.tier == MembershipTier.premiumPlus
-              ? AppColors.pink
+          final borderColor = plan.primaryColor;
+
+          final shadowColor = plan.tier == MembershipTier.premiumPlus
+              ? borderColor.withOpacity(0.15)
               : plan.tier == MembershipTier.vip
-              ? const Color(0xFFD39A36)
-              : Colors.black;
+              ? borderColor.withOpacity(0.15)
+              : Colors.black.withOpacity(0.08);
 
           return GestureDetector(
             onTap: () {
@@ -413,17 +447,23 @@ class _DurationSelectorState extends State<DurationSelector> {
                   decoration: BoxDecoration(
                     color: selected
                         ? plan.tier == MembershipTier.premiumPlus
-                              ? const Color(0xFFFFE7EC)
+                              ? const Color(0xFFFFF5F7)
                               : plan.tier == MembershipTier.vip
-                              ? const Color(0xFFFFF5DD)
-                              : const Color(0xFFF2F2F0)
+                              ? const Color(0xFFFFFDF5)
+                              : const Color(0xFFFAFAFA)
                         : Colors.white,
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
                       color: selected ? borderColor : AppColors.line,
-                      width: selected ? 3 : 1.5,
+                      width: selected ? 2.5 : 1.5,
                     ),
-                    boxShadow: selected ? AppColors.shadow : null,
+                    boxShadow: selected ? [
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
+                      )
+                    ] : null,
                   ),
                   child: Stack(
                     children: [
@@ -492,14 +532,14 @@ class _DurationSelectorState extends State<DurationSelector> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 2,
+                        vertical: 4,
                       ),
                       decoration: BoxDecoration(
                         color: borderColor,
                         borderRadius: BorderRadius.circular(999),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
+                            color: borderColor.withOpacity(0.4),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),
@@ -542,12 +582,17 @@ class WeeklyBenefitsWidget extends StatelessWidget {
         ? const Color(0xFFA66F0A)
         : const Color(0xFFC29A38);
 
-    final items = [
-      ('🗓️', benefits.datePlans, 'Date plans / wk'),
-      ('🚀', benefits.boosts, 'Boosts / wk'),
-      ('💝', benefits.compliments, 'Compliments / wk'),
-      ('🪙', benefits.coins, 'Coins / wk'),
-    ];
+        final Color borderColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFFBE4E7)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFFFF4E0)
+        : const Color(0xFFF2F2F2);
+
+    final Color shadowColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFE85A7A).withOpacity(0.08)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFC8933A).withOpacity(0.08)
+        : Colors.black.withOpacity(0.05);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -561,24 +606,35 @@ class WeeklyBenefitsWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        Row(
-          children: items.map((item) {
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          child: Row(
+            children: benefits.items.map((item) {
+              return Container(
+                width: 85,
+                margin: const EdgeInsets.only(right: 12),
                 height: 100,
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.line),
+                  border: Border.all(color: borderColor, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: shadowColor,
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(item.$1, style: const TextStyle(fontSize: 15)),
+                    Text(item.emoji, style: const TextStyle(fontSize: 15)),
                     const SizedBox(height: 4),
                     Text(
-                      item.$2,
+                      item.value,
                       style: GoogleFonts.playfairDisplay(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -587,7 +643,7 @@ class WeeklyBenefitsWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      item.$3,
+                      item.subtitle,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         fontSize: 9,
@@ -598,9 +654,9 @@ class WeeklyBenefitsWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
@@ -631,14 +687,32 @@ class FeatureSectionCard extends StatelessWidget {
         ? const Color(0xFFFFF4DC)
         : const Color(0xFFF0EFEB);
 
+    final Color borderColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFFBE4E7)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFFFF4E0)
+        : const Color(0xFFF2F2F2);
+
+    final Color shadowColor = tier == MembershipTier.premiumPlus
+        ? const Color(0xFFE85A7A).withOpacity(0.08)
+        : tier == MembershipTier.vip
+        ? const Color(0xFFC8933A).withOpacity(0.08)
+        : Colors.black.withOpacity(0.05);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.line),
-        boxShadow: AppColors.shadow,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderColor, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -30,11 +30,7 @@ class MembershipPlanBloc
         (plan) => plan.tier == event.initialTier,
       );
 
-      final selectedDurationIndex = switch (event.initialTier) {
-        MembershipTier.premiumPlus => 1,
-        MembershipTier.vip => 2,
-        MembershipTier.elite => 2,
-      };
+      final selectedDurationIndex = 0;
 
       emit(
         state.copyWith(
@@ -64,20 +60,6 @@ class MembershipPlanBloc
     );
 
     int durationIndex = 0;
-
-    switch (event.tier) {
-      case MembershipTier.premiumPlus:
-        durationIndex = 1;
-        break;
-
-      case MembershipTier.vip:
-        durationIndex = 2;
-        break;
-
-      case MembershipTier.elite:
-        durationIndex = 2;
-        break;
-    }
 
     emit(
       state.copyWith(

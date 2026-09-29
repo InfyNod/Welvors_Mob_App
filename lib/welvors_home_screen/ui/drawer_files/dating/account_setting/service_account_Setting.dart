@@ -233,6 +233,8 @@ class AccountSettingService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
+        debugPrint('==== Membership Plan API Response ====');
+        debugPrint(jsonEncode(data));
         if (data['success'] == true) {
           return data['data'];
         }
@@ -241,6 +243,39 @@ class AccountSettingService {
     } catch (e) {
       AppLogger.e('AccountSettingService', 'Error in getMembershipPlan: $e');
       return null;
+    }
+  }
+
+  static Future<bool> turnOffAutoRenew(String reason) async {
+    try {
+      debugPrint('==== Calling API to Turn Off Auto Renew ====');
+      debugPrint('Reason: $reason');
+      
+      final url = Uri.parse('$baseUrl/user/membership-plan/auto-renew/turn-off');
+      final reqBody = jsonEncode({'reason': reason});
+      debugPrint('URL: $url');
+      debugPrint('Request Body: $reqBody');
+      
+      final response = await http.post(
+        url,
+        headers: await _headers,
+        body: reqBody,
+      );
+
+      debugPrint('==== API Response Received ====');
+      debugPrint('Status Code: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Auto renew turned off successfully');
+        return true;
+      } else {
+        debugPrint('Failed to turn off auto renew: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in turnOffAutoRenew: $e');
+      return false;
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosyste
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/showMembershipPaymentSuccessDialog.dart';
 
 import '../model/membership_plan_model.dart';
+import '../data/membership_plan_repository.dart';
 
 class MembershipCheckoutScreen extends StatefulWidget {
   final MembershipPlanModel plan;
@@ -22,11 +23,9 @@ class MembershipCheckoutScreen extends StatefulWidget {
 }
 
 class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
-  String _paymentMethod = 'upi';
-  String _upiApp = 'GPay';
-
   String _coupon = '';
   bool _couponApplied = false;
+  bool _isPaying = false;
 
   late final TextEditingController _couponController;
 
@@ -221,29 +220,39 @@ class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _pay,
+                  onPressed: _isPaying ? null : _pay,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _accent,
+                    disabledBackgroundColor: _accent.withOpacity(0.5),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.credit_card_outlined, size: 20),
-                      const SizedBox(width: 9),
-                      Text(
-                        'Pay ${_money(_payable)}',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
+                  child: _isPaying
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.credit_card_outlined, size: 20),
+                            const SizedBox(width: 9),
+                            Text(
+                              'Pay ${_money(_payable)}',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
 
@@ -289,43 +298,11 @@ class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
                 onApply: _applyCoupon,
                 applied: _couponApplied,
                 coupon: _coupon,
-              ),
-
-              const SizedBox(height: 24),
-
-              // -------------------------------------------------
-              // PAYMENT METHOD
-              // -------------------------------------------------
-              const _SectionLabel('PAYMENT METHOD'),
-
-              const SizedBox(height: 10),
-
-              _PaymentMethods(
-                selectedMethod: _paymentMethod,
-                selectedUpi: _upiApp,
                 accent: _accent,
-
-                onMethodChanged: (value) {
-                  setState(() {
-                    _paymentMethod = value;
-                  });
-                },
-
-                onUpiChanged: (value) {
-                  setState(() {
-                    _paymentMethod = 'upi';
-                    _upiApp = value;
-                  });
-                },
               ),
-
               const SizedBox(height: 25),
-
-              // -------------------------------------------------
               // PRICE DETAILS
-              // -------------------------------------------------
-              const _SectionLabel('PRICE DETAILS'),
-
+            
               const SizedBox(height: 10),
 
               _PriceDetails(
@@ -340,7 +317,7 @@ class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
 
               Center(
                 child: Text(
-                  '♢  256-bit encrypted · powered by Razorpay',
+                  '♢  powered by Google Play Billing',
                   style: AppText.sub.copyWith(fontSize: 11),
                 ),
               ),
@@ -389,13 +366,38 @@ class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
   // -------------------------------------------------------------
 
   void _pay() async {
-    await showMembershipPaymentSuccessDialog(
-      context,
-      plan: widget.plan,
-      duration: widget.duration,
-      amount: _payable,
-      paymentMethod: _paymentMethod == 'upi' ? _upiApp : _paymentMethod,
-    );
+    setState(() {
+      _isPaying = true;
+    });
+
+    final repo = MembershipPlanRepository();
+    final result = await repo.purchasePackage(widget.duration.id);
+
+    if (mounted) {
+      setState(() {
+        _isPaying = false;
+      });
+
+      if (result['success'] == true) {
+        await showMembershipPaymentSuccessDialog(
+          context,
+          plan: widget.plan,
+          duration: widget.duration,
+          amount: _payable,
+          paymentMethod: 'Google Play',
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              result['message'] ??
+                  'Failed to process payment. Please try again.',
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -427,19 +429,57 @@ class _PlanSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isElite = plan.tier == MembershipTier.elite;
+    final isVip = plan.tier == MembershipTier.vip;
+
+    LinearGradient bgGradient;
+    Color textColor = AppColors.ink;
+    Color subTextColor = AppColors.ink60;
+    Color dividerColor = AppColors.line;
+
+    if (isElite) {
+      bgGradient = const LinearGradient(
+        colors: [Color(0xFF2C2C2C), Color(0xFF121212)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      textColor = Colors.white;
+      subTextColor = Colors.white70;
+      dividerColor = Colors.white24;
+    } else if (isVip) {
+      bgGradient = const LinearGradient(
+        colors: [Color(0xFFFFF8EA), Color(0xFFF3E1B9)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      textColor = const Color(0xFF4A3300);
+      subTextColor = const Color(0xFF856724);
+      dividerColor = const Color(0xFFE8D099);
+    } else {
+      bgGradient = const LinearGradient(
+        colors: [Color(0xFFFFF0F4), Color(0xFFFFDBE5)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      textColor = const Color(0xFF5E1325);
+      subTextColor = const Color(0xFF9E425B);
+      dividerColor = const Color(0xFFFFBCCF);
+    }
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: accent, width: 2),
+        gradient: bgGradient,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isElite ? const Color(0xFF4D4D4D) : accent.withOpacity(0.5), 
+          width: 1.5
+        ),
         boxShadow: [
           BoxShadow(
-            color: accent.withValues(alpha: .10),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: accent.withOpacity(isElite ? 0.35 : 0.18),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -451,14 +491,21 @@ class _PlanSummaryCard extends StatelessWidget {
                 width: 62,
                 height: 62,
                 decoration: BoxDecoration(
-                  color: isElite ? Colors.black : softAccent,
+                  color: isElite ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   isElite
                       ? '👑'
-                      : plan.tier == MembershipTier.vip
+                      : isVip
                       ? '💎'
                       : '🔥',
                   style: const TextStyle(fontSize: 29),
@@ -474,9 +521,9 @@ class _PlanSummaryCard extends StatelessWidget {
                     Text(
                       plan.name,
                       style: GoogleFonts.playfairDisplay(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
+                        fontSize: 21,
+                        fontWeight: FontWeight.w800,
+                        color: textColor,
                       ),
                     ),
 
@@ -484,7 +531,11 @@ class _PlanSummaryCard extends StatelessWidget {
 
                     Text(
                       membershipLabel,
-                      style: AppText.sub.copyWith(fontSize: 12),
+                      style: AppText.sub.copyWith(
+                        fontSize: 12, 
+                        color: subTextColor,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -493,23 +544,23 @@ class _PlanSummaryCard extends StatelessWidget {
               Text(
                 _money(_parsePrice(duration.price)),
                 style: GoogleFonts.playfairDisplay(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
+                  fontSize: 23,
+                  fontWeight: FontWeight.w900,
+                  color: textColor,
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 18),
 
-          Divider(color: AppColors.line, height: 1),
+          Divider(color: dividerColor, height: 1),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
 
           Row(
             children: [
-              Icon(Icons.autorenew_rounded, size: 17, color: AppColors.muted),
+              Icon(Icons.autorenew_rounded, size: 17, color: subTextColor),
 
               const SizedBox(width: 8),
 
@@ -518,7 +569,11 @@ class _PlanSummaryCard extends StatelessWidget {
                   isElite
                       ? 'One-time payment · lifetime access, no renewal'
                       : 'Auto-renews every ${duration.title.split(' ').first == '1' ? 'month' : duration.title.toLowerCase()} · cancel anytime from Settings',
-                  style: AppText.sub.copyWith(fontSize: 11.5, height: 1.35),
+                  style: AppText.sub.copyWith(
+                    fontSize: 11.5, 
+                    height: 1.35, 
+                    color: subTextColor,
+                  ),
                 ),
               ),
             ],
@@ -538,12 +593,14 @@ class _CouponSection extends StatelessWidget {
   final VoidCallback onApply;
   final bool applied;
   final String coupon;
+  final Color accent;
 
   const _CouponSection({
     required this.controller,
     required this.onApply,
     required this.applied,
     required this.coupon,
+    required this.accent,
   });
 
   @override
@@ -560,12 +617,14 @@ class _CouponSection extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: controller,
+                maxLength: 8,
                 textCapitalization: TextCapitalization.characters,
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
                 decoration: InputDecoration(
+                  counterText: '',
                   hintText: 'Enter coupon code',
                   hintStyle: GoogleFonts.dmSans(
                     fontSize: 14,
@@ -607,7 +666,7 @@ class _CouponSection extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onApply,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.ink,
+                  backgroundColor: accent,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -688,310 +747,6 @@ class _CouponChip extends StatelessWidget {
 // ===============================================================
 // PAYMENT METHODS
 // ===============================================================
-
-class _PaymentMethods extends StatelessWidget {
-  final String selectedMethod;
-  final String selectedUpi;
-  final Color accent;
-
-  final ValueChanged<String> onMethodChanged;
-
-  final ValueChanged<String> onUpiChanged;
-
-  const _PaymentMethods({
-    required this.selectedMethod,
-    required this.selectedUpi,
-    required this.accent,
-    required this.onMethodChanged,
-    required this.onUpiChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // UPI
-        _MethodCard(
-          selected: selectedMethod == 'upi',
-          accent: accent,
-          icon: '📱',
-          title: 'UPI',
-          subtitle: 'GPay · PhonePe · Paytm · any UPI app',
-          onTap: () => onMethodChanged('upi'),
-        ),
-        if (selectedMethod == 'upi')
-          Column(
-            children: [
-              const SizedBox(height: 12),
-
-              Row(
-                children: [
-                  _UpiChip(
-                    label: 'GPay',
-                    selected: selectedUpi == 'GPay',
-                    dot: const Color(0xFF55B946),
-                    onTap: () => onUpiChanged('GPay'),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  _UpiChip(
-                    label: 'PhonePe',
-                    selected: selectedUpi == 'PhonePe',
-                    dot: const Color(0xFFB276E8),
-                    onTap: () => onUpiChanged('PhonePe'),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  _UpiChip(
-                    label: 'Paytm',
-                    selected: selectedUpi == 'Paytm',
-                    dot: const Color(0xFF789CD8),
-                    onTap: () => onUpiChanged('Paytm'),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  _UpiChip(
-                    label: 'Other',
-                    selected: selectedUpi == 'Other',
-                    dot: const Color(0xFF8E8E8E),
-                    onTap: () => onUpiChanged('Other'),
-                    plus: true,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        const SizedBox(height: 10),
-
-        // CARD
-        _MethodCard(
-          selected: selectedMethod == 'card',
-          accent: accent,
-          icon: '💳',
-          title: 'Credit / Debit card',
-          subtitle: 'Visa · Mastercard · RuPay · Amex',
-          onTap: () => onMethodChanged('card'),
-        ),
-
-        const SizedBox(height: 10),
-
-        // WALLET
-        _MethodCard(
-          selected: selectedMethod == 'wallet',
-          accent: accent,
-          icon: '👛',
-          title: 'Welvors Wallet',
-          subtitle: 'Balance: ₹2,450 coins',
-          onTap: () => onMethodChanged('wallet'),
-        ),
-
-        const SizedBox(height: 10),
-
-        // BANK
-        _MethodCard(
-          selected: selectedMethod == 'bank',
-          accent: accent,
-          icon: '🏦',
-          title: 'Net banking',
-          subtitle: 'All major banks supported',
-          onTap: () => onMethodChanged('bank'),
-        ),
-      ],
-    );
-  }
-}
-
-// ===============================================================
-// METHOD CARD
-// ===============================================================
-
-class _MethodCard extends StatelessWidget {
-  final bool selected;
-  final Color accent;
-
-  final String icon;
-  final String title;
-  final String subtitle;
-
-  final VoidCallback onTap;
-  final Widget? child;
-
-  const _MethodCard({
-    required this.selected,
-    required this.accent,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  }) : child = null;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(17),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(18, 14, 12, 14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(17),
-            border: Border.all(
-              color: selected ? accent : AppColors.line,
-              width: selected ? 2 : 1,
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFAF9F7),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(icon, style: const TextStyle(fontSize: 18)),
-                  ),
-
-                  const SizedBox(width: 14),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: AppText.h2.copyWith(fontSize: 16)),
-
-                        const SizedBox(height: 2),
-
-                        Text(
-                          subtitle,
-                          style: AppText.sub.copyWith(fontSize: 11.5),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  _RadioMark(selected: selected, accent: accent),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ===============================================================
-// RADIO MARK
-// ===============================================================
-
-class _RadioMark extends StatelessWidget {
-  final bool selected;
-  final Color accent;
-
-  const _RadioMark({required this.selected, required this.accent});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
-      width: 25,
-      height: 25,
-      decoration: BoxDecoration(
-        color: selected ? accent : Colors.transparent,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: selected ? accent : AppColors.line,
-          width: 1.5,
-        ),
-      ),
-      alignment: Alignment.center,
-      child: selected
-          ? const Icon(Icons.check, color: Colors.white, size: 15)
-          : null,
-    );
-  }
-}
-
-// ===============================================================
-// UPI CHIP
-// ===============================================================
-
-class _UpiChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final Color dot;
-
-  final VoidCallback onTap;
-
-  final bool plus;
-
-  const _UpiChip({
-    required this.label,
-    required this.selected,
-    required this.dot,
-    required this.onTap,
-    this.plus = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(13),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          height: 68,
-          decoration: BoxDecoration(
-            color: selected ? const Color(0xFFFFFAEE) : Colors.white,
-            borderRadius: BorderRadius.circular(13),
-            border: Border.all(
-              color: selected ? const Color(0xFFC49A4B) : AppColors.line,
-              width: selected ? 2 : 1,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              plus
-                  ? const Icon(Icons.add, size: 24, color: AppColors.muted)
-                  : Container(
-                      width: 22,
-                      height: 22,
-                      decoration: BoxDecoration(
-                        color: dot,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-
-              const SizedBox(height: 4),
-
-              Text(
-                label,
-                style: GoogleFonts.dmSans(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: selected ? const Color(0xFF795D1D) : AppColors.muted,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 // ===============================================================
 // PRICE DETAILS
