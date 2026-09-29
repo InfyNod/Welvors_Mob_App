@@ -274,18 +274,22 @@ class DateNowApiService {
     }
   }
 
-  // GET Request to fetch my hosted plans (Today, Tomorrow, Weekend, Activity)
+  // GET Request to fetch my hosted plans (Today, Tomorrow, Weekend, Activity, or All if period is null)
   static Future<Map<String, dynamic>?> getMyPlans({
-    required String period,
+    String? period,
     String? activity,
   }) async {
     try {
-      String query = 'period=${period.toUpperCase()}';
+      String query = '';
+      if (period != null && period.isNotEmpty) {
+        query += 'period=${period.toUpperCase()}';
+      }
       if (activity != null && activity.isNotEmpty) {
-        query += '&activity=${activity.toLowerCase()}';
+        if (query.isNotEmpty) query += '&';
+        query += 'activity=${activity.toLowerCase()}';
       }
 
-      final url = Uri.parse('$baseUrl/user/date-plans/my-plans?$query');
+      final url = Uri.parse('$baseUrl/user/date-plans/my-plans${query.isNotEmpty ? '?$query' : ''}');
       final response = await http.get(url, headers: await _headers);
 
       if (response.statusCode == 200) {

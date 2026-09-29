@@ -5,6 +5,7 @@ import '../post_a_plan/bloc/post_plan_state.dart';
 import '../history/card_history.dart';
 import 'my_plan_screen.dart';
 import '../../date_api_service/date_now_api_service.dart';
+import '../requests_sent/requests_sent_screen.dart';
 
 void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -1534,6 +1535,9 @@ void showThanksBottomSheet(
                             'boost': 'No',
                           });
                           MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                           Navigator.pop(context);
                           _showFeedbackSavedSnackBar(
@@ -1820,6 +1824,9 @@ void showReportIssueBottomSheet(
                                   'boost': 'No',
                                 });
                                 MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                                 Navigator.pop(context);
                                 _showFeedbackSavedSnackBar(
@@ -2175,6 +2182,9 @@ void showNoOneCameBottomSheet(
                                   'boost': 'No',
                                 });
                                 MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                                 Navigator.pop(context);
                                 _showFeedbackSavedSnackBar(
@@ -2391,6 +2401,9 @@ void showCancelPlanBottomSheet(
 
                           // Remove from active plans
                           MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                           Navigator.pop(context);
                           _showFeedbackSavedSnackBar(context, 'Plan cancelled');

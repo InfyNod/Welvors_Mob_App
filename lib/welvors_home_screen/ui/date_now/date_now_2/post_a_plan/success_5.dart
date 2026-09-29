@@ -270,6 +270,7 @@ class Success5View extends StatelessWidget {
                       } else {
                         // Insert new plan
                         MyPlanScreen.myHostedPlans.insert(0, newPlan);
+                        RequestsSentScreen.myPlansCount++;
                       }
 
                       Navigator.pushAndRemoveUntil(

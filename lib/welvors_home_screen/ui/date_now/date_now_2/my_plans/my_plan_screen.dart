@@ -8,6 +8,7 @@ import 'profile.dart';
 import 'boost_drawer.dart';
 import 'dart:async';
 import '../../../event/all_screen/view_details/Invite_screen.dart';
+import '../requests_sent/requests_sent_screen.dart';
 
 class MyPlanScreen extends StatefulWidget {
   const MyPlanScreen({super.key});
@@ -658,6 +659,9 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                   onTap: () => showManageBottomSheet(context, plan, () {
                     setState(() {
                       MyPlanScreen.myHostedPlans.remove(plan);
+                      if (RequestsSentScreen.myPlansCount > 0) {
+                        RequestsSentScreen.myPlansCount--;
+                      }
                       _apiPlans.remove(plan);
                     });
                   }),
