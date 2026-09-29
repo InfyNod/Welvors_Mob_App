@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import '../../chat_bloc/chat_state.dart';
+import '../chat_format_utils.dart';
 import '../../location_map_screen.dart';
 
 /// Card for shared location with inline GoogleMap preview and tap to full screen
@@ -137,6 +138,37 @@ class ChatLocationCard extends StatelessWidget {
                           color: AppColors.muted,
                         ),
                       ),
+                  ],
+                ),
+              ),
+              // ── Time + seen / unseen ──
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text(
+                      ChatFormatUtils.formatMessageTime(message.time),
+                      style: AppText.sub.copyWith(
+                        fontSize: 12,
+                        color: message.isMine
+                            ? const Color(0xFFB07B8D)
+                            : AppColors.muted,
+                      ),
+                    ),
+                    if (message.isMine) ...[
+                      const SizedBox(width: 4),
+                      Text(
+                        message.seen ? ' ✓✓' : '  ✓',
+                        style: AppText.body.copyWith(
+                          color: message.seen
+                              ? AppColors.primary
+                              : Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
