@@ -383,4 +383,24 @@ class MembershipPlanRepository {
       rawFeatures: features,
     );
   }
+
+  Future<Map<String, dynamic>> purchasePackage(String priceId) async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final response = await http.post(
+        Uri.parse('https://api.welvors.com/api/user/package/wallet/purchase'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'priceId': priceId}),
+      );
+
+      final data = json.decode(response.body);
+      return data;
+    } catch (e) {
+      print('Error purchasing package: $e');
+      return {'success': false, 'message': e.toString()};
+    }
+  }
 }
