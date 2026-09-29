@@ -141,13 +141,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       setState(() {
         _isProcessingPayment = false;
       });
-      CustomSnackBar.showError(
-        context,
-        response.message?.isNotEmpty == true
-            ? response.message!
-            : 'Payment was cancelled or could not be processed.',
-        title: 'Payment Incomplete',
-      );
+
+      final rawMsg = response.message?.trim() ?? '';
+      final isUndefinedOrEmpty = rawMsg.isEmpty || 
+          rawMsg.toLowerCase() == 'undefined' || 
+          rawMsg.toLowerCase() == 'null';
+
+      // Code 2 or 0 or message containing cancel indicates user cancelled the checkout flow
+      final isCancelled = response.code == Razorpay.PAYMENT_CANCELLED ||
+          response.code == 2 ||
+          rawMsg.toLowerCase().contains('cancel') ||
+          isUndefinedOrEmpty;
+
+      if (isCancelled) {
+        CustomSnackBar.showInfo(
+          context,
+          'Payment was cancelled. You have not been charged.',
+          title: 'Payment Cancelled',
+        );
+      } else {
+        CustomSnackBar.showError(
+          context,
+          rawMsg,
+          title: 'Payment Failed',
+        );
+      }
     }
   }
 
