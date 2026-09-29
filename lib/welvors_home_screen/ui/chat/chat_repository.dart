@@ -372,6 +372,44 @@ class ChatRepository {
     }
   }
 
+  /// Persists reaction to the backend if the REST endpoint is supported.
+  Future<void> sendReaction({
+    required String messageId,
+    required String? reaction,
+    String? conversationId,
+  }) async {
+    final cleanId = messageId.trim();
+    if (cleanId.isEmpty) return;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      if (token == null || token.trim().isEmpty) return;
+
+      final authorization = token.toLowerCase().startsWith('bearer ')
+          ? token
+          : 'Bearer $token';
+
+      final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/chat/messages/$cleanId/reaction');
+      await http.post(
+        uri,
+        headers: <String, String>{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': authorization,
+        },
+        body: jsonEncode(<String, dynamic>{
+          'reaction': reaction,
+          'emoji': reaction,
+          if (conversationId != null && conversationId.trim().isNotEmpty)
+            'conversationId': conversationId.trim(),
+        }),
+      ).timeout(const Duration(seconds: 4));
+    } catch (_) {
+      // Graceful ignore if backend endpoint is absent
+    }
+  }
+
   final List<ChatMessage> aanyaMessages = [
     // ----------------------------------------------------------
     // ROSE RECEIVED

@@ -371,3 +371,52 @@ class ClearConversationEvent extends ChatEvent {
   @override
   List<Object?> get props => [conversationId];
 }
+
+class SetMessageReactionEvent extends ChatEvent {
+  final String chatId;
+  final String messageId;
+  final String? reaction;
+  final String? conversationId;
+
+  const SetMessageReactionEvent({
+    required this.chatId,
+    required this.messageId,
+    this.reaction,
+    this.conversationId,
+  });
+
+  @override
+  List<Object?> get props => [chatId, messageId, reaction, conversationId];
+}
+
+class IncomingReactionSocketEvent extends ChatEvent {
+  final String messageId;
+  final String chatId;
+  final String? conversationId;
+  final String? reaction;
+
+  const IncomingReactionSocketEvent({
+    required this.messageId,
+    required this.chatId,
+    this.conversationId,
+    this.reaction,
+  });
+
+  @override
+  List<Object?> get props => [messageId, chatId, conversationId, reaction];
+}
+
+class DeleteMultipleMessagesEvent extends ChatEvent {
+  final String chatId;
+  final List<String> messageIds;
+
+  const DeleteMultipleMessagesEvent({
+    required this.chatId,
+    required this.messageIds,
+  });
+
+  @override
+  List<Object?> get props => [chatId, messageIds];
+}
+
+

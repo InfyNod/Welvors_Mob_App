@@ -13,6 +13,7 @@ import 'cards/chat_compliment_card.dart';
 import 'cards/chat_date_plan_card.dart';
 import 'cards/chat_event_invite_card.dart';
 import 'cards/chat_relationship_tag_card.dart';
+import 'cards/chat_reaction_badge.dart';
 
 /// Factory widget that chooses and renders the appropriate card widget for a ChatMessage
 class ChatMessageCardFactory extends StatelessWidget {
@@ -31,6 +32,10 @@ class ChatMessageCardFactory extends StatelessWidget {
   final VoidCallback onAcceptRelationshipTag;
   final VoidCallback onRejectRelationshipTag;
   final void Function(ChatMessage message) onDeleteMessage;
+  final bool isSelected;
+  final void Function(ChatMessage message, BuildContext context, Offset globalPos)? onLongPressMessage;
+  final ValueChanged<ChatMessage>? onTapMessage;
+  final VoidCallback? onTapReaction;
 
   const ChatMessageCardFactory({
     super.key,
@@ -49,6 +54,10 @@ class ChatMessageCardFactory extends StatelessWidget {
     required this.onAcceptRelationshipTag,
     required this.onRejectRelationshipTag,
     required this.onDeleteMessage,
+    this.isSelected = false,
+    this.onLongPressMessage,
+    this.onTapMessage,
+    this.onTapReaction,
   });
 
   Widget _buildCard(BuildContext context) {
@@ -149,14 +158,51 @@ class ChatMessageCardFactory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final card = _buildCard(context);
+    Widget card = _buildCard(context);
 
-    if (!message.isMine) return card;
+    if (message.reaction != null && message.reaction!.trim().isNotEmpty) {
+      card = Stack(
+        clipBehavior: Clip.none,
+        children: [
+          card,
+          Positioned(
+            bottom: -6,
+            right: message.isMine ? null : 16,
+            left: message.isMine ? 16 : null,
+            child: ChatReactionBadge(
+              emoji: message.reaction!,
+              isMine: message.isMine,
+              onTap: onTapReaction,
+            ),
+          ),
+        ],
+      );
+    }
 
     return GestureDetector(
-      onLongPress: () => onDeleteMessage(message),
       behavior: HitTestBehavior.opaque,
-      child: card,
+      onTap: () {
+        if (onTapMessage != null) {
+          onTapMessage!(message);
+        }
+      },
+      onLongPressStart: (details) {
+        if (onLongPressMessage != null) {
+          onLongPressMessage!(message, context, details.globalPosition);
+        } else if (message.isMine) {
+          onDeleteMessage(message);
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFFE43A6A).withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: card,
+      ),
     );
   }
 }

@@ -28,6 +28,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<MessageReadSocketEvent>(_messageReadSocketEvent);
     on<MessageDeliveredSocketEvent>(_messageDeliveredSocketEvent);
     on<DeleteMessageEvent>(_deleteMessageEvent);
+    on<SetMessageReactionEvent>(_setMessageReactionEvent);
+    on<IncomingReactionSocketEvent>(_incomingReactionSocketEvent);
+    on<DeleteMultipleMessagesEvent>(_deleteMultipleMessagesEvent);
     on<DeleteConversationEvent>(_deleteConversationEvent);
     on<ClearConversationEvent>(_clearConversationEvent);
     on<UserOnlineSocketEvent>(_userOnlineSocketEvent);
@@ -41,6 +44,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     socketService.on('message:delivered', _onMessageDeliveredSocket);
     socketService.on('message:read', _onMessageReadSocket);
     socketService.on('message:receive', _onMessageReceiveSocket);
+    socketService.on('message:reaction', _onMessageReactionSocket);
+    socketService.on('message:react', _onMessageReactionSocket);
+    socketService.on('reaction:receive', _onMessageReactionSocket);
+    socketService.on('reaction', _onMessageReactionSocket);
     socketService.on('user:online', _onUserOnlineSocket);
     socketService.on('user:offline', _onUserOfflineSocket);
 
@@ -357,6 +364,186 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       AppLogger.i('ChatBloc', '🗑️ DELETE MESSAGE SUCCESS => ${event.messageId}');
     } catch (e) {
       AppLogger.e('ChatBloc', '❌ DELETE MESSAGE ERROR => $e');
+    }
+  }
+
+  void _setMessageReactionEvent(
+    SetMessageReactionEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    try {
+      String? matchedKey;
+      int matchedIndex = -1;
+
+      // 1. Try direct chatId key
+      if (state.messages.containsKey(event.chatId)) {
+        matchedIndex = state.messages[event.chatId]!.indexWhere((m) => m.id == event.messageId);
+        if (matchedIndex != -1) matchedKey = event.chatId;
+      }
+
+      // 2. If not found, scan all keys
+      if (matchedKey == null) {
+        for (final entry in state.messages.entries) {
+          final idx = entry.value.indexWhere((m) => m.id == event.messageId);
+          if (idx != -1) {
+            matchedKey = entry.key;
+            matchedIndex = idx;
+            break;
+          }
+        }
+      }
+
+      String? targetReaction = event.reaction;
+      if (matchedKey != null && matchedIndex != -1) {
+        final messages = state.messages[matchedKey]!;
+        final currentMsg = messages[matchedIndex];
+        final isSame = currentMsg.reaction == event.reaction;
+        targetReaction = isSame ? null : event.reaction;
+
+        final updatedList = List<ChatMessage>.from(messages);
+        updatedList[matchedIndex] = currentMsg.copyWith(
+          reaction: targetReaction,
+          clearReaction: isSame,
+        );
+
+        final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
+        updatedMessages[matchedKey] = updatedList;
+        emit(state.copyWith(messages: updatedMessages));
+      }
+
+      // Resolve conversation id for socket & backend
+      final resolvedConvId = (event.conversationId != null && event.conversationId!.trim().isNotEmpty)
+          ? event.conversationId!.trim()
+          : (matchedKey != null && matchedKey.isNotEmpty ? matchedKey : event.chatId.trim());
+
+      final socketPayload = <String, dynamic>{
+        'messageId': event.messageId,
+        'message_id': event.messageId,
+        'id': event.messageId,
+        'targetMessageId': event.messageId,
+        'reaction': targetReaction,
+        'emoji': targetReaction,
+        'conversationId': resolvedConvId,
+        'conversation_id': resolvedConvId,
+        'chatId': event.chatId,
+        'userId': repository.currentUserId,
+        'senderId': repository.currentUserId,
+        'fromId': repository.currentUserId,
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+
+      // Emit through socket for real-time peer delivery
+      socketService.emitWhenConnected('message:react', socketPayload);
+      socketService.emitWhenConnected('message:reaction', socketPayload);
+      socketService.emitWhenConnected('reaction:send', socketPayload);
+      socketService.emitWhenConnected('reaction', socketPayload);
+
+      // Persist to backend repository in background
+      repository.sendReaction(
+        messageId: event.messageId,
+        reaction: targetReaction,
+        conversationId: resolvedConvId,
+      );
+
+      AppLogger.i('ChatBloc', '❤️ REACTION UPDATED & EMITTED: msg=${event.messageId}, reaction=$targetReaction, conv=$resolvedConvId');
+    } catch (e) {
+      AppLogger.e('ChatBloc', '❌ REACTION ERROR: $e');
+    }
+  }
+
+  void _onMessageReactionSocket(dynamic payload) {
+    AppLogger.d('ChatBloc', '❤️ CHAT BLOC message:reaction received => $payload');
+    dynamic data = payload;
+    if (data is List) {
+      if (data.isEmpty) return;
+      data = data.first;
+    }
+    if (data is! Map) return;
+
+    final map = Map<String, dynamic>.from(data);
+    final messageId = (map['messageId'] ?? map['message_id'] ?? map['targetMessageId'] ?? map['id'] ?? '').toString().trim();
+    if (messageId.isEmpty) return;
+
+    final conversationId = (map['conversationId'] ?? map['conversation_id'] ?? '').toString().trim();
+    final chatId = (map['chatId'] ?? map['receiverId'] ?? map['senderId'] ?? conversationId).toString().trim();
+    final reaction = map['reaction']?.toString() ?? map['emoji']?.toString();
+
+    add(IncomingReactionSocketEvent(
+      messageId: messageId,
+      chatId: chatId,
+      conversationId: conversationId.isNotEmpty ? conversationId : null,
+      reaction: reaction,
+    ));
+  }
+
+  void _incomingReactionSocketEvent(
+    IncomingReactionSocketEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    try {
+      final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
+      bool found = false;
+
+      for (final entry in state.messages.entries) {
+        final list = entry.value;
+        final index = list.indexWhere((m) => m.id == event.messageId);
+        if (index != -1) {
+          found = true;
+          final old = list[index];
+          final updatedList = List<ChatMessage>.from(list);
+          final cleanReaction = (event.reaction == null || event.reaction!.trim().isEmpty) ? null : event.reaction!.trim();
+          updatedList[index] = old.copyWith(
+            reaction: cleanReaction,
+            clearReaction: cleanReaction == null,
+          );
+          updatedMessages[entry.key] = updatedList;
+        }
+      }
+
+      if (found) {
+        emit(state.copyWith(messages: updatedMessages));
+        AppLogger.i('ChatBloc', '✅ Incoming reaction applied: msg=${event.messageId}, reaction=${event.reaction}');
+      }
+    } catch (e) {
+      AppLogger.e('ChatBloc', '❌ Error applying incoming reaction: $e');
+    }
+  }
+
+  Future<void> _deleteMultipleMessagesEvent(
+    DeleteMultipleMessagesEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    try {
+      final messages = state.messages[event.chatId] ?? const <ChatMessage>[];
+      final toDeleteIds = Set<String>.from(event.messageIds);
+
+      // Delete user's own messages on the backend
+      for (final msgId in toDeleteIds) {
+        final target = messages.where((m) => m.id == msgId).isNotEmpty
+            ? messages.firstWhere((m) => m.id == msgId)
+            : null;
+
+        if (target != null && target.isMine && target.id.isNotEmpty) {
+          try {
+            await repository.deleteMessage(target.id);
+          } catch (e) {
+            AppLogger.w('ChatBloc', '⚠️ Failed to delete message on backend: ${target.id} -> $e');
+          }
+        }
+      }
+
+      // Remove all selected messages from local state
+      final updated = messages
+          .where((m) => !toDeleteIds.contains(m.id))
+          .toList(growable: false);
+
+      final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
+      updatedMessages[event.chatId] = updated;
+
+      emit(state.copyWith(messages: updatedMessages));
+      AppLogger.i('ChatBloc', '🗑️ BATCH DELETE SUCCESS => ${event.messageIds.length} messages removed');
+    } catch (e) {
+      AppLogger.e('ChatBloc', '❌ BATCH DELETE ERROR => $e');
     }
   }
 
@@ -2253,6 +2440,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       );
     }
 
+    // Preserve reaction if oldMessage had it but newMessage is missing it
+    if (newMessage.reaction == null && oldMessage.reaction != null) {
+      merged = merged.copyWith(reaction: oldMessage.reaction);
+    }
+
     return merged;
   }
 
@@ -2315,6 +2507,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     socketService.offListener('message:delivered', _onMessageDeliveredSocket);
     socketService.offListener('message:read', _onMessageReadSocket);
     socketService.offListener('message:receive', _onMessageReceiveSocket);
+    socketService.offListener('message:reaction', _onMessageReactionSocket);
+    socketService.offListener('message:react', _onMessageReactionSocket);
+    socketService.offListener('reaction:receive', _onMessageReactionSocket);
+    socketService.offListener('reaction', _onMessageReactionSocket);
     socketService.offListener('user:online', _onUserOnlineSocket);
     socketService.offListener('user:offline', _onUserOfflineSocket);
     return super.close();

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart' show XFile;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -29,6 +28,10 @@ import 'chat_bloc/chat_state.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'chat_image_pdf_viewer_screen.dart';
 
+import 'package:flutter/services.dart';
+import 'package:velvors/config/custom_snackbar.dart';
+import 'widgets/chat_reaction_bar.dart';
+import 'widgets/chat_selection_app_bar.dart';
 import 'widgets/chat_detail_app_bar.dart';
 import 'widgets/chat_filter_tabs.dart';
 import 'widgets/chat_status_banners.dart';
@@ -105,6 +108,265 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   ChatMessage? _replyingTo;
+
+  // ==========================================================
+  // MESSAGE SELECTION & REACTIONS
+  // ==========================================================
+  final Set<String> _selectedMessageIds = {};
+  bool get _isSelectionMode => _selectedMessageIds.isNotEmpty;
+
+  ChatMessage? _reactingMessage;
+  Offset? _reactingPosition;
+
+  bool get _canCopySelected {
+    final messages = context.read<ChatBloc>().state.messages[widget.user.id] ?? const <ChatMessage>[];
+    return _selectedMessageIds.any((id) {
+      final msg = messages.where((m) => m.id == id).isNotEmpty
+          ? messages.firstWhere((m) => m.id == id)
+          : null;
+      return msg != null && msg.type == ChatMessageType.text && msg.text.trim().isNotEmpty;
+    });
+  }
+
+  void _onMessageLongPress(
+    ChatMessage message,
+    BuildContext context,
+    Offset globalPos,
+  ) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      _selectedMessageIds.add(message.id);
+      _reactingMessage = message;
+      _reactingPosition = globalPos;
+    });
+  }
+
+  void _toggleMessageSelection(ChatMessage message) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      if (_selectedMessageIds.contains(message.id)) {
+        _selectedMessageIds.remove(message.id);
+      } else {
+        _selectedMessageIds.add(message.id);
+      }
+      _dismissReactionBar();
+    });
+  }
+
+  void _clearSelection() {
+    setState(() {
+      _selectedMessageIds.clear();
+      _dismissReactionBar();
+    });
+  }
+
+  void _dismissReactionBar() {
+    if (_reactingMessage != null || _reactingPosition != null) {
+      setState(() {
+        _reactingMessage = null;
+        _reactingPosition = null;
+      });
+    }
+  }
+
+  double _computeReactionTop() {
+    if (_reactingPosition == null) return 120.0;
+    final mediaQuery = MediaQuery.of(context);
+    final topPadding = mediaQuery.padding.top;
+    final appBarHeight = kToolbarHeight;
+    // _reactingPosition.dy is in global screen coordinates.
+    final localY = _reactingPosition!.dy - topPadding - appBarHeight - 64.0;
+    final maxHeight = mediaQuery.size.height - topPadding - appBarHeight - 140.0;
+    return localY.clamp(12.0, maxHeight > 12.0 ? maxHeight : 12.0);
+  }
+
+  void _onSelectReaction(String emoji) {
+    if (_reactingMessage == null) return;
+    final messageId = _reactingMessage!.id;
+    context.read<ChatBloc>().add(
+      SetMessageReactionEvent(
+        chatId: _messageKey,
+        messageId: messageId,
+        reaction: emoji,
+        conversationId: widget.user.conversationId,
+      ),
+    );
+    _dismissReactionBar();
+    _clearSelection();
+  }
+
+  void _onTapReactionBadge(ChatMessage message) {
+    HapticFeedback.selectionClick();
+    context.read<ChatBloc>().add(
+      SetMessageReactionEvent(
+        chatId: _messageKey,
+        messageId: message.id,
+        reaction: null,
+        conversationId: widget.user.conversationId,
+      ),
+    );
+    CustomSnackBar.showInfo(
+      context,
+      'Reaction removed',
+      title: 'Notice',
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  Future<void> _confirmDeleteSelectedMessages() async {
+    final count = _selectedMessageIds.length;
+    if (count == 0) return;
+
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => Dialog(
+        backgroundColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: Color(0xFFE43A6A),
+                  size: 30,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                count == 1 ? 'Delete message?' : 'Delete $count messages?',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                count == 1
+                    ? 'Are you sure you want to delete this message?'
+                    : 'Are you sure you want to delete these $count messages?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.35,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(dialogCtx, false),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(dialogCtx, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE43A6A),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                      ),
+                      child: const Text(
+                        'Delete',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (shouldDelete == true && mounted) {
+      final idsToDelete = _selectedMessageIds.toList();
+      context.read<ChatBloc>().add(
+        DeleteMultipleMessagesEvent(
+          chatId: widget.user.id,
+          messageIds: idsToDelete,
+        ),
+      );
+      _clearSelection();
+      CustomSnackBar.showSuccess(
+        context,
+        count == 1 ? 'Message deleted' : '$count messages deleted',
+        title: 'Deleted',
+        duration: const Duration(seconds: 2),
+      );
+    }
+  }
+
+  void _copySelectedMessages() {
+    final messages = context.read<ChatBloc>().state.messages[widget.user.id] ?? const <ChatMessage>[];
+    final selectedTexts = <String>[];
+
+    for (final id in _selectedMessageIds) {
+      final msg = messages.where((m) => m.id == id).isNotEmpty
+          ? messages.firstWhere((m) => m.id == id)
+          : null;
+      if (msg != null && msg.text.trim().isNotEmpty) {
+        selectedTexts.add(msg.text.trim());
+      }
+    }
+
+    if (selectedTexts.isNotEmpty) {
+      Clipboard.setData(ClipboardData(text: selectedTexts.join('\n')));
+      CustomSnackBar.showSuccess(
+        context,
+        'Copied to clipboard',
+        title: 'Copied',
+        duration: const Duration(seconds: 2),
+      );
+    }
+    _clearSelection();
+  }
+
+  void _replyToSelectedMessage() {
+    if (_selectedMessageIds.length != 1) return;
+    final messages = context.read<ChatBloc>().state.messages[widget.user.id] ?? const <ChatMessage>[];
+    final msg = messages.where((m) => m.id == _selectedMessageIds.first).isNotEmpty
+        ? messages.firstWhere((m) => m.id == _selectedMessageIds.first)
+        : null;
+
+    if (msg != null) {
+      _startReply(msg);
+    }
+    _clearSelection();
+  }
 
   // Live status for the other participant. This must be mutable UI state;
   // _isUserOnline is immutable and therefore cannot refresh on socket events.
@@ -968,9 +1230,52 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     // ChatBloc's chat-list listener as well. Only this screen's callback
     // is removed in dispose().
     _socketService.on('message:receive', _onMessageReceive);
+    _socketService.on('message:reaction', _onReactionReceive);
+    _socketService.on('message:react', _onReactionReceive);
+    _socketService.on('reaction:receive', _onReactionReceive);
+    _socketService.on('reaction', _onReactionReceive);
 
-    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: message:receive listener registered');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: message:receive & reaction listeners registered');
     AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: conversationId=${widget.user.conversationId}');
+  }
+
+  void _onReactionReceive(dynamic data) {
+    AppLogger.d('ChatDetailScreen', '❤️ CHAT DETAIL: reaction RECEIVED => $data');
+    if (!mounted) return;
+
+    final payload = _normalizeSocketMap(data);
+    if (payload == null) return;
+
+    final receivedConversationId = _extractConversationId(payload);
+    final currentConversationId = widget.user.conversationId?.trim();
+    if (receivedConversationId != null &&
+        receivedConversationId.isNotEmpty &&
+        currentConversationId != null &&
+        currentConversationId.isNotEmpty &&
+        receivedConversationId != currentConversationId) {
+      return;
+    }
+
+    final messageId = (payload['messageId'] ??
+            payload['message_id'] ??
+            payload['targetMessageId'] ??
+            payload['id'] ??
+            '')
+        .toString()
+        .trim();
+    final reaction = payload['reaction']?.toString() ?? payload['emoji']?.toString();
+
+    if (messageId.isNotEmpty) {
+      context.read<ChatBloc>().add(
+            IncomingReactionSocketEvent(
+              messageId: messageId,
+              chatId: _messageKey,
+              conversationId: widget.user.conversationId,
+              reaction: reaction,
+            ),
+          );
+      AppLogger.i('ChatDetailScreen', '✅ Reaction applied from socket: $messageId -> $reaction');
+    }
   }
 
   void _onMessageReceive(dynamic data) {
@@ -1000,6 +1305,39 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         'ℹ️ CHAT DETAIL: message:receive ignored - different conversation',
       );
       return;
+    }
+
+    // Intercept reaction payloads delivered via message:receive
+    final incomingType = (payload['messageType'] ??
+            payload['type'] ??
+            payload['typemsg'] ??
+            '')
+        .toString()
+        .trim()
+        .toLowerCase();
+    if (incomingType == 'reaction' || payload['isReaction'] == true) {
+      final targetId = (payload['targetMessageId'] ??
+              payload['messageId'] ??
+              payload['message_id'] ??
+              payload['id'] ??
+              '')
+          .toString()
+          .trim();
+      final reaction = payload['reaction']?.toString() ??
+          payload['emoji']?.toString() ??
+          payload['content']?.toString();
+
+      if (targetId.isNotEmpty) {
+        context.read<ChatBloc>().add(
+              IncomingReactionSocketEvent(
+                messageId: targetId,
+                chatId: _messageKey,
+                conversationId: widget.user.conversationId,
+                reaction: reaction,
+              ),
+            );
+        return;
+      }
     }
 
     // If there is no conversation id in the event, don't blindly inject it
@@ -1265,6 +1603,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     // Remove only this screen's listener. Do NOT remove the global
     // ChatBloc message:receive listener.
     _socketService.offListener('message:receive', _onMessageReceive);
+    _socketService.offListener('message:reaction', _onReactionReceive);
+    _socketService.offListener('message:react', _onReactionReceive);
+    _socketService.offListener('reaction:receive', _onReactionReceive);
+    _socketService.offListener('reaction', _onReactionReceive);
     _socketService.offListener('user:online', _onUserOnline);
     _socketService.offListener('user:offline', _onUserOffline);
     _socketService.offListener('profile:details', _onProfileDetails);
@@ -1829,75 +2171,135 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
         _markMessagesAsRead();
       },
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: ChatDetailAppBar(
-          liveImage: _liveImage,
-          liveName: _liveName,
-          liveAge: _liveAge,
-          livePackageType: _livePackageType,
-          isUserOnline: _isUserOnline,
-          onBackTap: () => Navigator.of(context).maybePop(),
-          onVoiceCallTap: _startVoiceCall,
-          onVideoCallTap: _startVideoCall,
-          onMoreTap: () {
-            Sidedrawer(
-              context: context,
-              liveImage: _liveImage,
-              liveName: _liveName,
-              liveAge: _liveAge,
-              isUserOnline: _isUserOnline,
-              bannerIndex: _bannerIndex,
-              messageKey: _messageKey,
-              isBlocked: _isBlocked,
-              isBlockedByMe: _isBlockedByMe,
-              confirmUnblockUser: _confirmUnblockUser,
-              userName: widget.user.name,
-              conversationId:
-                  (widget.user.conversationId?.trim().isNotEmpty == true)
-                      ? widget.user.conversationId!.trim()
-                      : widget.user.id.trim(),
-              avatar: (String image, double size, String name, String age) {
-                return _avatar(image, size: size, name: name, age: age);
-              },
-              giftUnlockProgress: () => _giftUnlockProgress(),
-              relationshipProgress: () => _relationshipProgress(),
-              openRelationshipTagSheet: () => _openRelationshipTagSheet(false),
-              confirmClearChat: _confirmClearChat,
-              confirmDeleteConversation: _confirmDeleteConversation,
-              showReportUserSheet: _showReportUserSheet,
-              showBlockUserSheet: _showBlockUserSheet,
-              openUnmatchSheet: _openUnmatchSheet,
-            ).openProfileSheet();
-          },
-        ),
+      child: PopScope(
+        canPop: !_isSelectionMode && _reactingMessage == null,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          if (_reactingMessage != null) {
+            _dismissReactionBar();
+            return;
+          }
+          if (_isSelectionMode) {
+            _clearSelection();
+            return;
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.white,
+          appBar: _isSelectionMode
+              ? ChatSelectionAppBar(
+                  selectedCount: _selectedMessageIds.length,
+                  onClose: _clearSelection,
+                  onDelete: _confirmDeleteSelectedMessages,
+                  onCopy: _copySelectedMessages,
+                  onReply: _replyToSelectedMessage,
+                  canCopy: _canCopySelected,
+                  canReply: _selectedMessageIds.length == 1,
+                )
+              : ChatDetailAppBar(
+                  liveImage: _liveImage,
+                  liveName: _liveName,
+                  liveAge: _liveAge,
+                  livePackageType: _livePackageType,
+                  isUserOnline: _isUserOnline,
+                  onBackTap: () => Navigator.of(context).maybePop(),
+                  onVoiceCallTap: _startVoiceCall,
+                  onVideoCallTap: _startVideoCall,
+                  onMoreTap: () {
+                    Sidedrawer(
+                      context: context,
+                      liveImage: _liveImage,
+                      liveName: _liveName,
+                      liveAge: _liveAge,
+                      isUserOnline: _isUserOnline,
+                      bannerIndex: _bannerIndex,
+                      messageKey: _messageKey,
+                      isBlocked: _isBlocked,
+                      isBlockedByMe: _isBlockedByMe,
+                      confirmUnblockUser: _confirmUnblockUser,
+                      userName: widget.user.name,
+                      conversationId:
+                          (widget.user.conversationId?.trim().isNotEmpty == true)
+                              ? widget.user.conversationId!.trim()
+                              : widget.user.id.trim(),
+                      avatar: (String image, double size, String name, String age) {
+                        return _avatar(image, size: size, name: name, age: age);
+                      },
+                      giftUnlockProgress: () => _giftUnlockProgress(),
+                      relationshipProgress: () => _relationshipProgress(),
+                      openRelationshipTagSheet: () => _openRelationshipTagSheet(false),
+                      confirmClearChat: _confirmClearChat,
+                      confirmDeleteConversation: _confirmDeleteConversation,
+                      showReportUserSheet: _showReportUserSheet,
+                      showBlockUserSheet: _showBlockUserSheet,
+                      openUnmatchSheet: _openUnmatchSheet,
+                    ).openProfileSheet();
+                  },
+                ),
 
-        body: SafeArea(
-          child: Column(
-            children: [
-              AnimatedSize(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                child: _topProgressBanner(),
-              ),
-              _tabs(),
-              Expanded(
-                child: _isUnmatched
-                    ? _unmatchedState()
-                    : GestureDetector(
-                        onTap: () {
-                          if (_showExtrasPanel) {
-                            setState(() => _showExtrasPanel = false);
-                          }
-                        },
-                        child: _messageArea(),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      child: _topProgressBanner(),
+                    ),
+                    _tabs(),
+                    Expanded(
+                      child: _isUnmatched
+                          ? _unmatchedState()
+                          : GestureDetector(
+                              onTap: () {
+                                if (_reactingMessage != null) {
+                                  _dismissReactionBar();
+                                }
+                                if (_showExtrasPanel) {
+                                  setState(() => _showExtrasPanel = false);
+                                }
+                              },
+                              child: _messageArea(),
+                            ),
+                    ),
+                    if (_isBlocked)
+                      _blockedMessage()
+                    else if (!_isUnmatched)
+                      _composer(),
+                  ],
+                ),
+                if (_reactingMessage != null) ...[
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        _dismissReactionBar();
+                        _clearSelection();
+                      },
+                      child: Container(
+                        color: Colors.black.withValues(alpha: 0.15),
                       ),
-              ),
-              if (_isBlocked)
-                _blockedMessage()
-              else if (!_isUnmatched)
-                _composer(),
-            ],
+                    ),
+                  ),
+                  Positioned(
+                    top: _computeReactionTop(),
+                    left: 16,
+                    right: 16,
+                    child: Align(
+                      alignment: (_reactingMessage?.isMine ?? true)
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: ChatReactionBar(
+                        currentReaction: _reactingMessage?.reaction,
+                        onSelectReaction: _onSelectReaction,
+                        onDismiss: _dismissReactionBar,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
       ),
@@ -2250,7 +2652,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                   key: _keyForMessage(message.id),
                   child: SwipeToReply(
                     onDelete: () {},
-                    onReply: () => _startReply(message),
+                    onReply: () {
+                      if (!_isSelectionMode) {
+                        _startReply(message);
+                      }
+                    },
                     child: _messageCardWithDelete(message),
                   ),
                 );
@@ -2389,6 +2795,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       liveAge: _liveAge,
       isAudioPlaying: _isAudioPlaying,
       playingAudioPath: _playingAudioPath,
+      isSelected: _selectedMessageIds.contains(message.id),
+      onTapMessage: (msg) {
+        if (_isSelectionMode) {
+          _toggleMessageSelection(msg);
+        }
+      },
+      onLongPressMessage: (msg, ctx, pos) => _onMessageLongPress(msg, ctx, pos),
+      onTapReaction: () => _onTapReactionBadge(message),
       onTapReply: () => _scrollToMessage(message.replyToId),
       onTapImage: () => _openChatImage(message),
       onTapReplyOverlay: () => _scrollToMessage(message.replyToId),

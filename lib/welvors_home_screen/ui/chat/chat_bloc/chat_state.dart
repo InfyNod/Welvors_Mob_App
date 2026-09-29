@@ -3,12 +3,6 @@ import 'package:velvors/config/env_config.dart';
 
 enum ChatMessageDirection { sender, receiver }
 
-enum _SwipeDirection { none, reply, delete }
-
-_SwipeDirection _swipeDirection = _SwipeDirection.none;
-
-bool _replyTriggered = false;
-bool _deleteTriggered = false;
 
 enum ChatMessageType {
   text,
@@ -238,6 +232,7 @@ class ChatMessage extends Equatable {
   final String? relationshipReceiverId;
   final bool isEventBook;
   bool? isAlreadyRequested;
+  final String? reaction;
   // ==========================================================
   // CONSTRUCTOR
   // ==========================================================
@@ -247,6 +242,7 @@ class ChatMessage extends Equatable {
     this.text = '',
     required this.time,
     required this.isMine,
+    this.reaction,
 
     this.senderId,
     this.receiverId,
@@ -1301,6 +1297,9 @@ class ChatMessage extends Equatable {
       dateplanid: dateplanid,
       isEventBook: isEventBook,
       isAlreadyRequested: isAlreadyRequested,
+      reaction: _string(
+        json['reaction'] ?? json['emoji_reaction'] ?? json['reactions'],
+      ),
     );
   }
 
@@ -1824,6 +1823,8 @@ class ChatMessage extends Equatable {
     List<String>? eventSafetyFeatures, // NEW
     bool? isEventBook,
     bool? isAlreadyRequested,
+    String? reaction,
+    bool clearReaction = false,
   }) {
     return ChatMessage(
       // ========================================================
@@ -2097,6 +2098,7 @@ class ChatMessage extends Equatable {
 
       eventSafetyFeatures: eventSafetyFeatures ?? this.eventSafetyFeatures,
       dateplanid: dateplanid ?? this.dateplanid,
+      reaction: clearReaction ? null : (reaction ?? this.reaction),
     );
   }
 
@@ -2280,6 +2282,7 @@ class ChatMessage extends Equatable {
     eventOtherDiscountedPrice,
     eventHeroImage,
     eventSafetyFeatures, dateplanid,
+    reaction,
   ];
 }
 
