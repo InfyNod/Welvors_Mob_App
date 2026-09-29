@@ -1343,6 +1343,36 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       AppLogger.d('ChatBloc', '🎁 payload => $socketPayload');
     }
 
+    if (socketMessageType == 'EFFECT' || event.type == ChatMessageType.effect) {
+      final emoji = event.giftEmoji ??
+          (event.typemsg != null && event.typemsg != 'Effect'
+              ? event.typemsg!
+              : '✨');
+      final label = (event.giftName ?? event.message ?? 'Effect').trim();
+
+      socketPayload['typemsg'] = 'Effect';
+      socketPayload['metadata'] = {
+        'effect': {
+          'emoji': emoji,
+          'name': label,
+        },
+        'effectEmoji': emoji,
+        'effectName': label,
+        'emoji': emoji,
+        'label': label,
+        'giftEmoji': emoji,
+        'giftName': label,
+      };
+      socketPayload['effectEmoji'] = emoji;
+      socketPayload['effectName'] = label;
+      socketPayload['giftEmoji'] = emoji;
+      socketPayload['giftName'] = label;
+      socketPayload['emoji'] = emoji;
+      socketPayload['label'] = label;
+
+      AppLogger.d('ChatBloc', '💫 EFFECT SEND => emoji=$emoji, label=$label');
+    }
+
     // ==========================================================
     // 6. LOCATION
     // ==========================================================
@@ -2024,6 +2054,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             oldestTime = parsedTime ?? oldestTime;
           }
         }
+      }
+      // ============================================================
+      // EFFECT
+      // ============================================================
+      else if (incoming.type == ChatMessageType.effect ||
+          incomingType == 'EFFECT') {
+        matchIndex = existing.indexWhere((message) {
+          if (!message.isMine || !_tempIdPattern.hasMatch(message.id)) {
+            return false;
+          }
+          if (message.type != ChatMessageType.effect &&
+              (message.typemsg ?? '').trim().toUpperCase() != 'EFFECT') {
+            return false;
+          }
+          final nameMatch = incoming.giftName != null &&
+              (message.giftName ?? '').trim() == incoming.giftName!.trim();
+          final textMatch =
+              message.text.isNotEmpty && message.text == incoming.text;
+          return nameMatch || textMatch;
+        });
       }
       // ============================================================
       // TEXT / OTHER

@@ -449,7 +449,7 @@ class ChatMessage extends Equatable {
 
     final gift = _map(json['gift']);
     // ========================================================
-    // GIFT
+    // GIFT & EFFECT
     // ========================================================
 
     final giftData = json['gift'] is Map
@@ -463,6 +463,12 @@ class ChatMessage extends Equatable {
     final socketGiftMetadata = json['metadata'] is Map
         ? Map<String, dynamic>.from(json['metadata'])
         : <String, dynamic>{};
+
+    final effectObj = json['effect'] is Map
+        ? Map<String, dynamic>.from(json['effect'])
+        : (socketGiftMetadata['effect'] is Map
+            ? Map<String, dynamic>.from(socketGiftMetadata['effect'])
+            : <String, dynamic>{});
 
     final giftImageUrl =
         (giftMaster['image'] ??
@@ -487,23 +493,46 @@ class ChatMessage extends Equatable {
     final parsedGiftName = _string(
       json['giftName'] ??
           json['gift_name'] ??
+          json['effectName'] ??
+          json['effect_name'] ??
+          effectObj['name'] ??
           gift?['giftName'] ??
           gift?['gift_name'] ??
           gift?['name'] ??
           giftMaster['name'] ??
           socketGiftMetadata['giftName'] ??
-          socketGiftMetadata['gift_name'],
+          socketGiftMetadata['gift_name'] ??
+          socketGiftMetadata['effectName'] ??
+          socketGiftMetadata['effect_name'] ??
+          socketGiftMetadata['label'],
     );
 
     final parsedGiftEmoji = _string(
       json['giftEmoji'] ??
           json['gift_emoji'] ??
+          json['effectEmoji'] ??
+          json['effect_emoji'] ??
+          json['emoji'] ??
+          effectObj['emoji'] ??
           gift?['giftEmoji'] ??
           gift?['gift_emoji'] ??
           gift?['emoji'] ??
           socketGiftMetadata['giftEmoji'] ??
-          socketGiftMetadata['gift_emoji'],
+          socketGiftMetadata['gift_emoji'] ??
+          socketGiftMetadata['effectEmoji'] ??
+          socketGiftMetadata['effect_emoji'] ??
+          socketGiftMetadata['emoji'],
     );
+
+    final resolvedType = (type == ChatMessageType.text &&
+            ((json['typemsg'] ?? '').toString().trim().toLowerCase() == 'effect' ||
+                socketGiftMetadata['effectName'] != null ||
+                socketGiftMetadata['effectEmoji'] != null ||
+                json['effectName'] != null ||
+                json['effectEmoji'] != null ||
+                effectObj.isNotEmpty))
+        ? ChatMessageType.effect
+        : type;
 
     final parsedGiftCoins = _string(
       json['giftCoins'] ??
@@ -856,7 +885,7 @@ class ChatMessage extends Equatable {
         json['typemsg'] ?? json['messageType'] ?? json['message_type'],
       ),
 
-      type: type,
+      type: resolvedType,
 
       // ------------------------------------------------------
       // IMAGE
@@ -960,9 +989,13 @@ class ChatMessage extends Equatable {
       // ------------------------------------------------------
       giftId: parsedGiftId,
 
-      giftName: parsedGiftName,
+      giftName: resolvedType == ChatMessageType.effect
+          ? (parsedGiftName ?? (text.isNotEmpty ? text : 'Effect'))
+          : parsedGiftName,
 
-      giftEmoji: parsedGiftEmoji,
+      giftEmoji: resolvedType == ChatMessageType.effect
+          ? (parsedGiftEmoji ?? effectEmojiFromName(parsedGiftName ?? text))
+          : parsedGiftEmoji,
 
       giftCoins: parsedGiftCoins,
 
@@ -1457,6 +1490,11 @@ class ChatMessage extends Equatable {
       // Event
       'eventinvite': ChatMessageType.eventInvite,
       'event': ChatMessageType.eventInvite,
+
+      // Effect
+      'effect': ChatMessageType.effect,
+      'chateffect': ChatMessageType.effect,
+      'effectmessage': ChatMessageType.effect,
     };
 
     return aliases[raw];
@@ -2060,6 +2098,25 @@ class ChatMessage extends Equatable {
       eventSafetyFeatures: eventSafetyFeatures ?? this.eventSafetyFeatures,
       dateplanid: dateplanid ?? this.dateplanid,
     );
+  }
+
+  // ==========================================================
+  // EFFECT EMOJI HELPER
+  // ==========================================================
+
+  static String effectEmojiFromName(String? name) {
+    final lower = (name ?? '').trim().toLowerCase();
+    if (lower.contains('heart') || lower.contains('love')) return '❤️';
+    if (lower.contains('rose') || lower.contains('petal')) return '🌹';
+    if (lower.contains('balloon')) return '🎈';
+    if (lower.contains('sparkle')) return '✨';
+    if (lower.contains('firework')) return '🎆';
+    if (lower.contains('burst')) return '💖';
+    if (lower.contains('butterfl')) return '🦋';
+    if (lower.contains('star')) return '⭐';
+    if (lower.contains('cheer')) return '🥂';
+    if (lower.contains('effect')) return '🎊';
+    return '✨';
   }
 
   // ==========================================================
