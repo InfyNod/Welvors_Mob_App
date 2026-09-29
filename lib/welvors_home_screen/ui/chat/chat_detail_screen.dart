@@ -365,7 +365,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         conversationId: widget.user.conversationId,
         type: ChatMessageType.effect,
         message: label,
-        typemsg: emoji,
+        typemsg: 'Effect',
 
         giftEmoji: emoji,
         giftName: label,
@@ -1028,6 +1028,54 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     AppLogger.i('ChatDetailScreen', 
       '✅ CHAT DETAIL: IncomingMessageEvent added for ${widget.user.id}',
     );
+
+    // Auto-play effect animation when received from the other participant
+    final rawType = (payload['messageType'] ??
+            payload['type'] ??
+            payload['typemsg'] ??
+            '')
+        .toString()
+        .trim()
+        .toLowerCase();
+    final metadata = payload['metadata'] is Map
+        ? Map<String, dynamic>.from(payload['metadata'] as Map)
+        : null;
+    final isEffect = rawType == 'effect' ||
+        payload['effectName'] != null ||
+        metadata?['effectName'] != null ||
+        payload['effectEmoji'] != null ||
+        metadata?['effectEmoji'] != null;
+
+    if (isEffect) {
+      final senderId = (payload['senderId'] ??
+              payload['sender_id'] ??
+              payload['fromId'] ??
+              '')
+          .toString()
+          .trim();
+      final currentUserId =
+          context.read<ChatBloc>().repository.currentUserId.trim();
+      final isFromOther = senderId.isEmpty || senderId != currentUserId;
+
+      if (isFromOther) {
+        final effectLabel = (payload['content'] ??
+                payload['text'] ??
+                payload['effectName'] ??
+                metadata?['effectName'] ??
+                metadata?['label'] ??
+                'Effect')
+            .toString();
+        final effectEmoji = (payload['effectEmoji'] ??
+                payload['emoji'] ??
+                payload['giftEmoji'] ??
+                metadata?['effectEmoji'] ??
+                metadata?['emoji'] ??
+                ChatMessage.effectEmojiFromName(effectLabel))
+            .toString();
+
+        _playEffectAnimation(effectEmoji, effectLabel);
+      }
+    }
 
     // Keep the latest received message visible when the user is already
     // near the bottom of the reversed ListView.
