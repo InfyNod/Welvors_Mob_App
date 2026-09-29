@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'detail_drawer.dart';
 
 class CardHistory extends StatelessWidget {
@@ -61,6 +62,25 @@ class CardHistory extends StatelessWidget {
         ],
       ],
     );
+  }
+
+  String _formatEventDateTime(Map<String, dynamic> plan) {
+    if (plan['eventDateTime'] != null) {
+      try {
+        final DateTime eventDate = DateTime.parse(plan['eventDateTime']).toLocal();
+        final int durationMins = plan['duration'] != null ? (plan['duration'] as num).toInt() : 60;
+        final DateTime endDate = eventDate.add(Duration(minutes: durationMins));
+        
+        final String dateStr = DateFormat('EEE, d MMM').format(eventDate);
+        final String startTimeStr = DateFormat('h:mm a').format(eventDate);
+        final String endTimeStr = DateFormat('h:mm a').format(endDate);
+        
+        return '$dateStr - $startTimeStr - $endTimeStr';
+      } catch (e) {
+        // fallback if parsing fails
+      }
+    }
+    return plan['date'] ?? '';
   }
 
   Widget _buildSectionHeader(String title, int count) {
@@ -229,7 +249,7 @@ class CardHistory extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            plan['title'],
+                            plan['title'] ?? '',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -240,7 +260,7 @@ class CardHistory extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            plan['date'],
+                            plan['date'] ?? '',
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey.shade500,

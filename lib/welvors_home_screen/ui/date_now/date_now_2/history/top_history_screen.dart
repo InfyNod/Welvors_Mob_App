@@ -89,18 +89,14 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
       int met = 0;
 
       for (var item in data) {
-        // Parse date
         DateTime eventDate = DateTime.now();
-        if (item['eventDateTime'] != null) {
-          eventDate = DateTime.parse(item['eventDateTime']);
+        if (item['createdAt'] != null) {
+          eventDate = DateTime.parse(item['createdAt']).toLocal();
+        } else if (item['eventDateTime'] != null) {
+          eventDate = DateTime.parse(item['eventDateTime']).toLocal();
         }
         
-        String formattedDate = DateFormat('EEE, d MMM · h:mm a').format(eventDate);
-        
-        // Calculate duration end time if needed, though simple format is fine
-        final duration = item['duration'] ?? 120;
-        final endTime = eventDate.add(Duration(minutes: duration));
-        formattedDate += ' – ${DateFormat('h:mm a').format(endTime)}';
+        String formattedDate = DateFormat('EEE, d MMM - h:mm a').format(eventDate);
 
         // Extract required fields
         final title = item['quickTitle']?['label'] ?? item['title'] ?? 'Date Plan';
