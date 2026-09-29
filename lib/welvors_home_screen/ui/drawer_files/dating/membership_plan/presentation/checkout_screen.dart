@@ -303,8 +303,8 @@ class _MembershipCheckoutScreenState extends State<MembershipCheckoutScreen> {
                 accent: _accent,
               ),
               const SizedBox(height: 25),
+
               // PRICE DETAILS
-            
               const SizedBox(height: 10),
 
               _PriceDetails(
@@ -507,8 +507,8 @@ class _PlanSummaryCard extends StatelessWidget {
         gradient: bgGradient,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isElite ? const Color(0xFF4D4D4D) : accent.withOpacity(0.5), 
-          width: 1.5
+          color: isElite ? const Color(0xFF4D4D4D) : accent.withOpacity(0.5),
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
@@ -533,15 +533,15 @@ class _PlanSummaryCard extends StatelessWidget {
                       color: Colors.black.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
-                    )
+                    ),
                   ],
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   isElite
-                      ? '👑'
-                      : isVip
                       ? '💎'
+                      : isVip
+                      ? '👑'
                       : '🔥',
                   style: const TextStyle(fontSize: 29),
                 ),
@@ -567,7 +567,7 @@ class _PlanSummaryCard extends StatelessWidget {
                     Text(
                       membershipLabel,
                       style: AppText.sub.copyWith(
-                        fontSize: 12, 
+                        fontSize: 12,
                         color: subTextColor,
                         fontWeight: FontWeight.w500,
                       ),
@@ -605,8 +605,8 @@ class _PlanSummaryCard extends StatelessWidget {
                       ? 'One-time payment · lifetime access, no renewal'
                       : 'Auto-renews every ${duration.title.split(' ').first == '1' ? 'month' : duration.title.toLowerCase()} · cancel anytime from Settings',
                   style: AppText.sub.copyWith(
-                    fontSize: 11.5, 
-                    height: 1.35, 
+                    fontSize: 11.5,
+                    height: 1.35,
                     color: subTextColor,
                   ),
                 ),

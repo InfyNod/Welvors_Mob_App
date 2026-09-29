@@ -126,6 +126,13 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     final horizontalPadding = size.width < 360 ? 16.0 : 24.0;
 
+    // Themed colors based on tier
+    Color glowColor = plan.tier == MembershipTier.vip 
+      ? const Color(0xFFFFD700) 
+      : plan.tier == MembershipTier.premiumPlus 
+      ? const Color(0xFFE43A6A) 
+      : Colors.grey.shade400;
+
     return Material(
       type: MaterialType.transparency,
       child: SafeArea(
@@ -133,81 +140,96 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
+              constraints: const BoxConstraints(maxWidth: 420),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(24, 40, 24, 28),
+                padding: const EdgeInsets.fromLTRB(28, 48, 28, 36),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: const [
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+                  boxShadow: [
                     BoxShadow(
-                      color: Color(0x55000000),
+                      color: glowColor.withOpacity(0.15),
+                      blurRadius: 40,
+                      spreadRadius: 10,
+                      offset: const Offset(0, 10),
+                    ),
+                    const BoxShadow(
+                      color: Color(0x33000000),
                       blurRadius: 30,
-                      offset: Offset(0, 14),
+                      offset: Offset(0, 20),
                     ),
                   ],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _SuccessIcon(),
-                    const SizedBox(height: 25),
+                    _PremiumSuccessIcon(
+                      tierEmoji: tierEmoji,
+                      glowColor: glowColor,
+                      isElite: isElite,
+                    ),
+                    const SizedBox(height: 32),
                     Text(
-                      'Payment successful',
+                      'Welcome to $tierLabel',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
-                        fontSize: 23,
+                        fontSize: 26,
                         height: 1.15,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF202020),
+                        letterSpacing: -0.5,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Text(
-                      "You're now a $tierLabel member.",
+                      "Your payment of ${_money(amount)} was successful. A receipt has been sent to your email.",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
-                        fontSize: 15.5,
-                        height: 1.35,
+                        fontSize: 15,
+                        height: 1.5,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF8D8984),
+                        color: const Color(0xFF7A7A7A),
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${_money(amount)} paid · receipt sent to your email.',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 15.5,
-                        height: 1.35,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF8D8984),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
+                    const SizedBox(height: 28),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
+                        horizontal: 18,
+                        vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: badgeBackground,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Text(
-                        '$tierEmoji $tierLabel unlocked',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: badgeForeground,
+                        color: badgeBackground.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: badgeForeground.withOpacity(0.2),
                         ),
                       ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.workspace_premium_rounded,
+                            size: 18,
+                            color: badgeForeground,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'All benefits are now active',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: badgeForeground,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 27),
+                    const SizedBox(height: 36),
                     SizedBox(
                       width: double.infinity,
-                      height: 66,
+                      height: 60,
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pushAndRemoveUntil(
@@ -222,14 +244,16 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
                           backgroundColor: actionColor,
                           foregroundColor: Colors.white,
                           elevation: 0,
+                          shadowColor: actionColor.withOpacity(0.5),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(17),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                         child: Text(
-                          'Start exploring',
+                          'Start Exploring',
                           style: GoogleFonts.dmSans(
                             fontSize: 17,
+                            letterSpacing: 0.2,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
@@ -246,26 +270,95 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
   }
 }
 
-class _SuccessIcon extends StatelessWidget {
-  const _SuccessIcon();
+class _PremiumSuccessIcon extends StatelessWidget {
+  final String tierEmoji;
+  final Color glowColor;
+  final bool isElite;
+
+  const _PremiumSuccessIcon({
+    required this.tierEmoji,
+    required this.glowColor,
+    required this.isElite,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 88,
-      height: 88,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.green,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.green.withOpacity(.24),
-            blurRadius: 24,
-            spreadRadius: 5,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Outer glow
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: glowColor.withOpacity(0.15),
           ),
-        ],
-      ),
-      child: const Icon(Icons.check_rounded, size: 56, color: Colors.white),
+        ),
+        // Middle ring
+        Container(
+          width: 76,
+          height: 76,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: glowColor.withOpacity(0.25),
+          ),
+        ),
+        // Inner solid circle
+        Container(
+          width: 58,
+          height: 58,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isElite
+                  ? [const Color(0xFF404040), const Color(0xFF1A1A1A)]
+                  : [glowColor.withOpacity(0.8), glowColor],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: glowColor.withOpacity(0.4),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              tierEmoji,
+              style: const TextStyle(fontSize: 26),
+            ),
+          ),
+        ),
+        // Success checkmark badge
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF22C55E), // Vibrant Green
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.check_rounded,
+              size: 16,
+              color: Colors.white,
+              weight: 900,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
