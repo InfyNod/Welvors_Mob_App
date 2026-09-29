@@ -134,8 +134,14 @@ class ChatEffectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isMine = message.isMine;
-    final emoji = message.giftEmoji ?? '✨';
-    final label = message.giftName ?? message.text;
+    final label = (message.giftName != null && message.giftName!.trim().isNotEmpty)
+        ? message.giftName!.trim()
+        : (message.text.trim().isNotEmpty ? message.text.trim() : 'Effect');
+    final emoji = (message.giftEmoji != null &&
+            message.giftEmoji!.trim().isNotEmpty &&
+            message.giftEmoji != '✨')
+        ? message.giftEmoji!.trim()
+        : ChatMessage.effectEmojiFromName(label);
 
     return Align(
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,

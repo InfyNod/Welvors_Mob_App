@@ -65,6 +65,18 @@ class ChatMessageCardFactory extends StatelessWidget {
       return ChatRoseCard(message: message, peerName: peerName);
     }
 
+    final isEffect = message.type == ChatMessageType.effect ||
+        (message.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+        ChatMessage.isKnownEffectName(message.text) ||
+        ChatMessage.isKnownEffectName(message.giftName);
+
+    if (isEffect) {
+      return ChatEffectCard(
+        message: message,
+        onPlayEffect: onPlayEffect,
+      );
+    }
+
     switch (message.type) {
       case ChatMessageType.text:
         return ChatTextCard(
