@@ -135,15 +135,32 @@ class EventApiService {
         }),
       );
 
+      AppLogger.d('EventApiService', 'createEventOrder status: ${response.statusCode} - ${response.body}');
+
+      if (response.body.isNotEmpty) {
+        try {
+          final decoded = json.decode(response.body);
+          if (decoded is Map<String, dynamic>) {
+            return decoded;
+          }
+        } catch (_) {}
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return json.decode(response.body);
+        return {'success': true};
       } else {
         AppLogger.e('EventApiService', 'Failed to create event order: ${response.statusCode} - ${response.body}');
-        return null;
+        return {
+          'success': false,
+          'message': 'Failed to create order (${response.statusCode})',
+        };
       }
     } catch (e) {
       AppLogger.e('EventApiService', 'Error creating event order: $e');
-      return null;
+      return {
+        'success': false,
+        'message': e.toString().replaceFirst('Exception: ', ''),
+      };
     }
   }
 
@@ -166,15 +183,32 @@ class EventApiService {
         body: body,
       );
 
+      AppLogger.d('EventApiService', 'verifyPayment status: ${response.statusCode} - ${response.body}');
+
+      if (response.body.isNotEmpty) {
+        try {
+          final decoded = json.decode(response.body);
+          if (decoded is Map<String, dynamic>) {
+            return decoded;
+          }
+        } catch (_) {}
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return json.decode(response.body);
+        return {'success': true};
       } else {
         AppLogger.e('EventApiService', 'Failed to verify payment: ${response.statusCode} - ${response.body}');
-        return null;
+        return {
+          'success': false,
+          'message': 'Failed to verify payment (${response.statusCode})',
+        };
       }
     } catch (e) {
       AppLogger.e('EventApiService', 'Error verifying payment: $e');
-      return null;
+      return {
+        'success': false,
+        'message': e.toString().replaceFirst('Exception: ', ''),
+      };
     }
   }
 
