@@ -42,30 +42,69 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan, String day) {
   final activity = rawPlan['activity'] ?? {};
   final venue = rawPlan['venue'] ?? {};
 
+  final eventObj = rawPlan['event'] ?? {};
+
   TimeOfDay? parsedTime;
-  if (rawPlan['eventTime'] != null) {
+  
+  // Try to find the time string or date string across possible keys
+  final String? dateTimeStr = rawPlan['eventDateTime']?.toString() ?? 
+                              eventObj['dateTime']?.toString() ??
+                              eventObj['eventDateTime']?.toString() ??
+                              rawPlan['createdAt']?.toString();
+
+  if (dateTimeStr != null) {
     try {
-      final timeStr = rawPlan['eventTime'].toString().toLowerCase();
-      final isPm = timeStr.contains('pm');
-      final cleanStr = timeStr.replaceAll(RegExp(r'[a-z ]'), '');
-      final parts = cleanStr.split(':');
-      if (parts.length == 2) {
-        int hour = int.parse(parts[0]);
-        final min = int.parse(parts[1]);
-        if (isPm && hour < 12) hour += 12;
-        if (!isPm && hour == 12) hour = 0;
-        parsedTime = TimeOfDay(hour: hour, minute: min);
-      }
+      final dt = DateTime.parse(dateTimeStr).toLocal();
+      parsedTime = TimeOfDay.fromDateTime(dt);
     } catch (_) {}
   }
+  
+  if (parsedTime == null) {
+    final rawTime = rawPlan['eventTime'] ?? eventObj['eventTime'] ?? eventObj['time'] ?? dateTimeStr;
+    if (rawTime != null) {
+      final timeStr = rawTime.toString();
+      try {
+        // Backend returns eventTime like "T04:55:00.000Z"
+        if (timeStr.startsWith('T') && timeStr.endsWith('Z')) {
+          final dateStr = rawPlan['eventDate']?.toString() ?? eventObj['eventDate']?.toString() ?? '1970-01-01';
+          // Make sure dateStr is valid (e.g. 2026-09-30)
+          String validDateStr = dateStr;
+          if (!validDateStr.contains('-')) {
+            validDateStr = '1970-01-01'; // fallback if it's something like "Today"
+          }
+          final dt = DateTime.parse('$validDateStr$timeStr').toLocal();
+          parsedTime = TimeOfDay.fromDateTime(dt);
+        } else {
+          // Fallback manual parsing for "5:30 PM"
+          final lowerTimeStr = timeStr.toLowerCase();
+          final isPm = lowerTimeStr.contains('pm');
+          final cleanStr = lowerTimeStr.replaceAll(RegExp(r'[a-z ]'), '');
+          final parts = cleanStr.split(':');
+          if (parts.length >= 2) {
+            int hour = int.parse(parts[0]);
+            final min = int.parse(parts[1]);
+            if (isPm && hour < 12) hour += 12;
+            if (!isPm && hour == 12) hour = 0;
+            parsedTime = TimeOfDay(hour: hour, minute: min);
+          }
+        }
+      } catch (e) {
+        debugPrint('Error parsing time: $e');
+      }
+    }
+  }
 
-  String durationStr = rawPlan['duration']?.toString() ?? '120';
+  String durationStr = rawPlan['duration']?.toString() ?? eventObj['duration']?.toString() ?? '120';
   if (durationStr == '120')
     durationStr = '2 hours';
   else if (durationStr == '60')
     durationStr = '1 hour';
   else if (durationStr == '180')
     durationStr = '3 hours';
+  else if (durationStr == '30')
+    durationStr = '30 min';
+  else if (durationStr == '0')
+    durationStr = 'Flexible';
 
   String _extractLabel(dynamic field, String fallback) {
     if (field is Map) {
@@ -76,7 +115,7 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan, String day) {
     return field?.toString() ?? fallback;
   }
 
-  String limitStr = rawPlan['participantLimit']?.toString() ?? '1';
+  String limitStr = rawPlan['participantLimit']?.toString() ?? eventObj['participantLimit']?.toString() ?? '1';
   String groupSizeVal = '1 person';
   if (limitStr == '2')
     groupSizeVal = '2 people';
@@ -97,13 +136,13 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan, String day) {
     landmark: '',
     whenDate: day.isNotEmpty
         ? day
-        : (rawPlan['eventDate']?.toString() ?? 'Today'),
+        : (rawPlan['eventDate']?.toString() ?? eventObj['eventDate']?.toString() ?? 'Today'),
     time: parsedTime,
     howLong: durationStr,
-    whoPays: _extractLabel(rawPlan['whoPays'], '🤝 Split'),
+    whoPays: _extractLabel(rawPlan['whoPays'] ?? eventObj['whoPays'], '🤝 Split'),
     groupSize: groupSizeVal,
-    whoCanRequest: _extractLabel(rawPlan['joinRequestGender'], 'Anyone'),
-    visibility: _extractLabel(rawPlan['visibility'], 'Premium 👑'),
+    whoCanRequest: _extractLabel(rawPlan['joinRequestGender'] ?? eventObj['joinRequestGender'], 'Anyone'),
+    visibility: _extractLabel(rawPlan['visibility'] ?? eventObj['visibility'], 'Premium 👑'),
     finalWhoCanJoin: groupSizeVal,
     verifiedMembersOnly: true,
     autoApproveRequests: false,
