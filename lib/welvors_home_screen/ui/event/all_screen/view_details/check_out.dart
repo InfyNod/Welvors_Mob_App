@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'package:velvors/config/app_cached_image.dart';
+import 'package:velvors/config/custom_snackbar.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String eventId;
@@ -114,12 +115,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           setState(() {
             _isProcessingPayment = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Payment Verification Failed! Please contact support.'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          final verifyError = (verifyResponse?['message'] ??
+                  verifyResponse?['error'] ??
+                  verifyResponse?['msg'])
+              ?.toString();
+          if (mounted) {
+            CustomSnackBar.showError(
+              context,
+              (verifyError != null && verifyError.trim().isNotEmpty)
+                  ? verifyError.trim()
+                  : 'Payment Verification Failed! Please contact support.',
+              title: 'Verification Failed',
+            );
+          }
         }
       }
     }
@@ -133,11 +141,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       setState(() {
         _isProcessingPayment = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Payment Failed: ${response.message ?? "Cancelled"}'),
-          backgroundColor: Colors.red,
-        ),
+      CustomSnackBar.showError(
+        context,
+        response.message?.isNotEmpty == true
+            ? response.message!
+            : 'Payment was cancelled or could not be processed.',
+        title: 'Payment Incomplete',
       );
     }
   }
@@ -751,8 +760,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       if (razorpayKey == null || razorpayKey.isEmpty) {
                                         AppLogger.e('CheckoutScreen', 'Razorpay key missing from backend order response');
                                         if (context.mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('Payment gateway configuration error. Please try again.')),
+                                          CustomSnackBar.showError(
+                                            context,
+                                            'Payment gateway configuration error. Please try again.',
+                                            title: 'Gateway Error',
                                           );
                                           setState(() {
                                             _isProcessingPayment = false;
@@ -806,14 +817,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       _isProcessingPayment = false;
                                     });
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            response?['message'] ??
-                                                'Failed to create order',
-                                          ),
-                                          backgroundColor: Colors.red,
-                                        ),
+                                      final errorMsg = (response?['message'] ??
+                                              response?['error'] ??
+                                              response?['msg'])
+                                          ?.toString();
+                                      CustomSnackBar.showError(
+                                        context,
+                                        (errorMsg != null && errorMsg.trim().isNotEmpty)
+                                            ? errorMsg.trim()
+                                            : 'Failed to create order. Please try again.',
+                                        title: 'Booking Unavailable',
                                       );
                                     }
                                   }
