@@ -31,6 +31,14 @@ class _Review4ViewState extends State<Review4View> {
     });
 
     try {
+      int participantLimit = 1;
+      if (state.finalWhoCanJoin == '2 people') participantLimit = 2;
+      if (state.finalWhoCanJoin == 'Small group') participantLimit = 4;
+
+      await DateNowApiService.patchPlan(planId, {
+        "participantLimit": participantLimit,
+      });
+
       final response = await DateNowApiService.publishPlan(planId);
       if (!mounted) return;
 

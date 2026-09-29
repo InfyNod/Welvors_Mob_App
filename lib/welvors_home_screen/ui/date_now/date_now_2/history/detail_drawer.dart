@@ -214,12 +214,36 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Date and Location
-                  Text(
-                    plan['date'],
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                  ),
-                  const SizedBox(height: 4),
+                  // Dates
+                  if (plan['createdDate'] != null && plan['createdDate'].isNotEmpty)
+                    Row(
+                      children: [
+                        Icon(Icons.edit_calendar, size: 14, color: Colors.grey.shade500),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Created on ${plan['createdDate']}',
+                          style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                        ),
+                      ],
+                    ),
+                  if (plan['eventDate'] != null && plan['eventDate'].isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.event, size: 14, color: Colors.grey.shade500),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Event starts ${plan['eventDate']}',
+                          style: TextStyle(
+                            fontSize: 13, 
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       Icon(
@@ -357,6 +381,7 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                         child: _buildInfoCard(
                           'BILL',
                           split,
+                          Icons.receipt_long_rounded,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -364,6 +389,7 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                         child: _buildInfoCard(
                           'GROUP',
                           groupSize,
+                          Icons.group_rounded,
                         ),
                       ),
                     ],
@@ -372,13 +398,14 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildInfoCard('BOOST', boost),
+                        child: _buildInfoCard('BOOST', boost, Icons.rocket_launch_rounded),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildInfoCard(
                           'PLAN COST',
                           planCost,
+                          Icons.payments_rounded,
                         ),
                       ),
                     ],
@@ -440,14 +467,31 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.bold,
-        color: Colors.grey.shade500,
-        letterSpacing: 1.0,
-      ),
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE43A6A).withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.insights_rounded,
+            size: 16,
+            color: Color(0xFFE43A6A),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+            color: Colors.black87,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ],
     );
   }
 
@@ -458,107 +502,129 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
     required int maxVal,
     required double progress,
   }) {
-    return Row(
-      children: [
-        // Label Column
-        SizedBox(
-          width: 80,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-              if (subtext != null) ...[
-                const SizedBox(height: 2),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Label Column
+          SizedBox(
+            width: 75,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  subtext,
-                  style: TextStyle(fontSize: 9, color: Colors.grey.shade400),
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
                 ),
+                if (subtext != null) ...[
+                  const SizedBox(height: 1),
+                  Text(
+                    subtext,
+                    style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
+                  ),
+                ],
               ],
-            ],
-          ),
-        ),
-
-        // Progress Bar
-        Expanded(
-          child: Container(
-            height: 8,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF6F4EF),
-              borderRadius: BorderRadius.circular(4),
             ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: progress.clamp(0.0, 1.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE43A6A),
-                  borderRadius: BorderRadius.circular(4),
+          ),
+
+          // Progress Bar
+          Expanded(
+            child: Container(
+              height: 8,
+              alignment: Alignment.centerLeft, // Fixes the center alignment issue
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F0F0),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: progress.clamp(0.0, 1.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFE43A6A), Color(0xFFFF5E8B)],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
 
-        // Value
-        const SizedBox(width: 16),
-        SizedBox(
-          width: 30,
-          child: Text(
-            '$value',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+          // Value
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 32,
+            child: Text(
+              '$value',
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.right,
             ),
-            textAlign: TextAlign.right,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildInfoCard(String label, String value) {
+  Widget _buildInfoCard(String label, String value, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.grey.shade200),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: Colors.grey.shade400,
-              letterSpacing: 0.5,
-            ),
+          Row(
+            children: [
+              Icon(icon, size: 13, color: Colors.grey.shade400),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.grey.shade500,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             value,
             style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: Colors.black87,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

@@ -195,6 +195,7 @@ class _Location3ViewState extends State<Location3View> {
           _isLocationSelected = true;
           _searchController.text = state.locationName;
           _selectedPlaceSubtext = state.locationSubtitle;
+          _selectedWhen = state.whenDate.isNotEmpty ? state.whenDate : 'Today';
           _selectedTime = state.time;
           _selectedHowLong = state.howLong;
           _selectedWhoPays = state.whoPays;

@@ -16,6 +16,7 @@ class RequestsSentScreen extends StatefulWidget {
 
   // Global static data for sent requests
   static List<Map<String, dynamic>> mySentRequests = [];
+  static int myPlansCount = 0;
 
   @override
   State<RequestsSentScreen> createState() => _RequestsSentScreenState();
@@ -133,6 +134,27 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             _historyCount = historyData.length;
           });
         }
+      }
+
+      // Fetch all my plans count for the tab (Only sum Today, Tomorrow, Weekend)
+      int totalMyPlans = 0;
+      final periods = ['Today', 'Tomorrow', 'Weekend'];
+      
+      final results = await Future.wait(
+        periods.map((p) => DateNowApiService.getMyPlans(period: p)),
+      );
+      
+      for (final res in results) {
+        if (res != null && res['success'] == true) {
+          final List<dynamic> data = res['data'] ?? [];
+          totalMyPlans += data.length;
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          RequestsSentScreen.myPlansCount = totalMyPlans;
+        });
       }
 
       // Fetch dynamic options for filters
@@ -407,7 +429,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
                 RequestsSentScreen.mySentRequests.length,
                 0,
               ),
-              _buildTab('My plans', MyPlanScreen.myHostedPlans.length, 1),
+              _buildTab('My plans', RequestsSentScreen.myPlansCount, 1),
               _buildTab('History', _historyCount, 2),
             ],
           ),

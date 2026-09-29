@@ -5,6 +5,7 @@ import '../post_a_plan/bloc/post_plan_state.dart';
 import '../history/card_history.dart';
 import 'my_plan_screen.dart';
 import '../../date_api_service/date_now_api_service.dart';
+import '../requests_sent/requests_sent_screen.dart';
 
 void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -37,34 +38,73 @@ void _showFeedbackSavedSnackBar(BuildContext context, String message) {
   );
 }
 
-PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
+PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan, String day) {
   final activity = rawPlan['activity'] ?? {};
   final venue = rawPlan['venue'] ?? {};
 
+  final eventObj = rawPlan['event'] ?? {};
+
   TimeOfDay? parsedTime;
-  if (rawPlan['eventTime'] != null) {
+  
+  // Try to find the time string or date string across possible keys
+  final String? dateTimeStr = rawPlan['eventDateTime']?.toString() ?? 
+                              eventObj['dateTime']?.toString() ??
+                              eventObj['eventDateTime']?.toString() ??
+                              rawPlan['createdAt']?.toString();
+
+  if (dateTimeStr != null) {
     try {
-      final timeStr = rawPlan['eventTime'].toString().toLowerCase();
-      final isPm = timeStr.contains('pm');
-      final cleanStr = timeStr.replaceAll(RegExp(r'[a-z ]'), '');
-      final parts = cleanStr.split(':');
-      if (parts.length == 2) {
-        int hour = int.parse(parts[0]);
-        final min = int.parse(parts[1]);
-        if (isPm && hour < 12) hour += 12;
-        if (!isPm && hour == 12) hour = 0;
-        parsedTime = TimeOfDay(hour: hour, minute: min);
-      }
+      final dt = DateTime.parse(dateTimeStr).toLocal();
+      parsedTime = TimeOfDay.fromDateTime(dt);
     } catch (_) {}
   }
+  
+  if (parsedTime == null) {
+    final rawTime = rawPlan['eventTime'] ?? eventObj['eventTime'] ?? eventObj['time'] ?? dateTimeStr;
+    if (rawTime != null) {
+      final timeStr = rawTime.toString();
+      try {
+        // Backend returns eventTime like "T04:55:00.000Z"
+        if (timeStr.startsWith('T') && timeStr.endsWith('Z')) {
+          final dateStr = rawPlan['eventDate']?.toString() ?? eventObj['eventDate']?.toString() ?? '1970-01-01';
+          // Make sure dateStr is valid (e.g. 2026-09-30)
+          String validDateStr = dateStr;
+          if (!validDateStr.contains('-')) {
+            validDateStr = '1970-01-01'; // fallback if it's something like "Today"
+          }
+          final dt = DateTime.parse('$validDateStr$timeStr').toLocal();
+          parsedTime = TimeOfDay.fromDateTime(dt);
+        } else {
+          // Fallback manual parsing for "5:30 PM"
+          final lowerTimeStr = timeStr.toLowerCase();
+          final isPm = lowerTimeStr.contains('pm');
+          final cleanStr = lowerTimeStr.replaceAll(RegExp(r'[a-z ]'), '');
+          final parts = cleanStr.split(':');
+          if (parts.length >= 2) {
+            int hour = int.parse(parts[0]);
+            final min = int.parse(parts[1]);
+            if (isPm && hour < 12) hour += 12;
+            if (!isPm && hour == 12) hour = 0;
+            parsedTime = TimeOfDay(hour: hour, minute: min);
+          }
+        }
+      } catch (e) {
+        debugPrint('Error parsing time: $e');
+      }
+    }
+  }
 
-  String durationStr = rawPlan['duration']?.toString() ?? '120';
+  String durationStr = rawPlan['duration']?.toString() ?? eventObj['duration']?.toString() ?? '120';
   if (durationStr == '120') {
     durationStr = '2 hours';
   } else if (durationStr == '60')
     durationStr = '1 hour';
   else if (durationStr == '180')
     durationStr = '3 hours';
+  else if (durationStr == '30')
+    durationStr = '30 min';
+  else if (durationStr == '0')
+    durationStr = 'Flexible';
 
   String extractLabel(dynamic field, String fallback) {
     if (field is Map) {
@@ -75,7 +115,7 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
     return field?.toString() ?? fallback;
   }
 
-  String limitStr = rawPlan['participantLimit']?.toString() ?? '1';
+  String limitStr = rawPlan['participantLimit']?.toString() ?? eventObj['participantLimit']?.toString() ?? '1';
   String groupSizeVal = '1 person';
   if (limitStr == '2') {
     groupSizeVal = '2 people';
@@ -94,7 +134,9 @@ PostPlanState _parseRawPlanToState(Map<String, dynamic> rawPlan) {
     locationName: venue['name']?.toString() ?? '',
     locationSubtitle: venue['address']?.toString() ?? '',
     landmark: '',
-    whenDate: rawPlan['eventDate']?.toString() ?? 'Today',
+    whenDate: day.isNotEmpty
+        ? day
+        : (rawPlan['eventDate']?.toString() ?? eventObj['eventDate']?.toString() ?? 'Today'),
     time: parsedTime,
     howLong: durationStr,
     whoPays: extractLabel(rawPlan['whoPays'], '🤝 Split'),
@@ -210,7 +252,10 @@ void showManageBottomSheet(
                   if (plan.containsKey('originalState')) {
                     stateToEdit = plan['originalState'] as PostPlanState;
                   } else if (plan.containsKey('rawPlan')) {
-                    stateToEdit = _parseRawPlanToState(plan['rawPlan']);
+                    stateToEdit = _parseRawPlanToState(
+                      plan['rawPlan'],
+                      plan['day']?.toString() ?? 'Today',
+                    );
                   }
 
                   if (stateToEdit != null) {
@@ -1545,6 +1590,9 @@ void showThanksBottomSheet(
                             'boost': 'No',
                           });
                           MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                           Navigator.pop(context);
                           _showFeedbackSavedSnackBar(
@@ -1831,6 +1879,9 @@ void showReportIssueBottomSheet(
                                   'boost': 'No',
                                 });
                                 MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                                 Navigator.pop(context);
                                 _showFeedbackSavedSnackBar(
@@ -2186,6 +2237,9 @@ void showNoOneCameBottomSheet(
                                   'boost': 'No',
                                 });
                                 MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                                 Navigator.pop(context);
                                 _showFeedbackSavedSnackBar(
@@ -2402,6 +2456,9 @@ void showCancelPlanBottomSheet(
 
                           // Remove from active plans
                           MyPlanScreen.myHostedPlans.remove(plan);
+                          if (RequestsSentScreen.myPlansCount > 0) {
+                            RequestsSentScreen.myPlansCount--;
+                          }
 
                           Navigator.pop(context);
                           _showFeedbackSavedSnackBar(context, 'Plan cancelled');
