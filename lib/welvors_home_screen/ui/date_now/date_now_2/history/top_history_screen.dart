@@ -89,14 +89,42 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
       int met = 0;
 
       for (var item in data) {
-        DateTime eventDate = DateTime.now();
+        DateTime? createdDate;
         if (item['createdAt'] != null) {
-          eventDate = DateTime.parse(item['createdAt']).toLocal();
-        } else if (item['eventDateTime'] != null) {
-          eventDate = DateTime.parse(item['eventDateTime']).toLocal();
+          try {
+            createdDate = DateTime.parse(item['createdAt']).toLocal();
+          } catch (_) {}
         }
         
-        String formattedDate = DateFormat('EEE, d MMM - h:mm a').format(eventDate);
+        DateTime? eventStartDate;
+        String? eventDateTimeStr = item['eventDateTime']?.toString() ?? 
+                                   item['event']?['dateTime']?.toString() ?? 
+                                   item['event']?['eventDateTime']?.toString();
+        if (eventDateTimeStr != null) {
+          try {
+            eventStartDate = DateTime.parse(eventDateTimeStr).toLocal();
+          } catch (_) {}
+        }
+        if (eventStartDate == null) {
+          final rawTime = item['eventTime'] ?? item['event']?['eventTime'] ?? item['event']?['time'];
+          if (rawTime != null) {
+            String timeStr = rawTime.toString();
+            if (timeStr.startsWith('T') && timeStr.endsWith('Z')) {
+              final dateStr = item['eventDate']?.toString() ?? item['event']?['eventDate']?.toString() ?? '1970-01-01';
+              String validDateStr = dateStr;
+              if (!validDateStr.contains('-')) validDateStr = '1970-01-01';
+              try {
+                eventStartDate = DateTime.parse('$validDateStr$timeStr').toLocal();
+              } catch (_) {}
+            }
+          }
+        }
+        
+        // Fallback for list sorting
+        DateTime sortingDate = createdDate ?? eventStartDate ?? DateTime.now();
+        
+        String formattedCreatedDate = createdDate != null ? DateFormat('EEE, d MMM - h:mm a').format(createdDate) : '';
+        String formattedEventDate = eventStartDate != null ? DateFormat('EEE, d MMM - h:mm a').format(eventStartDate) : '';
 
         // Extract required fields
         final title = item['quickTitle']?['label'] ?? item['title'] ?? 'Date Plan';
@@ -132,7 +160,9 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
         final mappedItem = {
           'id': item['_id'] ?? item['id'],
           'title': title,
-          'date': formattedDate,
+          'date': formattedCreatedDate.isNotEmpty ? formattedCreatedDate : formattedEventDate, // Fallback for Card History
+          'createdDate': formattedCreatedDate,
+          'eventDate': formattedEventDate,
           'location': location,
           'image': image,
           'status': status,
@@ -149,7 +179,7 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
           mappedItem['partnerStatus'] = 'Matched';
         }
 
-        if (eventDate.isAfter(sevenDaysAgo)) {
+        if (sortingDate.isAfter(sevenDaysAgo)) {
           thisWeek.add(mappedItem);
         } else {
           earlier.add(mappedItem);
