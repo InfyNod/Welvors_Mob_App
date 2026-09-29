@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart' show XFile;
 import 'package:http/http.dart' as http;
@@ -346,29 +347,35 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   void _playEffectAnimation(String emoji, String label) {
+    if (!mounted) return;
+    final lower = label.toLowerCase();
     EffectRainOverlay.play(
       context,
       emoji: emoji,
       count: 22,
-      burstFromCenter: label == 'Love Burst' || label == 'Fireworks',
+      burstFromCenter: lower.contains('burst') || lower.contains('firework'),
     );
   }
 
   void _sendEffectMessage(String emoji, String label) {
     final reply = _replyingTo;
+    final convId = (widget.user.conversationId ?? '').trim().isNotEmpty
+        ? widget.user.conversationId!
+        : _messageKey;
+    final cleanLabel = ChatMessage.cleanEffectLabel(label);
     AppLogger.d('ChatDetailScreen', 
-      '💫 Sending effect message: $label ($emoji)>>>>>>${ChatMessageType.effect}',
+      '💫 Sending effect message: $cleanLabel ($emoji) to conversation: $convId',
     );
     context.read<ChatBloc>().add(
       SendMessageEvent(
         chatId: widget.user.id,
-        conversationId: widget.user.conversationId,
+        conversationId: convId,
         type: ChatMessageType.effect,
-        message: label,
+        message: '$emoji $cleanLabel',
         typemsg: 'Effect',
 
         giftEmoji: emoji,
-        giftName: label,
+        giftName: cleanLabel,
         replyToId: reply?.id,
         replyText: reply?.text,
         replyImageUrl: reply?.imageUrl,
@@ -984,7 +991,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       return;
     }
 
-    final receivedConversationId = _extractConversationId(payload);
+    final receivedConversationId = (data is Map
+            ? _extractConversationId(Map<String, dynamic>.from(data))
+            : null) ??
+        _extractConversationId(payload);
     final currentConversationId = widget.user.conversationId?.trim();
 
     AppLogger.d('ChatDetailScreen', '📩 RECEIVED conversationId => $receivedConversationId');
@@ -1016,9 +1026,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     // This screen is already scoped to one conversation, so attach that id before
     // handing the event to ChatBloc. ChatBloc then stores it in the correct bucket.
     if ((payload['conversationId'] ?? payload['conversation_id']) == null &&
-        currentConversationId != null &&
-        currentConversationId.isNotEmpty) {
-      payload['conversationId'] = currentConversationId;
+        ((currentConversationId != null && currentConversationId.isNotEmpty) ||
+            receivedConversationId != null)) {
+      payload['conversationId'] = currentConversationId ?? receivedConversationId;
     }
 
     context.read<ChatBloc>().add(
@@ -1030,50 +1040,110 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     );
 
     // Auto-play effect animation when received from the other participant
+    dynamic rawMetadata = payload['metadata'] ?? (data is Map ? data['metadata'] : null);
+    if (rawMetadata is String) {
+      try {
+        final decoded = jsonDecode(rawMetadata);
+        if (decoded is Map) rawMetadata = decoded;
+      } catch (_) {}
+    }
+    final metadata = rawMetadata is Map
+        ? Map<String, dynamic>.from(rawMetadata)
+        : null;
+
     final rawType = (payload['messageType'] ??
+            payload['message_type'] ??
             payload['type'] ??
+            payload['contentType'] ??
+            payload['content_type'] ??
             payload['typemsg'] ??
+            (data is Map ? (data['messageType'] ?? data['type']) : '') ??
             '')
         .toString()
         .trim()
         .toLowerCase();
-    final metadata = payload['metadata'] is Map
-        ? Map<String, dynamic>.from(payload['metadata'] as Map)
-        : null;
+
+    final effectObj = payload['effect'] is Map
+        ? Map<String, dynamic>.from(payload['effect'] as Map)
+        : (metadata?['effect'] is Map
+            ? Map<String, dynamic>.from(metadata!['effect'] as Map)
+            : null);
+
+    final contentText = (payload['content'] ??
+            payload['text'] ??
+            payload['message'] ??
+            '')
+        .toString()
+        .trim();
+
     final isEffect = rawType == 'effect' ||
+        rawType == 'chateffect' ||
+        rawType == 'effectmessage' ||
+        (payload['typemsg'] ?? '').toString().trim().toLowerCase() == 'effect' ||
         payload['effectName'] != null ||
+        payload['effect_name'] != null ||
         metadata?['effectName'] != null ||
+        metadata?['effect_name'] != null ||
         payload['effectEmoji'] != null ||
-        metadata?['effectEmoji'] != null;
+        payload['effect_emoji'] != null ||
+        metadata?['effectEmoji'] != null ||
+        metadata?['effect_emoji'] != null ||
+        effectObj != null ||
+        ChatMessage.isKnownEffectName(contentText);
 
     if (isEffect) {
       final senderId = (payload['senderId'] ??
               payload['sender_id'] ??
               payload['fromId'] ??
+              payload['from'] ??
+              (payload['sender'] is Map
+                  ? (payload['sender']['_id'] ?? payload['sender']['id'])
+                  : payload['sender']) ??
+              (data is Map ? (data['senderId'] ?? data['sender_id']) : '') ??
               '')
           .toString()
           .trim();
-      final currentUserId =
-          context.read<ChatBloc>().repository.currentUserId.trim();
-      final isFromOther = senderId.isEmpty || senderId != currentUserId;
+      final currentUserId = (_currentUserId ??
+              context.read<ChatBloc>().repository.currentUserId)
+          .trim();
+      final isFromOther = senderId.isEmpty ||
+          currentUserId.isEmpty ||
+          senderId != currentUserId;
 
       if (isFromOther) {
-        final effectLabel = (payload['content'] ??
-                payload['text'] ??
-                payload['effectName'] ??
+        final rawEffectLabel = (payload['effectName'] ??
+                payload['effect_name'] ??
+                effectObj?['name'] ??
                 metadata?['effectName'] ??
+                metadata?['effect_name'] ??
                 metadata?['label'] ??
-                'Effect')
-            .toString();
+                (ChatMessage.isKnownEffectName(contentText) ? contentText : null) ??
+                (contentText.isNotEmpty ? contentText : 'Effect'))
+            .toString()
+            .trim();
+        final effectLabel = ChatMessage.cleanEffectLabel(rawEffectLabel);
         final effectEmoji = (payload['effectEmoji'] ??
+                payload['effect_emoji'] ??
+                effectObj?['emoji'] ??
                 payload['emoji'] ??
                 payload['giftEmoji'] ??
                 metadata?['effectEmoji'] ??
+                metadata?['effect_emoji'] ??
                 metadata?['emoji'] ??
-                ChatMessage.effectEmojiFromName(effectLabel))
-            .toString();
+                ChatMessage.effectEmojiFromName(rawEffectLabel))
+            .toString()
+            .trim();
 
-        _playEffectAnimation(effectEmoji, effectLabel);
+        final messageId = (payload['id'] ?? payload['_id'] ?? payload['messageId'] ?? '').toString().trim();
+        if (messageId.isNotEmpty) {
+          _playedEffectMessageIds.add(messageId);
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _playEffectAnimation(effectEmoji, effectLabel);
+          }
+        });
       }
     }
 
@@ -1700,6 +1770,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   num _estimatedMessageHeight(ChatMessage message) {
     switch (message.type) {
       case ChatMessageType.effect:
+        return 100;
       case ChatMessageType.image:
         return 430;
       case ChatMessageType.audio:
@@ -1798,6 +1869,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   bool _hideBanner = false;
   bool _initialScrollDone = false;
+  final Set<String> _playedEffectMessageIds = <String>{};
+  bool _initialEffectSeedDone = false;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ChatBloc, ChatState>(
@@ -1828,6 +1902,45 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         }
 
         _markMessagesAsRead();
+
+        // Check for incoming effect messages that haven't played an animation yet
+        final currentList = state.messages[_messageKey] ?? const <ChatMessage>[];
+        if (currentList.isNotEmpty) {
+          if (!_initialEffectSeedDone) {
+            _initialEffectSeedDone = true;
+            for (final m in currentList) {
+              if (m.id.isNotEmpty) _playedEffectMessageIds.add(m.id);
+            }
+          } else {
+            for (final m in currentList) {
+              if (!m.isMine &&
+                  m.id.isNotEmpty &&
+                  !_playedEffectMessageIds.contains(m.id)) {
+                final isEff = m.type == ChatMessageType.effect ||
+                    (m.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+                    ChatMessage.isKnownEffectName(m.text) ||
+                    ChatMessage.isKnownEffectName(m.giftName);
+                if (isEff) {
+                  _playedEffectMessageIds.add(m.id);
+                  final label = (m.giftName != null && m.giftName!.trim().isNotEmpty)
+                      ? m.giftName!.trim()
+                      : (m.text.trim().isNotEmpty ? m.text.trim() : 'Effect');
+                  final emoji = (m.giftEmoji != null &&
+                          m.giftEmoji!.trim().isNotEmpty &&
+                          m.giftEmoji != '✨')
+                      ? m.giftEmoji!.trim()
+                      : ChatMessage.effectEmojiFromName(label);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      _playEffectAnimation(emoji, label);
+                    }
+                  });
+                  break;
+                }
+              }
+            }
+          }
+        }
       },
       child: Scaffold(
         backgroundColor: AppColors.white,

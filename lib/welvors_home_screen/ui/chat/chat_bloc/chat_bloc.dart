@@ -1045,8 +1045,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (event.type == ChatMessageType.audio) {
       return 'AUDIO';
     }
-    if (event.type == ChatMessageType.effect) {
-      return 'EFFECT';
+    if (event.type == ChatMessageType.effect ||
+        (event.typemsg ?? '').trim().toLowerCase() == 'effect') {
+      return 'TEXT';
     }
     if (event.type == ChatMessageType.gift) {
       return 'GIFT';
@@ -1084,7 +1085,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       case ChatMessageType.gift:
         return 'GIFT';
       case ChatMessageType.effect:
-        return 'EFFECT';
+        return 'TEXT';
       case ChatMessageType.eventInvite:
         return 'EVENT';
       case ChatMessageType.DATECONFIRMED:
@@ -1343,15 +1344,28 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       AppLogger.d('ChatBloc', '🎁 payload => $socketPayload');
     }
 
-    if (socketMessageType == 'EFFECT' || event.type == ChatMessageType.effect) {
-      final emoji = event.giftEmoji ??
-          (event.typemsg != null && event.typemsg != 'Effect'
-              ? event.typemsg!
-              : '✨');
-      final label = (event.giftName ?? event.message ?? 'Effect').trim();
+    final bool isEffect = event.type == ChatMessageType.effect ||
+        (event.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+        ChatMessage.isKnownEffectName(event.message) ||
+        ChatMessage.isKnownEffectName(event.giftName);
 
-      socketPayload['typemsg'] = 'Effect';
+    if (isEffect) {
+      final label = ChatMessage.cleanEffectLabel(
+        (event.giftName ?? event.message ?? 'Effect').trim(),
+      );
+      final emoji = event.giftEmoji ??
+          ChatMessage.effectEmojiFromName(event.giftName ?? event.message);
+
+      // Backend database schema strictly accepts 'TEXT' (not 'EFFECT').
+      // Sending 'TEXT' ensures the backend successfully stores the message,
+      // broadcasts it to the recipient, and preserves it across refreshes.
+      socketPayload['type'] = 'TEXT';
+      socketPayload['messageType'] = 'TEXT';
+      socketPayload['content'] = '$emoji $label';
       socketPayload['metadata'] = {
+        'type': 'EFFECT',
+        'messageType': 'EFFECT',
+        'typemsg': 'Effect',
         'effect': {
           'emoji': emoji,
           'name': label,
@@ -1363,14 +1377,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         'giftEmoji': emoji,
         'giftName': label,
       };
+      socketPayload['effect'] = {
+        'emoji': emoji,
+        'name': label,
+      };
       socketPayload['effectEmoji'] = emoji;
       socketPayload['effectName'] = label;
       socketPayload['giftEmoji'] = emoji;
       socketPayload['giftName'] = label;
       socketPayload['emoji'] = emoji;
       socketPayload['label'] = label;
+      socketPayload['typemsg'] = 'Effect';
 
-      AppLogger.d('ChatBloc', '💫 EFFECT SEND => emoji=$emoji, label=$label');
+      AppLogger.d('ChatBloc', '💫 EFFECT SEND => emoji=$emoji, label=$label, content=${socketPayload['content']}');
     }
 
     // ==========================================================
@@ -1513,12 +1532,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // ========================================================
       // TEXT
       // ========================================================
-      text: (isMedia || isContact || isLocation) ? '' : (event.message ?? ''),
+      text: isEffect
+          ? '${event.giftEmoji ?? ChatMessage.effectEmojiFromName(event.giftName ?? event.message)} ${ChatMessage.cleanEffectLabel(event.giftName ?? event.message)}'
+          : ((isMedia || isContact || isLocation) ? '' : (event.message ?? '')),
 
       // ========================================================
       // MESSAGE TYPE
       // ========================================================
-      typemsg: isImage
+      typemsg: isEffect
+          ? 'Effect'
+          : isImage
           ? 'IMAGE'
           : isVideo
           ? 'VIDEO'
@@ -1537,7 +1560,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       isMine: true,
 
       // Dynamic type
-      type: event.type,
+      type: isEffect ? ChatMessageType.effect : event.type,
 
       // ========================================================
       // IMAGE
@@ -1590,8 +1613,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // GIFT
       // ========================================================
       giftId: event.giftId,
-      giftName: event.giftName,
-      giftEmoji: event.giftEmoji,
+      giftName: isEffect
+          ? ChatMessage.cleanEffectLabel(event.giftName ?? event.message)
+          : event.giftName,
+      giftEmoji: isEffect
+          ? (event.giftEmoji ?? ChatMessage.effectEmojiFromName(event.giftName ?? event.message))
+          : event.giftEmoji,
       giftCoins: event.giftCoins,
       giftClaimed: event.giftClaimed,
 
@@ -2059,20 +2086,29 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // EFFECT
       // ============================================================
       else if (incoming.type == ChatMessageType.effect ||
-          incomingType == 'EFFECT') {
+          incomingType == 'EFFECT' ||
+          ChatMessage.isKnownEffectName(incoming.text) ||
+          ChatMessage.isKnownEffectName(incoming.giftName)) {
         matchIndex = existing.indexWhere((message) {
           if (!message.isMine || !_tempIdPattern.hasMatch(message.id)) {
             return false;
           }
           if (message.type != ChatMessageType.effect &&
-              (message.typemsg ?? '').trim().toUpperCase() != 'EFFECT') {
+              (message.typemsg ?? '').trim().toUpperCase() != 'EFFECT' &&
+              !ChatMessage.isKnownEffectName(message.text) &&
+              !ChatMessage.isKnownEffectName(message.giftName)) {
             return false;
           }
-          final nameMatch = incoming.giftName != null &&
-              (message.giftName ?? '').trim() == incoming.giftName!.trim();
-          final textMatch =
-              message.text.isNotEmpty && message.text == incoming.text;
-          return nameMatch || textMatch;
+          final incomingClean = ChatMessage.cleanEffectLabel(
+            incoming.giftName ?? incoming.text,
+          ).toLowerCase();
+          final localClean = ChatMessage.cleanEffectLabel(
+            message.giftName ?? message.text,
+          ).toLowerCase();
+          return incomingClean == localClean ||
+              incoming.text == message.text ||
+              incoming.text.contains(localClean) ||
+              message.text.contains(incomingClean);
         });
       }
       // ============================================================
@@ -2149,10 +2185,40 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               : local.replyFileUrl,
           replyType: incoming.replyType ?? local.replyType,
 
-          // Gift fields are protected from partial socket/API echoes.
+          // Gift & Effect fields are protected from partial socket/API echoes.
+          type: (local.type == ChatMessageType.effect ||
+                  incoming.type == ChatMessageType.effect ||
+                  (local.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+                  (incoming.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+                  ChatMessage.isKnownEffectName(local.text) ||
+                  ChatMessage.isKnownEffectName(incoming.text))
+              ? ChatMessageType.effect
+              : incoming.type,
+          typemsg: (local.type == ChatMessageType.effect ||
+                  incoming.type == ChatMessageType.effect ||
+                  (local.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+                  (incoming.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+                  ChatMessage.isKnownEffectName(local.text) ||
+                  ChatMessage.isKnownEffectName(incoming.text))
+              ? 'Effect'
+              : incoming.typemsg,
           giftId: incoming.giftId ?? local.giftId,
-          giftName: incoming.giftName ?? local.giftName,
-          giftEmoji: incoming.giftEmoji ?? local.giftEmoji,
+          giftName: (local.type == ChatMessageType.effect ||
+                  incoming.type == ChatMessageType.effect ||
+                  ChatMessage.isKnownEffectName(incoming.text) ||
+                  ChatMessage.isKnownEffectName(local.text))
+              ? ChatMessage.cleanEffectLabel(
+                  incoming.giftName ?? local.giftName ?? (incoming.text.isNotEmpty ? incoming.text : local.text),
+                )
+              : (incoming.giftName ?? local.giftName),
+          giftEmoji: (local.type == ChatMessageType.effect ||
+                  incoming.type == ChatMessageType.effect ||
+                  ChatMessage.isKnownEffectName(incoming.text) ||
+                  ChatMessage.isKnownEffectName(local.text))
+              ? (incoming.giftEmoji ??
+                  local.giftEmoji ??
+                  ChatMessage.effectEmojiFromName(incoming.giftName ?? local.giftName ?? incoming.text))
+              : (incoming.giftEmoji ?? local.giftEmoji),
           giftCoins: _preferNonZero(incoming.giftCoins, local.giftCoins),
           giftClaimed: incoming.giftClaimed || local.giftClaimed,
           messageProgress: incoming.messageProgress ?? local.messageProgress,
@@ -2229,6 +2295,29 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         messageTarget: newMessage.messageTarget ?? oldMessage.messageTarget,
         expiresIn: newMessage.expiresIn ?? oldMessage.expiresIn,
         imageUrl: newMessage.imageUrl ?? oldMessage.imageUrl,
+      );
+    }
+
+    if (oldMessage.type == ChatMessageType.effect ||
+        newMessage.type == ChatMessageType.effect ||
+        (oldMessage.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+        (newMessage.typemsg ?? '').trim().toLowerCase() == 'effect' ||
+        ChatMessage.isKnownEffectName(oldMessage.text) ||
+        ChatMessage.isKnownEffectName(newMessage.text) ||
+        ChatMessage.isKnownEffectName(oldMessage.giftName) ||
+        ChatMessage.isKnownEffectName(newMessage.giftName)) {
+      final resolvedName = newMessage.giftName ??
+          oldMessage.giftName ??
+          (newMessage.text.isNotEmpty ? newMessage.text : oldMessage.text);
+      final resolvedEmoji = newMessage.giftEmoji ??
+          oldMessage.giftEmoji ??
+          ChatMessage.effectEmojiFromName(resolvedName);
+
+      merged = merged.copyWith(
+        type: ChatMessageType.effect,
+        typemsg: 'Effect',
+        giftName: resolvedName,
+        giftEmoji: resolvedEmoji,
       );
     }
 
