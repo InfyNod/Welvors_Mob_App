@@ -93,11 +93,11 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
   String get tierEmoji {
     switch (plan.tier) {
       case MembershipTier.premiumPlus:
-        return '⭐';
+        return '🔥';
       case MembershipTier.vip:
-        return '💎';
-      case MembershipTier.elite:
         return '👑';
+      case MembershipTier.elite:
+        return '💠';
     }
   }
 
@@ -127,11 +127,11 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
     final horizontalPadding = size.width < 360 ? 16.0 : 24.0;
 
     // Themed colors based on tier
-    Color glowColor = plan.tier == MembershipTier.vip 
-      ? const Color(0xFFFFD700) 
-      : plan.tier == MembershipTier.premiumPlus 
-      ? const Color(0xFFE43A6A) 
-      : Colors.grey.shade400;
+    Color glowColor = plan.tier == MembershipTier.vip
+        ? const Color(0xFFFFD700)
+        : plan.tier == MembershipTier.premiumPlus
+        ? const Color(0xFFE43A6A)
+        : Colors.grey.shade400;
 
     return Material(
       type: MaterialType.transparency,
@@ -147,7 +147,10 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(32),
-                  border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.5),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: glowColor.withOpacity(0.15),
@@ -326,10 +329,7 @@ class _PremiumSuccessIcon extends StatelessWidget {
             ],
           ),
           child: Center(
-            child: Text(
-              tierEmoji,
-              style: const TextStyle(fontSize: 26),
-            ),
+            child: Text(tierEmoji, style: const TextStyle(fontSize: 26)),
           ),
         ),
         // Success checkmark badge

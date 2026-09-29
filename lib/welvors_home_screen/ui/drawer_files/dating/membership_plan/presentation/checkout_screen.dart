@@ -539,7 +539,7 @@ class _PlanSummaryCard extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   isElite
-                      ? '💎'
+                      ? '💠'
                       : isVip
                       ? '👑'
                       : '🔥',
