@@ -18,13 +18,21 @@ import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ChatScreen_ extends StatefulWidget {
-  const ChatScreen_({super.key});
+  /// Fires whenever the chat tab becomes the active tab.
+  /// _ChatListView listens to this and refreshes the chat list.
+  final ValueNotifier<int>? refreshNotifier;
+
+  const ChatScreen_({super.key, this.refreshNotifier});
 
   @override
   State<ChatScreen_> createState() => _ChatScreen_State();
 }
 
-class _ChatScreen_State extends State<ChatScreen_> {
+class _ChatScreen_State extends State<ChatScreen_>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   late final Future<String> _initFuture = _init();
 
   Future<String> _init() async {
@@ -47,6 +55,7 @@ class _ChatScreen_State extends State<ChatScreen_> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return FutureBuilder<String>(
       future: _initFuture,
       builder: (context, snapshot) {
@@ -66,12 +75,16 @@ class _ChatScreen_State extends State<ChatScreen_> {
               socketService: SocketService(),
             )..add(const LoadChatsEvent());
           },
-          child: _ChatListView(currentUserId: currentUserId),
+          child: _ChatListView(
+            currentUserId: currentUserId,
+            refreshNotifier: widget.refreshNotifier,
+          ),
         );
       },
     );
   }
 }
+
 
 // ==========================================================
 // NEW MATCH MODEL
@@ -348,14 +361,22 @@ class _SwipeDeleteChatTileState extends State<_SwipeDeleteChatTile> {
 
 class _ChatListView extends StatefulWidget {
   final String currentUserId;
+  final ValueNotifier<int>? refreshNotifier;
 
-  const _ChatListView({required this.currentUserId});
+  const _ChatListView({
+    required this.currentUserId,
+    this.refreshNotifier,
+  });
 
   @override
   State<_ChatListView> createState() => _ChatListViewState();
 }
 
-class _ChatListViewState extends State<_ChatListView> {
+class _ChatListViewState extends State<_ChatListView>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   // ==========================================================
   // LAYOUT CONSTANTS
   // ==========================================================
@@ -433,9 +454,15 @@ class _ChatListViewState extends State<_ChatListView> {
   List<_NewMatch> _newMatchesData = const [];
   bool _newMatchesLoading = true;
   String? _newMatchesError;
+  // Guard: ensures the new-matches API is called only once per
+  // widget lifetime, even if the tab is switched back and forth.
+  bool _newMatchesLoaded = false;
 
-  Future<void> _loadNewMatches() async {
+  Future<void> _loadNewMatches({bool forceRefresh = false}) async {
     if (!mounted) return;
+
+    // Skip if already successfully loaded (unless explicitly refreshing)
+    if (_newMatchesLoaded && !forceRefresh) return;
 
     setState(() {
       _newMatchesLoading = true;
@@ -496,6 +523,7 @@ class _ChatListViewState extends State<_ChatListView> {
       setState(() {
         _newMatchesData = unique.values.toList();
         _newMatchesLoading = false;
+        _newMatchesLoaded = true; // Mark as loaded so we skip next time
       });
     } catch (e) {
       AppLogger.e('ChatScreen', '❌ NEW MATCHES: $e');
@@ -506,6 +534,7 @@ class _ChatListViewState extends State<_ChatListView> {
         _newMatchesData = const [];
         _newMatchesLoading = false;
         _newMatchesError = e.toString();
+        // Don't set _newMatchesLoaded = true on error so it retries next time
       });
     }
   }
@@ -560,7 +589,19 @@ class _ChatListViewState extends State<_ChatListView> {
     // listeners while creating the socket, so user:online cannot be missed.
     _socketService.ensureConnected();
 
+    // Listen to tab-switch signal from the bottom nav.
+    // When the chat tab becomes active, refresh the chat listing so any
+    // messages received while on another tab are immediately visible.
+    widget.refreshNotifier?.addListener(_onTabRefresh);
+
     AppLogger.d('ChatScreen', '🟢 CHAT LIST: initState completed');
+  }
+
+  /// Called by [refreshNotifier] whenever the chat tab becomes active.
+  void _onTabRefresh() {
+    if (!mounted) return;
+    AppLogger.d('ChatScreen', '🔄 Tab refresh signal received - reloading chat list');
+    context.read<ChatBloc>().add(const LoadChatsEvent());
   }
 
   // ==========================================================
@@ -965,6 +1006,9 @@ class _ChatListViewState extends State<_ChatListView> {
 
   @override
   void dispose() {
+    // Remove tab-refresh listener to avoid calling a disposed widget
+    widget.refreshNotifier?.removeListener(_onTabRefresh);
+
     _socketService.off('typing:start');
     _socketService.off('typing:stop');
     _socketService.offListener('user:online', _onUserOnline);
@@ -989,6 +1033,7 @@ class _ChatListViewState extends State<_ChatListView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -2012,6 +2057,8 @@ class _ChatListViewState extends State<_ChatListView> {
     ).then((_) {
       if (!mounted) return;
       chatBloc.clearConversationUnread(conversationId);
+      // Refresh chat list so new messages show after returning from ChatDetail
+      chatBloc.add(const LoadChatsEvent());
       AppLogger.d('ChatScreen', '🔙 RETURNED CHAT -> unread cleared: $conversationId');
     });
   }

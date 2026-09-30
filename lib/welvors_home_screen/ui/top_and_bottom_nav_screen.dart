@@ -115,10 +115,15 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   final ValueNotifier<Offset?> _rosePositionNotifier = ValueNotifier(null);
   final ValueNotifier<bool> _isDraggingRoseNotifier = ValueNotifier(false);
 
+  // Fires every time the chat tab (index 3) becomes the active tab so that
+  // ChatScreen_ can trigger a listing refresh via LoadChatsEvent.
+  final ValueNotifier<int> _chatTabNotifier = ValueNotifier<int>(0);
+
   @override
   void dispose() {
     _rosePositionNotifier.dispose();
     _isDraggingRoseNotifier.dispose();
+    _chatTabNotifier.dispose();
     _unreadCountPollTimer?.cancel();
     super.dispose();
   }
@@ -301,17 +306,24 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   }
 
   Widget _getSelectedScreen() {
-    if (_isDrawerOpen) {
-      return const DrawerScreen();
-    }
-    return IndexedStack(
-      index: _selectedIndex,
+    // Always keep IndexedStack alive in the widget tree so that ChatBloc
+    // (and its socket / API state) is never destroyed when the drawer opens
+    // or closes. DrawerScreen is overlaid on top via a Stack.
+    return Stack(
       children: [
-        HomeScreen(isPreview: widget.isPreview),
-        const DateNowScreen(),
-        const TopNavAdmirersScreen(),
-        const ChatScreen_(),
-        const EventsScreen(),
+        IndexedStack(
+          index: _selectedIndex,
+          children: [
+            HomeScreen(isPreview: widget.isPreview),
+            const DateNowScreen(),
+            const TopNavAdmirersScreen(),
+            // Pass the notifier so ChatScreen_ can refresh the listing
+            // whenever the chat tab becomes active (tab switch or re-tap).
+            ChatScreen_(refreshNotifier: _chatTabNotifier),
+            const EventsScreen(),
+          ],
+        ),
+        if (_isDrawerOpen) const DrawerScreen(),
       ],
     );
   }
@@ -729,10 +741,16 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
     final isActive = !_isDrawerOpen && _selectedIndex == index;
     return GestureDetector(
       onTap: () {
+        final wasAlreadyOnChat = _selectedIndex == 3 && !_isDrawerOpen;
         setState(() {
           _selectedIndex = index;
           _isDrawerOpen = false;
         });
+        // Fire refresh signal when navigating TO the chat tab (index 3),
+        // including re-tapping it while already on it.
+        if (index == 3 || wasAlreadyOnChat) {
+          _chatTabNotifier.value = DateTime.now().millisecondsSinceEpoch;
+        }
       },
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
