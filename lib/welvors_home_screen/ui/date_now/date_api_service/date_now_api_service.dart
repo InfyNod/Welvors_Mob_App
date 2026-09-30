@@ -430,10 +430,16 @@ class DateNowApiService {
         '$baseUrl/user/date-plans/discover?filter=$filter&limit=15',
       );
 
+      var rawToken = overrideToken ?? (await TokenHelper.getToken() ?? "");
+      rawToken = rawToken.trim();
+      if (rawToken.startsWith('Bearer ')) {
+        rawToken = rawToken.substring(7).trim();
+      }
+
       final headers = {
+        'Accept': '*/*',
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer ${overrideToken ?? (await TokenHelper.getToken() ?? "")}',
+        if (rawToken.isNotEmpty) 'Authorization': 'Bearer $rawToken',
       };
 
       final response = await http.get(url, headers: headers);
@@ -450,6 +456,9 @@ class DateNowApiService {
           if (data is List) {
             return data;
           } else if (data is Map) {
+            if (data['plans'] is List) {
+              return data['plans'] as List<dynamic>;
+            }
             return [data];
           }
           return [];

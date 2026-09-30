@@ -7,7 +7,8 @@ import 'all_pages_admirers/likes/received.dart';
 import 'all_pages_admirers/likes/sent.dart';
 
 class TopNavAdmirersScreen extends StatefulWidget {
-  const TopNavAdmirersScreen({super.key});
+  final ValueNotifier<int>? refreshNotifier;
+  const TopNavAdmirersScreen({super.key, this.refreshNotifier});
 
   @override
   State<TopNavAdmirersScreen> createState() => _TopNavAdmirersScreenState();
@@ -21,6 +22,7 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen>
   @override
   void initState() {
     super.initState();
+    widget.refreshNotifier?.addListener(_onTabRefresh);
     int initialIndex = 0;
     final state = context.read<AdmirersBloc>().state;
     if (state is AdmirersLoaded) {
@@ -42,8 +44,24 @@ class _TopNavAdmirersScreenState extends State<TopNavAdmirersScreen>
     });
   }
 
+  void _onTabRefresh() {
+    if (mounted) {
+      context.read<AdmirersBloc>().add(LoadAdmirersData());
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant TopNavAdmirersScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshNotifier != widget.refreshNotifier) {
+      oldWidget.refreshNotifier?.removeListener(_onTabRefresh);
+      widget.refreshNotifier?.addListener(_onTabRefresh);
+    }
+  }
+
   @override
   void dispose() {
+    widget.refreshNotifier?.removeListener(_onTabRefresh);
     _tabController.dispose();
     super.dispose();
   }

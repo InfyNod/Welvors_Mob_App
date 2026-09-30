@@ -10,9 +10,13 @@ class EventApiService {
 
   static Future<Map<String, String>> get _headers async {
     final token = await TokenHelper.getToken();
+    final authHeader = token != null && token.toLowerCase().startsWith('bearer ')
+        ? token
+        : 'Bearer $token';
     return {
+      'Accept': '*/*',
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
+      if (token != null && token.isNotEmpty) 'Authorization': authHeader,
     };
   }
 
