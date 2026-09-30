@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
+import '../../../../utils/notification_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -61,6 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (isLoggedIn && mounted) {
       context.read<HomeBloc>().add(const LoadHomeDataEvent(isRefresh: true));
+      unawaited(NotificationService().sendDeviceTokenToServer());
     }
 
     // 2. Ensure the splash animation plays for at least 3 seconds
