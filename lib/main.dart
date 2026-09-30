@@ -22,6 +22,8 @@ import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 import 'package:velvors/welvors_home_screen/services/network_connectivity_service.dart';
 import 'package:velvors/welvors_home_screen/ui/network/no_internet_screen.dart';
+import 'package:velvors/utils/app_update_helper.dart';
+import 'package:velvors/utils/app_update_screen.dart';
 
 // Firebase background message handler
 @pragma('vm:entry-point')
@@ -123,7 +125,10 @@ class _WelvorsAppState extends State<WelvorsApp> {
             data: MediaQuery.of(
               context,
             ).copyWith(textScaler: const TextScaler.linear(1.0)),
-            child: child!,
+            child: AppUpdateHelper.wrapWithUpdateAlert(
+              navigatorKey: navigatorKey,
+              child: child!,
+            ),
           );
         },
 
@@ -134,6 +139,15 @@ class _WelvorsAppState extends State<WelvorsApp> {
           '/TrustVerificationScreen': (context) =>
               const TrustVerificationScreen(),
           '/no-internet': (context) => const NoInternetScreen(),
+          '/app-update': (context) => AppUpdateScreen(
+                currentVersion:
+                    AppUpdateHelper.currentInstalledVersion ?? '1.0.0',
+                latestVersion:
+                    AppUpdateHelper.currentAppStoreVersion ?? '1.0.1',
+                releaseNotes: AppUpdateHelper.releaseNotes,
+                onUpdate: AppUpdateHelper.openPlayStore,
+                onLater: () => Navigator.of(context).pop(),
+              ),
         },
       ),
     );
