@@ -300,7 +300,8 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                           
                           final success = await AccountSettingService.unblockUser(id);
                           
-                          if (success && mounted) {
+                          if (!mounted || !context.mounted) return;
+                          if (success) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: const Text('User unblocked successfully!'),
@@ -312,7 +313,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                               ),
                             );
                             _fetchBlockedUsers();
-                          } else if (mounted) {
+                          } else {
                             setState(() => _isLoading = false);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

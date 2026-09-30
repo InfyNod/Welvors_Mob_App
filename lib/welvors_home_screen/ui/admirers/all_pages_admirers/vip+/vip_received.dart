@@ -580,26 +580,4 @@ class _VipReceivedScreenState extends State<VipReceivedScreen> {
     );
   }
 
-  Widget _buildSentPlaceholder() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.send_rounded, size: 48, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
-            Text(
-              'No sent proposals yet',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

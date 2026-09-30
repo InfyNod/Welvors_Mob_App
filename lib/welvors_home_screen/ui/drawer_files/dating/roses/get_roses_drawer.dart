@@ -172,7 +172,7 @@ class _GetRosesDrawerState extends State<GetRosesDrawer> {
                     
                     final success = await apiService.buyRosePack(packId);
                     
-                    if (!mounted) return;
+                    if (!mounted || !context.mounted) return;
                     
                     if (success) {
                       Navigator.pop(context); // Close the bottom sheet

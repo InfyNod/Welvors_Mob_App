@@ -178,7 +178,7 @@ class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
                     
                     final success = await apiService.buyBoostPack(packId);
                     
-                    if (!mounted) return;
+                    if (!mounted || !context.mounted) return;
                     
                     if (success) {
                       final rootContext = Navigator.of(context).context;

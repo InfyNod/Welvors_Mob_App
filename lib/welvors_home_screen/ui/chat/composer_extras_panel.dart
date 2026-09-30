@@ -285,17 +285,6 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
     'Good night',
   ];
 
-  // --------------------------------------------------------------
-  // GIF SEARCH QUERIES
-  // --------------------------------------------------------------
-
-  static const Map<String, String> _gifSearchQueries = {
-    'Romance': 'romance love romantic couple',
-    'Flirty': 'flirty wink kiss love',
-    'Say hi': 'hello hi hey greeting',
-    'Miss you': 'miss you missing you love',
-    'Good night': 'good night sweet dreams sleep',
-  };
 
   // --------------------------------------------------------------
   // GIF PREVIEW EMOJIS
@@ -309,110 +298,6 @@ class _ComposerExtrasPanelState extends State<ComposerExtrasPanel> {
     'Good night': ['🌙', '😴', '⭐', '💤'],
   };
 
-  // --------------------------------------------------------------
-  // GIFTS
-  // --------------------------------------------------------------
-
-  static const List<String> _giftCategories = [
-    'Flowers',
-    'Treats',
-    'Cute Gifts',
-    'Jewellery',
-    'Fashion',
-  ];
-
-  static const Map<String, List<GiftItem>> _gifts = {
-    'Flowers': [
-      GiftItem('Single rose', '🌹', 10),
-      GiftItem('Bouquet', '💐', 50),
-      GiftItem('Tulips', '🌷', 35),
-      GiftItem('Blossoms', '🌸', 30),
-      GiftItem('Dried rose', '🥀', 15),
-      GiftItem('Lotus', '🪷', 40),
-      GiftItem('Sunflower', '🌻', 25),
-      GiftItem('White rose', '🤍', 20),
-      GiftItem('Red tulip', '🌷', 30),
-      GiftItem('Lavender', '🪻', 35),
-      GiftItem('Cherry blossom', '🌸', 45),
-      GiftItem('Orchid', '🌺', 55),
-      GiftItem('Flower crown', '💐', 70),
-      GiftItem('Golden rose', '🌹', 100),
-      GiftItem('Heart flowers', '💮', 65),
-      GiftItem('Spring bouquet', '🌼', 80),
-    ],
-    'Treats': [
-      GiftItem('Cake', '🍰', 25),
-      GiftItem('Chocolate', '🍫', 15),
-      GiftItem('Ice cream', '🍨', 20),
-      GiftItem('Coffee', '☕', 10),
-      GiftItem('Donut', '🍩', 12),
-      GiftItem('Cookies', '🍪', 18),
-      GiftItem('Cupcake', '🧁', 20),
-      GiftItem('Candy', '🍬', 10),
-      GiftItem('Lollipop', '🍭', 15),
-      GiftItem('Macaron', '🍡', 28),
-      GiftItem('Strawberry', '🍓', 16),
-      GiftItem('Pizza', '🍕', 22),
-      GiftItem('Sushi', '🍣', 35),
-      GiftItem('Hot chocolate', '☕', 18),
-      GiftItem('Sweet box', '🍱', 45),
-      GiftItem('Birthday cake', '🎂', 60),
-    ],
-    'Cute Gifts': [
-      GiftItem('Teddy bear', '🧸', 45),
-      GiftItem('Balloon', '🎈', 15),
-      GiftItem('Bunny', '🐰', 60),
-      GiftItem('Puppy', '🐶', 70),
-      GiftItem('Kitten', '🐱', 65),
-      GiftItem('Panda', '🐼', 55),
-      GiftItem('Koala', '🐨', 50),
-      GiftItem('Penguin', '🐧', 48),
-      GiftItem('Unicorn', '🦄', 75),
-      GiftItem('Baby chick', '🐥', 35),
-      GiftItem('Duckling', '🦆', 32),
-      GiftItem('Frog', '🐸', 30),
-      GiftItem('Monkey', '🐵', 42),
-      GiftItem('Panda hug', '🤗', 58),
-      GiftItem('Cute hearts', '🥰', 65),
-      GiftItem('Magic star', '🌟', 80),
-    ],
-    'Jewellery': [
-      GiftItem('Ring', '💍', 200),
-      GiftItem('Necklace', '📿', 150),
-      GiftItem('Bracelet', '📿', 100),
-      GiftItem('Earrings', '💎', 90),
-      GiftItem('Crown', '👑', 250),
-      GiftItem('Watch', '⌚', 180),
-      GiftItem('Diamond', '💎', 300),
-      GiftItem('Gold ring', '💍', 280),
-      GiftItem('Pearl', '🫧', 220),
-      GiftItem('Ruby', '🔴', 350),
-      GiftItem('Sapphire', '🔵', 360),
-      GiftItem('Gold chain', '⛓️', 275),
-      GiftItem('Tiara', '👸', 240),
-      GiftItem('Silver ring', '💠', 190),
-      GiftItem('Luxury gem', '🔶', 400),
-      GiftItem('Diamond box', '🎁', 450),
-    ],
-    'Fashion': [
-      GiftItem('Dress', '👗', 120),
-      GiftItem('Handbag', '👜', 140),
-      GiftItem('Shoes', '👠', 110),
-      GiftItem('Sunglasses', '🕶️', 60),
-      GiftItem('Scarf', '🧣', 40),
-      GiftItem('Hat', '👒', 35),
-      GiftItem('Saree', '🥻', 160),
-      GiftItem('Jacket', '🧥', 130),
-      GiftItem('Heels', '👠', 145),
-      GiftItem('Sneakers', '👟', 100),
-      GiftItem('Tie', '👔', 75),
-      GiftItem('Purse', '👛', 125),
-      GiftItem('Watch band', '⌚', 95),
-      GiftItem('Sunglasses gold', '🕶️', 110),
-      GiftItem('Fashion crown', '👑', 200),
-      GiftItem('Silk gloves', '🧤', 65),
-    ],
-  };
 
   // --------------------------------------------------------------
   // BUILD

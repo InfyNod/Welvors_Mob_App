@@ -55,7 +55,7 @@ class DatePlanApiService {
       }
       return false;
     } catch (e) {
-      print('Error buying date plan pack: $e');
+      AppLogger.e('DatePlanApiService', 'Error buying date plan pack: $e');
       return false;
     }
   }

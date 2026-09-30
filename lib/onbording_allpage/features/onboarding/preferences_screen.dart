@@ -447,19 +447,18 @@ class _PreferencesScreenState extends State<PreferencesScreen> with AutomaticKee
                       interestedInValue,
                       sexualOrientationValue,
                     );
+                    if (!mounted || !context.mounted) return;
                     setState(() => _isLoading = false);
 
                     if (errorMsg == null) {
                       widget.onNext();
                     } else {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(errorMsg),
-                            duration: const Duration(seconds: 4),
-                          ),
-                        );
-                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(errorMsg),
+                          duration: const Duration(seconds: 4),
+                        ),
+                      );
                     }
                   }
                 : null,

@@ -147,12 +147,12 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(32),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: glowColor.withOpacity(0.15),
+                      color: glowColor.withValues(alpha: 0.15),
                       blurRadius: 40,
                       spreadRadius: 10,
                       offset: const Offset(0, 10),
@@ -202,10 +202,10 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: badgeBackground.withOpacity(0.6),
+                        color: badgeBackground.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: badgeForeground.withOpacity(0.2),
+                          color: badgeForeground.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(
@@ -246,7 +246,7 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
                           backgroundColor: actionColor,
                           foregroundColor: Colors.white,
                           elevation: 0,
-                          shadowColor: actionColor.withOpacity(0.5),
+                          shadowColor: actionColor.withValues(alpha: 0.5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -294,7 +294,7 @@ class _PremiumSuccessIcon extends StatelessWidget {
           height: 100,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: glowColor.withOpacity(0.15),
+            color: glowColor.withValues(alpha: 0.15),
           ),
         ),
         // Middle ring
@@ -303,7 +303,7 @@ class _PremiumSuccessIcon extends StatelessWidget {
           height: 76,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: glowColor.withOpacity(0.25),
+            color: glowColor.withValues(alpha: 0.25),
           ),
         ),
         // Inner solid circle
@@ -317,11 +317,11 @@ class _PremiumSuccessIcon extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: isElite
                   ? [const Color(0xFF404040), const Color(0xFF1A1A1A)]
-                  : [glowColor.withOpacity(0.8), glowColor],
+                  : [glowColor.withValues(alpha: 0.8), glowColor],
             ),
             boxShadow: [
               BoxShadow(
-                color: glowColor.withOpacity(0.4),
+                color: glowColor.withValues(alpha: 0.4),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
@@ -343,7 +343,7 @@ class _PremiumSuccessIcon extends StatelessWidget {
               border: Border.all(color: Colors.white, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),

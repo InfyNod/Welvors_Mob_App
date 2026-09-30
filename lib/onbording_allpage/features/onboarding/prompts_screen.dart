@@ -387,16 +387,15 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
                                     payload,
                                   );
 
+                                  if (!mounted || !context.mounted) return;
                                   setState(() => _isSubmitting = false);
 
                                   if (error != null) {
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(content: Text(error)),
-                                      );
-                                    }
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
+                                      SnackBar(content: Text(error)),
+                                    );
                                   } else {
                                     widget.onNext();
                                   }

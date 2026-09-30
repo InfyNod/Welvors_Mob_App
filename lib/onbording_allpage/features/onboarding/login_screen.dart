@@ -84,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_isOtpSent) {
       setState(() => _isLoading = true);
       final errorMsg = await ApiService.sendOtp(_phoneController.text);
+      if (!mounted) return;
       setState(() => _isLoading = false);
 
       if (errorMsg == null) {
@@ -92,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
         });
         _startTimer();
         Future.delayed(const Duration(milliseconds: 100), () {
-          if (context.mounted) {
+          if (mounted) {
             FocusScope.of(context).requestFocus(_otpFocusNode);
           }
         });
@@ -110,11 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _phoneController.text,
         _otpController.text,
       );
+      if (!mounted) return;
       setState(() => _isLoading = false);
 
       final token = result['token'];
       final errorMsg = result['error'];
-      final isRegister = result['is_register'] ?? true;
       final onboardingCompleted = result['onboarding_completed'] ?? false;
       final String? nextStep = result['next_step'];
 
@@ -122,44 +123,41 @@ class _LoginScreenState extends State<LoginScreen> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
 
-        if (mounted) {
-          context.read<ProfileEditCubit>().loadProfile();
-        }
+        if (!mounted) return;
+        context.read<ProfileEditCubit>().loadProfile();
 
         // Save phone to UserData
         userData.phone = '+91 ${_phoneController.text.trim()}';
 
-        if (mounted) {
-          if (!onboardingCompleted) {
-            // New or incomplete user -> Start onboarding from next step
-            await prefs.setBool('onboarding_completed', false);
-            if (nextStep != null) {
-              await prefs.setString('onboarding_next_step', nextStep);
-            }
+        if (!onboardingCompleted) {
+          // New or incomplete user -> Start onboarding from next step
+          await prefs.setBool('onboarding_completed', false);
+          if (nextStep != null) {
+            await prefs.setString('onboarding_next_step', nextStep);
+          }
 
-            final int initialStep =
-                OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
+          final int initialStep =
+              OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
 
-            if (context.mounted) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      OnboardingFlowScreen(initialStep: initialStep),
-                ),
-                (route) => false,
-              );
-            }
-          } else {
-            // Existing user who completed onboarding -> Go to Splash
-            await prefs.setBool('onboarding_completed', true);
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/splash',
-                (route) => false,
-              );
-            }
+          if (mounted) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    OnboardingFlowScreen(initialStep: initialStep),
+              ),
+              (route) => false,
+            );
+          }
+        } else {
+          // Existing user who completed onboarding -> Go to Splash
+          await prefs.setBool('onboarding_completed', true);
+          if (mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/splash',
+              (route) => false,
+            );
           }
         }
       } else {

@@ -197,8 +197,8 @@ class BoostAllApiService {
         }),
       );
 
-      print('Boost Top-Up Response Status: ${response.statusCode}');
-      print('Boost Top-Up Response Body: ${response.body}');
+      AppLogger.d('BoostAllApiService', 'Boost Top-Up Response Status: ${response.statusCode}');
+      AppLogger.d('BoostAllApiService', 'Boost Top-Up Response Body: ${response.body}');
       
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
@@ -208,7 +208,7 @@ class BoostAllApiService {
       }
       return false;
     } catch (e) {
-      print('Error buying boost pack: $e');
+      AppLogger.e('BoostAllApiService', 'Error buying boost pack: $e');
       return false;
     }
   }

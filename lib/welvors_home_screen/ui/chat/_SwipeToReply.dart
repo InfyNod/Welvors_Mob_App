@@ -166,12 +166,6 @@ class _SwipeToReplyState extends State<SwipeToReply>
         ? (_dragX / _replyThreshold).clamp(0.0, 1.0)
         : 0.0;
 
-    // IMPORTANT:
-    // Only show Delete icon when current gesture is Delete.
-    final double deleteProgress = _direction == SwipeDirection.delete
-        ? (-_dragX / -_deleteThreshold).clamp(0.0, 1.0)
-        : 0.0;
-
     return SizedBox(
       width: double.infinity,
       child: Stack(
@@ -192,7 +186,7 @@ class _SwipeToReplyState extends State<SwipeToReply>
                     width: 38,
                     height: 38,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.10),
+                      color: AppColors.primary.withValues(alpha: 0.10),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,

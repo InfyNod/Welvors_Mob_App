@@ -311,17 +311,6 @@ class _LocationMapScreenState extends State<LocationMapScreen> {
     };
   }
 
-  // ==========================================================
-  // RECENTER
-  // ==========================================================
-
-  void _recenter() {
-    _controller?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: _selected, zoom: 16),
-      ),
-    );
-  }
 
   // ==========================================================
   // SELECT LOCATION FROM MAP

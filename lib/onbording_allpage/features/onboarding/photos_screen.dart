@@ -356,7 +356,7 @@ class _PhotosScreenState extends State<PhotosScreen> with AutomaticKeepAliveClie
                       errorMsg = await ApiService.submitPhotos(paths);
                     }
 
-                    if (mounted) {
+                    if (mounted && context.mounted) {
                       setState(() => _isSubmitting = false);
 
                       if (errorMsg != null) {

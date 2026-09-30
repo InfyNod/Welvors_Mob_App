@@ -528,7 +528,9 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                         if (widget.onPlanAction != null) {
                           widget.onPlanAction!();
                         }
-                        Navigator.pop(context); // Go back after skipping
+                        if (context.mounted) {
+                          Navigator.pop(context); // Go back after skipping
+                        }
                       },
                     ),
                   ),

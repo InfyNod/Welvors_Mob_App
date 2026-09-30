@@ -735,8 +735,8 @@ class _CareerScreenState extends State<CareerScreen>
                         });
 
                         if (eduError != null) {
-                          setState(() => _isSubmitting = false);
-                          if (mounted) {
+                          if (mounted && context.mounted) {
+                            setState(() => _isSubmitting = false);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Education Error: $eduError'),
@@ -768,14 +768,13 @@ class _CareerScreenState extends State<CareerScreen>
                               : "Not specified",
                         });
 
+                        if (!mounted || !context.mounted) return;
                         setState(() => _isSubmitting = false);
 
                         if (workError != null) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Work Error: $workError')),
-                            );
-                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Work Error: $workError')),
+                          );
                           return;
                         }
 

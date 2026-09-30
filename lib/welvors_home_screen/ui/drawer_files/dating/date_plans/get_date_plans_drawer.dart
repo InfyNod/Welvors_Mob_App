@@ -170,7 +170,7 @@ class _GetDatePlansDrawerState extends State<GetDatePlansDrawer> {
                     
                     final success = await apiService.buyDatePlanPack(packId);
                     
-                    if (!mounted) return;
+                    if (!mounted || !context.mounted) return;
                     
                     if (success) {
                       Navigator.pop(context); // Close the bottom sheet

@@ -55,7 +55,7 @@ class RoseApiService {
       }
       return false;
     } catch (e) {
-      print('Error buying rose pack: $e');
+      AppLogger.e('RoseApiService', 'Error buying rose pack: $e');
       return false;
     }
   }

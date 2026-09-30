@@ -103,6 +103,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
     if (!_isOtpSent) {
       setState(() => _isLoading = true);
       final errorMsg = await ApiService.sendOtp(_phoneController.text);
+      if (!mounted) return;
       setState(() => _isLoading = false);
 
       if (errorMsg == null) {
@@ -111,16 +112,14 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
         });
         _startTimer();
         Future.delayed(const Duration(milliseconds: 100), () {
-          if (context.mounted) {
-            FocusScope.of(context).requestFocus(_otpFocusNode);
+          if (mounted) {
+            _otpFocusNode.requestFocus();
           }
         });
       } else {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(errorMsg)));
-        }
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMsg)));
       }
     } else {
       if (_inviteCodeController.text.trim().isEmpty) {
@@ -259,7 +258,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
             final int initialStep =
                 OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
 
-            if (context.mounted) {
+            if (mounted) {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
@@ -272,7 +271,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
           } else {
             // Existing user who completed onboarding -> Go to Splash
             await prefs.setBool('onboarding_completed', true);
-            if (context.mounted) {
+            if (mounted) {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/splash',
@@ -1041,46 +1040,3 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
   }
 }
 
-class _FeatureItem extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  const _FeatureItem({required this.icon, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 2),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.pinkSoft.withValues(
-                  alpha: 0.6,
-                ), // Light pink background
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                icon,
-                color: AppColors.ink.withValues(alpha: 0.7),
-                size: 24,
-              ), // Greyish icon
-            ),
-            const SizedBox(height: 10),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: AppText.sub.copyWith(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.ink.withValues(alpha: 0.8),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

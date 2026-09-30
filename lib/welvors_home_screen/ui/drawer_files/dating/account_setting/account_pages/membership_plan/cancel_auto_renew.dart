@@ -15,7 +15,7 @@ void showCancelAutoRenewBottomSheet(BuildContext context, String planName, VoidC
 class _CancelAutoRenewSheet extends StatefulWidget {
   final String planName;
   final VoidCallback onCancelled;
-  const _CancelAutoRenewSheet({super.key, required this.planName, required this.onCancelled});
+  const _CancelAutoRenewSheet({required this.planName, required this.onCancelled});
 
   @override
   State<_CancelAutoRenewSheet> createState() => _CancelAutoRenewSheetState();
@@ -203,7 +203,7 @@ class _CancelWarningSheet extends StatefulWidget {
   final String reason;
   final String planName;
   final VoidCallback onCancelled;
-  const _CancelWarningSheet({super.key, required this.reason, required this.planName, required this.onCancelled});
+  const _CancelWarningSheet({required this.reason, required this.planName, required this.onCancelled});
 
   @override
   State<_CancelWarningSheet> createState() => _CancelWarningSheetState();
@@ -365,24 +365,23 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
                         
                         final success = await AccountSettingService.turnOffAutoRenew(widget.reason);
                         
-                        if (mounted) {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                          
-                          if (success) {
-                            Navigator.pop(context);
-                            showCancelConfirmationBottomSheet(context, widget.reason, widget.planName, widget.onCancelled);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Failed to cancel auto-renew. Please try again.')),
-                            );
-                          }
+                        if (!mounted || !context.mounted) return;
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        
+                        if (success) {
+                          Navigator.pop(context);
+                          showCancelConfirmationBottomSheet(context, widget.reason, widget.planName, widget.onCancelled);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Failed to cancel auto-renew. Please try again.')),
+                          );
                         }
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDF5A5A), // Softer Red
-                  disabledBackgroundColor: const Color(0xFFDF5A5A).withOpacity(0.5),
+                  disabledBackgroundColor: const Color(0xFFDF5A5A).withValues(alpha: 0.5),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -470,7 +469,7 @@ class _CancelConfirmationSheet extends StatelessWidget {
   final String reason;
   final String planName;
   final VoidCallback onCancelled;
-  const _CancelConfirmationSheet({super.key, required this.reason, required this.planName, required this.onCancelled});
+  const _CancelConfirmationSheet({required this.reason, required this.planName, required this.onCancelled});
 
   @override
   Widget build(BuildContext context) {

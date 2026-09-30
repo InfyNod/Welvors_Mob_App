@@ -83,7 +83,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
         // Use the root navigator's context since this sheet's own
         // context is no longer valid once popped.
         final ctx = navigatorKey.currentContext;
-        if (ctx != null) {
+        if (ctx != null && ctx.mounted) {
           ScaffoldMessenger.of(ctx).showSnackBar(
             SnackBar(
               backgroundColor: Mycolor.redlight,
