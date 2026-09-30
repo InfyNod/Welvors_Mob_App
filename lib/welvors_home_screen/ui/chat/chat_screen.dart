@@ -2044,14 +2044,20 @@ class _ChatListViewState extends State<_ChatListView>
 
     chatBloc.joinConversation(conversationId);
 
-    // Message read individual message ke messageId se hoga.
-    // debugPrint("user>>>idd>>${user.userId}");
+    final bool isOnline = _onlineUsers.containsKey(user.userId)
+        ? _onlineUsers[user.userId] == true
+        : (_onlineUsers.containsKey(user.id)
+            ? _onlineUsers[user.id] == true
+            : user.online);
+
+    final ChatUser userToOpen = user.copyWith(online: isOnline);
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: chatBloc,
-          child: ChatDetailScreen(user: user),
+          child: ChatDetailScreen(user: userToOpen),
         ),
       ),
     ).then((_) {

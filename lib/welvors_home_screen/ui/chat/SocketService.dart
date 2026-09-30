@@ -26,9 +26,12 @@ class SocketService {
 
   final Map<String, List<Function(dynamic)>> _pendingListeners = {};
   final Set<String> _onlineUsers = <String>{};
+  final StreamController<Map<String, dynamic>> _presenceController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   bool get isConnected => socket?.connected == true;
   Set<String> get onlineUserIds => Set<String>.unmodifiable(_onlineUsers);
+  Stream<Map<String, dynamic>> get presenceStream => _presenceController.stream;
   bool isUserOnline(String userId) => _onlineUsers.contains(userId.trim());
 
   // ============================================================
@@ -265,6 +268,11 @@ class SocketService {
     if (userId == null) return;
     _onlineUsers.add(userId);
     AppLogger.d('SocketService', 'Presence online => $userId');
+    _presenceController.add({
+      'userId': userId,
+      'isOnline': true,
+      'raw': payload,
+    });
   }
 
   void _handleUserOffline(dynamic payload) {
@@ -272,11 +280,30 @@ class SocketService {
     if (userId == null) return;
     _onlineUsers.remove(userId);
     AppLogger.d('SocketService', 'Presence offline => $userId');
+    _presenceController.add({
+      'userId': userId,
+      'isOnline': false,
+      'raw': payload,
+    });
   }
 
   // ============================================================
-  // MESSAGE READ
+  // MESSAGE READ & DELIVERED
   // ============================================================
+
+  void markMessageAsDelivered(String messageId, {String? conversationId}) {
+    final id = messageId.trim();
+    if (id.isEmpty) return;
+
+    final data = <String, dynamic>{
+      'messageId': id,
+      'id': id,
+      if (conversationId != null && conversationId.trim().isNotEmpty)
+        'conversationId': conversationId.trim(),
+    };
+    AppLogger.d('SocketService', 'Message delivered => $data');
+    emitWhenConnected('message:delivered', data);
+  }
 
   void markMessageAsRead(String messageId) {
     final id = messageId.trim();

@@ -201,7 +201,7 @@ class ChatRoseCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             message.isMine
-                ? "Sent · ${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · ${message.seen ? '✓✓ Seen' : '✓ Sent'}"
+                ? "Sent · ${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · ${message.seen ? '✓✓ Seen' : (message.delivered ? '✓✓ Delivered' : '✓ Sent')}"
                 : 'Received today ·${DateFormat('hh:mm a').format(DateTime.parse(message.time).toLocal())} · her rose unlocks as you talk',
             textAlign: TextAlign.center,
             style: AppText.sub1.copyWith(

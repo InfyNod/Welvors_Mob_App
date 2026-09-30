@@ -37,6 +37,7 @@ class ChatContactCard extends StatelessWidget {
           isMine: message.isMine,
           time: message.time,
           seen: message.seen,
+          delivered: message.delivered,
         ),
       ),
     );

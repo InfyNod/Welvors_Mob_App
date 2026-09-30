@@ -99,11 +99,15 @@ class ChatTextCard extends StatelessWidget {
                         if (isMine) ...[
                           const SizedBox(width: 4),
                           Text(
-                            message.seen ? ' ✓✓' : '  ✓',
+                            message.seen
+                                ? ' ✓✓'
+                                : (message.delivered ? ' ✓✓' : '  ✓'),
                             style: AppText.body.copyWith(
                               color: message.seen
                                   ? AppColors.primary
-                                  : Colors.black,
+                                  : (isMine
+                                      ? const Color(0xFFB07B8D)
+                                      : Colors.black54),
                               fontSize: 14,
                             ),
                           ),
@@ -242,12 +246,16 @@ class ChatEffectCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       ((message.isMine)
-                          ? (message.seen ? ' ✓✓' : '  ✓')
+                          ? (message.seen
+                              ? ' ✓✓'
+                              : (message.delivered ? ' ✓✓' : '  ✓'))
                           : ""),
                       style: AppText.body.copyWith(
                         color: message.seen
                             ? AppColors.primary
-                            : Colors.grey,
+                            : (isMine
+                                ? const Color(0xFFB07B8D)
+                                : Colors.grey),
                         fontSize: 14,
                       ),
                     ),

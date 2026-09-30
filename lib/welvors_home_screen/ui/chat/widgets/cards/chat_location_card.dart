@@ -160,11 +160,13 @@ class ChatLocationCard extends StatelessWidget {
                     if (message.isMine) ...[
                       const SizedBox(width: 4),
                       Text(
-                        message.seen ? ' ✓✓' : '  ✓',
+                        message.seen
+                            ? ' ✓✓'
+                            : (message.delivered ? ' ✓✓' : '  ✓'),
                         style: AppText.body.copyWith(
                           color: message.seen
                               ? AppColors.primary
-                              : Colors.black,
+                              : const Color(0xFFB07B8D),
                           fontSize: 14,
                         ),
                       ),

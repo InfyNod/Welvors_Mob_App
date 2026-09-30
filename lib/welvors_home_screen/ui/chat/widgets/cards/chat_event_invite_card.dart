@@ -558,15 +558,26 @@ class ChatEventInviteCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        ChatFormatUtils.formatMessageTime(message.time) +
-                            ((message.isMine)
-                                ? (message.seen ? ' ✓✓' : ' ✓')
-                                : ""),
+                        ChatFormatUtils.formatMessageTime(message.time),
                         style: AppText.body.copyWith(
                           color: const Color(0xff928d89),
                           fontSize: 14,
                         ),
                       ),
+                      if (message.isMine) ...[
+                        const SizedBox(width: 4),
+                        Text(
+                          message.seen
+                              ? ' ✓✓'
+                              : (message.delivered ? ' ✓✓' : '  ✓'),
+                          style: AppText.body.copyWith(
+                            color: message.seen
+                                ? AppColors.primary
+                                : const Color(0xff928d89),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ],
