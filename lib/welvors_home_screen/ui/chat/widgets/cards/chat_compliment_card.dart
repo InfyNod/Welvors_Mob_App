@@ -266,11 +266,15 @@ class ChatComplimentCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            ((message.isMine) ? (read ? ' ✓✓' : '  ✓') : ""),
+                            ((message.isMine)
+                                ? (read
+                                    ? ' ✓✓'
+                                    : (message.delivered ? ' ✓✓' : '  ✓'))
+                                : ""),
                             style: AppText.body.copyWith(
                               color: message.seen
                                   ? AppColors.primary
-                                  : Colors.white,
+                                  : const Color(0xff928d89),
                               fontSize: 14,
                             ),
                           ),

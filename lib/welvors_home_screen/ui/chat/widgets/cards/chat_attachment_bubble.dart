@@ -12,6 +12,7 @@ class ChatAttachmentBubble extends StatelessWidget {
   final bool isMine;
   final String? time;
   final bool? seen;
+  final bool? delivered;
 
   const ChatAttachmentBubble({
     super.key,
@@ -22,6 +23,7 @@ class ChatAttachmentBubble extends StatelessWidget {
     required this.isMine,
     this.time,
     this.seen,
+    this.delivered,
   });
 
   @override
@@ -94,12 +96,16 @@ class ChatAttachmentBubble extends StatelessWidget {
                     color: AppColors.muted,
                   ),
                 ),
-                if (isMine && seen != null) ...[
+                if (isMine && (seen != null || delivered != null)) ...[
                   const SizedBox(width: 4),
                   Text(
-                    seen! ? ' ✓✓' : '  ✓',
+                    (seen == true)
+                        ? ' ✓✓'
+                        : ((delivered == true) ? ' ✓✓' : '  ✓'),
                     style: AppText.body.copyWith(
-                      color: seen! ? AppColors.primary : Colors.black54,
+                      color: (seen == true)
+                          ? AppColors.primary
+                          : (isMine ? const Color(0xFFB07B8D) : Colors.black54),
                       fontSize: 13,
                     ),
                   ),

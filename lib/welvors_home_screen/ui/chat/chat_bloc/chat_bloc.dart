@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/welvors_home_screen/services/token_helper.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/SocketService.dart';
 
 import '../chat_repository.dart';
@@ -13,8 +14,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final ChatRepository repository;
   final SocketService socketService;
   final Set<String> _handledSocketMessageIds = <String>{};
+  String? _resolvedCurrentUserId;
+
+  Future<String> _getCurrentUserId() async {
+    if (_resolvedCurrentUserId != null && _resolvedCurrentUserId!.isNotEmpty) {
+      return _resolvedCurrentUserId!;
+    }
+    if (repository.currentUserId.isNotEmpty && repository.currentUserId != 'current_user') {
+      _resolvedCurrentUserId = repository.currentUserId;
+      return _resolvedCurrentUserId!;
+    }
+    try {
+      final token = await TokenHelper.getToken();
+      final uid = ChatRepository.userIdFromToken(token);
+      if (uid.isNotEmpty) {
+        _resolvedCurrentUserId = uid;
+        return uid;
+      }
+    } catch (_) {}
+    return repository.currentUserId;
+  }
+
   ChatBloc({required this.repository, required this.socketService})
     : super(const ChatState()) {
+    _getCurrentUserId();
     on<LoadChatsEvent>(_loadChats);
     on<SearchChatsEvent>(_searchChats);
     on<SelectFilterEvent>(_selectFilter);
@@ -101,7 +124,59 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (data is! Map) return;
 
     final normalized = _unwrapMessagePayload(Map<String, dynamic>.from(data));
+    _acknowledgeMessageDelivered(normalized, data);
     add(IncomingSocketMessageListEvent(normalized));
+  }
+
+  Future<void> _acknowledgeMessageDelivered(
+    Map<String, dynamic> normalized,
+    dynamic original,
+  ) async {
+    try {
+      final messageId = (normalized['id'] ??
+              normalized['messageId'] ??
+              normalized['_id'] ??
+              (original is Map ? (original['messageId'] ?? original['id']) : null) ??
+              '')
+          .toString()
+          .trim();
+
+      if (messageId.isEmpty) return;
+
+      final senderId = (normalized['senderId'] ??
+              normalized['sender_id'] ??
+              normalized['fromId'] ??
+              normalized['from'] ??
+              (normalized['sender'] is Map
+                  ? (normalized['sender']['_id'] ?? normalized['sender']['id'])
+                  : normalized['sender']) ??
+              (original is Map ? (original['senderId'] ?? original['sender_id']) : null) ??
+              '')
+          .toString()
+          .trim();
+
+      final currentUid = await _getCurrentUserId();
+
+      if (currentUid.isNotEmpty && senderId.isNotEmpty && senderId == currentUid) {
+        return; // Our own message echoed back
+      }
+
+      final conversationId = (normalized['conversationId'] ??
+              normalized['conversation_id'] ??
+              (original is Map
+                  ? (original['conversationId'] ?? original['conversation_id'])
+                  : null) ??
+              '')
+          .toString()
+          .trim();
+
+      socketService.markMessageAsDelivered(
+        messageId,
+        conversationId: conversationId.isNotEmpty ? conversationId : null,
+      );
+    } catch (e) {
+      AppLogger.w('ChatBloc', '⚠️ Failed to acknowledge delivery: $e');
+    }
   }
 
   void _userOnlineSocketEvent(
@@ -149,7 +224,48 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               )
               .toList(growable: false);
 
-    emit(state.copyWith(allChats: updatedAll, filteredChats: searched));
+    Map<String, List<ChatMessage>>? updatedMessages;
+    if (online) {
+      final messagesMap = Map<String, List<ChatMessage>>.from(state.messages);
+      bool messagesChanged = false;
+      for (final chat in updatedAll) {
+        if (chat.userId == userId || chat.id == userId) {
+          final keys = [
+            (chat.conversationId ?? '').trim(),
+            chat.id.trim(),
+            chat.userId.trim(),
+          ];
+          for (final k in keys) {
+            if (k.isNotEmpty && messagesMap.containsKey(k)) {
+              final msgs = messagesMap[k]!;
+              bool convChanged = false;
+              final adjusted = msgs.map((m) {
+                if (m.isMine && !m.delivered && !m.seen) {
+                  convChanged = true;
+                  return m.copyWith(delivered: true);
+                }
+                return m;
+              }).toList();
+              if (convChanged) {
+                messagesMap[k] = adjusted;
+                messagesChanged = true;
+              }
+            }
+          }
+        }
+      }
+      if (messagesChanged) {
+        updatedMessages = messagesMap;
+      }
+    }
+
+    emit(
+      state.copyWith(
+        allChats: updatedAll,
+        filteredChats: searched,
+        messages: updatedMessages ?? state.messages,
+      ),
+    );
   }
 
   void _incomingSocketMessageListEvent(
@@ -283,11 +399,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       map = Map<String, dynamic>.from(map['data'] as Map);
     }
 
-    final messageId = (map['messageId'] ?? map['message_id'] ?? map['id'] ?? '')
+    final messageId = (map['messageId'] ?? map['message_id'] ?? map['id'] ?? map['_id'] ?? '')
         .toString()
         .trim();
     final conversationId =
-        (map['conversationId'] ?? map['conversation_id'] ?? '')
+        (map['conversationId'] ??
+                map['conversation_id'] ??
+                data['conversationId'] ??
+                data['conversation_id'] ??
+                '')
             .toString()
             .trim();
 
@@ -305,27 +425,54 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     MessageDeliveredSocketEvent event,
     Emitter<ChatState> emit,
   ) {
-    if (event.messageId == null || event.messageId!.isEmpty) return;
+    bool changed = false;
+    final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
 
-    for (final entry in state.messages.entries) {
-      final messages = entry.value;
-      final index = messages.indexWhere((m) => m.id == event.messageId);
-      if (index == -1) continue;
+    if (event.messageId != null && event.messageId!.isNotEmpty) {
+      for (final entry in updatedMessages.entries) {
+        final messages = entry.value;
+        final index = messages.indexWhere((m) => m.id == event.messageId);
+        if (index == -1) continue;
 
-      final message = messages[index];
-      if (!message.isMine || message.delivered) return;
+        final message = messages[index];
+        if (message.isMine && !message.delivered) {
+          final updated = List<ChatMessage>.from(messages);
+          updated[index] = message.copyWith(delivered: true);
+          updatedMessages[entry.key] = updated;
+          changed = true;
+          AppLogger.i('ChatBloc', '✅ message:delivered applied to ${event.messageId}');
+        }
+        break;
+      }
+    }
 
-      final updated = List<ChatMessage>.from(messages);
-      updated[index] = message.copyWith(delivered: true);
+    if (event.conversationId != null && event.conversationId!.isNotEmpty) {
+      for (final entry in updatedMessages.entries) {
+        if (entry.key == event.conversationId || entry.key.contains(event.conversationId!)) {
+          final messages = entry.value;
+          bool conversationChanged = false;
+          final updated = messages.map((m) {
+            if (m.isMine && !m.delivered) {
+              conversationChanged = true;
+              return m.copyWith(delivered: true);
+            }
+            return m;
+          }).toList();
 
-      final updatedMessages = Map<String, List<ChatMessage>>.from(
-        state.messages,
-      );
-      updatedMessages[entry.key] = updated;
+          if (conversationChanged) {
+            updatedMessages[entry.key] = updated;
+            changed = true;
+            AppLogger.i(
+              'ChatBloc',
+              '✅ message:delivered applied to conversation ${event.conversationId}',
+            );
+          }
+        }
+      }
+    }
 
+    if (changed) {
       emit(state.copyWith(messages: updatedMessages));
-      AppLogger.i('ChatBloc', '✅ message:delivered applied to ${event.messageId}');
-      return;
     }
   }
 
@@ -841,6 +988,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         state.messages[key] ?? const <ChatMessage>[],
         page.messages,
       );
+
+      final convId = (event.conversationId ?? '').trim();
+      final isPeerOnline = state.allChats.any((c) {
+        final cId = (c.conversationId ?? '').trim();
+        return ((cId.isNotEmpty && cId == convId) ||
+                c.id == event.chatId ||
+                c.userId == event.chatId) &&
+            c.online;
+      });
+
+      if (isPeerOnline) {
+        final list = updatedMessages[key] ?? const <ChatMessage>[];
+        bool peerChanged = false;
+        final adjusted = list.map((m) {
+          if (m.isMine && !m.delivered && !m.seen) {
+            peerChanged = true;
+            return m.copyWith(delivered: true);
+          }
+          return m;
+        }).toList();
+        if (peerChanged) {
+          updatedMessages[key] = adjusted;
+        }
+      }
 
       _messageNextCursor[key] = page.nextCursor;
       _messageHasMore[key] =
@@ -1827,6 +1998,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         (payload['conversationId'] ?? payload['conversation_id'] ?? '')
             .toString()
             .trim();
+
+    if (!incoming.isMine && incoming.id.isNotEmpty) {
+      socketService.markMessageAsDelivered(
+        incoming.id,
+        conversationId: payloadConversationId.isNotEmpty ? payloadConversationId : null,
+      );
+    }
     final key = _messageKey(
       event.chatId,
       payloadConversationId.isEmpty ? null : payloadConversationId,
@@ -2297,7 +2475,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ChatMessage oldMessage,
     ChatMessage newMessage,
   ) {
-    ChatMessage merged = newMessage;
+    ChatMessage merged = newMessage.copyWith(
+      seen: newMessage.seen || oldMessage.seen,
+      delivered: newMessage.delivered ||
+          oldMessage.delivered ||
+          newMessage.seen ||
+          oldMessage.seen,
+    );
     if (oldMessage.type == ChatMessageType.gift ||
         newMessage.type == ChatMessageType.gift ||
         oldMessage.giftId != null ||

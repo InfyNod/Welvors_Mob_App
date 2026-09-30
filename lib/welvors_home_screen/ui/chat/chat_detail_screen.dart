@@ -1095,6 +1095,38 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       IncomingMessageEvent(chatId: widget.user.id, payload: payload),
     );
 
+    final incomingMsgId = (payload['id'] ??
+            payload['_id'] ??
+            payload['messageId'] ??
+            (data is Map ? (data['messageId'] ?? data['id']) : null) ??
+            '')
+        .toString()
+        .trim();
+    final incomingSenderId = (payload['senderId'] ??
+            payload['sender_id'] ??
+            payload['fromId'] ??
+            payload['from'] ??
+            (payload['sender'] is Map
+                ? (payload['sender']['_id'] ?? payload['sender']['id'])
+                : payload['sender']) ??
+            (data is Map ? (data['senderId'] ?? data['sender_id']) : null) ??
+            '')
+        .toString()
+        .trim();
+    final effectiveCurrentUid = (_currentUserId ??
+            context.read<ChatBloc>().repository.currentUserId)
+        .trim();
+    final isIncomingFromOther = incomingSenderId.isEmpty ||
+        effectiveCurrentUid.isEmpty ||
+        incomingSenderId != effectiveCurrentUid;
+
+    if (isIncomingFromOther && incomingMsgId.isNotEmpty) {
+      _socketService.markMessageAsDelivered(
+        incomingMsgId,
+        conversationId: currentConversationId ?? receivedConversationId,
+      );
+    }
+
     AppLogger.i('ChatDetailScreen', 
       '✅ CHAT DETAIL: IncomingMessageEvent added for ${widget.user.id}',
     );
@@ -2419,7 +2451,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                   );
                 }
 
-                final message = filtered[index];
+                final rawMessage = filtered[index];
+                final message = (_isUserOnline &&
+                        rawMessage.isMine &&
+                        !rawMessage.delivered &&
+                        !rawMessage.seen)
+                    ? rawMessage.copyWith(delivered: true)
+                    : rawMessage;
 
                 return Container(
                   key: _keyForMessage(message.id),
@@ -2557,8 +2595,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   }
 
   Widget _messageCardWithDelete(ChatMessage message) {
+    final effectiveMessage = (_isUserOnline &&
+            message.isMine &&
+            !message.delivered &&
+            !message.seen)
+        ? message.copyWith(delivered: true)
+        : message;
+
     return ChatMessageCardFactory(
-      message: message,
+      message: effectiveMessage,
       peerName: widget.user.name,
       liveName: _liveName,
       liveAge: _liveAge,

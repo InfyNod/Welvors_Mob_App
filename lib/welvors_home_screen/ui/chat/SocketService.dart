@@ -288,8 +288,22 @@ class SocketService {
   }
 
   // ============================================================
-  // MESSAGE READ
+  // MESSAGE READ & DELIVERED
   // ============================================================
+
+  void markMessageAsDelivered(String messageId, {String? conversationId}) {
+    final id = messageId.trim();
+    if (id.isEmpty) return;
+
+    final data = <String, dynamic>{
+      'messageId': id,
+      'id': id,
+      if (conversationId != null && conversationId.trim().isNotEmpty)
+        'conversationId': conversationId.trim(),
+    };
+    AppLogger.d('SocketService', 'Message delivered => $data');
+    emitWhenConnected('message:delivered', data);
+  }
 
   void markMessageAsRead(String messageId) {
     final id = messageId.trim();

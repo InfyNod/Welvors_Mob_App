@@ -1048,23 +1048,78 @@ class ChatMessage extends Equatable {
         json['coinAmount'] ?? json['coin_amount'] ?? json['coins'],
       ),
 
-      seen:
-          _bool(
-            json['seen'] ??
-                json['isRead'] ??
-                json['is_read'] ??
-                json['readAt'] != null, // 👈 yahi logic
-          ) ??
-          false,
+      seen: () {
+        if (_bool(json['seen']) == true) return true;
+        if (_bool(json['isRead']) == true) return true;
+        if (_bool(json['read']) == true) return true;
+        if (_bool(json['is_read']) == true) return true;
+        if (_bool(json['isSeen']) == true) return true;
+        if (_bool(json['is_seen']) == true) return true;
+        if (json['readAt'] != null &&
+            json['readAt'].toString().isNotEmpty &&
+            json['readAt'].toString() != 'null') {
+          return true;
+        }
+        if (json['seenAt'] != null &&
+            json['seenAt'].toString().isNotEmpty &&
+            json['seenAt'].toString() != 'null') {
+          return true;
+        }
+        final status = (json['status'] ??
+                json['deliveryStatus'] ??
+                json['delivery_status'] ??
+                json['messageStatus'] ??
+                json['message_status'])
+            ?.toString()
+            .trim()
+            .toUpperCase();
+        if (status == 'READ' || status == 'SEEN') return true;
+        if (json['readBy'] is List && (json['readBy'] as List).isNotEmpty) return true;
+        return false;
+      }(),
 
-      delivered:
-          _bool(
-            json['delivered'] ??
-                json['isDelivered'] ??
-                json['is_delivered'] ??
-                json['deliveredAt'] != null,
-          ) ??
-          false,
+      delivered: () {
+        if (_bool(json['seen']) == true ||
+            _bool(json['isRead']) == true ||
+            _bool(json['read']) == true ||
+            _bool(json['is_read']) == true ||
+            _bool(json['isSeen']) == true ||
+            _bool(json['is_seen']) == true) {
+          return true;
+        }
+        if (json['readAt'] != null &&
+            json['readAt'].toString().isNotEmpty &&
+            json['readAt'].toString() != 'null') {
+          return true;
+        }
+        if (json['seenAt'] != null &&
+            json['seenAt'].toString().isNotEmpty &&
+            json['seenAt'].toString() != 'null') {
+          return true;
+        }
+        if (_bool(json['delivered']) == true) return true;
+        if (_bool(json['isDelivered']) == true) return true;
+        if (_bool(json['is_delivered']) == true) return true;
+        if (json['deliveredAt'] != null &&
+            json['deliveredAt'].toString().isNotEmpty &&
+            json['deliveredAt'].toString() != 'null') {
+          return true;
+        }
+        final status = (json['status'] ??
+                json['deliveryStatus'] ??
+                json['delivery_status'] ??
+                json['messageStatus'] ??
+                json['message_status'])
+            ?.toString()
+            .trim()
+            .toUpperCase();
+        if (status == 'DELIVERED' || status == 'READ' || status == 'SEEN') {
+          return true;
+        }
+        if (json['readBy'] is List && (json['readBy'] as List).isNotEmpty) return true;
+        if (json['deliveredTo'] is List && (json['deliveredTo'] as List).isNotEmpty) return true;
+        return false;
+      }(),
 
       hintLine: _string(json['hintLine'] ?? json['hint_line']),
 
@@ -1695,6 +1750,33 @@ class ChatMessage extends Equatable {
 
     // Newest first.
     messages.sort((a, b) => ChatMessage.compareByTime(b, a));
+
+    // Infer seen/delivered from conversation sequence:
+    // When the other user has replied or when any subsequent message is seen/delivered,
+    // all prior sent messages in this conversation are guaranteed to be seen/delivered.
+    bool seenEncountered = false;
+    bool deliveredEncountered = false;
+
+    for (int i = 0; i < messages.length; i++) {
+      final m = messages[i];
+      if (!m.isMine) {
+        seenEncountered = true;
+        deliveredEncountered = true;
+      } else {
+        if (m.seen) {
+          seenEncountered = true;
+          deliveredEncountered = true;
+        } else if (m.delivered) {
+          deliveredEncountered = true;
+        }
+
+        if (seenEncountered && (!m.seen || !m.delivered)) {
+          messages[i] = m.copyWith(seen: true, delivered: true);
+        } else if (deliveredEncountered && !m.delivered) {
+          messages[i] = m.copyWith(delivered: true);
+        }
+      }
+    }
 
     return messages;
   }

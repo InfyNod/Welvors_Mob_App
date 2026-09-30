@@ -128,9 +128,13 @@ class ChatAudioCard extends StatelessWidget {
                 if (isMine) ...[
                   const SizedBox(width: 4),
                   Text(
-                    message.seen ? ' ✓✓' : '  ✓',
+                    message.seen
+                        ? ' ✓✓'
+                        : (message.delivered ? ' ✓✓' : '  ✓'),
                     style: AppText.body.copyWith(
-                      color: message.seen ? AppColors.primary : Colors.black54,
+                      color: message.seen
+                          ? AppColors.primary
+                          : (isMine ? const Color(0xFFB07B8D) : Colors.black54),
                       fontSize: 13,
                     ),
                   ),

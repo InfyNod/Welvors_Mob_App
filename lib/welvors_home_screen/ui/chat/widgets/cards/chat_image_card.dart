@@ -89,7 +89,9 @@ class ChatImageCard extends StatelessWidget {
                           if (isMine) ...[
                             const SizedBox(width: 4),
                             Text(
-                              message.seen ? '✓✓' : '✓',
+                              message.seen
+                                  ? '✓✓'
+                                  : (message.delivered ? '✓✓' : '✓'),
                               style: TextStyle(
                                 color: message.seen
                                     ? AppColors.primary
