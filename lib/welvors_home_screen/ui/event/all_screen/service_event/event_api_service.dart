@@ -20,6 +20,7 @@ class EventApiService {
     String? eventType,
     String? dateFilter,
     bool? freeOnly,
+    String? city,
   }) async {
     try {
       String urlString = '$baseUrl/admin/events/get';
@@ -33,6 +34,9 @@ class EventApiService {
       }
       if (freeOnly == true) {
         queryParams.add('freeOnly=true');
+      }
+      if (city != null && city.isNotEmpty && city.toLowerCase() != 'all cities' && city.toLowerCase() != 'all') {
+        queryParams.add('city=${Uri.encodeComponent(city)}');
       }
 
       if (queryParams.isNotEmpty) {

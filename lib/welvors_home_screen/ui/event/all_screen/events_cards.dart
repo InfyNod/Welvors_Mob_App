@@ -45,6 +45,72 @@ class _EventsCardsState extends State<EventsCards> {
     _fetchWithState(state);
   }
 
+  @override
+  void didUpdateWidget(covariant EventsCards oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.cityName != widget.cityName ||
+        oldWidget.eventType != widget.eventType ||
+        oldWidget.categoryName != widget.categoryName) {
+      final state = context.read<EventsBloc>().state;
+      _fetchWithState(state);
+    }
+  }
+
+  bool _matchesCity(dynamic event) {
+    final targetCity = widget.cityName?.trim();
+    if (targetCity == null ||
+        targetCity.isEmpty ||
+        targetCity.toLowerCase() == 'all cities' ||
+        targetCity.toLowerCase() == 'all') {
+      return true;
+    }
+
+    final selectedLower = targetCity.toLowerCase();
+    final eventCity = (event['city'] ?? '').toString().toLowerCase().trim();
+    final fullAddress = (event['fullAddress'] ?? '').toString().toLowerCase().trim();
+    final venueAddress = (event['venueAddress'] ?? '').toString().toLowerCase().trim();
+    final addressComb = '$fullAddress $venueAddress';
+
+    // Direct match with city field
+    if (eventCity.isNotEmpty) {
+      if (eventCity == selectedLower ||
+          eventCity.contains(selectedLower) ||
+          selectedLower.contains(eventCity)) {
+        return true;
+      }
+    }
+
+    // Delhi NCR special handling
+    if (selectedLower.contains('delhi') || selectedLower.contains('ncr')) {
+      final ncrKeywords = ['delhi', 'ncr', 'noida', 'gurgaon', 'gurugram', 'ghaziabad', 'faridabad'];
+      for (var kw in ncrKeywords) {
+        if (eventCity.contains(kw) || addressComb.contains(kw)) {
+          return true;
+        }
+      }
+    }
+
+    // Bengaluru / Bangalore special handling
+    if (selectedLower.contains('bengaluru') || selectedLower.contains('bangalore')) {
+      if (eventCity.contains('bengaluru') || eventCity.contains('bangalore') ||
+          addressComb.contains('bengaluru') || addressComb.contains('bangalore')) {
+        return true;
+      }
+    }
+
+    // Mumbai / Suburban special handling
+    if (selectedLower == 'mumbai') {
+      if (eventCity.contains('mumbai') || addressComb.contains('mumbai') ||
+          addressComb.contains('bandra') || addressComb.contains('andheri') ||
+          addressComb.contains('colaba') || addressComb.contains('parel') ||
+          addressComb.contains('juhu') || addressComb.contains('worli')) {
+        return true;
+      }
+    }
+
+    return addressComb.contains(selectedLower);
+  }
+
   void _fetchWithState(EventsState state) {
     String? dateFilter;
     bool? freeOnly;
@@ -73,6 +139,7 @@ class _EventsCardsState extends State<EventsCards> {
         eventType: widget.eventType,
         dateFilter: dateFilter,
         freeOnly: freeOnly,
+        city: widget.cityName,
       );
       if (response != null && response['success'] == true) {
         if (mounted) {
@@ -216,14 +283,17 @@ class _EventsCardsState extends State<EventsCards> {
           _fetchWithState(state);
         },
         builder: (context, state) {
+          // Filter events by selected city
+          final cityFilteredEvents = _apiEvents.where(_matchesCity).toList();
+
           // Separate events based on tag
           final promotedTags = ['BRAND', 'PROMOTED', 'FEATURED'];
-          final promotedEvents = _apiEvents.where((e) {
+          final promotedEvents = cityFilteredEvents.where((e) {
             final tag = (e['eventTag'] ?? '').toString().toUpperCase();
             return promotedTags.contains(tag);
           }).toList();
 
-          final regularEvents = _apiEvents.where((e) {
+          final regularEvents = cityFilteredEvents.where((e) {
             final tag = (e['eventTag'] ?? '').toString().toUpperCase();
             return !promotedTags.contains(tag);
           }).toList();
@@ -351,7 +421,7 @@ class _EventsCardsState extends State<EventsCards> {
                               _buildApiEventCard(event, state),
                               const SizedBox(height: 24),
                             ],
-                            if (_apiEvents.isEmpty)
+                            if (cityFilteredEvents.isEmpty)
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                                 child: Text(
