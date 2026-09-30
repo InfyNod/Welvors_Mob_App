@@ -211,7 +211,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                             const SizedBox(height: 6),
                             Text(
                               widget.category['subtitle'] ??
-                                  'Music, dancing and late nights in Mumbai',
+                                  'Music, dancing and late nights in ${widget.cityName.toLowerCase() == 'all cities' ? 'all cities' : widget.cityName}',
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 14,

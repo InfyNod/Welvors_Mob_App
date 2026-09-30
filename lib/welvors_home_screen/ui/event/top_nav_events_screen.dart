@@ -266,7 +266,9 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              "What's hot in $_currentCity",
+                              _currentCity.toLowerCase() == 'all cities'
+                                  ? "What's hot across all cities"
+                                  : "What's hot in $_currentCity",
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
