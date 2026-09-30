@@ -41,12 +41,21 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
       final List<dynamic> data = res['data'] ?? [];
       _myPlansCount = data.length;
     }
-    
+
     // Fetch sent requests
     try {
-      const String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
-      final url = Uri.parse('${EnvConfig.apiBaseUrl}/user/my-date-plan-requests');
-      final response = await http.get(url, headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'});
+      const String token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMTM0OGNlNC0zMTgzLTRkNzgtYWI4Ni00ODZhMjg4NzcyMjQiLCJpYXQiOjE3ODY3MDI5OTgsImV4cCI6MTc4OTI5NDk5OH0.acSy-NV8wDq8p4793J2rYatcnAsxvc49Oq2KM3AZA2A';
+      final url = Uri.parse(
+        'https://api.welvors.com/api/user/my-date-plan-requests',
+      );
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         if (data['success'] == true && data['data'] != null) {
@@ -102,9 +111,9 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                   ],
                 ),
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Coming soon!')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('Coming soon!')));
                 },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
@@ -122,7 +131,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                       text: CommitmentBloc.isSingle
                           ? 'Single'
                           : (CommitmentBloc.currentCommitment?.partnerName ??
-                                'Priya'),
+                                '....'),
                       style: const TextStyle(
                         color: Color(0xFFE85A7A), // Deep pink
                         fontWeight: FontWeight.bold,
@@ -171,7 +180,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                   ],
                 ),
                 onTap: () {
-                 Navigator.pushNamed(context, '/TrustVerificationScreen');
+                  Navigator.pushNamed(context, '/TrustVerificationScreen');
                 },
               ),
             ],
@@ -202,20 +211,22 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                       );
                     },
                   );
-                }
+                },
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Builder(
                 builder: (context) {
-                  final totalDatesCount = _myPlansCount + _approvedRequestsCount;
+                  final totalDatesCount =
+                      _myPlansCount + _approvedRequestsCount;
 
                   return _buildActivityCard(
                     icon: '⏱️',
                     iconBgColor: const Color(0xFFF5F5F5),
                     title: 'My Dates',
-                    subtitle: '$totalDatesCount UPCOMING DATE${totalDatesCount == 1 ? '' : 'S'}',
+                    subtitle:
+                        '$totalDatesCount UPCOMING DATE${totalDatesCount == 1 ? '' : 'S'}',
                     onTap: () {
                       Navigator.push(
                         context,
@@ -443,47 +454,47 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
           border: Border.all(color: Colors.grey.shade100, width: 1.5),
           boxShadow: AppColors.shadow,
         ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              icon,
-              style: const TextStyle(
-                fontSize: 26,
-                height: 1.1, // Adjust line height to center emojis properly
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                icon,
+                style: const TextStyle(
+                  fontSize: 26,
+                  height: 1.1, // Adjust line height to center emojis properly
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              color: Colors.black87,
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-              letterSpacing: 0.5,
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
