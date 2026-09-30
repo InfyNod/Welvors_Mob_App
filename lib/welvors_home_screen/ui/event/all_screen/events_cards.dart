@@ -21,12 +21,14 @@ class EventsCards extends StatefulWidget {
   final String? eventType;
   final String? categoryName;
   final String? cityName;
+  final ValueNotifier<int>? refreshNotifier;
   
   const EventsCards({
     super.key, 
     this.eventType, 
     this.categoryName, 
     this.cityName,
+    this.refreshNotifier,
   });
 
   @override
@@ -41,19 +43,37 @@ class _EventsCardsState extends State<EventsCards> {
   @override
   void initState() {
     super.initState();
+    widget.refreshNotifier?.addListener(_onTabRefresh);
     final state = context.read<EventsBloc>().state;
     _fetchWithState(state);
+  }
+
+  void _onTabRefresh() {
+    if (mounted) {
+      final state = context.read<EventsBloc>().state;
+      _fetchWithState(state);
+    }
   }
 
   @override
   void didUpdateWidget(covariant EventsCards oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshNotifier != widget.refreshNotifier) {
+      oldWidget.refreshNotifier?.removeListener(_onTabRefresh);
+      widget.refreshNotifier?.addListener(_onTabRefresh);
+    }
     if (oldWidget.cityName != widget.cityName ||
         oldWidget.eventType != widget.eventType ||
         oldWidget.categoryName != widget.categoryName) {
       final state = context.read<EventsBloc>().state;
       _fetchWithState(state);
     }
+  }
+
+  @override
+  void dispose() {
+    widget.refreshNotifier?.removeListener(_onTabRefresh);
+    super.dispose();
   }
 
   bool _matchesCity(dynamic event) {

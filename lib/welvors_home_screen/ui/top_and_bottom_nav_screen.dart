@@ -119,11 +119,26 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   // ChatScreen_ can trigger a listing refresh via LoadChatsEvent.
   final ValueNotifier<int> _chatTabNotifier = ValueNotifier<int>(0);
 
+  // Fires every time the date plan tab (index 1) becomes the active tab so that
+  // DateNowScreen can trigger a plans refresh immediately.
+  final ValueNotifier<int> _datePlanTabNotifier = ValueNotifier<int>(0);
+
+  // Fires every time the admirers tab (index 2) becomes the active tab so that
+  // TopNavAdmirersScreen can refresh admirers data immediately.
+  final ValueNotifier<int> _admirersTabNotifier = ValueNotifier<int>(0);
+
+  // Fires every time the events tab (index 4) becomes the active tab so that
+  // EventsScreen can refresh events data immediately.
+  final ValueNotifier<int> _eventsTabNotifier = ValueNotifier<int>(0);
+
   @override
   void dispose() {
     _rosePositionNotifier.dispose();
     _isDraggingRoseNotifier.dispose();
     _chatTabNotifier.dispose();
+    _datePlanTabNotifier.dispose();
+    _admirersTabNotifier.dispose();
+    _eventsTabNotifier.dispose();
     _unreadCountPollTimer?.cancel();
     super.dispose();
   }
@@ -315,12 +330,12 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
           index: _selectedIndex,
           children: [
             HomeScreen(isPreview: widget.isPreview),
-            const DateNowScreen(),
-            const TopNavAdmirersScreen(),
+            DateNowScreen(refreshNotifier: _datePlanTabNotifier),
+            TopNavAdmirersScreen(refreshNotifier: _admirersTabNotifier),
             // Pass the notifier so ChatScreen_ can refresh the listing
             // whenever the chat tab becomes active (tab switch or re-tap).
             ChatScreen_(refreshNotifier: _chatTabNotifier),
-            const EventsScreen(),
+            EventsScreen(refreshNotifier: _eventsTabNotifier),
           ],
         ),
         if (_isDrawerOpen) const DrawerScreen(),
@@ -741,15 +756,20 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
     final isActive = !_isDrawerOpen && _selectedIndex == index;
     return GestureDetector(
       onTap: () {
-        final wasAlreadyOnChat = _selectedIndex == 3 && !_isDrawerOpen;
         setState(() {
           _selectedIndex = index;
           _isDrawerOpen = false;
         });
-        // Fire refresh signal when navigating TO the chat tab (index 3),
-        // including re-tapping it while already on it.
-        if (index == 3 || wasAlreadyOnChat) {
+
+        // Trigger refresh signal ONLY for the selected tab (tab switch or re-tap)
+        if (index == 1) {
+          _datePlanTabNotifier.value = DateTime.now().millisecondsSinceEpoch;
+        } else if (index == 2) {
+          _admirersTabNotifier.value = DateTime.now().millisecondsSinceEpoch;
+        } else if (index == 3) {
           _chatTabNotifier.value = DateTime.now().millisecondsSinceEpoch;
+        } else if (index == 4) {
+          _eventsTabNotifier.value = DateTime.now().millisecondsSinceEpoch;
         }
       },
       behavior: HitTestBehavior.opaque,

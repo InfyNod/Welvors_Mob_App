@@ -11,16 +11,18 @@ import 'filter_events.dart';
 import 'package:velvors/config/app_cached_image.dart';
 
 class EventsScreen extends StatelessWidget {
-  const EventsScreen({super.key});
+  final ValueNotifier<int>? refreshNotifier;
+  const EventsScreen({super.key, this.refreshNotifier});
 
   @override
   Widget build(BuildContext context) {
-    return const _EventsScreenView();
+    return _EventsScreenView(refreshNotifier: refreshNotifier);
   }
 }
 
 class _EventsScreenView extends StatefulWidget {
-  const _EventsScreenView();
+  final ValueNotifier<int>? refreshNotifier;
+  const _EventsScreenView({this.refreshNotifier});
 
   @override
   State<_EventsScreenView> createState() => _EventsScreenViewState();
@@ -488,6 +490,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                       child: EventsCards(
                         categoryName: 'Events',
                         cityName: _currentCity,
+                        refreshNotifier: widget.refreshNotifier,
                       ),
                     ),
                   ],

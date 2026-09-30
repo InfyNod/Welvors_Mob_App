@@ -28,7 +28,8 @@ String _formatEventTime(String? timeStr) {
 }
 
 class DateNowScreen extends StatefulWidget {
-  const DateNowScreen({super.key});
+  final ValueNotifier<int>? refreshNotifier;
+  const DateNowScreen({super.key, this.refreshNotifier});
 
   @override
   State<DateNowScreen> createState() => _DateNowScreenState();
@@ -52,19 +53,40 @@ class _DateNowScreenState extends State<DateNowScreen>
   final Set<String> _removedPlanIds = {};
 
   late PageController _pageController;
+  int _fetchRequestId = 0;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _selectedTabIndex);
+    widget.refreshNotifier?.addListener(_onTabRefresh);
     _fetchOptions();
     _fetchPlans();
   }
 
   @override
+  void didUpdateWidget(covariant DateNowScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshNotifier != widget.refreshNotifier) {
+      oldWidget.refreshNotifier?.removeListener(_onTabRefresh);
+      widget.refreshNotifier?.addListener(_onTabRefresh);
+    }
+  }
+
+  @override
   void dispose() {
+    widget.refreshNotifier?.removeListener(_onTabRefresh);
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _onTabRefresh() {
+    if (mounted) {
+      if (_filters.length <= 1) {
+        _fetchOptions();
+      }
+      _fetchPlans();
+    }
   }
 
   Future<void> _fetchOptions() async {
@@ -91,6 +113,7 @@ class _DateNowScreenState extends State<DateNowScreen>
   }
 
   Future<void> _fetchPlans() async {
+    final int currentRequestId = ++_fetchRequestId;
     setState(() {
       _isLoading = true;
     });
@@ -109,7 +132,7 @@ class _DateNowScreenState extends State<DateNowScreen>
       overrideToken: token,
     );
 
-    if (mounted) {
+    if (mounted && currentRequestId == _fetchRequestId) {
       setState(() {
         _fetchedPlans = [];
         _removedPlanIds.clear();
@@ -470,96 +493,106 @@ class _DateNowScreenState extends State<DateNowScreen>
         filterLabel = '$filterLabel for $filterText';
       }
 
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.calendar_today_outlined,
-                size: 48,
-                color: Colors.grey.shade400,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'No plans found $filterLabel',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade800,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Be the first to post a plan and\ninvite others to join you!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey.shade500,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 32),
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFDE2957).withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+      return RefreshIndicator(
+        color: const Color(0xFFE43A6A),
+        onRefresh: _fetchPlans,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.65,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.calendar_today_outlined,
+                      size: 48,
+                      color: Colors.grey.shade400,
+                    ),
                   ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Activity1Screen(),
+                  const SizedBox(height: 24),
+                  Text(
+                    'No plans found $filterLabel',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Be the first to post a plan and\ninvite others to join you!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.grey.shade500,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFA6A85), Color(0xFFDE2957)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ).then((_) {
-                      if (mounted) {
-                        _fetchPlans();
-                      }
-                    });
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.add, size: 18, color: Colors.white),
-                        SizedBox(width: 6),
-                        Text(
-                          'Post a plan',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFDE2957).withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Activity1Screen(),
+                            ),
+                          ).then((_) {
+                            if (mounted) {
+                              _fetchPlans();
+                            }
+                          });
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add, size: 18, color: Colors.white),
+                              SizedBox(width: 6),
+                              Text(
+                                'Post a plan',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       );
     }
