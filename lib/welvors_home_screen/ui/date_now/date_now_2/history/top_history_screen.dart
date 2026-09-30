@@ -20,8 +20,6 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
   List<Map<String, dynamic>> _thisWeekPlans = [];
   List<Map<String, dynamic>> _earlierPlans = [];
   bool _isLoading = true;
-  int _totalViews = 0;
-  int _totalRequests = 0;
   int _totalMet = 0;
 
   List<String> get _filters {
@@ -190,8 +188,6 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
         setState(() {
           _thisWeekPlans = thisWeek;
           _earlierPlans = earlier;
-          _totalViews = views;
-          _totalRequests = reqs;
           _totalMet = met;
           _isLoading = false;
           

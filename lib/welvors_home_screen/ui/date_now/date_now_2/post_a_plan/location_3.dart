@@ -22,7 +22,6 @@ class Location3View extends StatefulWidget {
 
 class _Location3ViewState extends State<Location3View> {
   final TextEditingController _searchController = TextEditingController();
-  final TextEditingController _manualController = TextEditingController();
   String _selectedWhen = 'Today';
   DateTime? _customDate;
   TimeOfDay? _selectedTime;
@@ -635,6 +634,7 @@ class _Location3ViewState extends State<Location3View> {
                           },
                         );
                         if (picked != null) {
+                          if (!mounted) return;
                           DateTime now = DateTime.now();
                           DateTime eventDate = now;
                           if (_selectedWhen == 'Tomorrow') {
@@ -1134,52 +1134,4 @@ class _Location3ViewState extends State<Location3View> {
     );
   }
 
-  Widget _buildSuggestionItem(String emoji, String title, String subtitle) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _searchController.text = title;
-          _selectedPlaceSubtext = subtitle;
-          _isLocationSelected = true;
-        });
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(emoji, style: const TextStyle(fontSize: 16)),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

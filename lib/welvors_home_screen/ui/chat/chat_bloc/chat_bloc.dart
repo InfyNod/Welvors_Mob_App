@@ -30,6 +30,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<DeleteMessageEvent>(_deleteMessageEvent);
     on<DeleteConversationEvent>(_deleteConversationEvent);
     on<ClearConversationEvent>(_clearConversationEvent);
+    on<ClearConversationUnreadEvent>(_clearConversationUnreadEvent);
+    on<MarkConversationReadEvent>(_markConversationReadEvent);
+    on<MarkMessagesSeenEvent>(_markMessagesSeenEvent);
     on<UserOnlineSocketEvent>(_userOnlineSocketEvent);
     on<UserOfflineSocketEvent>(_userOfflineSocketEvent);
     on<IncomingSocketMessageListEvent>(_incomingSocketMessageListEvent);
@@ -960,8 +963,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   // }
   void clearConversationUnread(String conversationId) {
     if (conversationId.isEmpty) return;
+    add(ClearConversationUnreadEvent(conversationId: conversationId));
+  }
 
-    final id = conversationId.trim();
+  void _clearConversationUnreadEvent(
+    ClearConversationUnreadEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final id = event.conversationId.trim();
     final updatedAllChats = state.allChats.map((chat) {
       final cId = (chat.conversationId ?? '').trim();
       if ((cId == id || chat.id == id) && chat.unread > 0) {
@@ -984,21 +993,21 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         filteredChats: updatedFilteredChats,
       ),
     );
-
-    // debugPrint('✅ CHAT LIST LOCAL UNREAD CLEARED: $conversationId');
   }
 
   /// Marks the opened conversation as read on the socket and immediately
   /// clears its unread badge locally in the chat list.
   void markConversationRead(String conversationId) {
     if (conversationId.isEmpty) return;
+    add(MarkConversationReadEvent(conversationId: conversationId));
+  }
 
-    AppLogger.d('ChatBloc', '📖 Mark conversation read locally: $conversationId');
-    // Do NOT emit message:read with conversationId here.
-    // The backend message:read contract is messageId-based; ChatDetailScreen
-    // emits one message:read event for every unread incoming message.
-
-    final id = conversationId.trim();
+  void _markConversationReadEvent(
+    MarkConversationReadEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    AppLogger.d('ChatBloc', '📖 Mark conversation read locally: ${event.conversationId}');
+    final id = event.conversationId.trim();
     final updatedAllChats = state.allChats.map((chat) {
       final cId = (chat.conversationId ?? '').trim();
       if ((cId == id || chat.id == id) && chat.unread > 0) {
@@ -1022,7 +1031,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ),
     );
 
-    AppLogger.i('ChatBloc', '✅ MESSAGE READ EVENT SENT: $conversationId');
+    AppLogger.i('ChatBloc', '✅ MESSAGE READ EVENT SENT: ${event.conversationId}');
   }
 
   //<navneet>
@@ -1446,7 +1455,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           'imageUrl': event.replyImageUrl!.trim(),
         if ((event.replyFileUrl ?? '').trim().isNotEmpty)
           'fileUrl': event.replyFileUrl!.trim(),
-        if (replyTypeStr != null) 'type': replyTypeStr,
+        'type': ?replyTypeStr,
       };
 
       final metadata = socketPayload['metadata'] is Map
@@ -1774,7 +1783,15 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   // ============================================================
 
   void markMessagesSeen(String chatId) {
-    final existing = state.messages[chatId];
+    if (chatId.isEmpty) return;
+    add(MarkMessagesSeenEvent(chatId: chatId));
+  }
+
+  void _markMessagesSeenEvent(
+    MarkMessagesSeenEvent event,
+    Emitter<ChatState> emit,
+  ) {
+    final existing = state.messages[event.chatId];
     if (existing == null || existing.isEmpty) return;
 
     bool changed = false;
@@ -1790,7 +1807,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     if (!changed) return;
 
     final updatedMessages = Map<String, List<ChatMessage>>.from(state.messages);
-    updatedMessages[chatId] = updated;
+    updatedMessages[event.chatId] = updated;
 
     emit(state.copyWith(messages: updatedMessages));
   }
@@ -2409,19 +2426,5 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     return super.close();
   }
 
-  String _currentTime() {
-    final now = DateTime.now();
 
-    final hour = now.hour == 0
-        ? 12
-        : now.hour > 12
-        ? now.hour - 12
-        : now.hour;
-
-    final minute = now.minute.toString().padLeft(2, '0');
-
-    final period = now.hour >= 12 ? 'PM' : 'AM';
-
-    return '$hour:$minute $period';
-  }
 }

@@ -35,23 +35,13 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   List<Map<String, dynamic>> _apiPlans = [];
   bool _isLoading = true;
 
-  final bool _isBoosted = false;
-  DateTime? _boostEndTime;
   Timer? _timer;
-
-  int _fakeViews = 100;
-  int _fakeRequests = 1;
-  int _fakeApproved = 0;
 
   void _startTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
-        setState(() {
-          if (timer.tick % 3 == 0) _fakeViews++;
-          if (timer.tick % 8 == 0) _fakeRequests++;
-          if (timer.tick % 25 == 0) _fakeApproved++;
-        });
+        setState(() {});
       }
     });
   }
@@ -1272,26 +1262,22 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                       final result = await DateNowApiService.declineRequest(
                         requestId,
                       );
+                      if (!mounted) return;
                       if (result['success'] == true) {
-                        if (!mounted) return;
                         setState(() {
                           if (plan['requests'] is List) {
                             (plan['requests'] as List).remove(request);
                           }
                         });
-                        if (context.mounted) {
-                          _showActionPopup('Request declined');
-                        }
+                        _showActionPopup('Request declined');
                       } else {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(result['message'] ?? 'Failed to decline request'),
-                              backgroundColor: Colors.red,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(result['message'] ?? 'Failed to decline request'),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
                       }
                     },
                     child: Container(
@@ -1323,24 +1309,20 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                       final result = await DateNowApiService.approveRequest(
                         requestId,
                       );
+                      if (!mounted) return;
                       if (result['success'] == true) {
-                        if (!mounted) return;
                         setState(() {
                           request['status'] = 'approved';
                         });
-                        if (context.mounted) {
-                          _showActionPopup('Request approved');
-                        }
+                        _showActionPopup('Request approved');
                       } else {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(result['message'] ?? 'Failed to approve request'),
-                              backgroundColor: Colors.red,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(result['message'] ?? 'Failed to approve request'),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
                       }
                     },
                     child: Container(
@@ -1373,60 +1355,3 @@ class _MyPlanScreenState extends State<MyPlanScreen>
   }
 }
 
-void _showFeedbackSavedSnackBar(BuildContext context, String message) {
-  final overlay = Overlay.of(context);
-  late OverlayEntry entry;
-
-  entry = OverlayEntry(
-    builder: (context) => Positioned(
-      top: 60, // Top of the screen
-      left: 20,
-      right: 20,
-      child: Material(
-        color: Colors.transparent,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1E24),
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('💌 ', style: TextStyle(fontSize: 16)),
-                Flexible(
-                  child: Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-
-  overlay.insert(entry);
-
-  Future.delayed(const Duration(seconds: 3), () {
-    if (entry.mounted) {
-      entry.remove();
-    }
-  });
-}

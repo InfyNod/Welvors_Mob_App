@@ -40,7 +40,7 @@ class BottomFree5Popup extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 8,
                               spreadRadius: 1,
                               offset: const Offset(0, 2),
@@ -196,7 +196,7 @@ class BottomFree5Popup extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFE43A6A).withOpacity(0.3),
+                    color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -277,7 +277,7 @@ class BottomFree5Popup extends StatelessWidget {
                 border: Border.all(color: Colors.white, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -309,7 +309,7 @@ class BottomFree5Popup extends StatelessWidget {
         border: Border.all(color: Colors.white, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -324,7 +324,7 @@ class BottomFree5Popup extends StatelessWidget {
             BackdropFilter(
               filter: dart_ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
               child: Container(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
               ),
             ),
           ],
@@ -404,7 +404,7 @@ class BottomFree5Popup extends StatelessWidget {
                 BackdropFilter(
                   filter: dart_ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                   child: Container(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                   ),
                 ),
               ],
@@ -433,7 +433,7 @@ class BottomFree5Popup extends StatelessWidget {
                     'ID & profession verified',
                     style: TextStyle(
                       fontSize: 9,
-                      color: const Color(0xFF10B981).withOpacity(0.8),
+                      color: const Color(0xFF10B981).withValues(alpha: 0.8),
                       fontWeight: FontWeight.w600,
                     ),
                   ),

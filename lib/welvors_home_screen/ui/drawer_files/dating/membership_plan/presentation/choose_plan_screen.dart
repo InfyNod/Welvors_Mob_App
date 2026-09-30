@@ -373,10 +373,10 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
         : const LinearGradient(colors: [Color(0xFFD63B5F), Color(0xFFF0516A)], begin: Alignment.centerLeft, end: Alignment.centerRight);
 
     final Color shadowColor = elite
-        ? Colors.black.withOpacity(0.3)
+        ? Colors.black.withValues(alpha: 0.3)
         : vip
-        ? const Color(0xFFA67620).withOpacity(0.3)
-        : const Color(0xFFD63B5F).withOpacity(0.3);
+        ? const Color(0xFFA67620).withValues(alpha: 0.3)
+        : const Color(0xFFD63B5F).withValues(alpha: 0.3);
 
     final String action = elite
         ? 'Request'

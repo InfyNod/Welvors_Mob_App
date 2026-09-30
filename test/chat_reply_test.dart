@@ -265,9 +265,9 @@ void main() {
               onTypingChanged: (_) {},
               onEmojiSelected: (_) {},
               onStickerSelected: (_) {},
-              onMemeSelected: (_, __) {},
-              onEffectSelected: (_, __) {},
-              onGifSelected: (_, __) {},
+              onMemeSelected: (_, _) {},
+              onEffectSelected: (_, _) {},
+              onGifSelected: (_, _) {},
               onGiftSelected: (_) {},
               onContentInserted: (content) {
                 contentInsertedCalled = true;
@@ -286,6 +286,7 @@ void main() {
         textField.contentInsertionConfiguration!.allowedMimeTypes,
         containsAll(['image/gif', 'image/png', 'image/jpeg', 'image/webp']),
       );
+      expect(contentInsertedCalled, isFalse);
     });
 
     testWidgets('ChatTextCard renders reply text, time, and seen ticks when replying to a photo', (tester) async {

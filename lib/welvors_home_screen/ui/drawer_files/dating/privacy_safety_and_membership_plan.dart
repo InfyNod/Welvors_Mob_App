@@ -14,7 +14,7 @@ class PrivacySafetyAndMembership extends StatefulWidget {
 
 class _PrivacySafetyAndMembershipState
     extends State<PrivacySafetyAndMembership> {
-  bool _isSafetyModeOn = false;
+  final bool _isSafetyModeOn = false;
   List<MembershipPlanModel> _plans = [];
   bool _isLoading = true;
 
@@ -235,12 +235,12 @@ class _PrivacySafetyAndMembershipState
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFD63B5F).withOpacity(0.3),
+          color: const Color(0xFFD63B5F).withValues(alpha: 0.3),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFD63B5F).withOpacity(0.12),
+            color: const Color(0xFFD63B5F).withValues(alpha: 0.12),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -265,7 +265,7 @@ class _PrivacySafetyAndMembershipState
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFE85A7A).withOpacity(0.1),
+                      color: const Color(0xFFE85A7A).withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     )
@@ -372,7 +372,7 @@ class _PrivacySafetyAndMembershipState
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFD63B5F).withOpacity(0.3),
+                    color: const Color(0xFFD63B5F).withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -403,12 +403,12 @@ class _PrivacySafetyAndMembershipState
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFE0AA3E).withOpacity(0.3),
+          color: const Color(0xFFE0AA3E).withValues(alpha: 0.3),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFA67620).withOpacity(0.12),
+            color: const Color(0xFFA67620).withValues(alpha: 0.12),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -433,7 +433,7 @@ class _PrivacySafetyAndMembershipState
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFC8933A).withOpacity(0.1),
+                      color: const Color(0xFFC8933A).withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     )
@@ -539,7 +539,7 @@ class _PrivacySafetyAndMembershipState
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFA67620).withOpacity(0.3),
+                    color: const Color(0xFFA67620).withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -579,7 +579,7 @@ class _PrivacySafetyAndMembershipState
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -604,7 +604,7 @@ class _PrivacySafetyAndMembershipState
                   border: Border.all(color: const Color(0xFF555555), width: 1),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     )
@@ -710,7 +710,7 @@ class _PrivacySafetyAndMembershipState
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFE5C07B).withOpacity(0.2),
+                    color: const Color(0xFFE5C07B).withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),

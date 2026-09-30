@@ -277,6 +277,7 @@ class ChatAttachmentService {
 
       AppLogger.i('ChatAttachmentService', '✅ FINAL IMAGE URL => $imageUrl');
 
+      if (!context.mounted) return;
       final reply = getReplyingTo();
 
       context.read<ChatBloc>().add(
@@ -326,6 +327,7 @@ class ChatAttachmentService {
       if (finalFile == null) {
         AppLogger.w('ChatAttachmentService', '⚠️ ImagePicker returned null, opening CustomCameraScreen');
 
+        if (!context.mounted) return;
         final customResult = await Navigator.push<String>(
           context,
           MaterialPageRoute(
@@ -644,6 +646,7 @@ class ChatAttachmentService {
 
       AppLogger.i('ChatAttachmentService', '✅ FINAL VIDEO URL => $videoUrl');
 
+      if (!context.mounted) return;
       final reply = getReplyingTo();
 
       context.read<ChatBloc>().add(
@@ -696,6 +699,7 @@ class ChatAttachmentService {
         ),
       );
 
+      if (!context.mounted) return;
       final selected = await LocationMapScreen.pick(
         context: context,
         latitude: position.latitude,
@@ -750,6 +754,7 @@ class ChatAttachmentService {
         return;
       }
 
+      if (!context.mounted) return;
       final selected = await ChatContactPickerSheet.show(context, contacts);
 
       if (selected == null) return;

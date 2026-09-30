@@ -130,10 +130,8 @@ void main() {
 
       final maharashtraCities = rawCities.where((c) => stateMap[c.stateCode] == 'Maharashtra').toList();
       expect(maharashtraCities.length, greaterThan(50));
-      print('Maharashtra cities found: ${maharashtraCities.length}');
       final pune = maharashtraCities.where((c) => c.name.toLowerCase() == 'pune').firstOrNull;
       expect(pune, isNotNull);
-      print('Pune successfully found in dynamically loaded Maharashtra cities!');
     });
   });
 }

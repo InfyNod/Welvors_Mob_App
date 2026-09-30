@@ -594,65 +594,6 @@ class _ComplimentsScreenState extends State<ComplimentsScreen> {
     );
   }
 
-  Widget _buildProTipBanner() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color.fromARGB(255, 255, 245, 225),
-            Color(0xFFFFF0F5),
-            Color.fromARGB(255, 251, 226, 234),
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF6B042),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.wb_sunny_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Pro tip: Send Compliments between 8–10 PM',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "That's when match rates are highest — 2× higher than mornings.",
-                  style: TextStyle(
-                    color: Colors.black.withValues(alpha: 0.6),
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildPackageCard(int index) {
     final pkg = _packages[index];

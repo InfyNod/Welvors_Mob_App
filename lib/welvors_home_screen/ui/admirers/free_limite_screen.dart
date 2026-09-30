@@ -101,7 +101,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen>
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -147,7 +147,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF702EDC).withOpacity(0.4),
+                  color: const Color(0xFF702EDC).withValues(alpha: 0.4),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -217,7 +217,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen>
                     shape: BoxShape.circle,
                     color: const Color(
                       0xFF702EDC,
-                    ).withOpacity(_rippleOpacityAnimation.value),
+                    ).withValues(alpha: _rippleOpacityAnimation.value),
                   ),
                 ),
               ),
@@ -229,8 +229,8 @@ class _FreeLimitScreenState extends State<FreeLimitScreen>
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF702EDC).withOpacity(
-                      _rippleOpacityAnimation.value * 1.5 > 1.0
+                    color: const Color(0xFF702EDC).withValues(
+                      alpha: _rippleOpacityAnimation.value * 1.5 > 1.0
                           ? 1.0
                           : _rippleOpacityAnimation.value * 1.5,
                     ),
@@ -260,7 +260,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF702EDC).withOpacity(0.4),
+                            color: const Color(0xFF702EDC).withValues(alpha: 0.4),
                             blurRadius: 10 * breatheScale,
                             spreadRadius: 2,
                             offset: const Offset(0, 4),
@@ -287,7 +287,7 @@ class _FreeLimitScreenState extends State<FreeLimitScreen>
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF702EDC).withOpacity(0.08), // Very light purple
+          color: const Color(0xFF702EDC).withValues(alpha: 0.08), // Very light purple
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(

@@ -68,7 +68,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 8,
                               spreadRadius: 1,
                               offset: const Offset(0, 2),
@@ -213,7 +213,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF702EDC).withOpacity(0.4),
+                      color: const Color(0xFF702EDC).withValues(alpha: 0.4),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -294,7 +294,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
                     shape: BoxShape.circle,
                     color: const Color(
                       0xFF702EDC,
-                    ).withOpacity(_rippleOpacityAnimation.value),
+                    ).withValues(alpha: _rippleOpacityAnimation.value),
                   ),
                 ),
               ),
@@ -306,8 +306,8 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
                   height: 90,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF702EDC).withOpacity(
-                      _rippleOpacityAnimation.value * 1.5 > 1.0
+                    color: const Color(0xFF702EDC).withValues(
+                      alpha: _rippleOpacityAnimation.value * 1.5 > 1.0
                           ? 1.0
                           : _rippleOpacityAnimation.value * 1.5,
                     ),
@@ -337,7 +337,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF702EDC).withOpacity(0.4),
+                            color: const Color(0xFF702EDC).withValues(alpha: 0.4),
                             blurRadius: 8 * breatheScale,
                             spreadRadius: 2,
                             offset: const Offset(0, 3),
@@ -364,7 +364,7 @@ class _FreeLimitPopupState extends State<FreeLimitPopup>
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF702EDC).withOpacity(0.08), // Very light purple
+          color: const Color(0xFF702EDC).withValues(alpha: 0.08), // Very light purple
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(

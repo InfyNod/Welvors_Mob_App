@@ -452,7 +452,7 @@ class _RequestsSectionState extends State<RequestsSection> {
               GestureDetector(
                 onTap: () async {
                   final success = await CommitmentApiService().respondToProposal(id, true);
-                  if (success && mounted) {
+                  if (success && ctx.mounted && context.mounted) {
                     Navigator.pop(ctx);
                     // Fetch real relationship data from server to get valid relationshipId
                     context.read<CommitmentBloc>().add(LoadCommitmentData());

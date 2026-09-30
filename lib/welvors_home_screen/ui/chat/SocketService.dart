@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import 'package:velvors/config/env_config.dart';
 
@@ -17,7 +17,7 @@ class SocketService {
   static String get _baseUrl => EnvConfig.baseUrl;
   static const Duration _heartbeatInterval = Duration(seconds: 75);
 
-  IO.Socket? socket;
+  io.Socket? socket;
 
   Timer? _presenceHeartbeatTimer;
   Timer? _manualReconnectTimer;
@@ -80,9 +80,9 @@ class SocketService {
 
     final bearerr = rawToken;
 
-    socket = IO.io(
+    socket = io.io(
       _baseUrl,
-      IO.OptionBuilder()
+      io.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
           .enableReconnection()

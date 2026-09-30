@@ -4,13 +4,6 @@ import 'package:velvors/config/env_config.dart';
 
 enum ChatMessageDirection { sender, receiver }
 
-enum _SwipeDirection { none, reply, delete }
-
-_SwipeDirection _swipeDirection = _SwipeDirection.none;
-
-bool _replyTriggered = false;
-bool _deleteTriggered = false;
-
 enum ChatMessageType {
   text,
   image,

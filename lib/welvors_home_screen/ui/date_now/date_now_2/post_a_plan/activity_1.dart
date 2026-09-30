@@ -607,29 +607,26 @@ class _Activity1ScreenBodyState extends State<Activity1ScreenBody> {
                           }
                         }
 
+                        if (!mounted || !context.mounted) return;
                         if (isSuccess) {
-                          if (mounted) {
-                            context.read<PostPlanBloc>().add(
-                              UpdateStep1Event(
-                                activityName: _selectedActivity!,
-                                activityImage: _selectedActivityImage ?? '',
-                                planId: finalPlanId,
-                              ),
-                            );
-                          }
+                          context.read<PostPlanBloc>().add(
+                            UpdateStep1Event(
+                              activityName: _selectedActivity!,
+                              activityImage: _selectedActivityImage ?? '',
+                              planId: finalPlanId,
+                            ),
+                          );
                         } else {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Failed to create plan. Please try again.',
-                                ),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Failed to create plan. Please try again.',
                               ),
-                            );
-                          }
+                            ),
+                          );
                         }
                       } catch (e) {
-                        if (mounted) {
+                        if (mounted && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text(

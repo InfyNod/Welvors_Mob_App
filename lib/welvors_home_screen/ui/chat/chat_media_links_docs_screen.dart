@@ -127,8 +127,6 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
               children: [
                 _allTab(context, data),
                 _photoTab(context, data),
-                // _videoTab(context, data),
-                // _audioTab(context, data),
                 _documentTab(context, data),
                 _linkTab(context, data),
               ],
@@ -290,65 +288,6 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     );
   }
 
-  // ============================================================
-  // VIDEOS
-  // ============================================================
-
-  Widget _videoTab(BuildContext context, SharedItemsBundle data) {
-    final videos = data.videos;
-
-    if (videos.isEmpty) {
-      return _empty();
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: videos.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final item = videos[index];
-
-        return _roundedTile(
-          icon: Icons.play_circle_outline,
-          title: 'Video',
-          subtitle: _formatDate(item.createdAt),
-          onTap: () {
-            _openExternal(item.mediaUrl);
-          },
-        );
-      },
-    );
-  }
-
-  // ============================================================
-  // AUDIO
-  // ============================================================
-
-  Widget _audioTab(BuildContext context, SharedItemsBundle data) {
-    final audios = data.audios;
-
-    if (audios.isEmpty) {
-      return _empty();
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: audios.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final item = audios[index];
-
-        return _roundedTile(
-          icon: Icons.audiotrack_outlined,
-          title: 'Audio',
-          subtitle: _formatDate(item.createdAt),
-          onTap: () {
-            _openExternal(item.mediaUrl);
-          },
-        );
-      },
-    );
-  }
 
   // ============================================================
   // DOCUMENTS

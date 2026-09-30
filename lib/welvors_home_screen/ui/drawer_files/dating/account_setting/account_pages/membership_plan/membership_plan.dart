@@ -139,13 +139,13 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.08),
+                                          color: Colors.black.withValues(alpha: 0.08),
                                           blurRadius: 16,
                                           spreadRadius: 0,
                                           offset: const Offset(0, 8),
                                         ),
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.04),
+                                          color: Colors.black.withValues(alpha: 0.04),
                                           blurRadius: 4,
                                           spreadRadius: 0,
                                           offset: const Offset(0, 2),
@@ -336,22 +336,6 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                 child: Column(
                   children: List.generate(history.length, (index) {
                     final item = history[index];
-                    final emoji = item['slug'] == 'vip' ? '💎' : '⭐';
-                    final bgColor = item['slug'] == 'vip' ? const Color(0xFFE6F0FA) : const Color(0xFFFFF7E6);
-                    
-                    Color statusColor;
-                    Color statusBgColor;
-                    if (item['status'] == 'ACTIVE') {
-                      statusColor = const Color(0xFF1CB569);
-                      statusBgColor = const Color(0xFFE8F6EF);
-                    } else if (item['status'] == 'REFUNDED') {
-                      statusColor = const Color(0xFFE43A6A);
-                      statusBgColor = const Color(0xFFFDF0F3);
-                    } else {
-                      statusColor = Colors.black54;
-                      statusBgColor = const Color(0xFFF2F2F2);
-                    }
-
                     return Column(
                       children: [
                         _buildHistoryItem(

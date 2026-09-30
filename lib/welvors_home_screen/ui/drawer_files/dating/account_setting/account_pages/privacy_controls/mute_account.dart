@@ -300,7 +300,8 @@ class _MuteAccountScreenState extends State<MuteAccountScreen> {
                           
                           final success = await AccountSettingService.unmuteUser(id);
                           
-                          if (success && mounted) {
+                          if (!mounted || !context.mounted) return;
+                          if (success) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: const Text('User unmuted successfully!'),
@@ -312,7 +313,7 @@ class _MuteAccountScreenState extends State<MuteAccountScreen> {
                               ),
                             );
                             _fetchMutedUsers();
-                          } else if (mounted) {
+                          } else {
                             setState(() => _isLoading = false);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

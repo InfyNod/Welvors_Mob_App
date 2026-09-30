@@ -65,24 +65,6 @@ class CardHistory extends StatelessWidget {
     );
   }
 
-  String _formatEventDateTime(Map<String, dynamic> plan) {
-    if (plan['eventDateTime'] != null) {
-      try {
-        final DateTime eventDate = DateTime.parse(plan['eventDateTime']).toLocal();
-        final int durationMins = plan['duration'] != null ? (plan['duration'] as num).toInt() : 60;
-        final DateTime endDate = eventDate.add(Duration(minutes: durationMins));
-        
-        final String dateStr = DateFormat('EEE, d MMM').format(eventDate);
-        final String startTimeStr = DateFormat('h:mm a').format(eventDate);
-        final String endTimeStr = DateFormat('h:mm a').format(endDate);
-        
-        return '$dateStr - $startTimeStr - $endTimeStr';
-      } catch (e) {
-        // fallback if parsing fails
-      }
-    }
-    return plan['date'] ?? '';
-  }
 
   Widget _buildSectionHeader(String title, int count) {
     return Padding(

@@ -55,7 +55,7 @@ class ComplimentApiService {
       }
       return false;
     } catch (e) {
-      print('Error buying compliment pack: $e');
+      AppLogger.e('ComplimentApiService', 'Error buying compliment pack: $e');
       return false;
     }
   }

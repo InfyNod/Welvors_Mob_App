@@ -483,7 +483,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                     );
 
                                 // Hide loading
-                                if (Navigator.canPop(context)) {
+                                if (context.mounted && Navigator.canPop(context)) {
                                   Navigator.pop(context);
                                 }
 
@@ -494,6 +494,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                 ).create();
                                 await imagePath.writeAsBytes(capturedImage);
 
+                                if (!context.mounted) return;
                                 final box =
                                     context.findRenderObject() as RenderBox?;
                                 await Share.shareXFiles(
@@ -506,7 +507,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
                                       : null,
                                 );
                               } catch (e) {
-                                if (Navigator.canPop(context)) {
+                                if (context.mounted && Navigator.canPop(context)) {
                                   Navigator.pop(context);
                                 }
                                 AppLogger.e('ReferAndEarnScreen', 'Error sharing referral: $e');
@@ -961,59 +962,6 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen>
     );
   }
 
-  Widget _buildSocialButton(
-    String label, {
-    IconData? icon,
-    String? lottiePath,
-    double scale = 1.0,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 76,
-        height: 76,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (lottiePath != null)
-              Transform.scale(
-                scale: scale,
-                child: Lottie.asset(
-                  lottiePath,
-                  width: 32,
-                  height: 32,
-                  repeat: true,
-                ),
-              )
-            else if (icon != null)
-              Icon(icon, color: Colors.grey.shade700, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,
-                color: Colors.black87,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildReferralTab(String label, String count, bool isSelected) {
     return GestureDetector(

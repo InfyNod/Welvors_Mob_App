@@ -371,3 +371,24 @@ class ClearConversationEvent extends ChatEvent {
   @override
   List<Object?> get props => [conversationId];
 }
+
+class ClearConversationUnreadEvent extends ChatEvent {
+  final String conversationId;
+  const ClearConversationUnreadEvent({required this.conversationId});
+  @override
+  List<Object?> get props => [conversationId];
+}
+
+class MarkConversationReadEvent extends ChatEvent {
+  final String conversationId;
+  const MarkConversationReadEvent({required this.conversationId});
+  @override
+  List<Object?> get props => [conversationId];
+}
+
+class MarkMessagesSeenEvent extends ChatEvent {
+  final String chatId;
+  const MarkMessagesSeenEvent({required this.chatId});
+  @override
+  List<Object?> get props => [chatId];
+}

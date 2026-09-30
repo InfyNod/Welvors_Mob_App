@@ -90,10 +90,11 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
 
               AppLogger.i('BlockUserDialog', '✅ USER REPORT SUCCESS');
 
-              final ctx = navigatorKey.currentContext;
-              if (ctx == null) return;
-
+              if (!reportContext.mounted) return;
               Navigator.of(reportContext).pop();
+
+              final ctx = navigatorKey.currentContext;
+              if (ctx == null || !ctx.mounted) return;
 
               ScaffoldMessenger.of(ctx).showSnackBar(
                 const SnackBar(
@@ -113,12 +114,12 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
                 'already reported',
               );
 
-              if (isAlreadyReported) {
+              if (isAlreadyReported && reportContext.mounted) {
                 Navigator.of(reportContext).pop();
               }
 
               final ctx = navigatorKey.currentContext;
-              if (ctx == null) return;
+              if (ctx == null || !ctx.mounted) return;
 
               ScaffoldMessenger.of(ctx).showSnackBar(
                 SnackBar(
@@ -152,6 +153,8 @@ class _BlockUserDialogState extends State<BlockUserDialog> {
       );
       return;
     }
+
+    if (!mounted) return;
 
     if (selectedOption == 'block_and_report') {
       // Close Sheet A (this dialog) first.

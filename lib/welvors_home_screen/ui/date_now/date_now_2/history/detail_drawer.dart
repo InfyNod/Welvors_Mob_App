@@ -472,7 +472,7 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: const Color(0xFFE43A6A).withOpacity(0.1),
+            color: const Color(0xFFE43A6A).withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -552,7 +552,7 @@ class _HistoryDetailDrawerState extends State<HistoryDetailDrawer> {
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFE43A6A).withOpacity(0.3),
+                        color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

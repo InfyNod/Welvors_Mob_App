@@ -593,7 +593,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
                             Future.delayed(
                               const Duration(milliseconds: 300),
                               () {
-                                if (Navigator.canPop(context)) {
+                                if (context.mounted && Navigator.canPop(context)) {
                                   Navigator.pop(context);
                                 }
                               },
@@ -951,7 +951,7 @@ class _BasicsScreenState extends State<BasicsScreen> with AutomaticKeepAliveClie
 
                     final error = await ApiService.submitBasicInfo(data);
 
-                    if (mounted) {
+                    if (mounted && context.mounted) {
                       setState(() => _isLoading = false);
                       if (error != null) {
                         ScaffoldMessenger.of(context).showSnackBar(

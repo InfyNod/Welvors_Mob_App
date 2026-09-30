@@ -176,7 +176,7 @@ class _GetComplimentsDrawerState extends State<GetComplimentsDrawer> {
                     
                     final success = await apiService.buyComplimentPack(packId);
                     
-                    if (!mounted) return;
+                    if (!mounted || !context.mounted) return;
                     
                     if (success) {
                       Navigator.pop(context); // Close the bottom sheet

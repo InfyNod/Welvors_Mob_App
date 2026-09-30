@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class MapSelectionDialog extends StatefulWidget {
   const MapSelectionDialog({super.key});
@@ -289,7 +290,7 @@ class _MapSelectionDialogState extends State<MapSelectionDialog> {
                                   try {
                                     _selectLocation(item);
                                   } catch (e) {
-                                    print("Error selecting location: $e");
+                                    AppLogger.e('MapSelectionDialog', 'Error selecting location: $e');
                                   }
                                 },
                                 child: Padding(

@@ -70,7 +70,7 @@ class TrustScoreCardAdhar extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(30),
             child: LinearProgressIndicator(
-              value: score / 100,
+              value: progress,
               minHeight: 7,
               borderRadius: BorderRadius.circular(10),
               backgroundColor: Colors.white.withValues(alpha: 0.28),

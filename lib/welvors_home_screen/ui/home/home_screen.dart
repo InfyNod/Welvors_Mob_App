@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
           showDialog(
             context: context,
             barrierDismissible: true,
-            barrierColor: Colors.black.withOpacity(0.6),
+            barrierColor: Colors.black.withValues(alpha: 0.6),
             builder: (context) => const FreeLimitPopup(),
           );
         } else if (swipedCount == 5 && !_hasShownFree5Popup) {
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           showDialog(
             context: context,
             barrierDismissible: true,
-            barrierColor: Colors.black.withOpacity(0.6),
+            barrierColor: Colors.black.withValues(alpha: 0.6),
             builder: (context) => const BottomFree5Popup(),
           );
         }
