@@ -110,10 +110,25 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   // Live status for the other participant. This must be mutable UI state;
   // _isUserOnline is immutable and therefore cannot refresh on socket events.
   late bool _isUserOnline;
+  StreamSubscription<Map<String, dynamic>>? _presenceSubscription;
   bool _isUnmatched = false;
   bool _isBlocked = false;
   bool _isBlockedByMe = false;
   String? _currentUserId;
+
+  bool _isTargetUser(String? incomingUserId) {
+    if (incomingUserId == null || incomingUserId.trim().isEmpty) return false;
+    final incoming = incomingUserId.trim();
+    final widgetUserId = widget.user.userId.trim();
+    if (widgetUserId.isNotEmpty && incoming == widgetUserId) return true;
+    final widgetId = widget.user.id.trim();
+    if (widgetId.isNotEmpty && incoming == widgetId) return true;
+    final liveId = (_liveuserId ?? '').trim();
+    if (liveId.isNotEmpty && incoming == liveId) return true;
+    final detailsId = (_profileDetails?.userId ?? '').trim();
+    if (detailsId.isNotEmpty && incoming == detailsId) return true;
+    return false;
+  }
 
   Future<bool> _checkIfUserBlockedByMe(String peerUserId) async {
     try {
@@ -580,7 +595,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       }
     });
 
-    _isUserOnline = widget.user.online;
+    final targetId = widget.user.userId.trim().isNotEmpty
+        ? widget.user.userId.trim()
+        : widget.user.id.trim();
+
+    _isUserOnline = _socketService.isUserOnline(targetId) ||
+        _socketService.isUserOnline(widget.user.userId) ||
+        _socketService.isUserOnline(widget.user.id) ||
+        widget.user.online;
 
     scrollController.addListener(_handleMessageScroll);
     _messageFocusNode.addListener(_onInputStateChanged);
@@ -710,14 +732,25 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   // ============================================================
 
   void _registerOnlineStatusListeners() {
+    _presenceSubscription?.cancel();
+    _presenceSubscription = _socketService.presenceStream.listen((event) {
+      final userId = event['userId']?.toString();
+      final bool isOnline = event['isOnline'] == true;
+      if (!mounted || !_isTargetUser(userId)) return;
+
+      AppLogger.d('ChatDetailScreen', '🟢 PRESENCE STREAM MATCH: userId=$userId isOnline=$isOnline');
+      setState(() {
+        _isUserOnline = isOnline;
+      });
+    });
+
     _socketService.offListener('user:online', _onUserOnline);
     _socketService.offListener('user:offline', _onUserOffline);
 
     _socketService.on('user:online', _onUserOnline);
     _socketService.on('user:offline', _onUserOffline);
 
-    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: user:online listener registered');
-    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: user:offline listener registered');
+    AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL: user:online/offline listeners registered');
   }
 
   Future<void> _loadChatMessages({required String conversationId}) async {
@@ -790,16 +823,35 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     bloc.add(LoadMessagesEvent(widget.user.id, conversationId: id));
   }
 
-  String? _extractOnlineUserId(dynamic data) {
+  String? _extractOnlineUserId(dynamic payload) {
+    dynamic data = payload;
+    if (data is List) {
+      if (data.isEmpty) return null;
+      data = data.first;
+    }
+
     if (data is Map) {
-      final value = data['userId'] ?? data['id'];
-      if (value != null && value.toString().isNotEmpty) return value.toString();
+      final direct = data['userId'] ?? data['user_id'] ?? data['id'];
+      if (direct != null && direct.toString().trim().isNotEmpty) {
+        return direct.toString().trim();
+      }
 
       final nested = data['data'];
       if (nested is Map) {
-        final nestedValue = nested['userId'] ?? nested['id'];
-        if (nestedValue != null && nestedValue.toString().isNotEmpty) {
-          return nestedValue.toString();
+        final value = nested['userId'] ?? nested['user_id'] ?? nested['id'];
+        if (value != null && value.toString().trim().isNotEmpty) {
+          return value.toString().trim();
+        }
+      }
+
+      final userObj = data['user'];
+      if (userObj is Map) {
+        final value = userObj['userId'] ??
+            userObj['user_id'] ??
+            userObj['id'] ??
+            userObj['_id'];
+        if (value != null && value.toString().trim().isNotEmpty) {
+          return value.toString().trim();
         }
       }
     }
@@ -809,7 +861,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   void _onUserOnline(dynamic data) {
     final userId = _extractOnlineUserId(data);
     AppLogger.d('ChatDetailScreen', '🟢 CHAT DETAIL user:online => $data | userId=$userId');
-    if (!mounted || userId != widget.user.userId) return;
+    if (!mounted || !_isTargetUser(userId)) return;
 
     setState(() {
       _isUserOnline = true;
@@ -819,7 +871,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   void _onUserOffline(dynamic data) {
     final userId = _extractOnlineUserId(data);
     AppLogger.d('ChatDetailScreen', '🔴 CHAT DETAIL user:offline => $data | userId=$userId');
-    if (!mounted || userId != widget.user.userId) return;
+    if (!mounted || !_isTargetUser(userId)) return;
 
     setState(() {
       _isUserOnline = false;
@@ -857,9 +909,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       }
       if (!mounted) return;
 
+      final liveSocketOnline = _socketService.isUserOnline(details.userId) ||
+          _socketService.isUserOnline(widget.user.userId) ||
+          _socketService.isUserOnline(widget.user.id);
+
       setState(() {
         _profileDetails = details;
-        _isUserOnline = details.isOnline;
+        _isUserOnline = liveSocketOnline || details.isOnline;
         _isBlocked = details.isBlocked;
         _isBlockedByMe = isBlockedByMe;
       });
@@ -951,9 +1007,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       }
       if (!mounted) return;
 
+      final liveSocketOnline = _socketService.isUserOnline(details.userId) ||
+          _socketService.isUserOnline(widget.user.userId) ||
+          _socketService.isUserOnline(widget.user.id);
+
       setState(() {
         _profileDetails = details;
-        _isUserOnline = details.isOnline;
+        _isUserOnline = liveSocketOnline || details.isOnline;
         _isBlocked = details.isBlocked;
         _isBlockedByMe = isBlockedByMe;
       });
@@ -1332,6 +1392,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
 
   @override
   void dispose() {
+    _presenceSubscription?.cancel();
+    _presenceSubscription = null;
     // Remove only this screen's listener. Do NOT remove the global
     // ChatBloc message:receive listener.
     _socketService.offListener('message:receive', _onMessageReceive);
