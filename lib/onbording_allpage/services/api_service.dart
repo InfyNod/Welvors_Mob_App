@@ -574,6 +574,42 @@ class ApiService {
     }
   }
 
+  /// Saves FCM device token to backend.
+  /// POST https://api.welvors.com/api/user/notifications/device-token
+  static Future<bool> saveDeviceToken(String deviceToken) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null || token.isEmpty) {
+        AppLogger.w('ApiService', 'Cannot save device token: No auth_token found');
+        return false;
+      }
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/notifications/device-token'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': token.toLowerCase().startsWith('bearer ')
+              ? token
+              : 'Bearer $token',
+        },
+        body: jsonEncode({'deviceToken': deviceToken}),
+      ).timeout(const Duration(seconds: 15));
+
+      AppLogger.d('ApiService', 'Save Device Token Status: ${response.statusCode}');
+      AppLogger.d('ApiService', 'Save Device Token Body: ${response.body}');
+
+      await handleTokenExpiration(response.statusCode);
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      AppLogger.e('ApiService', 'Error saving device token: $e');
+      return false;
+    }
+  }
+
   /// Submits the basic info to the server.
   static Future<String?> submitBasicInfo(Map<String, dynamic> data) async {
     try {

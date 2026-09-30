@@ -1,9 +1,11 @@
-
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:velvors/firebase_options.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/landing_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/splash_screen.dart';
+import 'package:velvors/utils/notification_service.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/trust_verification_screen.dart';
 import 'onbording_allpage/theme/app_theme.dart';
 import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
@@ -20,6 +22,15 @@ import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 import 'package:velvors/welvors_home_screen/services/network_connectivity_service.dart';
 import 'package:velvors/welvors_home_screen/ui/network/no_internet_screen.dart';
+
+// Firebase background message handler
+@pragma('vm:entry-point')
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  AppLogger.d("FCM", "Background message received: ${message.messageId}");
+  AppLogger.d("FCM", "Background message data: ${message.data}");
+}
 
 void main() {
   AppLogger.runLoggingApp(() async {
@@ -44,16 +55,51 @@ void main() {
 
     // Initialize global network connectivity monitoring
     NetworkConnectivityService.instance.initialize();
-
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
     runApp(const WelvorsApp(initialRoute: '/splash'));
   });
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-class WelvorsApp extends StatelessWidget {
+class WelvorsApp extends StatefulWidget {
   final String initialRoute;
+
   const WelvorsApp({super.key, required this.initialRoute});
+
+  @override
+  State<WelvorsApp> createState() => _WelvorsAppState();
+}
+
+class _WelvorsAppState extends State<WelvorsApp> {
+  bool _notificationInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Context available झाल्यानंतर notification initialize करतो
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeNotifications();
+    });
+  }
+  Future<void> _initializeNotifications() async {
+    if (_notificationInitialized) {
+      return;
+    }
+    _notificationInitialized = true;
+    try {
+      debugPrint('Initializing Notification Service...');
+      final notificationService = NotificationService();
+      await notificationService.initialize(context);
+      debugPrint('Notification Service initialized successfully');
+    } catch (e, stackTrace) {
+      debugPrint('Notification Service initialization failed: $e');
+      debugPrint(stackTrace.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,12 +111,13 @@ class WelvorsApp extends StatelessWidget {
         BlocProvider<ProfileEditCubit>(create: (context) => ProfileEditCubit()),
         BlocProvider<EventsBloc>(create: (context) => EventsBloc()),
       ],
+
       child: MaterialApp(
         title: 'Welvors',
         theme: buildTheme(),
         debugShowCheckedModeBanner: false,
         navigatorKey: navigatorKey,
-        initialRoute: initialRoute,
+        initialRoute: widget.initialRoute,
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(
@@ -79,6 +126,7 @@ class WelvorsApp extends StatelessWidget {
             child: child!,
           );
         },
+
         routes: {
           '/splash': (context) => const SplashScreen(),
           '/home': (context) => const TopAndBottomNavScreen(),

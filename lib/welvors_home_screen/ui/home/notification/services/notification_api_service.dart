@@ -184,6 +184,44 @@ class NotificationApiService {
     }
   }
 
+  /// Save FCM Device Token to backend
+  /// POST https://api.welvors.com/api/user/notifications/device-token
+  /// Body: {"deviceToken": "..."}
+  static Future<bool> saveDeviceToken(String deviceToken) async {
+    final token = deviceToken.trim();
+    if (token.isEmpty) {
+      AppLogger.w('NotificationApiService', 'Device token is empty, skipping');
+      return false;
+    }
+
+    try {
+      final headers = await _headers();
+      final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/notifications/device-token');
+
+      AppLogger.d('NotificationApiService', '🚀 POST DEVICE TOKEN');
+      AppLogger.d('NotificationApiService', 'URL: $uri');
+      AppLogger.d('NotificationApiService', 'DeviceToken: $token');
+
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: jsonEncode(<String, dynamic>{
+          'deviceToken': token,
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      AppLogger.d('NotificationApiService', 'SAVE DEVICE TOKEN STATUS: ${response.statusCode}');
+      AppLogger.d('NotificationApiService', 'SAVE DEVICE TOKEN BODY: ${response.body}');
+
+      await _handleAuth(response.statusCode);
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      AppLogger.e('NotificationApiService', 'Failed to save device token: $e');
+      return false;
+    }
+  }
+
   static String _messageFromResponse(String body, String fallback) {
     try {
       final decoded = jsonDecode(body);

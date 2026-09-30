@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'user_data.dart';
 import 'onboarding_flow_screen.dart';
 import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
+import '../../../../utils/notification_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -122,6 +123,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (token != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
+
+        // Sync FCM device token to backend after successful login/verification
+        unawaited(NotificationService().sendDeviceTokenToServer());
 
         if (!mounted) return;
         context.read<ProfileEditCubit>().loadProfile();
