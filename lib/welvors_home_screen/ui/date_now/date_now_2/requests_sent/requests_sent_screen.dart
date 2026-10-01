@@ -326,8 +326,35 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
         scrolledUnderElevation: 0,
         elevation: 0,
         automaticallyImplyLeading: false,
+        leadingWidth: 64,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black87,
+                size: 16,
+              ),
+            ),
+          ),
+        ),
         centerTitle: false,
-        titleSpacing: 16,
+        titleSpacing: 8,
         title: RichText(
           text: const TextSpan(
             style: TextStyle(
