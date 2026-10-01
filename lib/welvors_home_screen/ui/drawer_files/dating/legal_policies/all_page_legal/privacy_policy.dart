@@ -28,12 +28,12 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     }
   }
 
-  Widget _buildRichText(List<dynamic> contentSegments, {double fontSize = 14}) {
+  Widget _buildRichText(List<dynamic> contentSegments, {double fontSize = 14, bool defaultBold = false}) {
     List<TextSpan> spans = [];
     for (var segment in contentSegments) {
       if (segment is Map<String, dynamic>) {
         final text = segment['text'] ?? '';
-        final isBold = segment['bold'] == true;
+        final isBold = segment['bold'] == true || defaultBold;
 
         spans.add(
           TextSpan(
@@ -137,7 +137,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
 
             return Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
-              child: _buildRichText(content, fontSize: fontSize),
+              child: _buildRichText(content, fontSize: fontSize, defaultBold: true),
             );
           } else if (type == 'bulletList') {
             final items = block['items'] as List<dynamic>? ?? [];
