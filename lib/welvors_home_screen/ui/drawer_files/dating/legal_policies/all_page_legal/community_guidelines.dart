@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../service_legal/service_legal.dart';
-import 'package:intl/intl.dart';
 
 class CommunityGuidelinesScreen extends StatefulWidget {
   const CommunityGuidelinesScreen({super.key});
@@ -18,15 +17,6 @@ class _CommunityGuidelinesScreenState extends State<CommunityGuidelinesScreen> {
   void initState() {
     super.initState();
     _legalDataFuture = _apiService.getLegalPage('COMMUNITY_GUIDELINES');
-  }
-
-  String _formatDate(String isoString) {
-    try {
-      final date = DateTime.parse(isoString);
-      return DateFormat('dd MMMM yyyy').format(date);
-    } catch (e) {
-      return isoString;
-    }
   }
 
   Widget _buildRichText(List<dynamic> contentSegments, {double fontSize = 14, bool defaultBold = false}) {
@@ -238,7 +228,6 @@ class _CommunityGuidelinesScreenState extends State<CommunityGuidelinesScreen> {
           }
 
           final data = snapshot.data!;
-          final effectiveFrom = data['effectiveFrom'] ?? '';
           final contentMap = data['content'] as Map<String, dynamic>? ?? {};
           final blocks = List<dynamic>.from(contentMap['blocks'] ?? []);
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../service_legal/service_legal.dart';
-import 'package:intl/intl.dart';
 
 class VerificationPolicyScreen extends StatefulWidget {
   const VerificationPolicyScreen({super.key});
@@ -18,15 +17,6 @@ class _VerificationPolicyScreenState extends State<VerificationPolicyScreen> {
   void initState() {
     super.initState();
     _legalDataFuture = _apiService.getLegalPage('VERIFICATION_ID_POLICY');
-  }
-
-  String _formatDate(String isoString) {
-    try {
-      final date = DateTime.parse(isoString);
-      return DateFormat('dd MMMM yyyy').format(date);
-    } catch (e) {
-      return isoString;
-    }
   }
 
   Widget _buildRichText(List<dynamic> contentSegments, {double fontSize = 14, bool defaultBold = false}) {
@@ -235,7 +225,6 @@ class _VerificationPolicyScreenState extends State<VerificationPolicyScreen> {
           }
 
           final data = snapshot.data!;
-          final effectiveFrom = data['effectiveFrom'] ?? '';
           final contentMap = data['content'] as Map<String, dynamic>? ?? {};
           final blocks = List<dynamic>.from(contentMap['blocks'] ?? []);
 
