@@ -21,9 +21,7 @@ class TrustScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.grey.shade300,
-                ),
+                border: Border.all(color: Colors.grey.shade300),
               ),
               child: const Icon(
                 Icons.arrow_back_ios_new,
@@ -183,9 +181,24 @@ class TrustScreen extends StatelessWidget {
                     'Sources verified': '3 sources',
                   },
                   incomeSources: [
-                    {'emoji': '💼', 'title': 'Salary', 'subtitle': 'Razorpay · monthly', 'amount': '₹24 L/yr'},
-                    {'emoji': '🏠', 'title': 'Rental income', 'subtitle': '1 flat · Pune', 'amount': '₹3.6 L/yr'},
-                    {'emoji': '💻', 'title': 'Freelance', 'subtitle': 'Product consulting', 'amount': '₹2.4 L/yr'},
+                    {
+                      'emoji': '💼',
+                      'title': 'Salary',
+                      'subtitle': 'Razorpay · monthly',
+                      'amount': '₹24 L/yr',
+                    },
+                    {
+                      'emoji': '🏠',
+                      'title': 'Rental income',
+                      'subtitle': '1 flat · Pune',
+                      'amount': '₹3.6 L/yr',
+                    },
+                    {
+                      'emoji': '💻',
+                      'title': 'Freelance',
+                      'subtitle': 'Product consulting',
+                      'amount': '₹2.4 L/yr',
+                    },
                   ],
                   verifiedDate: '22 Jan 2026',
                   verifiedMethod: 'Bank statement (3 months)',
@@ -330,9 +343,7 @@ class TrustScreen extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    CustomPaint(
-                      painter: _GradientArcPainter(progress: 1.0),
-                    ),
+                    CustomPaint(painter: _GradientArcPainter(progress: 1.0)),
                     Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -425,7 +436,10 @@ class TrustScreen extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
                 children: [
-                  TextSpan(text: 'You only see the verified result — never the documents. They stay private and encrypted.'),
+                  TextSpan(
+                    text:
+                        'You only see the verified result — never the documents. They stay private and encrypted.',
+                  ),
                 ],
               ),
             ),
@@ -459,9 +473,13 @@ class TrustScreen extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: isComplete ? const Color(0xFF2CB864) : Colors.transparent,
+                color: isComplete
+                    ? const Color(0xFF2CB864)
+                    : Colors.transparent,
                 shape: BoxShape.circle,
-                border: isComplete ? null : Border.all(color: Colors.grey.shade400, width: 2),
+                border: isComplete
+                    ? null
+                    : Border.all(color: Colors.grey.shade400, width: 2),
               ),
               child: Icon(
                 Icons.check,
@@ -474,37 +492,42 @@ class TrustScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: title,
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                          ),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    spacing: 6,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
                         ),
-                        TextSpan(
-                          text: '  $pointsText',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 2.0),
+                        child: Text(
+                          pointsText,
                           style: TextStyle(
-                            color: Colors.grey.shade600,
+                            color: Colors.grey.shade500,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Container(
                     height: 4,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: isComplete ? const Color(0xFF2CB864) : Colors.transparent,
+                      color: isComplete
+                          ? const Color(0xFF2CB864)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(2),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -512,13 +535,17 @@ class TrustScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: isComplete ? const Color(0xFFE8F6ED) : Colors.grey.shade200,
+                color: isComplete
+                    ? const Color(0xFFE8F6ED)
+                    : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 progress,
                 style: TextStyle(
-                  color: isComplete ? const Color(0xFF2CB864) : Colors.grey.shade600,
+                  color: isComplete
+                      ? const Color(0xFF2CB864)
+                      : Colors.grey.shade600,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
@@ -562,7 +589,9 @@ class TrustScreen extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEDF2FA), // subtle blueish background for icon
+                  color: const Color(
+                    0xFFEDF2FA,
+                  ), // subtle blueish background for icon
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
@@ -602,9 +631,13 @@ class TrustScreen extends StatelessWidget {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: isVerified ? const Color(0xFF2CB864) : Colors.transparent,
+                      color: isVerified
+                          ? const Color(0xFF2CB864)
+                          : Colors.transparent,
                       shape: BoxShape.circle,
-                      border: isVerified ? null : Border.all(color: Colors.grey.shade300, width: 2),
+                      border: isVerified
+                          ? null
+                          : Border.all(color: Colors.grey.shade300, width: 2),
                     ),
                     child: Icon(
                       Icons.check,
@@ -614,15 +647,22 @@ class TrustScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                      color: isVerified ? const Color(0xFFE8F6ED) : Colors.grey.shade100,
+                      color: isVerified
+                          ? const Color(0xFFE8F6ED)
+                          : Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       badgeText,
                       style: TextStyle(
-                        color: isVerified ? const Color(0xFF2CB864) : Colors.grey.shade500,
+                        color: isVerified
+                            ? const Color(0xFF2CB864)
+                            : Colors.grey.shade500,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -633,11 +673,15 @@ class TrustScreen extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Inner Details Box (Light Green Border)
         if (details.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+            padding: const EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              bottom: 16.0,
+            ),
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFFF9FBF9),
@@ -647,58 +691,84 @@ class TrustScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 8),
+                    padding: const EdgeInsets.only(top: 8, bottom: 4),
                     child: Column(
-                      children: details.entries.map((e) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                e.key,
-                                style: const TextStyle(
-                                  color: Color(0xFF888888),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                      children: details.entries.toList().asMap().entries.map((
+                        entry,
+                      ) {
+                        int idx = entry.key;
+                        var e = entry.value;
+                        return Column(
+                          children: [
+                            if (idx > 0)
+                              const Divider(
+                                height: 1,
+                                color: Color(0xFFE8F0EA),
                               ),
-                              Row(
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 8.0,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    e.value,
+                                    e.key,
                                     style: const TextStyle(
-                                      color: Colors.black87,
+                                      color: Color(0xFF888888),
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    width: 16,
-                                    height: 16,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF2CB864),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.check, color: Colors.white, size: 10),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        e.value,
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        width: 16,
+                                        height: 16,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFF2CB864),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 10,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         );
                       }).toList(),
                     ),
                   ),
-                  
+
                   if (incomeSources != null && incomeSources.isNotEmpty)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Divider(height: 1, color: Color(0xFFE8F0EA)),
                         Padding(
-                          padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                          padding: const EdgeInsets.only(
+                            left: 16,
+                            right: 16,
+                            top: 16,
+                            bottom: 8,
+                          ),
                           child: Text(
                             'INCOME SOURCES',
                             style: TextStyle(
@@ -709,57 +779,133 @@ class TrustScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        ...incomeSources.map((source) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                            child: Row(
-                              children: [
-                                Text(source['emoji']!, style: const TextStyle(fontSize: 16)),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        source['title']!,
-                                        style: const TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                      Text(
-                                        source['subtitle']!,
-                                        style: TextStyle(
-                                          color: Colors.grey.shade500,
-                                          fontSize: 10,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Text(
-                                  source['amount']!,
-                                  style: const TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 4.0,
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFFE8F0EA),
+                              ),
                             ),
-                          );
-                        }),
+                            child: Column(
+                              children: incomeSources.asMap().entries.map((
+                                entry,
+                              ) {
+                                int idx = entry.key;
+                                var source = entry.value;
+                                return Column(
+                                  children: [
+                                    if (idx > 0)
+                                      const Divider(
+                                        height: 1,
+                                        color: Color(0xFFE8F0EA),
+                                      ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12.0,
+                                        vertical: 10.0,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 36,
+                                            height: 36,
+                                            decoration: BoxDecoration(
+                                              color: const Color(
+                                                0xFFF6F8F6,
+                                              ), // slightly different background for inner emoji
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              source['emoji']!,
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  source['title']!,
+                                                  style: const TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  source['subtitle']!,
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF888888),
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                source['amount']!,
+                                                style: const TextStyle(
+                                                  color: Colors.black87,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                width: 16,
+                                                height: 16,
+                                                decoration: const BoxDecoration(
+                                                  color: Color(0xFF2CB864),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(
+                                                  Icons.check,
+                                                  color: Colors.white,
+                                                  size: 10,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 8),
                       ],
                     ),
-                  
+
                   if (verifiedDate != null && verifiedMethod != null) ...[
                     // Footer is now a darker green
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: const BoxDecoration(
-                        color: Color(0xFFD9EFE0), // Thoda dark green color as requested
+                        color: Color(
+                          0xFFD9EFE0,
+                        ), // Thoda dark green color as requested
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(15),
                           bottomRight: Radius.circular(15),
@@ -770,7 +916,11 @@ class TrustScreen extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.check, color: Color(0xFF2CB864), size: 14),
+                              const Icon(
+                                Icons.check,
+                                color: Color(0xFF2CB864),
+                                size: 14,
+                              ),
                               const SizedBox(width: 6),
                               Text(
                                 'Verified $verifiedDate',
@@ -793,7 +943,7 @@ class TrustScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ]
+                  ],
                 ],
               ),
             ),
@@ -819,7 +969,7 @@ class _GradientArcPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6.5
       ..strokeCap = StrokeCap.round;
-    
+
     canvas.drawArc(
       rect.deflate(6.5 / 2),
       0,
