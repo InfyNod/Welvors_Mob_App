@@ -478,6 +478,56 @@ class ApiService {
     }
   }
 
+  /// Extracts user-friendly error message from response body.
+  static String extractErrorMessage(
+    http.Response response, [
+    String fallback = 'Something went wrong',
+  ]) {
+    try {
+      if (response.body.isNotEmpty) {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map<String, dynamic>) {
+          final msg = decoded['message'] ?? decoded['error'] ?? decoded['msg'];
+          if (msg != null && msg.toString().trim().isNotEmpty) {
+            return msg.toString().trim();
+          }
+        }
+      }
+    } catch (_) {}
+    return fallback;
+  }
+
+  /// Cleans an error string by unpacking JSON or removing "Error 400: " prefixes if present.
+  static String cleanErrorMessage(
+    String? rawError, [
+    String fallback = 'Something went wrong. Please try again.',
+  ]) {
+    if (rawError == null || rawError.trim().isEmpty) return fallback;
+    String trimmed = rawError.trim();
+
+    final jsonStart = trimmed.indexOf('{');
+    final jsonEnd = trimmed.lastIndexOf('}');
+    if (jsonStart != -1 && jsonEnd != -1 && jsonEnd > jsonStart) {
+      try {
+        final jsonStr = trimmed.substring(jsonStart, jsonEnd + 1);
+        final decoded = jsonDecode(jsonStr);
+        if (decoded is Map<String, dynamic>) {
+          final msg = decoded['message'] ?? decoded['error'] ?? decoded['msg'];
+          if (msg != null && msg.toString().trim().isNotEmpty) {
+            return msg.toString().trim();
+          }
+        }
+      } catch (_) {}
+    }
+
+    final prefixRegex = RegExp(r'^Error\s*\d*:\s*', caseSensitive: false);
+    if (prefixRegex.hasMatch(trimmed)) {
+      trimmed = trimmed.replaceFirst(prefixRegex, '').trim();
+    }
+
+    return trimmed.isNotEmpty ? trimmed : fallback;
+  }
+
   /// Sends OTP to the given phone number.
   static Future<String?> sendOtp(String phoneNumber) async {
     try {
@@ -493,10 +543,10 @@ class ApiService {
         if (decoded['success'] == true) return null;
         return decoded['message'] ?? 'Failed to send OTP';
       }
-      return 'Error ${response.statusCode}: ${response.body}';
+      return extractErrorMessage(response, 'Failed to send OTP');
     } catch (e) {
       AppLogger.e('ApiService', 'Error sending OTP: $e');
-      return e.toString();
+      return 'Connection error. Please check your internet connection.';
     }
   }
 
@@ -561,16 +611,16 @@ class ApiService {
         }
         return {
           'token': null,
-          'error': decoded['message'] ?? 'Failed to verify',
+          'error': decoded['message'] ?? 'Failed to verify OTP',
         };
       }
       return {
         'token': null,
-        'error': 'Error ${response.statusCode}: ${response.body}',
+        'error': extractErrorMessage(response, 'Failed to verify OTP'),
       };
     } catch (e) {
       AppLogger.e('ApiService', 'Error verifying OTP: $e');
-      return {'token': null, 'error': e.toString()};
+      return {'token': null, 'error': 'Connection error. Please check your internet connection.'};
     }
   }
 

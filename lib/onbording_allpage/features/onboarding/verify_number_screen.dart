@@ -13,6 +13,7 @@ import 'user_data.dart';
 import 'onboarding_flow_screen.dart';
 import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import '../../../../utils/notification_service.dart';
+import 'package:velvors/config/custom_snackbar.dart';
 
 class VerifyNumberScreen extends StatefulWidget {
   const VerifyNumberScreen({super.key});
@@ -118,9 +119,12 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
           }
         });
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(errorMsg)));
+        if (mounted) {
+          CustomSnackBar.showError(
+            context,
+            ApiService.cleanErrorMessage(errorMsg, 'Failed to send OTP'),
+          );
+        }
       }
     } else {
       if (_inviteCodeController.text.trim().isEmpty) {
@@ -303,9 +307,11 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMsg ?? 'Invalid OTP. Please try again.'),
+          CustomSnackBar.showError(
+            context,
+            ApiService.cleanErrorMessage(
+              errorMsg,
+              'Invalid OTP. Please try again.',
             ),
           );
         }
@@ -332,16 +338,19 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
               ? 'Referral code applied successfully!'
               : 'Invalid referral code.');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: success ? Colors.green : Colors.red,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
       if (success) {
+        CustomSnackBar.showSuccess(
+          context,
+          message,
+          title: 'Success',
+        );
         setState(() => _isInviteCodeVerified = true);
+      } else {
+        CustomSnackBar.showError(
+          context,
+          message,
+          title: 'Referral Code',
+        );
       }
     }
   }
