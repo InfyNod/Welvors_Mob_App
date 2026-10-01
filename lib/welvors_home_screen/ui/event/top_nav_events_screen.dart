@@ -6,9 +6,10 @@ import 'events_bloc/events_event.dart';
 import 'events_bloc/events_state.dart';
 import 'all_screen/events_cards.dart';
 import 'all_screen/events_location.dart';
-import 'all_screen/my_ticket.dart';
 import 'filter_events.dart';
 import 'package:velvors/config/app_cached_image.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class EventsScreen extends StatelessWidget {
   final ValueNotifier<int>? refreshNotifier;
@@ -207,12 +208,7 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                     // My Ticket Button
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MyTicketScreen(),
-                          ),
-                        );
+                        context.push(AppRoutes.myBookings);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(

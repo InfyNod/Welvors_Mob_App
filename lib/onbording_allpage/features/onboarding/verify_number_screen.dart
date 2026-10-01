@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'user_data.dart';
 import 'onboarding_flow_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import '../../../../utils/notification_service.dart';
 
@@ -263,24 +265,13 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                 OnboardingFlowScreen.mapNextStepToScreenIndex(nextStep);
 
             if (mounted) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      OnboardingFlowScreen(initialStep: initialStep),
-                ),
-                (route) => false,
-              );
+              context.go('${AppRoutes.onboardingFlow}?step=$initialStep');
             }
           } else {
             // Existing user who completed onboarding -> Go to Splash
             await prefs.setBool('onboarding_completed', true);
             if (mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/splash',
-                (route) => false,
-              );
+              context.go(AppRoutes.splash);
             }
           }
         }

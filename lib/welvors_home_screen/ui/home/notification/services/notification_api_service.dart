@@ -9,6 +9,8 @@ import '../../../../services/logger_service.dart';
 import '../model/notification_model.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/utils/navigation/app_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class NotificationApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/notification';

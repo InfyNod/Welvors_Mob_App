@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velvors/main.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/utils/navigation/app_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class ApiService {
@@ -53,13 +53,7 @@ class ApiService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('auth_token');
 
-      if (navigatorKey.currentContext != null) {
-        Navigator.pushNamedAndRemoveUntil(
-          navigatorKey.currentContext!,
-          '/landing',
-          (route) => false,
-        );
-      }
+      AppRouter.go(AppRoutes.landing);
     }
   }
 

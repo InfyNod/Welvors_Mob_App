@@ -8,8 +8,8 @@ import '../../widgets/primary_button.dart';
 import '../../widgets/stat_pill.dart';
 import '../../widgets/terms_bottom_sheet.dart';
 import '../../widgets/privacy_bottom_sheet.dart';
-import 'login_screen.dart';
-import 'verify_number_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/utils/app_update_helper.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -213,12 +213,7 @@ class _LandingScreenState extends State<LandingScreen> {
               PrimaryButton(
                 'Get started',
                 onTap: _isTermsAccepted ? () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const VerifyNumberScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.verifyNumber);
                 } : null,
               ),
               const SizedBox(height: 16),
@@ -241,12 +236,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const LoginScreen(),
-                            ),
-                          );
+                          context.push(AppRoutes.login);
                         },
                     ),
                   ],

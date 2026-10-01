@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../../../utils/notification_service.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -89,18 +91,10 @@ class _SplashScreenState extends State<SplashScreen>
     // 3. Navigate
     if (mounted) {
       if (isLoggedIn) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/home',
-          (route) => false,
-        );
+        context.go(AppRoutes.home);
       } else {
         // If they haven't completed onboarding, force them to land and verify again
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/landing',
-          (route) => false,
-        );
+        context.go(AppRoutes.landing);
       }
     }
   }

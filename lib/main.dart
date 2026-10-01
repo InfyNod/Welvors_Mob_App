@@ -3,13 +3,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/firebase_options.dart';
-import 'package:velvors/onbording_allpage/features/onboarding/landing_screen.dart';
-import 'package:velvors/onbording_allpage/features/onboarding/splash_screen.dart';
 import 'package:velvors/utils/notification_service.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/trust_verification_screen.dart';
 import 'onbording_allpage/theme/app_theme.dart';
 import 'onbording_allpage/blocs/onboarding/onboarding_bloc.dart';
-import 'welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 import 'welvors_home_screen/home_bloc/home_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 import 'welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
@@ -21,9 +17,7 @@ import 'package:velvors/config/env_config.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 import 'package:velvors/welvors_home_screen/services/network_connectivity_service.dart';
-import 'package:velvors/welvors_home_screen/ui/network/no_internet_screen.dart';
-import 'package:velvors/utils/app_update_helper.dart';
-import 'package:velvors/utils/app_update_screen.dart';
+import 'package:velvors/utils/navigation/app_router.dart';
 
 // Firebase background message handler
 @pragma('vm:entry-point')
@@ -61,16 +55,17 @@ void main() {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
-    runApp(const WelvorsApp(initialRoute: '/splash'));
+    runApp(const WelvorsApp());
   });
 }
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+// Global navigatorKey referencing AppRouter navigatorKey for backward compatibility
+final GlobalKey<NavigatorState> navigatorKey = AppRouter.navigatorKey;
 
 class WelvorsApp extends StatefulWidget {
   final String initialRoute;
 
-  const WelvorsApp({super.key, required this.initialRoute});
+  const WelvorsApp({super.key, this.initialRoute = '/splash'});
 
   @override
   State<WelvorsApp> createState() => _WelvorsAppState();
@@ -82,11 +77,12 @@ class _WelvorsAppState extends State<WelvorsApp> {
   @override
   void initState() {
     super.initState();
-    // Context available झाल्यानंतर notification initialize करतो
+    // Initialize notifications once context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeNotifications();
     });
   }
+
   Future<void> _initializeNotifications() async {
     if (_notificationInitialized) {
       return;
@@ -114,12 +110,11 @@ class _WelvorsAppState extends State<WelvorsApp> {
         BlocProvider<EventsBloc>(create: (context) => EventsBloc()),
       ],
 
-      child: MaterialApp(
+      child: MaterialApp.router(
         title: 'Welvors',
         theme: buildTheme(),
         debugShowCheckedModeBanner: false,
-        navigatorKey: navigatorKey,
-        initialRoute: widget.initialRoute,
+        routerConfig: AppRouter.router,
         builder: (context, child) {
           return MediaQuery(
             data: MediaQuery.of(
@@ -127,24 +122,6 @@ class _WelvorsAppState extends State<WelvorsApp> {
             ).copyWith(textScaler: const TextScaler.linear(1.0)),
             child: child!,
           );
-        },
-
-        routes: {
-          '/splash': (context) => const SplashScreen(),
-          '/home': (context) => const TopAndBottomNavScreen(),
-          '/landing': (context) => const LandingScreen(),
-          '/TrustVerificationScreen': (context) =>
-              const TrustVerificationScreen(),
-          '/no-internet': (context) => const NoInternetScreen(),
-          '/app-update': (context) => AppUpdateScreen(
-                currentVersion:
-                    AppUpdateHelper.currentInstalledVersion ?? '1.0.0',
-                latestVersion:
-                    AppUpdateHelper.currentAppStoreVersion ?? '1.0.1',
-                releaseNotes: AppUpdateHelper.releaseNotes,
-                onUpdate: AppUpdateHelper.openPlayStore,
-                onLater: () => Navigator.of(context).pop(),
-              ),
         },
       ),
     );

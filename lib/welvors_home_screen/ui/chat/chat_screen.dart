@@ -11,7 +11,8 @@ import 'chat_bloc/chat_bloc.dart';
 import 'chat_bloc/chat_event.dart';
 import 'chat_bloc/chat_state.dart';
 import 'chat_repository.dart';
-import 'chat_detail_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
@@ -2052,14 +2053,12 @@ class _ChatListViewState extends State<_ChatListView>
 
     final ChatUser userToOpen = user.copyWith(online: isOnline);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: chatBloc,
-          child: ChatDetailScreen(user: userToOpen),
-        ),
-      ),
+    context.push(
+      AppRoutes.chatDetail,
+      extra: {
+        'user': userToOpen,
+        'bloc': chatBloc,
+      },
     ).then((_) {
       if (!mounted) return;
       chatBloc.clearConversationUnread(conversationId);
