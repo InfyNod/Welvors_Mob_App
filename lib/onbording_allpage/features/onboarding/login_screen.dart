@@ -15,6 +15,7 @@ import 'user_data.dart';
 import 'onboarding_flow_screen.dart';
 import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import '../../../../utils/notification_service.dart';
+import 'package:velvors/config/custom_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -100,9 +101,10 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(
+          CustomSnackBar.showError(
             context,
-          ).showSnackBar(SnackBar(content: Text(errorMsg)));
+            ApiService.cleanErrorMessage(errorMsg, 'Failed to send OTP'),
+          );
         }
       }
     } else {
@@ -166,9 +168,11 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMsg ?? 'Invalid OTP. Please try again.'),
+          CustomSnackBar.showError(
+            context,
+            ApiService.cleanErrorMessage(
+              errorMsg,
+              'Invalid OTP. Please try again.',
             ),
           );
         }
