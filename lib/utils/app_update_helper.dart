@@ -19,7 +19,7 @@ class AppUpdateHelper {
 
   /// Shared Upgrader instance configured for Welvors
   static final Upgrader upgrader = Upgrader(
-    debugDisplayAlways: true,
+    // debugDisplayAlways: true,
     debugLogging: kDebugMode,
     durationUntilAlertAgain: const Duration(hours: 4),
   );

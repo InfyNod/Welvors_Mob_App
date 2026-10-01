@@ -56,16 +56,11 @@ class NotificationRepository {
     }
 
     /*
-      IMPORTANT:
-
-      Agar backend ka mark-read endpoint different hai,
-      sirf ye URL change karein.
-
-      Current assumed endpoint:
-      PATCH /api/notifications/{notificationId}/read
+      Endpoint:
+      PATCH /api/user/notification/{notificationId}/read
     */
 
-    final uri = Uri.parse('$baseUrl/api/notification/$notificationId/read');
+    final uri = Uri.parse('$baseUrl/api/user/notification/$notificationId/read');
 
     AppLogger.apiRequest(
       'NotificationRepository',
@@ -108,8 +103,8 @@ class NotificationRepository {
     }
 
     /*
-      Assumed endpoint:
-      PATCH /api/notifications/read-all
+      Endpoint:
+      PATCH /api/user/notification/read-all
     */
 
     final uri = Uri.parse('$baseUrl/api/user/notification/read-all');
