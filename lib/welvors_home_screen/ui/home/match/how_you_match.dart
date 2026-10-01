@@ -371,6 +371,7 @@ class AFewDifferencesSection extends StatelessWidget {
           final them = diff['them'];
           
           final emoji = _getEmojiForDifference(diff['key'] ?? '');
+          final circleColor = _getColorForDifference(diff['key'] ?? '');
           
           String description;
           if (you != null && them != null && you.toString().isNotEmpty && them.toString().isNotEmpty) {
@@ -385,6 +386,7 @@ class AFewDifferencesSection extends StatelessWidget {
               emoji,
               title,
               description,
+              circleColor,
             ),
           );
         }),
@@ -395,6 +397,10 @@ class AFewDifferencesSection extends StatelessWidget {
   String _getEmojiForDifference(String key) {
     switch (key) {
       case 'RELATIONSHIP_INTENT': return '🎯';
+      case 'RELIGION': return '🙏';
+      case 'COMMUNITY': return '🤝';
+      case 'NATIVE_PLACE': return '🏠';
+      case 'COMMUNICATION_STYLE': return '💬';
       case 'DIET': return '🍽️';
       case 'DAILY_RHYTHM': return '🌙';
       case 'VALUES': return '💞';
@@ -409,7 +415,20 @@ class AFewDifferencesSection extends StatelessWidget {
     }
   }
 
-  Widget _buildDifferenceCard(String emoji, String title, String description) {
+  Color _getColorForDifference(String key) {
+    switch (key) {
+      case 'RELATIONSHIP_INTENT': return const Color(0xFFFFEAEA); // Light Pink
+      case 'RELIGION': return const Color(0xFFFFF4E5); // Light Orange
+      case 'COMMUNITY': return const Color(0xFFE5F9E5); // Light Green
+      case 'NATIVE_PLACE': return const Color(0xFFE5F3FF); // Light Blue
+      case 'COMMUNICATION_STYLE': return const Color(0xFFF3E5FF); // Light Purple
+      case 'DIET': return const Color(0xFFFFF3E0);
+      case 'DAILY_RHYTHM': return const Color(0xFFE1F5FE);
+      default: return const Color(0xFFFFF9E6); // Light Yellow default
+    }
+  }
+
+  Widget _buildDifferenceCard(String emoji, String title, String description, Color circleColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -429,8 +448,8 @@ class AFewDifferencesSection extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFF9E6), // Light yellow background
+            decoration: BoxDecoration(
+              color: circleColor,
               shape: BoxShape.circle,
             ),
             child: Text(emoji, style: const TextStyle(fontSize: 18)),
