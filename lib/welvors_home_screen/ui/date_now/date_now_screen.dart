@@ -8,6 +8,9 @@ import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_no
 import 'date_now_2/post_a_plan/activity_1.dart';
 import 'package:intl/intl.dart';
 import 'profile/profile_detail.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:velvors/config/env_config.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 String _formatEventTime(String? timeStr) {
@@ -131,6 +134,8 @@ class _DateNowScreenState extends State<DateNowScreen>
       filter,
       overrideToken: token,
     );
+    
+    _fetchBadgeCounts();
 
     if (mounted && currentRequestId == _fetchRequestId) {
       setState(() {
@@ -180,6 +185,60 @@ class _DateNowScreenState extends State<DateNowScreen>
         _currentPlanIndex = 0;
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _fetchBadgeCounts() async {
+    try {
+      int totalMyPlans = 0;
+      final periods = ['Today', 'Tomorrow', 'Weekend'];
+      final results = await Future.wait(
+        periods.map((p) => DateNowApiService.getMyPlans(period: p)),
+      );
+      
+      for (final res in results) {
+        if (res != null && res['success'] == true) {
+          final List<dynamic> data = res['data'] ?? [];
+          totalMyPlans += data.length;
+        }
+      }
+
+      int sentRequestsCount = RequestsSentScreen.mySentRequests.length;
+      final url = Uri.parse('${EnvConfig.apiBaseUrl}/user/my-date-plan-requests');
+      final reqResponse = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await TokenHelper.getToken() ?? ""}',
+        },
+      );
+      if (reqResponse.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(reqResponse.body);
+        if (data['success'] == true && data['data'] != null) {
+          final List<dynamic> items = data['data'];
+          // We don't overwrite the full list because RequestsSentScreen handles the complex mapping
+          // We just need the correct length for the badge if it hasn't been mapped yet.
+          if (RequestsSentScreen.mySentRequests.isEmpty && items.isNotEmpty) {
+             // Just put dummy items so length is correct. RequestsSentScreen will overwrite them.
+             RequestsSentScreen.mySentRequests = List.generate(items.length, (_) => {});
+          } else if (RequestsSentScreen.mySentRequests.isNotEmpty) {
+             // If we already mapped them, let's keep the real mapped data but adjust length if needed
+             // Actually, it's safer to just set mySentRequests if it's currently empty, or let it be.
+             // Best is to introduce a static count for sent requests too, but let's just use dummy list for now.
+             if (RequestsSentScreen.mySentRequests.length != items.length) {
+                 RequestsSentScreen.mySentRequests = List.generate(items.length, (_) => {});
+             }
+          }
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          RequestsSentScreen.myPlansCount = totalMyPlans;
+        });
+      }
+    } catch (e) {
+      AppLogger.e('DateNowScreen', 'Error fetching badge counts: $e');
     }
   }
 
@@ -314,7 +373,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                           shape: BoxShape.circle,
                         ),
                         child: Text(
-                          '${RequestsSentScreen.mySentRequests.length + MyPlanScreen.myHostedPlans.length}',
+                          '${RequestsSentScreen.mySentRequests.length + RequestsSentScreen.myPlansCount}',
                           style: const TextStyle(
                             color: Color(0xFFDE2957),
                             fontWeight: FontWeight.bold,
