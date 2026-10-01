@@ -123,11 +123,15 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
                       const SizedBox(height: 24),
                       _buildInsightCard(),
                       const SizedBox(height: 24),
-                      const HowYouMatchSection(),
+                      HowYouMatchSection(
+                        dimensions: matchData?['dimensions'] as List<dynamic>?,
+                      ),
                       const SizedBox(height: 24),
                       const WhatYouShareSection(),
                       const SizedBox(height: 24),
-                      const AFewDifferencesSection(),
+                      AFewDifferencesSection(
+                        differences: matchData?['differences'] as List<dynamic>?,
+                      ),
                       const SizedBox(height: 24),
                       const SideBySideSection(),
                       const SizedBox(height: 24),
