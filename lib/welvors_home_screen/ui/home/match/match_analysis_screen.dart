@@ -135,6 +135,7 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
                       const SizedBox(height: 24),
                       SideBySideSection(
                         sideBySide: matchData?['sideBySide'] as List<dynamic>?,
+                        matchName: widget.matchName,
                       ),
                       const SizedBox(height: 24),
                       const SizedBox(
@@ -476,32 +477,30 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
       );
     }
 
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            valueWidget,
-            const SizedBox(height: 2),
-            SizedBox(
-              height: 28, // Fixed height for 1 or 2 lines
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF9B98A7),
-                    letterSpacing: 0.8,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          valueWidget,
+          const SizedBox(height: 2),
+          SizedBox(
+            height: 28, // Fixed height for 1 or 2 lines
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF9B98A7),
+                  letterSpacing: 0.8,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

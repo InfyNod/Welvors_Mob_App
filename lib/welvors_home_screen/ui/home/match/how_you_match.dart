@@ -469,8 +469,13 @@ class AFewDifferencesSection extends StatelessWidget {
 
 class SideBySideSection extends StatelessWidget {
   final List<dynamic>? sideBySide;
+  final String matchName;
 
-  const SideBySideSection({super.key, this.sideBySide});
+  const SideBySideSection({
+    super.key,
+    this.sideBySide,
+    required this.matchName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -511,7 +516,7 @@ class SideBySideSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             child: Column(
               children: [
-                _buildHeaderRow(),
+                _buildHeaderRow(matchName),
                 ...sideBySide!.asMap().entries.map((entry) {
                   final index = entry.key;
                   final item = entry.value;
@@ -538,7 +543,7 @@ class SideBySideSection extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderRow() {
+  Widget _buildHeaderRow(String name) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       color: const Color(0xFFF7F7F7),
@@ -569,12 +574,14 @@ class SideBySideSection extends StatelessWidget {
               ),
             ),
           ),
-          const Expanded(
+          Expanded(
             flex: 1,
             child: Text(
-              'AANYA',
+              name.toUpperCase(),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFFE85A7A), // Pink for her
