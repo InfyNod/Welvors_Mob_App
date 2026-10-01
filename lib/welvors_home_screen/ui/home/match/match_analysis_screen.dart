@@ -380,8 +380,7 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
           ),
           const SizedBox(height: 5),
           Text(
-            matchData?['insight']?['text'] ??
-                'Welvors AI compared both profiles across every dimension — intent, values, lifestyle, family and more.',
+            'Welvors AI compared both profiles across every dimension — intent, values, lifestyle, family and more.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12,
