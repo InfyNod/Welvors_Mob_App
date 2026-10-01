@@ -399,7 +399,7 @@ class _ProfileDetailsView extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            MatchAnalysisScreen(matchName: profile.name),
+                            MatchAnalysisScreen(userId: profile.id, matchName: profile.name),
                       ),
                     );
                   },
