@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 /// Reusable modern floating SnackBar utility and widget for Welvors.
@@ -10,6 +11,30 @@ import 'package:flutter/material.dart';
 /// - [CustomSnackBar.show]
 class CustomSnackBar {
   CustomSnackBar._();
+
+  /// Cleans message text by parsing embedded JSON or removing "Error 400: " prefixes.
+  static String cleanMessage(String message) {
+    String trimmed = message.trim();
+    final jsonStart = trimmed.indexOf('{');
+    final jsonEnd = trimmed.lastIndexOf('}');
+    if (jsonStart != -1 && jsonEnd != -1 && jsonEnd > jsonStart) {
+      try {
+        final jsonStr = trimmed.substring(jsonStart, jsonEnd + 1);
+        final decoded = jsonDecode(jsonStr);
+        if (decoded is Map<String, dynamic>) {
+          final msg = decoded['message'] ?? decoded['error'] ?? decoded['msg'];
+          if (msg != null && msg.toString().trim().isNotEmpty) {
+            return msg.toString().trim();
+          }
+        }
+      } catch (_) {}
+    }
+    final prefixRegex = RegExp(r'^Error\s*\d*:\s*', caseSensitive: false);
+    if (prefixRegex.hasMatch(trimmed)) {
+      trimmed = trimmed.replaceFirst(prefixRegex, '').trim();
+    }
+    return trimmed;
+  }
 
   /// Primary Welvors accent pink
   static const Color primaryPink = Color(0xFFE43A6A);
@@ -133,7 +158,7 @@ class CustomSnackBar {
       padding: EdgeInsets.zero,
       duration: duration,
       content: CustomSnackBarContent(
-        message: message,
+        message: cleanMessage(message),
         title: title,
         icon: icon,
         accentColor: accentColor,

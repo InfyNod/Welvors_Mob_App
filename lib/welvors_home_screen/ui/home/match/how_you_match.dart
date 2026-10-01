@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HowYouMatchSection extends StatelessWidget {
-  const HowYouMatchSection({super.key});
+  final List<dynamic>? dimensions;
+
+  const HowYouMatchSection({super.key, this.dimensions});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class HowYouMatchSection extends StatelessWidget {
         const SizedBox(height: 5),
         _buildStrongestMatchCard(),
         const SizedBox(height: 16),
-        _buildMatchesGrid(),
+        _buildMatchesGrid(dimensions ?? []),
       ],
     );
   }
@@ -143,57 +145,43 @@ class HowYouMatchSection extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchesGrid() {
+  Widget _buildMatchesGrid(List<dynamic> matches) {
+    if (matches.isEmpty) return const SizedBox.shrink();
+
+    final List<Widget> rows = [];
+    for (int i = 0; i < matches.length; i += 2) {
+      final first = matches[i];
+      final second = i + 1 < matches.length ? matches[i + 1] : null;
+
+      rows.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _buildItemFromData(first)),
+            const SizedBox(width: 12),
+            Expanded(child: second != null ? _buildItemFromData(second) : const SizedBox()),
+          ],
+        ),
+      );
+      if (i + 2 < matches.length) {
+        rows.add(const SizedBox(height: 12));
+      }
+    }
+    
     return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildGridItem(
-                '💖',
-                '96%',
-                'Values & love language',
-                0.96,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildGridItem('🎂', '95%', 'Age & life stage', 0.95),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildGridItem('🏡', '94%', 'Family & roots', 0.94),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildGridItem('📞', '92%', 'Communication style', 0.92),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(child: _buildGridItem('🌿', '90%', 'Lifestyle', 0.90)),
-            const SizedBox(width: 12),
-            Expanded(child: _buildGridItem('🥾', '88%', 'Hobbies', 0.88)),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildGridItem('🎓', '85%', 'Education & ambition', 0.85),
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: _buildGridItem('📍', '82%', 'Location', 0.82)),
-          ],
-        ),
-      ],
+      children: rows,
     );
+  }
+
+  Widget _buildItemFromData(dynamic data) {
+    final title = data['title'] ?? '';
+    final icon = data['icon'] ?? '';
+    final score = data['score'] as num?;
+    
+    final percentage = score != null ? '${score.toInt()}%' : '-';
+    final progress = score != null ? (score.toDouble() / 100.0).clamp(0.0, 1.0) : 0.0;
+    
+    return _buildGridItem(icon, percentage, title, progress);
   }
 
   Widget _buildGridItem(
@@ -351,10 +339,16 @@ class WhatYouShareSection extends StatelessWidget {
 }
 
 class AFewDifferencesSection extends StatelessWidget {
-  const AFewDifferencesSection({super.key});
+  final List<dynamic>? differences;
+
+  const AFewDifferencesSection({super.key, this.differences});
 
   @override
   Widget build(BuildContext context) {
+    if (differences == null || differences!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -371,22 +365,78 @@ class AFewDifferencesSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _buildDifferenceCard(
-          '🍽️',
-          'Diet',
-          "You're vegetarian - Aanya eats everything. Easy to work around over dinner.",
-        ),
-        const SizedBox(height: 12),
-        _buildDifferenceCard(
-          '🌙',
-          'Daily rhythm',
-          "You're an early bird - she's more of a night owl. Brunch dates win.",
-        ),
+        ...differences!.map((diff) {
+          final title = diff['title'] ?? '';
+          final you = diff['you'];
+          final them = diff['them'];
+          
+          final emoji = _getEmojiForDifference(diff['key'] ?? '');
+          final circleColor = _getColorForDifference(diff['key'] ?? '');
+          
+          String description;
+          if (you != null && them != null && you.toString().isNotEmpty && them.toString().isNotEmpty) {
+             description = "You're $you - they're $them.";
+          } else {
+             description = "You both have different perspectives here.";
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: _buildDifferenceCard(
+              emoji,
+              title,
+              description,
+              circleColor,
+            ),
+          );
+        }),
       ],
     );
   }
 
-  Widget _buildDifferenceCard(String emoji, String title, String description) {
+  String _getEmojiForDifference(String key) {
+    switch (key) {
+      case 'RELATIONSHIP_INTENT': return '🎯';
+      case 'RELIGION': return '🙏';
+      case 'COMMUNITY': return '🤝';
+      case 'NATIVE_PLACE': return '🏠';
+      case 'COMMUNICATION_STYLE': return '💬';
+      case 'LOVE_LANGUAGE': return '💝';
+      case 'FAMILY_TYPE': return '👨‍👩‍👧‍👦';
+      case 'DRINKING': return '🥂';
+      case 'DRINKS': return '🥂';
+      case 'DIET': return '🍽️';
+      case 'DAILY_RHYTHM': return '🌙';
+      case 'VALUES': return '💞';
+      case 'AGE_LIFE_STAGE': return '🎂';
+      case 'FAMILY_ROOTS': return '🏡';
+      case 'COMMUNICATION': return '📞';
+      case 'LIFESTYLE': return '🌿';
+      case 'INTERESTS': return '🥾';
+      case 'EDUCATION_AMBITION': return '🎓';
+      case 'LOCATION': return '📍';
+      default: return '💡';
+    }
+  }
+
+  Color _getColorForDifference(String key) {
+    switch (key) {
+      case 'RELATIONSHIP_INTENT': return const Color(0xFFFFEAEA); // Light Pink
+      case 'RELIGION': return const Color(0xFFFFF4E5); // Light Orange
+      case 'COMMUNITY': return const Color(0xFFE5F9E5); // Light Green
+      case 'NATIVE_PLACE': return const Color(0xFFE5F3FF); // Light Blue
+      case 'COMMUNICATION_STYLE': return const Color(0xFFF3E5FF); // Light Purple
+      case 'LOVE_LANGUAGE': return const Color(0xFFFFEBF3); // Soft Rose
+      case 'FAMILY_TYPE': return const Color(0xFFFFF0E6); // Soft Peach
+      case 'DRINKING': return const Color(0xFFF5E6E6); // Light Wine
+      case 'DRINKS': return const Color(0xFFF5E6E6); // Light Wine
+      case 'DIET': return const Color(0xFFFFF3E0);
+      case 'DAILY_RHYTHM': return const Color(0xFFE1F5FE);
+      default: return const Color(0xFFFFF9E6); // Light Yellow default
+    }
+  }
+
+  Widget _buildDifferenceCard(String emoji, String title, String description, Color circleColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -406,8 +456,8 @@ class AFewDifferencesSection extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFF9E6), // Light yellow background
+            decoration: BoxDecoration(
+              color: circleColor,
               shape: BoxShape.circle,
             ),
             child: Text(emoji, style: const TextStyle(fontSize: 18)),
@@ -445,10 +495,21 @@ class AFewDifferencesSection extends StatelessWidget {
 }
 
 class SideBySideSection extends StatelessWidget {
-  const SideBySideSection({super.key});
+  final List<dynamic>? sideBySide;
+  final String matchName;
+
+  const SideBySideSection({
+    super.key,
+    this.sideBySide,
+    required this.matchName,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (sideBySide == null || sideBySide!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -482,32 +543,25 @@ class SideBySideSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             child: Column(
               children: [
-                _buildHeaderRow(),
-                _buildRow('Looking for', 'Serious', 'Serious', isMatch: true),
-                _buildRow('Love language', 'Words', 'Words', isMatch: true),
-                _buildRow('Age', '28', '24', isMatch: false),
-                _buildRow('City', 'Pune', 'Pune', isMatch: true),
-                _buildRow('Religion', 'Hindu', 'Hindu', isMatch: true),
-                _buildRow('Mother tongue', 'Marathi', 'Marathi', isMatch: true),
-                _buildRow(
-                  'Profession',
-                  'Engineer',
-                  'Fashion designer',
-                  isMatch: false,
-                ),
-                _buildRow('Diet', 'Veg', 'Non-veg', isMatch: false),
-                _buildRow('Drinks', 'Socially', 'Socially', isMatch: true),
-                _buildRow('Smoking', 'Non-smoker', 'Non-smoker', isMatch: true),
-                _buildRow('Fitness', 'Active', 'Active', isMatch: true),
-                _buildRow('Communication', 'Calls', 'Calls', isMatch: true),
-                _buildRow('Wants kids', 'Someday', 'Someday', isMatch: true),
-                _buildRow(
-                  'Sleep',
-                  'Early bird',
-                  'Night owl',
-                  isMatch: false,
-                  isLast: true,
-                ),
+                _buildHeaderRow(matchName),
+                ...sideBySide!.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  
+                  final attribute = item['attribute'] ?? '';
+                  final you = item['you'] ?? '-';
+                  final them = item['them'] ?? '-';
+                  final isMatch = item['matched'] == true;
+                  final isLast = index == sideBySide!.length - 1;
+                  
+                  return _buildRow(
+                    attribute,
+                    you.toString(),
+                    them.toString(),
+                    isMatch: isMatch,
+                    isLast: isLast,
+                  );
+                }),
               ],
             ),
           ),
@@ -516,7 +570,7 @@ class SideBySideSection extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderRow() {
+  Widget _buildHeaderRow(String name) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       color: const Color(0xFFF7F7F7),
@@ -547,12 +601,14 @@ class SideBySideSection extends StatelessWidget {
               ),
             ),
           ),
-          const Expanded(
+          Expanded(
             flex: 1,
             child: Text(
-              'AANYA',
+              name.toUpperCase(),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFFE85A7A), // Pink for her

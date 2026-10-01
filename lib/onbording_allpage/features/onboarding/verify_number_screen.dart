@@ -15,6 +15,7 @@ import 'package:go_router/go_router.dart';
 import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import '../../../../utils/notification_service.dart';
+import 'package:velvors/config/custom_snackbar.dart';
 
 class VerifyNumberScreen extends StatefulWidget {
   const VerifyNumberScreen({super.key});
@@ -120,9 +121,12 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
           }
         });
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(errorMsg)));
+        if (mounted) {
+          CustomSnackBar.showError(
+            context,
+            ApiService.cleanErrorMessage(errorMsg, 'Failed to send OTP'),
+          );
+        }
       }
     } else {
       if (_inviteCodeController.text.trim().isEmpty) {
@@ -171,13 +175,19 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                     const SizedBox(height: 20),
                     Text(
                       'Have an invite code?',
-                      style: AppText.h2.copyWith(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: AppText.h2.copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'Entering an invite code gives you extra benefits and exclusive access!',
-                      style: AppText.body.copyWith(color: Colors.grey.shade600, height: 1.4),
+                      style: AppText.body.copyWith(
+                        color: Colors.grey.shade600,
+                        height: 1.4,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 28),
@@ -189,12 +199,18 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                           backgroundColor: AppColors.pinkDeep,
                           foregroundColor: Colors.white,
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
                         onPressed: () => Navigator.of(context).pop(false),
                         child: Text(
-                          'Yes, I have one', 
-                          style: AppText.body.copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)
+                          'Yes, I have one',
+                          style: AppText.body.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),
@@ -203,11 +219,16 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                       onPressed: () => Navigator.of(context).pop(true),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.grey.shade500,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                       child: Text(
                         'Skip for now',
-                        style: AppText.body.copyWith(color: Colors.grey.shade500, fontWeight: FontWeight.w600)
+                        style: AppText.body.copyWith(
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -277,9 +298,11 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMsg ?? 'Invalid OTP. Please try again.'),
+          CustomSnackBar.showError(
+            context,
+            ApiService.cleanErrorMessage(
+              errorMsg,
+              'Invalid OTP. Please try again.',
             ),
           );
         }
@@ -306,16 +329,19 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
               ? 'Referral code applied successfully!'
               : 'Invalid referral code.');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: success ? Colors.green : Colors.red,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
       if (success) {
+        CustomSnackBar.showSuccess(
+          context,
+          message,
+          title: 'Success',
+        );
         setState(() => _isInviteCodeVerified = true);
+      } else {
+        CustomSnackBar.showError(
+          context,
+          message,
+          title: 'Referral Code',
+        );
       }
     }
   }
@@ -560,11 +586,15 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                   height: 56,
                                   decoration: BoxDecoration(
                                     color: _isOtpSent
-                                        ? AppColors.pinkSoft.withValues(alpha: 0.4)
+                                        ? AppColors.pinkSoft.withValues(
+                                            alpha: 0.4,
+                                          )
                                         : Colors.white,
                                     border: Border.all(
                                       color: _isOtpSent
-                                          ? AppColors.pinkSoft.withValues(alpha: 0.4)
+                                          ? AppColors.pinkSoft.withValues(
+                                              alpha: 0.4,
+                                            )
                                           : (_phoneFocusNode.hasFocus
                                                 ? AppColors.pinkDeep
                                                 : AppColors.ink.withValues(
@@ -600,7 +630,7 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                       LengthLimitingTextInputFormatter(10),
                                     ],
                                     decoration: InputDecoration(
-                                      hintText: '98765 43210',
+                                      hintText: 'Enter number',
                                       hintStyle: AppText.body.copyWith(
                                         color: AppColors.muted,
                                         fontSize: 16,
@@ -652,7 +682,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                       'Your number stays private — never shown on your profile or shared.',
                                       style: AppText.sub.copyWith(
                                         fontSize: 13,
-                                        color: AppColors.ink.withValues(alpha: 0.8),
+                                        color: AppColors.ink.withValues(
+                                          alpha: 0.8,
+                                        ),
                                         height: 1.5,
                                       ),
                                     ),
@@ -680,7 +712,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                   child: Text(
                                     'Enter the 6-digit code',
                                     style: AppText.sub.copyWith(
-                                      color: AppColors.ink.withValues(alpha: 0.4),
+                                      color: AppColors.ink.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -754,8 +788,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             color: isFilled || isCurrent
-                                                ? AppColors.pinkSoft
-                                                      .withValues(alpha: 0.4)
+                                                ? AppColors.pinkSoft.withValues(
+                                                    alpha: 0.4,
+                                                  )
                                                 : Colors.white,
                                             border: Border.all(
                                               color: isFilled || isCurrent
@@ -774,7 +809,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                                 ? [
                                                     BoxShadow(
                                                       color: AppColors.pinkDeep
-                                                          .withValues(alpha: 0.15),
+                                                          .withValues(
+                                                            alpha: 0.15,
+                                                          ),
                                                       blurRadius: 8,
                                                       offset: const Offset(
                                                         0,
@@ -844,7 +881,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                 Expanded(
                                   child: Container(
                                     height: 1,
-                                    color: AppColors.line.withValues(alpha: 0.6),
+                                    color: AppColors.line.withValues(
+                                      alpha: 0.6,
+                                    ),
                                   ),
                                 ),
                                 Padding(
@@ -855,7 +894,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                     'Have an invite code?',
                                     style: AppText.sub.copyWith(
                                       fontSize: 11,
-                                      color: AppColors.ink.withValues(alpha: 0.4),
+                                      color: AppColors.ink.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -863,7 +904,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                 Expanded(
                                   child: Container(
                                     height: 1,
-                                    color: AppColors.line.withValues(alpha: 0.6),
+                                    color: AppColors.line.withValues(
+                                      alpha: 0.6,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -908,7 +951,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                         hintText:
                                             'Enter friend\'s code (optional)',
                                         hintStyle: AppText.body.copyWith(
-                                          color: AppColors.ink.withValues(alpha: 0.4),
+                                          color: AppColors.ink.withValues(
+                                            alpha: 0.4,
+                                          ),
                                           fontSize: 15,
                                         ),
                                         border: InputBorder.none,
@@ -931,7 +976,9 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
                                   decoration: BoxDecoration(
                                     color: _isInviteCodeEntered
                                         ? AppColors.pinkDeep
-                                        : AppColors.pinkSoft.withValues(alpha: 0.5),
+                                        : AppColors.pinkSoft.withValues(
+                                            alpha: 0.5,
+                                          ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: TextButton(
@@ -1034,4 +1081,3 @@ class _VerifyNumberScreenState extends State<VerifyNumberScreen>
     );
   }
 }
-

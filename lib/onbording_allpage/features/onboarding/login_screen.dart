@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../../../welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import '../../../../utils/notification_service.dart';
+import 'package:velvors/config/custom_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -102,9 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(
+          CustomSnackBar.showError(
             context,
-          ).showSnackBar(SnackBar(content: Text(errorMsg)));
+            ApiService.cleanErrorMessage(errorMsg, 'Failed to send OTP'),
+          );
         }
       }
     } else {
@@ -157,9 +159,11 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMsg ?? 'Invalid OTP. Please try again.'),
+          CustomSnackBar.showError(
+            context,
+            ApiService.cleanErrorMessage(
+              errorMsg,
+              'Invalid OTP. Please try again.',
             ),
           );
         }
@@ -389,7 +393,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       LengthLimitingTextInputFormatter(10),
                                     ],
                                     decoration: InputDecoration(
-                                      hintText: '98765 43210',
+                                      hintText: 'Enter number',
                                       hintStyle: AppText.body.copyWith(
                                         color: AppColors.muted,
                                         fontSize: 16,

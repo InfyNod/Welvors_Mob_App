@@ -2,10 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:velvors/welvors_home_screen/ui/home/send_compliment/complimenting.dart';
 import 'package:velvors/welvors_home_screen/ui/home/match/how_you_match.dart';
 
-class MatchAnalysisScreen extends StatelessWidget {
+import 'package:velvors/welvors_home_screen/ui/home/match/service_match.dart';
+
+class MatchAnalysisScreen extends StatefulWidget {
+  final String userId;
   final String matchName;
 
-  const MatchAnalysisScreen({super.key, this.matchName = 'Aanya'});
+  const MatchAnalysisScreen({
+    super.key,
+    required this.userId,
+    this.matchName = 'Aanya',
+  });
+
+  @override
+  State<MatchAnalysisScreen> createState() => _MatchAnalysisScreenState();
+}
+
+class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
+  Map<String, dynamic>? matchData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final data = await ServiceMatch.fetchMatchAnalysis(widget.userId);
+    if (mounted) {
+      setState(() {
+        matchData = data?['data'];
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +95,10 @@ class MatchAnalysisScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Text(
-              'WELVORS AI ENGINE',
+            Text(
+              (matchData?['insight']?['title']?.toString() ??
+                      'WELVORS AI ENGINE')
+                  .toUpperCase(),
               style: TextStyle(
                 color: Color(0xFF9B98A7),
                 fontSize: 9,
@@ -76,52 +109,61 @@ class MatchAnalysisScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Stack(
               children: [
-                _buildMainMatchCard(),
-                const SizedBox(height: 24),
-                _buildInsightCard(),
-                const SizedBox(height: 24),
-                const HowYouMatchSection(),
-                const SizedBox(height: 24),
-                const WhatYouShareSection(),
-                const SizedBox(height: 24),
-                const AFewDifferencesSection(),
-                const SizedBox(height: 24),
-                const SideBySideSection(),
-                const SizedBox(height: 24),
-                const SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    '✨ Score is recalculated by Welvors AI as you both add more to your profiles — it only compares signals, never shares your private answers.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Color.fromARGB(255, 117, 116, 116),
-                      height: 1.5,
-                      fontWeight: FontWeight.w500,
-                    ),
+                SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildMainMatchCard(),
+                      const SizedBox(height: 24),
+                      _buildInsightCard(),
+                      const SizedBox(height: 24),
+                      HowYouMatchSection(
+                        dimensions: matchData?['dimensions'] as List<dynamic>?,
+                      ),
+                      const SizedBox(height: 24),
+                      const WhatYouShareSection(),
+                      const SizedBox(height: 24),
+                      AFewDifferencesSection(
+                        differences: matchData?['differences'] as List<dynamic>?,
+                      ),
+                      const SizedBox(height: 24),
+                      SideBySideSection(
+                        sideBySide: matchData?['sideBySide'] as List<dynamic>?,
+                        matchName: widget.matchName,
+                      ),
+                      const SizedBox(height: 24),
+                      const SizedBox(
+                        width: double.infinity,
+                        child: Text(
+                          '✨ Score is recalculated by Welvors AI as you both add more to your profiles — it only compares signals, never shares your private answers.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color.fromARGB(255, 117, 116, 116),
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                // Bottom Actions
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: _buildBottomActions(context),
+                ),
               ],
             ),
-          ),
-          // Bottom Actions
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildBottomActions(context),
-          ),
-        ],
-      ),
     );
   }
 
@@ -159,22 +201,30 @@ class MatchAnalysisScreen extends StatelessWidget {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
+                      color: Colors.grey[200],
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
-                        ), // Placeholder for user
-                        fit: BoxFit.cover,
-                      ),
+                      image: matchData?['users']?['you']?['photo'] != null
+                          ? DecorationImage(
+                              image: NetworkImage(
+                                matchData!['users']['you']['photo'],
+                              ),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF966EB4).withValues(alpha: 0.15),
+                          color: const Color(
+                            0xFF966EB4,
+                          ).withValues(alpha: 0.15),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
+                    child: matchData?['users']?['you']?['photo'] == null
+                        ? const Icon(Icons.person, color: Colors.grey, size: 32)
+                        : null,
                   ),
                 ),
                 Positioned(
@@ -183,22 +233,30 @@ class MatchAnalysisScreen extends StatelessWidget {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
+                      color: Colors.grey[200],
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
-                        ), // Placeholder for match
-                        fit: BoxFit.cover,
-                      ),
+                      image: matchData?['users']?['target']?['photo'] != null
+                          ? DecorationImage(
+                              image: NetworkImage(
+                                matchData!['users']['target']['photo'],
+                              ),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF966EB4).withValues(alpha: 0.15),
+                          color: const Color(
+                            0xFF966EB4,
+                          ).withValues(alpha: 0.15),
                           blurRadius: 15,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
+                    child: matchData?['users']?['target']?['photo'] == null
+                        ? const Icon(Icons.person, color: Colors.grey, size: 32)
+                        : null,
                   ),
                 ),
                 // Heart icon in middle
@@ -223,7 +281,10 @@ class MatchAnalysisScreen extends StatelessWidget {
               ],
             ),
             child: TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: 0.0, end: 0.92),
+              tween: Tween<double>(
+                begin: 0.0,
+                end: ((matchData?['match']?['score'] as num?) ?? 0) / 100.0,
+              ),
               duration: const Duration(milliseconds: 1500),
               curve: Curves.easeOutCubic,
               builder: (context, value, child) {
@@ -315,7 +376,8 @@ class MatchAnalysisScreen extends StatelessWidget {
 
           // Texts
           Text(
-            'You & $matchName are a strong match',
+            matchData?['match']?['headline'] ??
+                'You & ${widget.matchName} are a strong match',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 18,
@@ -324,7 +386,7 @@ class MatchAnalysisScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5),
-          const Text(
+          Text(
             'Welvors AI compared both profiles across every dimension — intent, values, lifestyle, family and more.',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -339,59 +401,19 @@ class MatchAnalysisScreen extends StatelessWidget {
           // Stats Card
           _buildStatsCard(),
           const SizedBox(height: 14),
-
-          // Pills
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEAF9F0),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.auto_awesome, color: Color(0xFF27AE60), size: 14),
-                SizedBox(width: 8),
-                Text(
-                  'Top 5% compatibility for you',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF27AE60),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF4EDFF),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.circle, color: Color(0xFF8B5CF6), size: 8),
-                SizedBox(width: 8),
-                Text(
-                  'Welvors AI · analysed 42 profile signals',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF8B5CF6),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildStatsCard() {
+    final signals =
+        matchData?['summary']?['signalsCompared']?.toString() ?? '0';
+    final dimensions =
+        matchData?['summary']?['dimensionsCompared']?.toString() ?? '0';
+    final totalDimensions =
+        matchData?['summary']?['totalDimensions']?.toString() ?? '0';
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -401,20 +423,23 @@ class MatchAnalysisScreen extends StatelessWidget {
       ),
       child: IntrinsicHeight(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildStatColumn('42', 'SIGNALS\nCOMPARED'),
+            Expanded(child: _buildStatColumn(signals, 'SIGNALS\nCOMPARED')),
             const VerticalDivider(
               color: Color(0xFFE8D9FF),
               width: 1,
               thickness: 1,
             ),
-            _buildStatColumn('9', 'DIMENSIONS'),
+            Expanded(child: _buildStatColumn(dimensions, 'DIMENSIONS')),
             const VerticalDivider(
               color: Color(0xFFE8D9FF),
               width: 1,
               thickness: 1,
             ),
-            _buildStatColumn('Top 5%', 'FOR YOU'),
+            Expanded(
+              child: _buildStatColumn(totalDimensions, 'TOTAL\nDIMENSIONS'),
+            ),
           ],
         ),
       ),
@@ -452,32 +477,30 @@ class MatchAnalysisScreen extends StatelessWidget {
       );
     }
 
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            valueWidget,
-            const SizedBox(height: 2),
-            SizedBox(
-              height: 28, // Fixed height for 1 or 2 lines
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF9B98A7),
-                    letterSpacing: 0.8,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          valueWidget,
+          const SizedBox(height: 2),
+          SizedBox(
+            height: 28, // Fixed height for 1 or 2 lines
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF9B98A7),
+                  letterSpacing: 0.8,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -522,21 +545,23 @@ class MatchAnalysisScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welvors AI · Match Insight',
-                    style: TextStyle(
+                    matchData?['insight']?['title'] ??
+                        'Welvors AI · Match Insight',
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: Color.fromARGB(255, 122, 75, 231),
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
-                    'Based on both complete profiles',
-                    style: TextStyle(
+                    matchData?['insight']?['basedOn'] ??
+                        'Based on both complete profiles',
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: Color.fromARGB(255, 194, 175, 239),
@@ -547,82 +572,13 @@ class MatchAnalysisScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          RichText(
-            text: const TextSpan(
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF6D6D78),
-                height: 1.6,
-              ),
-              children: [
-                TextSpan(text: 'Out of '),
-                TextSpan(
-                  text: '42 signals',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF242424),
-                  ),
-                ),
-                TextSpan(
-                  text: ' I compared, you two align on the big three — ',
-                ),
-                TextSpan(
-                  text: 'intent, values and lifestyle',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF242424),
-                  ),
-                ),
-                TextSpan(
-                  text:
-                      '. You both want something serious, speak the same love language, and share 6 interests. The small gaps (diet, sleep rhythm) are the kind couples work around easily. ',
-                ),
-                TextSpan(
-                  text: 'My call: this one’s worth a real conversation.',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF242424),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildInsightPill('🎯', 'Same intent'),
-              _buildInsightPill('💬', 'Same love language'),
-              _buildInsightPill('📍', '7 km apart'),
-              _buildInsightPill('🥂', 'Both social drinkers'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInsightPill(String emoji, String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE8D9FF), width: 1.5),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 12)),
-          const SizedBox(width: 6),
           Text(
-            text,
+            matchData?['insight']?['text'] ?? '',
             style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF8B5CF6), // Purple text
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF6D6D78),
+              height: 1.6,
             ),
           ),
         ],
