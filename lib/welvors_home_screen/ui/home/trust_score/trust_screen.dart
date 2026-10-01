@@ -1,253 +1,197 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'service_trust.dart';
 
-class TrustScreen extends StatelessWidget {
-  const TrustScreen({super.key});
+class TrustScreen extends StatefulWidget {
+  final String userId;
+  
+  const TrustScreen({super.key, required this.userId});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  State<TrustScreen> createState() => _TrustScreenState();
+}
+
+class _TrustScreenState extends State<TrustScreen> {
+  bool _isLoading = true;
+  Map<String, dynamic>? _trustData;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final result = await ServiceTrust.fetchTrustScore(widget.userId);
+    if (mounted) {
+      if (result != null && result['success'] == true && result['data'] != null) {
+        setState(() {
+          _trustData = result['data'];
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _error = 'Failed to load trust score.';
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  String _getEmojiForType(String type) {
+    switch (type) {
+      case 'MOBILE_EMAIL': return '📱';
+      case 'LOCATION': return '📍';
+      case 'GOVERNMENT_ID': return '🪪';
+      case 'FACE_VERIFICATION': return '🤳';
+      case 'VIDEO_VERIFICATION': return '🎥';
+      case 'EDUCATION_VERIFICATION': return '🎓';
+      case 'PROFESSIONAL_VERIFICATION': return '💼';
+      case 'INCOME_VERIFICATION': return '💰';
+      case 'CRIMINAL_BACKGROUND_CHECK': return '🔍';
+      case 'EMERGENCY_CONTACT': return '📞';
+      default: return '✅';
+    }
+  }
+
+  Color _getColorForType(String type) {
+    switch (type) {
+      case 'MOBILE_EMAIL': return const Color(0xFFE3F2FD);
+      case 'LOCATION': return const Color(0xFFFFEBEE);
+      case 'GOVERNMENT_ID': return const Color(0xFFFFF3E0);
+      case 'FACE_VERIFICATION': return const Color(0xFFF3E5F5);
+      case 'VIDEO_VERIFICATION': return const Color(0xFFE0F7FA);
+      case 'EDUCATION_VERIFICATION': return const Color(0xFFFFF8E1);
+      case 'PROFESSIONAL_VERIFICATION': return const Color(0xFFEFEBE9);
+      case 'INCOME_VERIFICATION': return const Color(0xFFE8F5E9);
+      case 'CRIMINAL_BACKGROUND_CHECK': return const Color(0xFFE8EAF6);
+      case 'EMERGENCY_CONTACT': return const Color(0xFFFCE4EC);
+      default: return const Color(0xFFEDF2FA);
+    }
+  }
+
+  String? _formatDate(String? isoDate) {
+    if (isoDate == null) return null;
+    try {
+      final date = DateTime.parse(isoDate);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
       backgroundColor: const Color.fromRGBO(255, 253, 252, 1.0),
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(255, 253, 252, 1.0),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Color(0xFF242424),
-                size: 16,
-              ),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+        child: InkWell(
+          onTap: () => Navigator.pop(context),
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Color(0xFF242424),
+              size: 16,
             ),
           ),
         ),
-        title: const Text(
-          'Trust Score',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        centerTitle: true,
       ),
+      title: const Text(
+        'Trust Score',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: const Color.fromRGBO(255, 253, 252, 1.0),
+        appBar: _buildAppBar(),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null || _trustData == null) {
+      return Scaffold(
+        backgroundColor: const Color.fromRGBO(255, 253, 252, 1.0),
+        appBar: _buildAppBar(),
+        body: Center(child: Text(_error ?? 'No data')),
+      );
+    }
+
+    final user = _trustData!['user'];
+    final trustScore = _trustData!['trustScore'];
+    final privacyNotice = _trustData!['privacyNotice'];
+    final sections = _trustData!['sections'] as List;
+
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(255, 253, 252, 1.0),
+      appBar: _buildAppBar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            _buildMainTrustCard(),
+            _buildMainTrustCard(user, trustScore),
             const SizedBox(height: 16),
-            _buildInfoBanner(),
+            _buildInfoBanner(privacyNotice),
             const SizedBox(height: 32),
-            _buildVerificationSection(
-              title: 'Basic verification',
-              pointsText: 'No points · required',
-              progress: '2/2 ✓',
-              items: [
-                _buildVerificationItem(
-                  title: 'Mobile & Email',
-                  subtitle: 'Confirmed real contact details',
-                  badgeText: 'Required',
-                  emoji: '📱',
-                  iconBgColor: const Color(0xFFE3F2FD), // Light blue
-                  isVerified: true,
-                  details: {
-                    'Mobile': '+91 ••••• ••210',
-                    'Email': 'aa•••@gmail.com',
-                    'Status': 'Both active',
-                  },
-                  verifiedDate: '12 Jan 2026',
-                  verifiedMethod: 'OTP + email link',
-                ),
-                _buildVerificationItem(
-                  title: 'Location check',
-                  subtitle: 'City-level authenticity confirmed',
-                  badgeText: 'Required',
-                  emoji: '📍',
-                  iconBgColor: const Color(0xFFFFEBEE), // Light red
-                  isVerified: true,
-                  details: {
-                    'City': 'Pune, Maharashtra',
-                    'Area': 'Koregaon Park',
-                    'Matches profile': 'Yes',
-                  },
-                  verifiedDate: '12 Jan 2026',
-                  verifiedMethod: 'Device GPS',
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            _buildVerificationSection(
-              title: 'Identity verification',
-              pointsText: '44 pts',
-              progress: '3/3 ✓',
-              items: [
-                _buildVerificationItem(
-                  title: 'Government ID',
-                  subtitle: 'A real person, matched to official ID',
-                  badgeText: '+20 pts',
-                  emoji: '🪪',
-                  iconBgColor: const Color(0xFFFFF3E0), // Light orange
-                  isVerified: true,
-                  details: {
-                    'Document': 'Aadhaar card',
-                    'Name on ID': 'Aanya Sharma',
-                    'Age on ID': '24 years',
-                    'Gender': 'Female',
-                  },
-                  verifiedDate: '14 Jan 2026',
-                  verifiedMethod: 'DigiLocker API',
-                ),
-                _buildVerificationItem(
-                  title: 'Face match (selfie)',
-                  subtitle: 'Selfie matched the ID photo',
-                  badgeText: '+12 pts',
-                  emoji: '🤳',
-                  iconBgColor: const Color(0xFFF3E5F5), // Light purple
-                  isVerified: true,
-                  details: {
-                    'Match with ID': '99% match',
-                    'Profile photos': 'Same person',
-                  },
-                  verifiedDate: '14 Jan 2026',
-                  verifiedMethod: 'AI face match',
-                ),
-                _buildVerificationItem(
-                  title: 'Video liveness',
-                  subtitle: 'Live video confirmed a present person',
-                  badgeText: '+12 pts',
-                  emoji: '🎥',
-                  iconBgColor: const Color(0xFFE0F7FA), // Light cyan
-                  isVerified: true,
-                  details: {
-                    'Liveness': 'Real person, live',
-                    'Gestures': 'All 3 completed',
-                  },
-                  verifiedDate: '14 Jan 2026',
-                  verifiedMethod: 'Live video check',
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            _buildVerificationSection(
-              title: 'High-trust verification',
-              pointsText: '38 pts',
-              progress: '3/3 ✓',
-              items: [
-                _buildVerificationItem(
-                  title: 'Education',
-                  subtitle: 'College & qualification verified',
-                  badgeText: '+12 pts',
-                  emoji: '🎓',
-                  iconBgColor: const Color(0xFFFFF8E1), // Light amber
-                  isVerified: true,
-                  details: {
-                    'Degree': 'MBA',
-                    'College': 'IIM Ahmedabad',
-                    'Passing year': '2024',
-                  },
-                  verifiedDate: '20 Jan 2026',
-                  verifiedMethod: 'Reviewed by Welvors team',
-                ),
-                _buildVerificationItem(
-                  title: 'Profession',
-                  subtitle: 'Job & company verified',
-                  badgeText: '+14 pts',
-                  emoji: '💼',
-                  iconBgColor: const Color(0xFFEFEBE9), // Light brown
-                  isVerified: true,
-                  details: {
-                    'Company': 'Razorpay',
-                    'Designation': 'Senior Product Manager',
-                    'Joining date': 'Jun 2024',
-                    'Currently working': 'Yes',
-                  },
-                  verifiedDate: '21 Jan 2026',
-                  verifiedMethod: 'Work email + offer letter',
-                ),
-                _buildVerificationItem(
-                  title: 'Income',
-                  subtitle: 'Declared income bracket confirmed',
-                  badgeText: '+12 pts',
-                  emoji: '💰',
-                  iconBgColor: const Color(0xFFE8F5E9), // Light green
-                  isVerified: true,
-                  details: {
-                    'Income bracket': '₹25–35 L / year',
-                    'Matches declared': 'Yes',
-                    'Sources verified': '3 sources',
-                  },
-                  incomeSources: [
-                    {
-                      'emoji': '💼',
-                      'title': 'Salary',
-                      'subtitle': 'Razorpay · monthly',
-                      'amount': '₹24 L/yr',
-                    },
-                    {
-                      'emoji': '🏠',
-                      'title': 'Rental income',
-                      'subtitle': '1 flat · Pune',
-                      'amount': '₹3.6 L/yr',
-                    },
-                    {
-                      'emoji': '💻',
-                      'title': 'Freelance',
-                      'subtitle': 'Product consulting',
-                      'amount': '₹2.4 L/yr',
-                    },
-                  ],
-                  verifiedDate: '22 Jan 2026',
-                  verifiedMethod: 'Bank statement (3 months)',
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            _buildVerificationSection(
-              title: 'Platinum verification',
-              pointsText: '18 pts',
-              progress: '1/2',
-              isComplete: false,
-              stepNumber: 4,
-              items: [
-                _buildVerificationItem(
-                  title: 'Criminal background',
-                  subtitle: 'Court & police records — clean history',
-                  badgeText: '+18 pts',
-                  emoji: '🔍',
-                  iconBgColor: const Color(0xFFE8EAF6), // Light indigo
-                  isVerified: true,
-                  details: {
-                    'Court records': 'None found',
-                    'Police records': 'None found',
-                    'Result': 'Clean history',
-                  },
-                  verifiedDate: '02 Feb 2026',
-                  verifiedMethod: 'Background-check partner',
-                ),
-                _buildVerificationItem(
-                  title: 'Emergency contact',
-                  subtitle: 'A trusted person registered for safety',
-                  badgeText: 'Not yet',
-                  emoji: '📞',
-                  iconBgColor: const Color(0xFFFCE4EC), // Light pink
-                  isVerified: false,
-                  details: {},
-                ),
-              ],
-            ),
-            const SizedBox(height: 22),
+            ...sections.map((section) {
+              return Column(
+                children: [
+                  _buildVerificationSection(
+                    title: section['title'],
+                    pointsText: section['maxPoints'] == 0 
+                        ? 'No points · required' 
+                        : '${section['maxPoints']} pts',
+                    progress: '${section['completed']}/${section['total']}${section['status'] == 'VERIFIED' ? ' ✓' : ''}',
+                    isComplete: section['status'] == 'VERIFIED',
+                    stepNumber: int.tryParse(section['number'] ?? ''),
+                    items: (section['items'] as List).map((item) {
+                      String badge = item['required'] == true
+                          ? 'Required'
+                          : (item['status'] == 'VERIFIED'
+                              ? '+${item['points']} pts'
+                              : 'Not yet');
+
+                      return _buildVerificationItem(
+                        title: item['title'],
+                        subtitle: item['description'],
+                        badgeText: badge,
+                        emoji: _getEmojiForType(item['type']),
+                        iconBgColor: _getColorForType(item['type']),
+                        isVerified: item['status'] == 'VERIFIED',
+                        details: {
+                          if (item['details'] != null)
+                            for (var detail in item['details'])
+                              detail['label']: detail['value']
+                        },
+                        verifiedDate: _formatDate(item['verifiedAt']),
+                        verifiedMethod: item['verifiedBy'],
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              );
+            }),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -268,7 +212,11 @@ class TrustScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMainTrustCard() {
+  Widget _buildMainTrustCard(Map<String, dynamic> user, Map<String, dynamic> trustScore) {
+    final double maxScore = (trustScore['maxScore'] as num).toDouble();
+    final double currentScore = (trustScore['score'] as num).toDouble();
+    final double progress = maxScore > 0 ? currentScore / maxScore : 0.0;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -302,10 +250,8 @@ class TrustScreen extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.8),
                     width: 2,
                   ),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
-                    ),
+                  image: DecorationImage(
+                    image: NetworkImage(user['profilePhoto'] ?? ''),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -319,9 +265,9 @@ class TrustScreen extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Text(
-                          'Aanya, 24',
-                          style: TextStyle(
+                        Text(
+                          '${user['name']}, ${user['age']}',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -336,9 +282,9 @@ class TrustScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      '9 of 10 checks verified',
-                      style: TextStyle(
+                    Text(
+                      '${trustScore['verifiedChecks']} of ${trustScore['totalChecks']} checks verified',
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -354,21 +300,21 @@ class TrustScreen extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    CustomPaint(painter: _GradientArcPainter(progress: 1.0)),
+                    CustomPaint(painter: _GradientArcPainter(progress: progress)),
                     Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Text(
-                            '100',
-                            style: TextStyle(
+                            '${trustScore['score']}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               height: 1.1,
                             ),
                           ),
-                          Text(
+                          const Text(
                             'TRUST',
                             style: TextStyle(
                               color: Colors.white70,
@@ -387,48 +333,52 @@ class TrustScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           // Platinum verified badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFF2BC57), Color(0xFFE59C39)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Text('🔥', style: TextStyle(fontSize: 12)),
-                SizedBox(width: 6),
-                Text(
-                  'Platinum verified',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                  ),
+          if (trustScore['badge'] != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFF2BC57), Color(0xFFE59C39)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (trustScore['badge']['key'] == 'PLATINUM')
+                    const Padding(
+                      padding: EdgeInsets.only(right: 6.0),
+                      child: Text('🔥', style: TextStyle(fontSize: 12)),
+                    ),
+                  Text(
+                    trustScore['badge']['title'] ?? '',
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
           const SizedBox(height: 16),
           // Description
-          const Text(
-            'A high Trust Score means more of Aanya\'s identity has been independently checked — you can message with confidence.',
-            style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.5),
+          Text(
+            trustScore['description'] ?? '',
+            style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.5),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoBanner() {
+  Widget _buildInfoBanner(Map<String, dynamic> privacyNotice) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F6ED), // Light green background
+        color: const Color(0xFFE8F6ED),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFD1E8D8)),
       ),
@@ -439,8 +389,8 @@ class TrustScreen extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: RichText(
-              text: const TextSpan(
-                style: TextStyle(
+              text: TextSpan(
+                style: const TextStyle(
                   color: Color(0xFF2CB864),
                   fontSize: 12,
                   height: 1.5,
@@ -448,8 +398,7 @@ class TrustScreen extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text:
-                        'You only see the verified result — never the documents. They stay private and encrypted.',
+                    text: privacyNotice['message'] ?? '',
                   ),
                 ],
               ),
@@ -468,6 +417,20 @@ class TrustScreen extends StatelessWidget {
     bool isComplete = true,
     int? stepNumber,
   }) {
+    double widthFactor = 0.0;
+    if (!isComplete) {
+      try {
+        final parts = progress.replaceAll(' ✓', '').split('/');
+        if (parts.length == 2) {
+          final current = double.parse(parts[0]);
+          final total = double.parse(parts[1]);
+          if (total > 0) {
+            widthFactor = current / total;
+          }
+        }
+      } catch (_) {}
+    }
+
     List<Widget> separatedItems = [];
     for (int i = 0; i < items.length; i++) {
       separatedItems.add(items[i]);
@@ -551,9 +514,9 @@ class TrustScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                      if (!isComplete)
+                      if (!isComplete && widthFactor > 0.0)
                         FractionallySizedBox(
-                          widthFactor: 0.5,
+                          widthFactor: widthFactor,
                           child: Container(
                             height: 4,
                             decoration: BoxDecoration(
@@ -990,8 +953,6 @@ class _GradientArcPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (progress <= 0.0) return;
-
     // Draw background track
     final rect = Offset.zero & size;
     final trackPaint = Paint()
@@ -1007,6 +968,8 @@ class _GradientArcPainter extends CustomPainter {
       false,
       trackPaint,
     );
+
+    if (progress <= 0.0) return;
 
     final paint = Paint()
       ..shader = const LinearGradient(

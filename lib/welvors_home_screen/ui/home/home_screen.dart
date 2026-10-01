@@ -411,7 +411,7 @@ class _ProfileDetailsView extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const TrustScreen(),
+                      builder: (context) => TrustScreen(userId: profile.id),
                     ),
                   );
                 },
