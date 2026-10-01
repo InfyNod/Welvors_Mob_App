@@ -60,6 +60,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Confirmed real contact details',
                   badgeText: 'Required',
                   emoji: '📱',
+                  iconBgColor: const Color(0xFFE3F2FD), // Light blue
                   isVerified: true,
                   details: {
                     'Mobile': '+91 ••••• ••210',
@@ -74,6 +75,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'City-level authenticity confirmed',
                   badgeText: 'Required',
                   emoji: '📍',
+                  iconBgColor: const Color(0xFFFFEBEE), // Light red
                   isVerified: true,
                   details: {
                     'City': 'Pune, Maharashtra',
@@ -96,6 +98,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'A real person, matched to official ID',
                   badgeText: '+20 pts',
                   emoji: '🪪',
+                  iconBgColor: const Color(0xFFFFF3E0), // Light orange
                   isVerified: true,
                   details: {
                     'Document': 'Aadhaar card',
@@ -111,6 +114,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Selfie matched the ID photo',
                   badgeText: '+12 pts',
                   emoji: '🤳',
+                  iconBgColor: const Color(0xFFF3E5F5), // Light purple
                   isVerified: true,
                   details: {
                     'Match with ID': '99% match',
@@ -124,6 +128,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Live video confirmed a present person',
                   badgeText: '+12 pts',
                   emoji: '🎥',
+                  iconBgColor: const Color(0xFFE0F7FA), // Light cyan
                   isVerified: true,
                   details: {
                     'Liveness': 'Real person, live',
@@ -145,6 +150,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'College & qualification verified',
                   badgeText: '+12 pts',
                   emoji: '🎓',
+                  iconBgColor: const Color(0xFFFFF8E1), // Light amber
                   isVerified: true,
                   details: {
                     'Degree': 'MBA',
@@ -159,6 +165,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Job & company verified',
                   badgeText: '+14 pts',
                   emoji: '💼',
+                  iconBgColor: const Color(0xFFEFEBE9), // Light brown
                   isVerified: true,
                   details: {
                     'Company': 'Razorpay',
@@ -174,6 +181,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'Declared income bracket confirmed',
                   badgeText: '+12 pts',
                   emoji: '💰',
+                  iconBgColor: const Color(0xFFE8F5E9), // Light green
                   isVerified: true,
                   details: {
                     'Income bracket': '₹25–35 L / year',
@@ -211,12 +219,14 @@ class TrustScreen extends StatelessWidget {
               pointsText: '18 pts',
               progress: '1/2',
               isComplete: false,
+              stepNumber: 4,
               items: [
                 _buildVerificationItem(
                   title: 'Criminal background',
                   subtitle: 'Court & police records — clean history',
                   badgeText: '+18 pts',
                   emoji: '🔍',
+                  iconBgColor: const Color(0xFFE8EAF6), // Light indigo
                   isVerified: true,
                   details: {
                     'Court records': 'None found',
@@ -231,6 +241,7 @@ class TrustScreen extends StatelessWidget {
                   subtitle: 'A trusted person registered for safety',
                   badgeText: 'Not yet',
                   emoji: '📞',
+                  iconBgColor: const Color(0xFFFCE4EC), // Light pink
                   isVerified: false,
                   details: {},
                 ),
@@ -455,6 +466,7 @@ class TrustScreen extends StatelessWidget {
     required String progress,
     required List<Widget> items,
     bool isComplete = true,
+    int? stepNumber,
   }) {
     List<Widget> separatedItems = [];
     for (int i = 0; i < items.length; i++) {
@@ -475,17 +487,25 @@ class TrustScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isComplete
                     ? const Color(0xFF2CB864)
-                    : Colors.transparent,
+                    : const Color(0xFFE85A7A),
                 shape: BoxShape.circle,
-                border: isComplete
-                    ? null
-                    : Border.all(color: Colors.grey.shade400, width: 2),
               ),
-              child: Icon(
-                Icons.check,
-                color: isComplete ? Colors.white : Colors.transparent,
-                size: 18,
-              ),
+              child: isComplete
+                  ? const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 18,
+                    )
+                  : Center(
+                      child: Text(
+                        stepNumber != null ? '$stepNumber' : '',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -518,15 +538,31 @@ class TrustScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Container(
-                    height: 4,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: isComplete
-                          ? const Color(0xFF2CB864)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+                  Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      Container(
+                        height: 4,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: isComplete
+                              ? const Color(0xFF2CB864)
+                              : Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      if (!isComplete)
+                        FractionallySizedBox(
+                          widthFactor: 0.5,
+                          child: Container(
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF2BC57),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
@@ -537,7 +573,7 @@ class TrustScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isComplete
                     ? const Color(0xFFE8F6ED)
-                    : Colors.grey.shade200,
+                    : const Color(0xFFFFF7EB),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -545,7 +581,7 @@ class TrustScreen extends StatelessWidget {
                 style: TextStyle(
                   color: isComplete
                       ? const Color(0xFF2CB864)
-                      : Colors.grey.shade600,
+                      : const Color(0xFFF29B38),
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
@@ -573,6 +609,7 @@ class TrustScreen extends StatelessWidget {
     required String emoji,
     required bool isVerified,
     required Map<String, String> details,
+    Color? iconBgColor,
     String? verifiedDate,
     String? verifiedMethod,
     List<Map<String, String>>? incomeSources,
@@ -589,9 +626,7 @@ class TrustScreen extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(
-                    0xFFEDF2FA,
-                  ), // subtle blueish background for icon
+                  color: iconBgColor ?? const Color(0xFFEDF2FA),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
@@ -616,7 +651,7 @@ class TrustScreen extends StatelessWidget {
                       subtitle,
                       style: const TextStyle(
                         color: Color(0xFF888888),
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -633,16 +668,13 @@ class TrustScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isVerified
                           ? const Color(0xFF2CB864)
-                          : Colors.transparent,
+                          : const Color(0xFFF6F6F6),
                       shape: BoxShape.circle,
-                      border: isVerified
-                          ? null
-                          : Border.all(color: Colors.grey.shade300, width: 2),
                     ),
                     child: Icon(
-                      Icons.check,
-                      color: isVerified ? Colors.white : Colors.transparent,
-                      size: 16,
+                      isVerified ? Icons.check : Icons.close,
+                      color: isVerified ? Colors.white : Colors.grey.shade400,
+                      size: 14,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -654,7 +686,7 @@ class TrustScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isVerified
                           ? const Color(0xFFE8F6ED)
-                          : Colors.grey.shade100,
+                          : const Color(0xFFF6F6F6),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -662,7 +694,7 @@ class TrustScreen extends StatelessWidget {
                       style: TextStyle(
                         color: isVerified
                             ? const Color(0xFF2CB864)
-                            : Colors.grey.shade500,
+                            : Colors.grey.shade600,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -903,9 +935,7 @@ class TrustScreen extends StatelessWidget {
                         vertical: 12,
                       ),
                       decoration: const BoxDecoration(
-                        color: Color(
-                          0xFFD9EFE0,
-                        ), // Thoda dark green color as requested
+                        color: Color.fromRGBO(231, 245, 237, 1.0),
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(15),
                           bottomRight: Radius.circular(15),
@@ -935,7 +965,7 @@ class TrustScreen extends StatelessWidget {
                           Text(
                             verifiedMethod,
                             style: const TextStyle(
-                              color: Color(0xFF2CB864),
+                              color: Color.fromRGBO(80, 123, 100, 1.0),
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
