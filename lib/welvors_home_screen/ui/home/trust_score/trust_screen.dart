@@ -6,9 +6,9 @@ class TrustScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromRGBO(255, 253, 252, 1.0),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromRGBO(255, 253, 252, 1.0),
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -22,15 +22,8 @@ class TrustScreen extends StatelessWidget {
                 color: Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFFF05C91).withValues(alpha: 0.1),
+                  color: Colors.grey.shade300,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF966EB4).withValues(alpha: 0.10),
-                    blurRadius: 30,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
               ),
               child: const Icon(
                 Icons.arrow_back_ios_new,
@@ -60,110 +53,173 @@ class TrustScreen extends StatelessWidget {
             _buildInfoBanner(),
             const SizedBox(height: 32),
             _buildVerificationSection(
-              title: '1  Basic verification',
+              title: 'Basic verification',
+              pointsText: 'No points · required',
               progress: '2/2 ✓',
               items: [
                 _buildVerificationItem(
                   title: 'Mobile & Email',
                   subtitle: 'Confirmed real contact details',
-                  score: '+10',
+                  badgeText: 'Required',
                   emoji: '📱',
-                  iconBgColor: Colors.blue.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Mobile': '+91 ••••• ••210',
+                    'Email': 'aa•••@gmail.com',
+                    'Status': 'Both active',
+                  },
+                  verifiedDate: '12 Jan 2026',
+                  verifiedMethod: 'OTP + email link',
                 ),
                 _buildVerificationItem(
                   title: 'Location check',
                   subtitle: 'City-level authenticity confirmed',
-                  score: '+10',
+                  badgeText: 'Required',
                   emoji: '📍',
-                  iconBgColor: Colors.orange.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'City': 'Pune, Maharashtra',
+                    'Area': 'Koregaon Park',
+                    'Matches profile': 'Yes',
+                  },
+                  verifiedDate: '12 Jan 2026',
+                  verifiedMethod: 'Device GPS',
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             _buildVerificationSection(
-              title: '2  Identity verification',
+              title: 'Identity verification',
+              pointsText: '44 pts',
               progress: '3/3 ✓',
               items: [
                 _buildVerificationItem(
                   title: 'Government ID',
                   subtitle: 'A real person, matched to official ID',
-                  score: '+10',
+                  badgeText: '+20 pts',
                   emoji: '🪪',
-                  iconBgColor: Colors.purple.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Document': 'Aadhaar card',
+                    'Name on ID': 'Aanya Sharma',
+                    'Age on ID': '24 years',
+                    'Gender': 'Female',
+                  },
+                  verifiedDate: '14 Jan 2026',
+                  verifiedMethod: 'DigiLocker API',
                 ),
                 _buildVerificationItem(
                   title: 'Face match (selfie)',
                   subtitle: 'Selfie matched the ID photo',
-                  score: '+5',
+                  badgeText: '+12 pts',
                   emoji: '🤳',
-                  iconBgColor: Colors.pink.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Match with ID': '99% match',
+                    'Profile photos': 'Same person',
+                  },
+                  verifiedDate: '14 Jan 2026',
+                  verifiedMethod: 'AI face match',
                 ),
                 _buildVerificationItem(
                   title: 'Video liveness',
                   subtitle: 'Live video confirmed a present person',
-                  score: '+5',
+                  badgeText: '+12 pts',
                   emoji: '🎥',
-                  iconBgColor: Colors.red.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Liveness': 'Real person, live',
+                    'Gestures': 'All 3 completed',
+                  },
+                  verifiedDate: '14 Jan 2026',
+                  verifiedMethod: 'Live video check',
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             _buildVerificationSection(
-              title: '3  High-trust verification',
-              progress: '3/4',
-              isComplete: false,
+              title: 'High-trust verification',
+              pointsText: '38 pts',
+              progress: '3/3 ✓',
               items: [
-                _buildVerificationItem(
-                  title: 'Relationship intent',
-                  subtitle: 'Confirmed she’s here for something serious',
-                  score: '+7',
-                  emoji: '💬',
-                  iconBgColor: Colors.pinkAccent.withValues(alpha: 0.1),
-                ),
                 _buildVerificationItem(
                   title: 'Education',
                   subtitle: 'College & qualification verified',
-                  score: '+7',
+                  badgeText: '+12 pts',
                   emoji: '🎓',
-                  iconBgColor: Colors.indigo.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Degree': 'MBA',
+                    'College': 'IIM Ahmedabad',
+                    'Passing year': '2024',
+                  },
+                  verifiedDate: '20 Jan 2026',
+                  verifiedMethod: 'Reviewed by Welvors team',
                 ),
                 _buildVerificationItem(
                   title: 'Profession',
                   subtitle: 'Job & company verified',
-                  score: '+8',
+                  badgeText: '+14 pts',
                   emoji: '💼',
-                  iconBgColor: Colors.brown.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Company': 'Razorpay',
+                    'Designation': 'Senior Product Manager',
+                    'Joining date': 'Jun 2024',
+                    'Currently working': 'Yes',
+                  },
+                  verifiedDate: '21 Jan 2026',
+                  verifiedMethod: 'Work email + offer letter',
                 ),
                 _buildVerificationItem(
                   title: 'Income',
                   subtitle: 'Declared income bracket confirmed',
-                  score: 'Not yet',
+                  badgeText: '+12 pts',
                   emoji: '💰',
-                  isVerified: false,
-                  iconBgColor: Colors.green.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Income bracket': '₹25–35 L / year',
+                    'Matches declared': 'Yes',
+                    'Sources verified': '3 sources',
+                  },
+                  incomeSources: [
+                    {'emoji': '💼', 'title': 'Salary', 'subtitle': 'Razorpay · monthly', 'amount': '₹24 L/yr'},
+                    {'emoji': '🏠', 'title': 'Rental income', 'subtitle': '1 flat · Pune', 'amount': '₹3.6 L/yr'},
+                    {'emoji': '💻', 'title': 'Freelance', 'subtitle': 'Product consulting', 'amount': '₹2.4 L/yr'},
+                  ],
+                  verifiedDate: '22 Jan 2026',
+                  verifiedMethod: 'Bank statement (3 months)',
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             _buildVerificationSection(
-              title: '4  Platinum verification',
+              title: 'Platinum verification',
+              pointsText: '18 pts',
               progress: '1/2',
               isComplete: false,
               items: [
                 _buildVerificationItem(
                   title: 'Criminal background',
                   subtitle: 'Court & police records — clean history',
-                  score: '+12',
+                  badgeText: '+18 pts',
                   emoji: '🔍',
-                  iconBgColor: Colors.teal.withValues(alpha: 0.1),
+                  isVerified: true,
+                  details: {
+                    'Court records': 'None found',
+                    'Police records': 'None found',
+                    'Result': 'Clean history',
+                  },
+                  verifiedDate: '02 Feb 2026',
+                  verifiedMethod: 'Background-check partner',
                 ),
                 _buildVerificationItem(
                   title: 'Emergency contact',
                   subtitle: 'A trusted person registered for safety',
-                  score: 'Not yet',
+                  badgeText: 'Not yet',
                   emoji: '📞',
                   isVerified: false,
-                  iconBgColor: Colors.deepOrange.withValues(alpha: 0.1),
+                  details: {},
                 ),
               ],
             ),
@@ -171,7 +227,7 @@ class TrustScreen extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Trust Score is built from independent identity, safety and intent checks. The more verified, the higher the score — capped at 100.',
+                'Trust Score is built from independent identity, safety and intent checks. Basic checks and emergency contact are required but carry no points. The other 7 checks add up to 100.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black54,
@@ -193,7 +249,7 @@ class TrustScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2B2144), Color(0xFF1E1730)],
+          colors: [Color(0xFF33203C), Color(0xFF1B1527)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -214,8 +270,8 @@ class TrustScreen extends StatelessWidget {
             children: [
               // Avatar
               Container(
-                width: 52,
-                height: 52,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
@@ -236,139 +292,98 @@ class TrustScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Row(
                       children: [
                         const Text(
                           'Aanya, 24',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 6),
                         const Icon(
                           Icons.verified,
-                          color: Colors.blue,
+                          color: Color(0xFF2979FF),
                           size: 16,
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      '8 of 11 checks verified',
+                    const Text(
+                      '9 of 10 checks verified',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: Colors.white70,
                         fontSize: 12,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               ),
-              // Trust Score Circle
-              TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0.0, end: 0.98),
-                duration: const Duration(seconds: 2),
-                curve: Curves.easeOutCubic,
-                builder: (context, value, child) {
-                  return Container(
-                    width: 84,
-                    height: 84,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFE85A7A).withValues(alpha: 0.6),
-                          blurRadius: 20,
-                          spreadRadius: 4,
-                        ),
-                      ],
+              // Circular progress
+              SizedBox(
+                width: 65,
+                height: 65,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CustomPaint(
+                      painter: _GradientArcPainter(progress: 1.0),
                     ),
-                    child: Stack(
-                      children: [
-                        // Background track
-                        Positioned.fill(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: CircularProgressIndicator(
-                              value: 1.0,
-                              strokeWidth: 6.5,
-                              backgroundColor: Colors.transparent,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white.withValues(alpha: 0.1),
-                              ),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            '100',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              height: 1.1,
                             ),
                           ),
-                        ),
-                        // Animated Gradient Stroke
-                        Positioned.fill(
-                          child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: CustomPaint(
-                              painter: _GradientArcPainter(progress: value),
+                          Text(
+                            'TRUST',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
                             ),
                           ),
-                        ),
-                        // Inner content
-                        Positioned.fill(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.5),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF2B2144),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    (value * 100).toInt().toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w900,
-                                      height: 1.1,
-                                    ),
-                                  ),
-                                  const Text(
-                                    'TRUST',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 8,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 16),
           // Platinum verified badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF2BC57),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF2BC57), Color(0xFFE59C39)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Text('👑', style: TextStyle(fontSize: 12)),
+                Text('🔥', style: TextStyle(fontSize: 12)),
                 SizedBox(width: 6),
                 Text(
                   'Platinum verified',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.black87,
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                   ),
@@ -391,15 +406,9 @@ class TrustScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1730), // Dark background for contrast
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF1E1730).withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        color: const Color(0xFFE8F6ED), // Light green background
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFD1E8D8)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,24 +419,13 @@ class TrustScreen extends StatelessWidget {
             child: RichText(
               text: const TextSpan(
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF2CB864),
                   fontSize: 12,
                   height: 1.5,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
                 children: [
-                  TextSpan(text: 'You only see the '),
-                  TextSpan(
-                    text: 'verified result',
-                    style: TextStyle(
-                      color: Color(0xFF2CB864),
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  TextSpan(
-                    text:
-                        ' — never the documents. They stay private and encrypted.',
-                  ),
+                  TextSpan(text: 'You only see the verified result — never the documents. They stay private and encrypted.'),
                 ],
               ),
             ),
@@ -439,6 +437,7 @@ class TrustScreen extends StatelessWidget {
 
   Widget _buildVerificationSection({
     required String title,
+    required String pointsText,
     required String progress,
     required List<Widget> items,
     bool isComplete = true,
@@ -456,66 +455,83 @@ class TrustScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            // Number badge (like '1' or '2')
             Container(
-              width: 22,
-              height: 22,
-              decoration: const BoxDecoration(
-                color: Color(0xFF1E1730),
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: isComplete ? const Color(0xFF2CB864) : Colors.transparent,
                 shape: BoxShape.circle,
+                border: isComplete ? null : Border.all(color: Colors.grey.shade400, width: 2),
               ),
-              alignment: Alignment.center,
-              child: Text(
-                title.substring(0, 1),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Icon(
+                Icons.check,
+                color: isComplete ? Colors.white : Colors.transparent,
+                size: 18,
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              title.substring(2).trim(),
-              style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: title,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '  $pointsText',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 4,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: isComplete ? const Color(0xFF2CB864) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  )
+                ],
               ),
             ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: SizedBox(
-                width: 40,
-                child: Text(
-                  progress,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: isComplete
-                        ? const Color(0xFF2CB864)
-                        : const Color(0xFFE9A63F),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                  ),
+            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: isComplete ? const Color(0xFFE8F6ED) : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                progress,
+                style: TextStyle(
+                  color: isComplete ? const Color(0xFF2CB864) : Colors.grey.shade600,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.grey.shade200),
           ),
           child: Column(children: separatedItems),
         ),
@@ -526,85 +542,263 @@ class TrustScreen extends StatelessWidget {
   Widget _buildVerificationItem({
     required String title,
     required String subtitle,
-    required String score,
+    required String badgeText,
     required String emoji,
-    bool isVerified = true,
-    Color? iconBgColor,
+    required bool isVerified,
+    required Map<String, String> details,
+    String? verifiedDate,
+    String? verifiedMethod,
+    List<Map<String, String>>? incomeSources,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 16.0,
-        right: 8.0,
-        top: 14.0,
-        bottom: 14.0,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: iconBgColor ?? const Color(0xFFF8F8F8),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            alignment: Alignment.center,
-            child: Text(emoji, style: const TextStyle(fontSize: 20)),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
+    return Column(
+      children: [
+        // Header Row
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEDF2FA), // subtle blueish background for icon
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: Text(emoji, style: const TextStyle(fontSize: 22)),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 2),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Color(0xFF888888),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: isVerified ? const Color(0xFF2CB864) : Colors.transparent,
+                      shape: BoxShape.circle,
+                      border: isVerified ? null : Border.all(color: Colors.grey.shade300, width: 2),
+                    ),
+                    child: Icon(
+                      Icons.check,
+                      color: isVerified ? Colors.white : Colors.transparent,
+                      size: 16,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFF888888),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: isVerified ? const Color(0xFFE8F6ED) : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      badgeText,
+                      style: TextStyle(
+                        color: isVerified ? const Color(0xFF2CB864) : Colors.grey.shade500,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ],
+          ),
+        ),
+        
+        // Inner Details Box (Light Green Border)
+        if (details.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FBF9),
+                border: Border.all(color: const Color(0xFFD1E8D8)),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 8),
+                    child: Column(
+                      children: details.entries.map((e) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                e.key,
+                                style: const TextStyle(
+                                  color: Color(0xFF888888),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    e.value,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF2CB864),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.check, color: Colors.white, size: 10),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  
+                  if (incomeSources != null && incomeSources.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Divider(height: 1, color: Color(0xFFE8F0EA)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                          child: Text(
+                            'INCOME SOURCES',
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ),
+                        ...incomeSources.map((source) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Row(
+                              children: [
+                                Text(source['emoji']!, style: const TextStyle(fontSize: 16)),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        source['title']!,
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                      Text(
+                                        source['subtitle']!,
+                                        style: TextStyle(
+                                          color: Colors.grey.shade500,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  source['amount']!,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  
+                  if (verifiedDate != null && verifiedMethod != null) ...[
+                    // Footer is now a darker green
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD9EFE0), // Thoda dark green color as requested
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.check, color: Color(0xFF2CB864), size: 14),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Verified $verifiedDate',
+                                style: const TextStyle(
+                                  color: Color(0xFF2CB864),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            verifiedMethod,
+                            style: const TextStyle(
+                              color: Color(0xFF2CB864),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]
+                ],
+              ),
             ),
           ),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 40,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  isVerified ? Icons.check_circle : Icons.cancel,
-                  color: isVerified
-                      ? const Color(0xFF2CB864)
-                      : Colors.grey.shade400,
-                  size: 22,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  score,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: isVerified
-                        ? const Color(0xFF2CB864)
-                        : Colors.grey.shade500,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -618,7 +812,22 @@ class _GradientArcPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (progress <= 0.0) return;
 
+    // Draw background track
     final rect = Offset.zero & size;
+    final trackPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6.5
+      ..strokeCap = StrokeCap.round;
+    
+    canvas.drawArc(
+      rect.deflate(6.5 / 2),
+      0,
+      2 * 3.1415926535897932,
+      false,
+      trackPaint,
+    );
+
     final paint = Paint()
       ..shader = const LinearGradient(
         colors: [Color(0xFFE85A7A), Color(0xFFFF9B70)],
