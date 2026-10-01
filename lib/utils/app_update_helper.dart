@@ -9,8 +9,8 @@ import 'package:velvors/utils/app_update_screen.dart';
 /// Features:
 /// - Automatically detects when a new version is published to Google Play Store.
 /// - Shows a beautifully designed Welvors update dialog.
+/// - Only triggers when a valid newer version actually exists on Play Store.
 /// - Supports both optional and mandatory (force) updates.
-/// - One-line integration in `MaterialApp.builder` or screens.
 class AppUpdateHelper {
   AppUpdateHelper._();
 
@@ -19,9 +19,10 @@ class AppUpdateHelper {
 
   /// Shared Upgrader instance configured for Welvors
   static final Upgrader upgrader = Upgrader(
-    // debugDisplayAlways: true,
     debugLogging: kDebugMode,
+    debugDisplayAlways: false,
     durationUntilAlertAgain: const Duration(hours: 4),
+    countryCode: 'IN',
   );
 
   /// Current installed version of the app
@@ -42,8 +43,8 @@ class AppUpdateHelper {
     }
   }
 
-  /// Wraps any widget or app with the Welvors Upgrade Alert listener.
-  /// Place this in your `MaterialApp.builder` or root screen.
+  /// Wraps any screen or view with the Welvors Upgrade Alert listener.
+  /// Recommended to wrap on your main landing/home screen.
   static Widget wrapWithUpdateAlert({
     required Widget child,
     GlobalKey<NavigatorState>? navigatorKey,
@@ -143,6 +144,29 @@ class WelvorsUpgradeAlert extends UpgradeAlert {
 
 class WelvorsUpgradeAlertState extends UpgradeAlertState {
   @override
+  void checkVersion({required BuildContext context}) {
+    if (!context.mounted) return;
+
+    final isDebugAlways = widget.upgrader.state.debugDisplayAlways;
+    final storeVer = widget.upgrader.currentAppStoreVersion;
+    final isAvailable = widget.upgrader.isUpdateAvailable();
+    final isBlocked = (widget as WelvorsUpgradeAlert).isForceUpdate || widget.upgrader.blocked();
+
+    // In normal production mode: Only proceed if Play Store actually has a newer version!
+    // In debugDisplayAlways mode: Allow showing so developer can test the dialog!
+    if (!isDebugAlways) {
+      if (storeVer == null || storeVer.trim().isEmpty || (!isAvailable && !isBlocked)) {
+        if (widget.upgrader.state.debugLogging) {
+          debugPrint('WelvorsUpgradeAlert: No new version available on Play Store (installed: ${widget.upgrader.currentInstalledVersion}, store: $storeVer). Dialog skipped.');
+        }
+        return;
+      }
+    }
+
+    super.checkVersion(context: context);
+  }
+
+  @override
   void showTheDialog({
     Key? key,
     required BuildContext context,
@@ -154,10 +178,25 @@ class WelvorsUpgradeAlertState extends UpgradeAlertState {
   }) {
     if (!context.mounted) return;
 
+    final isDebugAlways = widget.upgrader.state.debugDisplayAlways;
+    final rawStoreVer = widget.upgrader.currentAppStoreVersion;
+    final isAvailable = widget.upgrader.isUpdateAvailable();
     final isBlocked = (widget as WelvorsUpgradeAlert).isForceUpdate || widget.upgrader.blocked();
+
+    // Strict validation in normal production mode
+    if (!isDebugAlways) {
+      if (rawStoreVer == null || rawStoreVer.trim().isEmpty || (!isAvailable && !isBlocked)) {
+        return;
+      }
+    }
+
+    // Use Play Store version, or dummy '1.0.1' when testing in debug mode
+    final storeVer = (rawStoreVer != null && rawStoreVer.isNotEmpty)
+        ? rawStoreVer
+        : '1.0.1';
+
     final effectiveBarrierDismissible = isBlocked ? false : barrierDismissible;
     final currentVersion = widget.upgrader.currentInstalledVersion ?? '1.0.0';
-    final latestVersion = widget.upgrader.currentAppStoreVersion ?? '';
 
     // Mark as alerted
     widget.upgrader.saveLastAlerted();
@@ -174,13 +213,13 @@ class WelvorsUpgradeAlertState extends UpgradeAlertState {
             insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             child: AppUpdateContent(
               currentVersion: currentVersion,
-              latestVersion: latestVersion,
+              latestVersion: storeVer,
               releaseNotes: releaseNotes ?? widget.upgrader.releaseNotes,
               isForceUpdate: isBlocked,
               isDialog: true,
               onUpdate: () {
                 onUserUpdated(dialogContext, !isBlocked);
-                // Also trigger direct store launch if upgrader didn't open
+                // Trigger direct store launch
                 AppUpdateHelper.openPlayStore();
               },
               onLater: isBlocked ? null : () => onUserLater(dialogContext, true),

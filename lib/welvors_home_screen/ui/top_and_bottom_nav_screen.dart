@@ -24,6 +24,7 @@ import 'drawer_files/dating/my_boosts/boost_bloc/boost_state.dart';
 import 'drawer_files/dating/my_boosts/boost_history.dart/performance_screen.dart';
 import 'drawer_files/dating/my_boosts/boost_wallet_all_screen/boost_wallet_top_nav.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:velvors/utils/app_update_helper.dart';
 
 class TopAndBottomNavScreen extends StatefulWidget {
   final bool isPreview;
@@ -55,9 +56,11 @@ class _TopAndBottomNavScreenState extends State<TopAndBottomNavScreen> {
           create: (context) => AdmirersBloc()..add(LoadAdmirersData()),
         ),
       ],
-      child: _TopAndBottomNavView(
-        isPreview: widget.isPreview,
-        initialIndex: widget.initialIndex,
+      child: AppUpdateHelper.wrapWithUpdateAlert(
+        child: _TopAndBottomNavView(
+          isPreview: widget.isPreview,
+          initialIndex: widget.initialIndex,
+        ),
       ),
     );
   }
