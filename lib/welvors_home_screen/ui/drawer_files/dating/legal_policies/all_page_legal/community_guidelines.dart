@@ -29,12 +29,12 @@ class _CommunityGuidelinesScreenState extends State<CommunityGuidelinesScreen> {
     }
   }
 
-  Widget _buildRichText(List<dynamic> contentSegments, {double fontSize = 14}) {
+  Widget _buildRichText(List<dynamic> contentSegments, {double fontSize = 14, bool defaultBold = false}) {
     List<TextSpan> spans = [];
     for (var segment in contentSegments) {
       if (segment is Map<String, dynamic>) {
         final text = segment['text'] ?? '';
-        final isBold = segment['bold'] == true;
+        final isBold = segment['bold'] == true || defaultBold;
         
         Color textColor = isBold ? Colors.black87 : Colors.grey.shade700;
         final colorHex = segment['color'] as String?;
@@ -79,74 +79,9 @@ class _CommunityGuidelinesScreenState extends State<CommunityGuidelinesScreen> {
             final level = block['level'] as int? ?? 2;
             final fontSize = level == 1 ? 22.0 : (level == 2 ? 18.0 : 16.0);
 
-            String fullText = '';
-            for (var segment in content) {
-              if (segment is Map<String, dynamic>) {
-                fullText += segment['text'] ?? '';
-              }
-            }
-
-            final match = RegExp(
-              r'^(\d+)\.\s*(.*)',
-            ).firstMatch(fullText.trim());
-            if (match != null) {
-              final number = match.group(1)!;
-              final text = match.group(2)!;
-
-              return Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFF6B8B), Color(0xFFE43A6A)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFE43A6A).withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          number,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        text,
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black87,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-
             return Padding(
               padding: const EdgeInsets.only(top: 20.0, bottom: 12.0),
-              child: _buildRichText(content, fontSize: fontSize),
+              child: _buildRichText(content, fontSize: fontSize, defaultBold: true),
             );
           } else if (type == 'bulletList') {
             final items = block['items'] as List<dynamic>? ?? [];
@@ -307,27 +242,6 @@ class _CommunityGuidelinesScreenState extends State<CommunityGuidelinesScreen> {
           final contentMap = data['content'] as Map<String, dynamic>? ?? {};
           final blocks = List<dynamic>.from(contentMap['blocks'] ?? []);
 
-          String badgeText = '';
-          if (blocks.isNotEmpty) {
-            final firstBlock = blocks.first;
-            if (firstBlock is Map<String, dynamic> &&
-                firstBlock['type'] == 'paragraph') {
-              final content = firstBlock['content'] as List<dynamic>? ?? [];
-              if (content.isNotEmpty && content.first is Map<String, dynamic>) {
-                final text = content.first['text']?.toString() ?? '';
-                if (text.contains('Last updated') ||
-                    text.contains('Effective')) {
-                  badgeText = text;
-                  blocks.removeAt(0); // Remove it so it doesn't render twice
-                }
-              }
-            }
-          }
-
-          if (badgeText.isEmpty && effectiveFrom.isNotEmpty) {
-            badgeText = 'Effective from ${_formatDate(effectiveFrom)}';
-          }
-
           return SingleChildScrollView(
             padding: const EdgeInsets.only(
               left: 20,
@@ -338,49 +252,6 @@ class _CommunityGuidelinesScreenState extends State<CommunityGuidelinesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (badgeText.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF0F3), // light pink
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.pink.shade100, width: 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.pink.withValues(alpha: 0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.update,
-                          size: 14,
-                          color: Colors.pink.shade400,
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            badgeText,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.pink.shade600,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                const SizedBox(height: 24),
-
                 // Content parsed from API blocks
                 if (blocks.isNotEmpty)
                   _buildBlocks(blocks)
