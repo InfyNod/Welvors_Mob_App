@@ -94,7 +94,8 @@ class _MyPlanScreenState extends State<MyPlanScreen>
     if (_selectedCategoryFilter != null) {
       rawActivity = _selectedCategoryFilter!
           .replaceAll(RegExp(r'[^\w\s]+'), '')
-          .trim();
+          .trim()
+          .replaceAll(RegExp(r'\s+'), '_');
     }
 
     final res = await DateNowApiService.getMyPlans(

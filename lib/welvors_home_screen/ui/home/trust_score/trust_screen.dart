@@ -727,20 +727,22 @@ class _TrustScreenState extends State<TrustScreen> {
                                           fontWeight: FontWeight.w800,
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        width: 16,
-                                        height: 16,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFF2CB864),
-                                          shape: BoxShape.circle,
+                                      if (isVerified) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          width: 16,
+                                          height: 16,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF2CB864),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 10,
+                                          ),
                                         ),
-                                        child: const Icon(
-                                          Icons.check,
-                                          color: Colors.white,
-                                          size: 10,
-                                        ),
-                                      ),
+                                      ],
                                     ],
                                   ),
                                 ],
