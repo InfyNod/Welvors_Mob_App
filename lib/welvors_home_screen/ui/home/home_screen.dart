@@ -389,41 +389,44 @@ class _ProfileDetailsView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildPillTag(
-                profile.matchPercentage,
-                Colors.blue,
-                onTap: () {
-                  if (isSelfPreview) return;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          MatchAnalysisScreen(matchName: profile.name),
-                    ),
-                  );
-                },
-              ),
-              _buildPillTag(
-                profile.trustPercentage,
-                Colors.green,
-                onTap: () {
-                  if (isSelfPreview) return;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TrustScreen(userId: profile.id),
-                    ),
-                  );
-                },
-              ),
-              _buildPillTag(
-                profile.replyTime,
-                Colors.orange,
-                onTap: () {
-                  if (isSelfPreview) return;
-                  ReplyDrawer.show(context);
-                },
-              ),
+              if (profile.matchPercentage.isNotEmpty)
+                _buildPillTag(
+                  profile.matchPercentage,
+                  Colors.blue,
+                  onTap: () {
+                    if (isSelfPreview) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            MatchAnalysisScreen(matchName: profile.name),
+                      ),
+                    );
+                  },
+                ),
+              if (profile.trustPercentage.isNotEmpty)
+                _buildPillTag(
+                  profile.trustPercentage,
+                  Colors.green,
+                  onTap: () {
+                    if (isSelfPreview) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TrustScreen(userId: profile.id),
+                      ),
+                    );
+                  },
+                ),
+              if (profile.replyTime.isNotEmpty)
+                _buildPillTag(
+                  profile.replyTime,
+                  Colors.orange,
+                  onTap: () {
+                    if (isSelfPreview) return;
+                    ReplyDrawer.show(context);
+                  },
+                ),
             ],
           ),
           const SizedBox(height: 16),
@@ -2570,11 +2573,17 @@ class _ProfileCardUI extends StatelessWidget {
                   // Tags row
                   Row(
                     children: [
-                      _buildTag(profile.matchPercentage, Colors.blue),
-                      const SizedBox(width: 8),
-                      _buildTag(profile.trustPercentage, Colors.green),
-                      const SizedBox(width: 8),
-                      _buildTag(profile.replyTime, Colors.orange),
+                      if (profile.matchPercentage.isNotEmpty) ...[
+                        _buildTag(profile.matchPercentage, Colors.blue),
+                        const SizedBox(width: 8),
+                      ],
+                      if (profile.trustPercentage.isNotEmpty) ...[
+                        _buildTag(profile.trustPercentage, Colors.green),
+                        const SizedBox(width: 8),
+                      ],
+                      if (profile.replyTime.isNotEmpty) ...[
+                        _buildTag(profile.replyTime, Colors.orange),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 3),

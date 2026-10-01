@@ -130,8 +130,8 @@ class ProfileModel extends Equatable {
       location: loc,
       job: profession,
       intent: 'New friends', // Default or parse if available
-      matchPercentage: '${json['matchScore'] ?? 0}% Match',
-      trustPercentage: '${json['trust'] ?? 0}% Trust',
+      matchPercentage: json['matchScore'] != null ? '${json['matchScore']}% Match' : '',
+      trustPercentage: json['trust'] != null ? '${json['trust']}% Trust' : '',
       replyTime: json['replyTime']?.toString() ?? '',
       height: json['height'] != null ? '${json['height']} cm' : '',
       dob: json['birth_date'] ?? '',
