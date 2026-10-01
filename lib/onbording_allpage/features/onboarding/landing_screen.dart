@@ -10,6 +10,7 @@ import '../../widgets/terms_bottom_sheet.dart';
 import '../../widgets/privacy_bottom_sheet.dart';
 import 'login_screen.dart';
 import 'verify_number_screen.dart';
+import 'package:velvors/utils/app_update_helper.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -23,7 +24,8 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppUpdateHelper.wrapWithUpdateAlert(
+      child: Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
@@ -255,7 +257,7 @@ class _LandingScreenState extends State<LandingScreen> {
           ),
         ),
       ),
-    );
+    ));
   }
 }
 

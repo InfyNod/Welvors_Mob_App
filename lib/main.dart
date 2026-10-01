@@ -125,10 +125,7 @@ class _WelvorsAppState extends State<WelvorsApp> {
             data: MediaQuery.of(
               context,
             ).copyWith(textScaler: const TextScaler.linear(1.0)),
-            child: AppUpdateHelper.wrapWithUpdateAlert(
-              navigatorKey: navigatorKey,
-              child: child!,
-            ),
+            child: child!,
           );
         },
 
