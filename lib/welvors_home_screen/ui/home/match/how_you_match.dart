@@ -468,10 +468,16 @@ class AFewDifferencesSection extends StatelessWidget {
 }
 
 class SideBySideSection extends StatelessWidget {
-  const SideBySideSection({super.key});
+  final List<dynamic>? sideBySide;
+
+  const SideBySideSection({super.key, this.sideBySide});
 
   @override
   Widget build(BuildContext context) {
+    if (sideBySide == null || sideBySide!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -506,31 +512,24 @@ class SideBySideSection extends StatelessWidget {
             child: Column(
               children: [
                 _buildHeaderRow(),
-                _buildRow('Looking for', 'Serious', 'Serious', isMatch: true),
-                _buildRow('Love language', 'Words', 'Words', isMatch: true),
-                _buildRow('Age', '28', '24', isMatch: false),
-                _buildRow('City', 'Pune', 'Pune', isMatch: true),
-                _buildRow('Religion', 'Hindu', 'Hindu', isMatch: true),
-                _buildRow('Mother tongue', 'Marathi', 'Marathi', isMatch: true),
-                _buildRow(
-                  'Profession',
-                  'Engineer',
-                  'Fashion designer',
-                  isMatch: false,
-                ),
-                _buildRow('Diet', 'Veg', 'Non-veg', isMatch: false),
-                _buildRow('Drinks', 'Socially', 'Socially', isMatch: true),
-                _buildRow('Smoking', 'Non-smoker', 'Non-smoker', isMatch: true),
-                _buildRow('Fitness', 'Active', 'Active', isMatch: true),
-                _buildRow('Communication', 'Calls', 'Calls', isMatch: true),
-                _buildRow('Wants kids', 'Someday', 'Someday', isMatch: true),
-                _buildRow(
-                  'Sleep',
-                  'Early bird',
-                  'Night owl',
-                  isMatch: false,
-                  isLast: true,
-                ),
+                ...sideBySide!.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  
+                  final attribute = item['attribute'] ?? '';
+                  final you = item['you'] ?? '-';
+                  final them = item['them'] ?? '-';
+                  final isMatch = item['matched'] == true;
+                  final isLast = index == sideBySide!.length - 1;
+                  
+                  return _buildRow(
+                    attribute,
+                    you.toString(),
+                    them.toString(),
+                    isMatch: isMatch,
+                    isLast: isLast,
+                  );
+                }),
               ],
             ),
           ),

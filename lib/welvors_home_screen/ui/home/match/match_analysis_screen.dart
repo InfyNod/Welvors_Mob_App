@@ -133,7 +133,9 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
                         differences: matchData?['differences'] as List<dynamic>?,
                       ),
                       const SizedBox(height: 24),
-                      const SideBySideSection(),
+                      SideBySideSection(
+                        sideBySide: matchData?['sideBySide'] as List<dynamic>?,
+                      ),
                       const SizedBox(height: 24),
                       const SizedBox(
                         width: double.infinity,
