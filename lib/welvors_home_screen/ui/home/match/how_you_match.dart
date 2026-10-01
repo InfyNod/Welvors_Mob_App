@@ -401,6 +401,10 @@ class AFewDifferencesSection extends StatelessWidget {
       case 'COMMUNITY': return '🤝';
       case 'NATIVE_PLACE': return '🏠';
       case 'COMMUNICATION_STYLE': return '💬';
+      case 'LOVE_LANGUAGE': return '💝';
+      case 'FAMILY_TYPE': return '👨‍👩‍👧‍👦';
+      case 'DRINKING': return '🥂';
+      case 'DRINKS': return '🥂';
       case 'DIET': return '🍽️';
       case 'DAILY_RHYTHM': return '🌙';
       case 'VALUES': return '💞';
@@ -422,6 +426,10 @@ class AFewDifferencesSection extends StatelessWidget {
       case 'COMMUNITY': return const Color(0xFFE5F9E5); // Light Green
       case 'NATIVE_PLACE': return const Color(0xFFE5F3FF); // Light Blue
       case 'COMMUNICATION_STYLE': return const Color(0xFFF3E5FF); // Light Purple
+      case 'LOVE_LANGUAGE': return const Color(0xFFFFEBF3); // Soft Rose
+      case 'FAMILY_TYPE': return const Color(0xFFFFF0E6); // Soft Peach
+      case 'DRINKING': return const Color(0xFFF5E6E6); // Light Wine
+      case 'DRINKS': return const Color(0xFFF5E6E6); // Light Wine
       case 'DIET': return const Color(0xFFFFF3E0);
       case 'DAILY_RHYTHM': return const Color(0xFFE1F5FE);
       default: return const Color(0xFFFFF9E6); // Light Yellow default
