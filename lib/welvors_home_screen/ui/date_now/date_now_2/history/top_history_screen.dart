@@ -82,8 +82,6 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
       List<Map<String, dynamic>> thisWeek = [];
       List<Map<String, dynamic>> earlier = [];
       
-      int views = 0;
-      int reqs = 0;
       int met = 0;
 
       for (var item in data) {
@@ -148,12 +146,10 @@ class _TopHistoryScreenState extends State<TopHistoryScreen>
         final partnerName = item['participant']?['name'];
         final partnerAvatar = item['participant']?['photoUrl'];
 
-        reqs += requestsCount as int;
         if (status == 'MET') met++;
         
         // We will just mock views as random for now or 0
         final itemViews = (item['views'] ?? 10) as int;
-        views += itemViews;
 
         final mappedItem = {
           'id': item['_id'] ?? item['id'],
