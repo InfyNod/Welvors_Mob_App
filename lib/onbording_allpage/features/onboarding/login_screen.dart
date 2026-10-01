@@ -398,7 +398,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       LengthLimitingTextInputFormatter(10),
                                     ],
                                     decoration: InputDecoration(
-                                      hintText: '98765 43210',
+                                      hintText: 'Enter number',
                                       hintStyle: AppText.body.copyWith(
                                         color: AppColors.muted,
                                         fontSize: 16,
