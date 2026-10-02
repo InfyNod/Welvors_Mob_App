@@ -398,28 +398,28 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
-          _buildSectionTitle('PAYMENTS & PAYOUTS'),
-          _buildCard(
-            children: [
-              _buildListItem(
-                iconWidget: const Text('🏦', style: TextStyle(fontSize: 18)),
-                iconBgColor: const Color(0xFFE6FAE6),
-                title: 'Bank & UPI',
-                subtitle: '$_bankCount bank • $_upiCount UPI IDs',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BankUpiScreen(),
-                    ),
-                  ).then((_) {
-                    _fetchCounts();
-                  });
-                },
-              ),
-            ],
-          ),
+          // const SizedBox(height: 24),
+          // _buildSectionTitle('PAYMENTS & PAYOUTS'),
+          // _buildCard(
+          //   children: [
+          //     _buildListItem(
+          //       iconWidget: const Text('🏦', style: TextStyle(fontSize: 18)),
+          //       iconBgColor: const Color(0xFFE6FAE6),
+          //       title: 'Bank & UPI',
+          //       subtitle: '$_bankCount bank • $_upiCount UPI IDs',
+          //       onTap: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder: (context) => const BankUpiScreen(),
+          //           ),
+          //         ).then((_) {
+          //           _fetchCounts();
+          //         });
+          //       },
+          //     ),
+          //   ],
+          // ),
           const SizedBox(height: 24),
           _buildSectionTitle('PRIVACY'),
           _buildCard(

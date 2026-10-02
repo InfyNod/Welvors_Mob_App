@@ -90,31 +90,31 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
           ),
           child: Column(
             children: [
-              _buildEcosystemTile(
-                icon: '🔮',
-                iconBgColor: const Color(0xFFF3E5F5), // Light purple
-                title: 'Forever Love Programme',
-                subtitleRich: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '3-year journey tracking · ',
-                      style: TextStyle(color: Colors.grey.shade500),
-                    ),
-                    const TextSpan(
-                      text: '5 Lakh Status',
-                      style: TextStyle(
-                        color: Color(0xFFE85A7A), // Deep pink
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(const SnackBar(content: Text('Coming soon!')));
-                },
-              ),
+              // _buildEcosystemTile(
+              //   icon: '🔮',
+              //   iconBgColor: const Color(0xFFF3E5F5), // Light purple
+              //   title: 'Forever Love Programme',
+              //   subtitleRich: TextSpan(
+              //     children: [
+              //       TextSpan(
+              //         text: '3-year journey tracking · ',
+              //         style: TextStyle(color: Colors.grey.shade500),
+              //       ),
+              //       const TextSpan(
+              //         text: '5 Lakh Status',
+              //         style: TextStyle(
+              //           color: Color(0xFFE85A7A), // Deep pink
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              //   onTap: () {
+              //     ScaffoldMessenger.of(
+              //       context,
+              //     ).showSnackBar(const SnackBar(content: Text('Coming soon!')));
+              //   },
+              // ),
               Divider(color: Colors.grey.shade100, height: 1),
               _buildEcosystemTile(
                 icon: '💎',
