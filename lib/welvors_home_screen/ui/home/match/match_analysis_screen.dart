@@ -124,6 +124,7 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
                       _buildInsightCard(),
                       const SizedBox(height: 24),
                       HowYouMatchSection(
+                        howYouMatch: matchData?['howYouMatch'] as Map<String, dynamic>?,
                         dimensions: matchData?['dimensions'] as List<dynamic>?,
                       ),
                       const SizedBox(height: 24),

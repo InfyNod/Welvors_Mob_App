@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class HowYouMatchSection extends StatelessWidget {
+  final Map<String, dynamic>? howYouMatch;
   final List<dynamic>? dimensions;
 
-  const HowYouMatchSection({super.key, this.dimensions});
+  const HowYouMatchSection({super.key, this.howYouMatch, this.dimensions});
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +24,22 @@ class HowYouMatchSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 5),
-        _buildStrongestMatchCard(),
-        const SizedBox(height: 16),
+        if (howYouMatch != null) ...[
+          _buildStrongestMatchCard(),
+          const SizedBox(height: 16),
+        ],
         _buildMatchesGrid(dimensions ?? []),
       ],
     );
   }
 
   Widget _buildStrongestMatchCard() {
+    final title = howYouMatch?['title']?.toString() ?? 'Match';
+    final icon = howYouMatch?['icon']?.toString() ?? '🎯';
+    final score = howYouMatch?['score'] as num? ?? 100;
+    final description = howYouMatch?['description']?.toString() ?? '';
+    final isStrongest = howYouMatch?['strongest'] == true;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -66,18 +75,18 @@ class HowYouMatchSection extends StatelessWidget {
                     const Color(0xFFE85A7A).withValues(alpha: 0.2),
                   ),
                 ),
-                const CircularProgressIndicator(
-                  value: 1.0, // 100%
+                CircularProgressIndicator(
+                  value: (score.toDouble() / 100.0).clamp(0.0, 1.0),
                   strokeWidth: 4,
                   backgroundColor: Colors.transparent,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE85A7A)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE85A7A)),
                 ),
-                const Center(
+                Center(
                   child: Padding(
-                    padding: EdgeInsets.only(top: 2.0),
+                    padding: const EdgeInsets.only(top: 2.0),
                     child: Text(
-                      '100%',
-                      style: TextStyle(
+                      '${score.toInt()}%',
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w900,
                         color: Color(0xFFE85A7A),
@@ -99,44 +108,47 @@ class HowYouMatchSection extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 4,
                   children: [
-                    const Text(
-                      '🎯 Relationship intent',
-                      style: TextStyle(
+                    Text(
+                      '$icon $title',
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF242424),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE85A7A),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'STRONGEST',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                    if (isStrongest)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE85A7A),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'STRONGEST',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'You both want a serious, long-term relationship — no mixed signals.',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF6D6D78),
-                    height: 1.4,
+                if (description.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF6D6D78),
+                      height: 1.4,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

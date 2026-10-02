@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:velvors/config/custom_snackbar.dart';
+import 'service_wallet.dart';
 
 class AddMoneyScreen extends StatefulWidget {
   const AddMoneyScreen({super.key});
@@ -443,8 +445,25 @@ class _AddMoneyScreenState extends State<AddMoneyScreen>
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _currentAmount > 0
-                    ? () {
-                        // Payment Logic
+                    ? () async {
+                        final success = await WalletApiService().addMoney(_currentAmount);
+                        if (!mounted) return;
+                        
+                        if (success) {
+                          CustomSnackBar.showSuccess(
+                            context,
+                            '₹$_currentAmount added to your wallet successfully!',
+                          );
+                          // Optionally, clear amount or navigate back
+                          setState(() {
+                            _amountController.text = '0';
+                          });
+                        } else {
+                          CustomSnackBar.showError(
+                            context,
+                            'Failed to add money. Please try again.',
+                          );
+                        }
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
