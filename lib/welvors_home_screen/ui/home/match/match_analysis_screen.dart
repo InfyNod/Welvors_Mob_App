@@ -127,7 +127,9 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
                         dimensions: matchData?['dimensions'] as List<dynamic>?,
                       ),
                       const SizedBox(height: 24),
-                      const WhatYouShareSection(),
+                      WhatYouShareSection(
+                        sharedInterests: matchData?['sharedInterests'] as List<dynamic>?,
+                      ),
                       const SizedBox(height: 24),
                       AFewDifferencesSection(
                         differences: matchData?['differences'] as List<dynamic>?,
@@ -581,6 +583,38 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
               height: 1.6,
             ),
           ),
+          if (matchData?['highlights'] != null && (matchData!['highlights'] as List).isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: (matchData!['highlights'] as List).map((highlight) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1E6FF),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFE8D9FF)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.stars_rounded, color: Color(0xFF8B5CF6), size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        highlight.toString(),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Color.fromARGB(255, 122, 75, 231),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ],
       ),
     );

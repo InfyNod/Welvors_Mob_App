@@ -260,7 +260,8 @@ class HowYouMatchSection extends StatelessWidget {
 }
 
 class WhatYouShareSection extends StatelessWidget {
-  const WhatYouShareSection({super.key});
+  final List<dynamic>? sharedInterests;
+  const WhatYouShareSection({super.key, this.sharedInterests});
 
   @override
   Widget build(BuildContext context) {
@@ -283,20 +284,27 @@ class WhatYouShareSection extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 12,
-          children: [
-            _buildSharePill('🧗‍♀️', 'Trekking'),
-            _buildSharePill('☕', 'Coffee'),
-            _buildSharePill('✈️', 'Travel'),
-            _buildSharePill('📚', 'Books'),
-            _buildSharePill('🎵', 'Live music'),
-            _buildSharePill('🏋️‍♀️', 'Fitness'),
-          ],
+          children: (sharedInterests != null && sharedInterests!.isNotEmpty) 
+            ? sharedInterests!.map((interest) {
+                final name = interest['name']?.toString() ?? '';
+                // Since user asked for default icon, we can just use a default star or generic icon
+                // Or map some words if desired. A generic check mark or heart works too.
+                return _buildSharePill(Icons.favorite_rounded, name);
+              }).toList()
+            : [
+                _buildSharePill(Icons.park, 'Trekking'),
+                _buildSharePill(Icons.local_cafe, 'Coffee'),
+                _buildSharePill(Icons.flight, 'Travel'),
+                _buildSharePill(Icons.menu_book, 'Books'),
+                _buildSharePill(Icons.music_note, 'Live music'),
+                _buildSharePill(Icons.fitness_center, 'Fitness'),
+              ],
         ),
       ],
     );
   }
 
-  Widget _buildSharePill(String emoji, String text) {
+  Widget _buildSharePill(IconData icon, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -306,7 +314,7 @@ class WhatYouShareSection extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 14)),
+          Icon(icon, size: 14, color: const Color(0xFFE85A7A)),
           const SizedBox(width: 6),
           Text(
             text,

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../boost_bloc/boost_bloc.dart';
 import '../../boost_bloc/boost_event.dart';
 // import 'boost_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/service_wallet.dart';
 import 'boost_payment_processing_dialog.dart';
 import '../../service_all_flow.dart';
 
@@ -34,6 +35,23 @@ class GetBoostsDrawer extends StatefulWidget {
 
 class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
   String _selectedPaymentMethod = 'wallet';
+  String _walletBalance = '₹0';
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWalletBalance();
+  }
+
+  Future<void> _fetchWalletBalance() async {
+    final data = await WalletApiService().getWalletData(filter: 'ALL');
+    if (mounted && data != null) {
+      setState(() {
+        _walletBalance = data['wallet']?['formattedBalance'] ?? '₹0';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +163,7 @@ class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
               _buildPaymentOption(
                 id: 'wallet',
                 title: 'Wallet coins',
-                subtitle: 'Balance ₹2,480',
+                subtitle: 'Balance $_walletBalance',
               ),
               const SizedBox(height: 8),
               _buildPaymentOption(
@@ -162,12 +180,51 @@ class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
               
               const SizedBox(height: 20),
               
+              if (_errorMessage != null) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.red, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
               // Pay Button
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () async {
+                    if (_selectedPaymentMethod != 'wallet') {
+                      setState(() {
+                        _errorMessage = 'Google billing not added here. Boosts can only be bought using your Wallet.';
+                      });
+                      return;
+                    }
+
+                    setState(() {
+                      _errorMessage = null;
+                    });
+
                     final apiService = BoostAllApiService();
                     final raw = widget.selectedPackage['raw'];
                     final packId = widget.selectedPackage['id']?.toString() ?? 
@@ -242,6 +299,7 @@ class _GetBoostsDrawerState extends State<GetBoostsDrawer> {
       onTap: () {
         setState(() {
           _selectedPaymentMethod = id;
+          _errorMessage = null; // Clear error when switching method
         });
       },
       child: Container(
