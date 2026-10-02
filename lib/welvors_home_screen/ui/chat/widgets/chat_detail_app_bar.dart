@@ -14,6 +14,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBackTap;
   final VoidCallback? onVoiceCallTap;
   final VoidCallback? onVideoCallTap;
+  final VoidCallback? onProfileTap;
 
   const ChatDetailAppBar({
     super.key,
@@ -26,6 +27,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackTap,
     this.onVoiceCallTap,
     this.onVideoCallTap,
+    this.onProfileTap,
   });
 
   @override
@@ -43,58 +45,72 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: [
           const SizedBox(width: 12),
           _buildBackButton(context),
-          const SizedBox(width: 10),
-          _buildAvatarWithStatus(
-            context,
-            liveImage,
-            size: 40,
-            name: liveName,
-            age: liveAge.toString(),
-            isOnline: isUserOnline,
-          ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: onProfileTap,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                child: Row(
                   children: [
-                    Flexible(
-                      child: Text(
-                        liveAge > 0 ? '$liveName, $liveAge' : liveName,
-                        style: AppText.h2.copyWith(fontSize: 16),
-                        overflow: TextOverflow.ellipsis,
+                    _buildAvatarWithStatus(
+                      context,
+                      liveImage,
+                      size: 40,
+                      name: liveName,
+                      age: liveAge.toString(),
+                      isOnline: isUserOnline,
+                      onTap: onProfileTap,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  liveAge > 0 ? '$liveName, $liveAge' : liveName,
+                                  style: AppText.h2.copyWith(fontSize: 16),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              _buildBadge(livePackageType.toUpperCase()),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Container(
+                                width: 7,
+                                height: 7,
+                                decoration: BoxDecoration(
+                                  color: isUserOnline ? AppColors.green : AppColors.muted,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                isUserOnline ? 'Online' : 'Offline',
+                                style: AppText.body.copyWith(
+                                  color: isUserOnline ? AppColors.green : AppColors.muted,
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    _buildBadge(livePackageType.toUpperCase()),
                   ],
                 ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Container(
-                      width: 7,
-                      height: 7,
-                      decoration: BoxDecoration(
-                        color: isUserOnline ? AppColors.green : AppColors.muted,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      isUserOnline ? 'Online' : 'Offline',
-                      style: AppText.body.copyWith(
-                        color: isUserOnline ? AppColors.green : AppColors.muted,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -195,6 +211,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     required String name,
     required String age,
     required bool isOnline,
+    VoidCallback? onTap,
   }) {
     return Stack(
       clipBehavior: Clip.none,
@@ -205,6 +222,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           size: size,
           name: name,
           age: age,
+          onTap: onTap,
         ),
         if (isOnline)
           Positioned(
@@ -249,9 +267,10 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     double size = 58,
     required String name,
     required String age,
+    VoidCallback? onTap,
   }) {
     return GestureDetector(
-      onTap: () {
+      onTap: onTap ?? () {
         showDialog(
           context: context,
           barrierColor: Colors.black.withValues(alpha: 0.8),

@@ -10,7 +10,6 @@ import 'chat_bloc/chat_state.dart';
 import 'chat_repository.dart';
 import 'chat_detail_screen.dart';
 import 'all_new_matches_screen.dart';
-import 'chat_automation_screen.dart';
 import 'services/new_matches_service.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
@@ -692,6 +691,10 @@ class _ChatListViewState extends State<_ChatListView>
   // snake_case also supported.
   // ==========================================================
 
+String capitalizeFirstLetter(String text) {
+  if (text.isEmpty) return text;
+  return text[0].toUpperCase() + text.substring(1);
+}
   String? _extractTypingValue(dynamic data, String key) {
     dynamic value = data;
 
@@ -1434,7 +1437,7 @@ class _ChatListViewState extends State<_ChatListView>
                       style: TextStyle(
                         fontFamily: 'DM Sans',
                         fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: selected
                             ? Colors.white
                             : const Color(0xFF5F5C56),
@@ -1471,7 +1474,7 @@ class _ChatListViewState extends State<_ChatListView>
           );
         }
         return SliverPadding(
-          padding: const EdgeInsets.fromLTRB(10, 3, 10, 24),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               final user = state.filteredChats[index];
@@ -1564,9 +1567,15 @@ class _ChatListViewState extends State<_ChatListView>
                     // Top row: name, age, match pill, trust pill, time
                     Row(
                       children: [
-                        Flexible(
+                        Expanded(
+                        child: Tooltip(
+                          message: user.age > 0
+                              ? '${capitalizeFirstLetter(user.name)}, ${user.age}'
+                              : capitalizeFirstLetter(user.name),
                           child: Text(
-                            user.age > 0 ? '${user.name}, ${user.age}' : user.name,
+                            user.age > 0
+                                ? '${capitalizeFirstLetter(user.name)}, ${user.age}'
+                                : capitalizeFirstLetter(user.name),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -1577,6 +1586,7 @@ class _ChatListViewState extends State<_ChatListView>
                             ),
                           ),
                         ),
+                      ),
                         if (user.match.isNotEmpty) ...[
                           const SizedBox(width: 7),
                           Container(
@@ -1625,7 +1635,8 @@ class _ChatListViewState extends State<_ChatListView>
                             ),
                           ),
                         ],
-                        const Spacer(),
+                        // const Spacer(),
+                        const SizedBox(width: 6,),
                         Text(
                           user.time,
                           style: const TextStyle(
