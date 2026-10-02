@@ -44,6 +44,8 @@ import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'package:velvors/config/env_config.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setting/service_account_Setting.dart';
 import 'package:velvors/welvors_home_screen/services/token_helper.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/profile/profile_detail.dart';
+import 'package:velvors/config/custom_snackbar.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final ChatUser user;
@@ -181,6 +183,33 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       : widget.user.image;
 
   String get _livePackageType => _profileDetails?.packageType ?? 'FREE';
+
+  String get _targetUserId {
+    final liveId = _profileDetails?.userId.trim();
+    if (liveId != null && liveId.isNotEmpty) return liveId;
+    final userFieldId = widget.user.userId.trim();
+    if (userFieldId.isNotEmpty) return userFieldId;
+    return widget.user.id.trim();
+  }
+
+  void _openProfileDetails() {
+    final targetUserId = _targetUserId;
+    if (targetUserId.isEmpty) {
+      CustomSnackBar.showError(context, 'User profile is not available');
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProfileDetailScreen(
+          userId: targetUserId,
+          profileImageUrl: _liveImage,
+          profileName: _liveName,
+        ),
+      ),
+    );
+  }
 
   // Top banner alternates between "Gift Unlock Progress" and
   // "Relationship Progress" every few seconds.
@@ -2045,6 +2074,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
           livePackageType: _livePackageType,
           isUserOnline: _isUserOnline,
           onBackTap: () => Navigator.of(context).maybePop(),
+          onProfileTap: _openProfileDetails,
           onVoiceCallTap: _startVoiceCall,
           onVideoCallTap: _startVideoCall,
           onMoreTap: () {
