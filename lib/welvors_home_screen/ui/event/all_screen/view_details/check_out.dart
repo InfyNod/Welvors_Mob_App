@@ -280,8 +280,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   // Partner Tickets State
   final List<PartnerTicket> _partners = [];
-  double _womanPrice = 1250.0;
-  double _manPrice = 1800.0;
+  double? _womanPrice;
+  double? _manPrice;
 
   double get _gst {
     if (_bookingPreview != null && _bookingPreview!['gstAmount'] != null) {
@@ -498,9 +498,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 userGender == 'man' || userGender == 'men';
                             return _buildPriceRow(
                               'Ticket × 1',
-                              _currencyFormat.format(
-                                isUserMan ? _manPrice : _womanPrice,
-                              ),
+                              (isUserMan ? _manPrice : _womanPrice) != null 
+                                  ? _currencyFormat.format(isUserMan ? _manPrice : _womanPrice)
+                                  : 'N/A',
                               subtitle: isUserMan ? "(Man)" : "(Woman)",
                             );
                           },
@@ -514,9 +514,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             padding: const EdgeInsets.only(bottom: 10),
                             child: _buildPriceRow(
                               'Partner ${idx + 1}',
-                              _currencyFormat.format(
-                                p.isMan == true ? _manPrice : _womanPrice,
-                              ),
+                              (p.isMan == true ? _manPrice : _womanPrice) != null
+                                  ? _currencyFormat.format(p.isMan == true ? _manPrice : _womanPrice)
+                                  : 'N/A',
                               subtitle: p.isMan == true ? "(Man)" : "(Woman)",
                             ),
                           );
@@ -1048,7 +1048,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     _currencyFormat.format(
                       partner.isMan == null
                           ? 0.0
-                          : (partner.isMan == true ? _manPrice : _womanPrice),
+                          : (partner.isMan == true ? _manPrice ?? 0.0 : _womanPrice ?? 0.0),
                     ),
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
@@ -1159,83 +1159,86 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      partner.isMan = false;
-                    });
-                    _updateCheckoutCalculation();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: partner.isMan == false
-                          ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
-                          : Colors.white,
-                      border: Border.all(
+              if (_womanPrice != null)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        partner.isMan = false;
+                      });
+                      _updateCheckoutCalculation();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
                         color: partner.isMan == false
-                            ? const Color(0xFFE43A6A)
-                            : Colors.grey.shade300,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Woman - ${_currencyFormat.format(_womanPrice)}',
-                        style: TextStyle(
+                            ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
+                            : Colors.white,
+                        border: Border.all(
                           color: partner.isMan == false
                               ? const Color(0xFFE43A6A)
-                              : Colors.black87,
-                          fontWeight: partner.isMan == false
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          fontSize: 13,
+                              : Colors.grey.shade300,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Woman - ${_currencyFormat.format(_womanPrice)}',
+                          style: TextStyle(
+                            color: partner.isMan == false
+                                ? const Color(0xFFE43A6A)
+                                : Colors.black87,
+                            fontWeight: partner.isMan == false
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      partner.isMan = true;
-                    });
-                    _updateCheckoutCalculation();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: partner.isMan == true
-                          ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
-                          : Colors.white,
-                      border: Border.all(
+              if (_womanPrice != null && _manPrice != null)
+                const SizedBox(width: 8),
+              if (_manPrice != null)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        partner.isMan = true;
+                      });
+                      _updateCheckoutCalculation();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
                         color: partner.isMan == true
-                            ? const Color(0xFFE43A6A)
-                            : Colors.grey.shade300,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Man - ${_currencyFormat.format(_manPrice)}',
-                        style: TextStyle(
+                            ? const Color(0xFFE43A6A).withValues(alpha: 0.08)
+                            : Colors.white,
+                        border: Border.all(
                           color: partner.isMan == true
                               ? const Color(0xFFE43A6A)
-                              : Colors.black87,
-                          fontWeight: partner.isMan == true
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          fontSize: 13,
+                              : Colors.grey.shade300,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Man - ${_currencyFormat.format(_manPrice)}',
+                          style: TextStyle(
+                            color: partner.isMan == true
+                                ? const Color(0xFFE43A6A)
+                                : Colors.black87,
+                            fontWeight: partner.isMan == true
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ],
