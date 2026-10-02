@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import 'user_data.dart';
-import 'splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CompletionScreen extends StatelessWidget {
@@ -231,13 +232,7 @@ class CompletionScreen extends StatelessWidget {
                   await prefs.setBool('onboarding_completed', true);
 
                   if (context.mounted) {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SplashScreen(),
-                      ),
-                      (route) => false,
-                    );
+                    context.go(AppRoutes.splash);
                   }
                 },
               ),

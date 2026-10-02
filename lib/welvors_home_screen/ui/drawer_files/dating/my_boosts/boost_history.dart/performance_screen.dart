@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../../top_and_bottom_nav_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
@@ -177,13 +178,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
       height: 54,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const TopAndBottomNavScreen(),
-            ),
-            (route) => false,
-          );
+          context.go(AppRoutes.home);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFE43A6A),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/events_cards.dart';
-import 'package:velvors/welvors_home_screen/ui/event/all_screen/my_ticket.dart';
 import 'package:velvors/welvors_home_screen/ui/event/events_bloc/events_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/event/events_bloc/events_event.dart';
 import 'package:velvors/welvors_home_screen/ui/event/events_bloc/events_state.dart';
@@ -111,12 +112,7 @@ class _FilterEventsScreenState extends State<FilterEventsScreen> {
                   // My Ticket Button
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MyTicketScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.myBookings);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

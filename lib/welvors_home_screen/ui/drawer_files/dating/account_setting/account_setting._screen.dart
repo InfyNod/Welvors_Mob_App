@@ -4,11 +4,8 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../edit_profile/bloc/profile_edit_cubit.dart';
 import '../edit_profile/bloc/profile_edit_state.dart';
-import 'account_pages/personal_info.dart';
-import 'account_pages/membership_plan/membership_plan.dart';
-import 'account_pages/bank_upi.dart';
-import 'account_pages/privacy_controls/privacy_controls_screen.dart';
-import 'account_pages/push_notification.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'account_pages/pause_delete_drawer.dart';
 import 'service_account_Setting.dart';
 import '../edit_profile/services/edit_profile_api_service.dart';
@@ -368,12 +365,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 title: 'Personal Information',
                 subtitle: 'Name, email, phone, date of birth',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PersonalInfoScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.personalInfo);
                 },
               ),
               const Divider(
@@ -388,12 +380,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 title: 'Membership Plan',
                 subtitle: _membershipSubtitle,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MembershipPlanScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.membershipPlan);
                 },
               ),
             ],
@@ -430,12 +417,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 title: 'Privacy Controls',
                 subtitle: 'Visibility, contacts, blocked users',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PrivacyControlsScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.privacyControls);
                 },
               ),
             ],
@@ -450,12 +432,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 title: 'Push Notifications',
                 subtitle: 'Matches, messages, likes',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PushNotificationScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.pushNotifications);
                 },
               ),
               const Divider(

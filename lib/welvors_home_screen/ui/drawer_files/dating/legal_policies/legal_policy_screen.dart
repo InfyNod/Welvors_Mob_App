@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'all_page_legal/18+_age_policy.dart';
 import 'all_page_legal/child_safety.dart';
 import 'all_page_legal/content_moderation_law.dart';
@@ -50,7 +52,7 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -129,11 +131,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Terms of Service',
                 subtitle: 'The rules for using Welvors',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const TermsServiceScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const TermsServiceScreen(),
                   );
                 },
               ),
@@ -144,11 +144,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Privacy Policy',
                 subtitle: 'What data we collect & why',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PrivacyPolicyScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const PrivacyPolicyScreen(),
                   );
                 },
               ),
@@ -159,11 +157,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Community Guidelines',
                 subtitle: 'How to behave on Welvors',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CommunityGuidelinesScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const CommunityGuidelinesScreen(),
                   );
                 },
               ),
@@ -174,11 +170,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Safety & Dating Tips',
                 subtitle: 'Stay safe online & on dates',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SafetyDatingTipsScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const SafetyDatingTipsScreen(),
                   );
                 },
               ),
@@ -195,11 +189,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Child Safety Standards',
                 subtitle: 'Zero tolerance · CSAE policy',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChildSafetyScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const ChildSafetyScreen(),
                   );
                 },
               ),
@@ -210,11 +202,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: '18+ Age Policy',
                 subtitle: 'Age gate & verification',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AgePolicyScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const AgePolicyScreen(),
                   );
                 },
               ),
@@ -225,11 +215,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Content Moderation & Law Enforcement',
                 subtitle: 'Reports, takedowns, legal requests',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ContentModerationScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const ContentModerationScreen(),
                   );
                 },
               ),
@@ -246,11 +234,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Refund & Cancellation Policy',
                 subtitle: 'Plans, events, wallet withdrawals',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RefundCancellationScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const RefundCancellationScreen(),
                   );
                 },
               ),
@@ -261,11 +247,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Wallet & Coins Terms',
                 subtitle: 'Earning, spending, 25% withdrawal fee',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WalletCoinTermsScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const WalletCoinTermsScreen(),
                   );
                 },
               ),
@@ -276,11 +260,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Forever Love Programme Terms',
                 subtitle: '₹5 Lakh honeymoon conditions',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ForeverLoveScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const ForeverLoveScreen(),
                   );
                 },
               ),
@@ -297,11 +279,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Cookie Policy',
                 subtitle: 'Trackers & analytics',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CookiePolicyScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const CookiePolicyScreen(),
                   );
                 },
               ),
@@ -312,11 +292,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Data & Your Rights',
                 subtitle: 'Access, download, delete',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DataRightsScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const DataRightsScreen(),
                   );
                 },
               ),
@@ -327,11 +305,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Verification & ID Policy',
                 subtitle: 'How we handle your documents',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const VerificationPolicyScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const VerificationPolicyScreen(),
                   );
                 },
               ),
@@ -342,11 +318,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Delete Your Account & Data',
                 subtitle: 'How to request erasure',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DeleteYourAccountScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const DeleteYourAccountScreen(),
                   );
                 },
               ),
@@ -363,11 +337,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Licenses & Acknowledgements',
                 subtitle: 'Open-source & partners',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LicensesScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const LicensesScreen(),
                   );
                 },
               ),
@@ -378,11 +350,9 @@ class _LegalPoliciesScreenState extends State<LegalPoliciesScreen> {
                 title: 'Grievance Officer',
                 subtitle: 'IT Rules 2021 contact',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GrievanceOfficerScreen(),
-                    ),
+                  context.push(
+                    AppRoutes.legalPolicyDetail,
+                    extra: const GrievanceOfficerScreen(),
                   );
                 },
               ),

@@ -9,6 +9,8 @@ import '../../../../services/logger_service.dart';
 import '../model/notification_model.dart';
 
 import 'package:velvors/config/env_config.dart';
+import 'package:velvors/utils/navigation/app_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class NotificationApiService {
   static String get _baseUrl => '${EnvConfig.apiBaseUrl}/user/notification';
@@ -43,13 +45,7 @@ class NotificationApiService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
 
-    if (navigatorKey.currentContext != null) {
-      Navigator.pushNamedAndRemoveUntil(
-        navigatorKey.currentContext!,
-        '/landing',
-        (route) => false,
-      );
-    }
+    AppRouter.go(AppRoutes.landing);
   }
 
   static Future<List<NotificationModel>> getNotifications({

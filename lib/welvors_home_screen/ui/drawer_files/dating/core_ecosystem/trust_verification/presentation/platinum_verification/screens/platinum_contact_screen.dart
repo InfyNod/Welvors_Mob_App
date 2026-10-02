@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import '../bloc/platinum_verification_bloc.dart';
 import '../bloc/platinum_verification_event.dart';
 import '../bloc/platinum_verification_state.dart';
@@ -22,7 +23,7 @@ class PlatinumContactScreen extends StatelessWidget {
           if (screencall == true) {
             bloc.add(const GoToStep(2));
           } else {
-            Navigator.pop(context);
+            context.pop();
           }
         },
       ),

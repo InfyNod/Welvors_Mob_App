@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../utils/navigation/app_routes.dart';
 import 'package:lottie/lottie.dart';
 import '../boost_history.dart/performance_screen.dart';
 import '../boost_bloc/boost_bloc.dart';
@@ -33,15 +35,11 @@ class _GoingLiveScreenState extends State<_GoingLiveScreen> {
     // Auto-dismiss after 2 seconds and navigate to history
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        Navigator.of(context).pop(); // Close overlay
+        context.pop(); // Close overlay
         final history = context.read<BoostBloc>().state.history;
         if (history.isNotEmpty) {
           final item = history.first;
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PerformanceScreen(item: item),
-            ),
-          );
+          context.push(AppRoutes.performance, extra: item);
         } else {
           // Activation failed or history is empty, show snackbar instead
           ScaffoldMessenger.of(context).showSnackBar(

@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart' show XFile;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +19,6 @@ import 'package:velvors/welvors_home_screen/ui/chat/sidedrawer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/RelationshipTagSheet.dart';
-import 'package:velvors/welvors_home_screen/ui/chat/YourJourneyScreen.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_effects_overlay.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/composer_extras_panel.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/report_user_dialog.dart';
@@ -199,15 +200,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProfileDetailScreen(
-          userId: targetUserId,
-          profileImageUrl: _liveImage,
-          profileName: _liveName,
-        ),
-      ),
+    context.push(
+      AppRoutes.datePlanProfileDetail,
+      extra: {
+        'userId': targetUserId,
+        'profileImageUrl': _liveImage,
+        'profileName': _liveName,
+      },
     );
   }
 
@@ -2005,7 +2004,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         if (!mounted) return;
 
         if (state.chatAction == 'deleted') {
-          Navigator.of(context).pop();
+          context.pop();
           return;
         }
 
@@ -2246,15 +2245,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
               : ChatRelationshipProgressBanner(
                   key: const ValueKey('relationship_progress'),
                   onJourneyTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => YourJourneyScreen(
-                          function: () {
-                            _openRelationshipTagSheet(true);
-                          },
-                        ),
-                      ),
+                    context.push(
+                      AppRoutes.yourJourney,
+                      extra: () {
+                        _openRelationshipTagSheet(true);
+                      },
                     );
                   },
                 ),
@@ -2276,15 +2271,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
   Widget _relationshipProgress() {
     return ChatRelationshipProgressBanner(
       onJourneyTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => YourJourneyScreen(
-              function: () {
-                _openRelationshipTagSheet(true);
-              },
-            ),
-          ),
+        context.push(
+          AppRoutes.yourJourney,
+          extra: () {
+            _openRelationshipTagSheet(true);
+          },
         );
       },
     );
@@ -2294,8 +2285,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     return ChatUnmatchedBanner(
       userName: widget.user.name,
       onBack: () {
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
+        if (context.canPop()) {
+          context.pop();
         }
       },
     );
@@ -2670,14 +2661,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
       return;
     }
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChatImageViewerScreen(
-          imageUrl: imageUrl,
-          heroTag: 'chat-image-${message.id}',
-        ),
-      ),
+    await context.push(
+      AppRoutes.chatImageViewer,
+      extra: {
+        'imageUrl': imageUrl,
+        'heroTag': 'chat-image-${message.id}',
+      },
     );
   }
 
@@ -2694,14 +2683,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         (message.fileName ?? '').toLowerCase().endsWith('.pdf');
 
     if (isPdf) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatPdfViewerScreen(
-            pdfUrl: fileUrl,
-            title: message.fileName ?? 'PDF',
-          ),
-        ),
+      await context.push(
+        AppRoutes.chatPdfViewer,
+        extra: {
+          'pdfUrl': fileUrl,
+          'title': message.fileName ?? 'PDF',
+        },
       );
       return;
     }

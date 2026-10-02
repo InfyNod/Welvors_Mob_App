@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../date_now/profile/profile_detail.dart';
 import 'match_dialog.dart';
 
@@ -62,7 +63,7 @@ class AdmirerProfileView extends StatelessWidget {
               padding: 14,
               onTap: () {
                 onAction(userCard['id'], 'Rejected ❌');
-                Navigator.pop(context); // Go back after action
+                context.pop(); // Go back after action
               },
             ),
 
@@ -83,18 +84,18 @@ class AdmirerProfileView extends StatelessWidget {
                   matchedUserImageUrl: userCard['imageUrl'] ?? '',
                   onMessage: () {
                     onAction(userCard['id'], 'Liked back 💖');
-                    Navigator.pop(context); // Close dialog
-                    Navigator.pop(context); // Go back from profile
+                    context.pop(); // Close dialog
+                    context.pop(); // Go back from profile
                   },
                   onSendRose: () {
                     onAction(userCard['id'], 'Sent Rose 🌹');
-                    Navigator.pop(context); // Close dialog
-                    Navigator.pop(context); // Go back from profile
+                    context.pop(); // Close dialog
+                    context.pop(); // Go back from profile
                   },
                   onKeepBrowsing: () {
                     onAction(userCard['id'], 'Liked back 💖');
-                    Navigator.pop(context); // Close dialog
-                    Navigator.pop(context); // Go back from profile
+                    context.pop(); // Close dialog
+                    context.pop(); // Go back from profile
                   },
                 );
               },

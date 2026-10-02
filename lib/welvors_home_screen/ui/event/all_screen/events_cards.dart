@@ -10,12 +10,13 @@ import 'package:shimmer/shimmer.dart';
 import '../events_bloc/events_bloc.dart';
 import '../events_bloc/events_state.dart';
 // import '../events_bloc/events_event.dart';
-import 'view_details/event_details.dart';
 import 'service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import '../../drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'package:velvors/config/app_cached_image.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class EventsCards extends StatefulWidget {
   final String? eventType;
@@ -518,20 +519,18 @@ class _EventsCardsState extends State<EventsCards> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventDetailsScreen(
-              eventId: eventId,
-              title: title,
-              date: dateStr,
-              location: locationTitle,
-              imageUrl: imageUrl,
-              status: tagLabel,
-              price: _getEventPrice(context, event),
-              featureTags: event['featureTags'],
-            ),
-          ),
+        context.push(
+          AppRoutes.eventDetails,
+          extra: {
+            'eventId': eventId,
+            'title': title,
+            'date': dateStr,
+            'location': locationTitle,
+            'imageUrl': imageUrl,
+            'status': tagLabel,
+            'price': _getEventPrice(context, event),
+            'featureTags': event['featureTags'],
+          },
         );
       },
       child: Container(
@@ -723,20 +722,18 @@ class _EventsCardsState extends State<EventsCards> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventDetailsScreen(
-              eventId: eventId,
-              title: title,
-              date: dateStr,
-              location: location,
-              imageUrl: imageUrl,
-              status: status.toString().toUpperCase(),
-              price: price,
-              featureTags: event['featureTags'],
-            ),
-          ),
+        context.push(
+          AppRoutes.eventDetails,
+          extra: {
+            'eventId': eventId,
+            'title': title,
+            'date': dateStr,
+            'location': location,
+            'imageUrl': imageUrl,
+            'status': status.toString().toUpperCase(),
+            'price': price,
+            'featureTags': event['featureTags'],
+          },
         );
       },
       child: Container(

@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'help_support/help_support_screen.dart';
-import 'legal_policies/legal_policy_screen.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
-import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
-import 'commitment_management.dart/commitment_screen.dart';
-import '../../event/all_screen/my_ticket.dart';
-import '../../date_now/date_now_2/requests_sent/requests_sent_screen.dart';
 import 'commitment_management.dart/commitment_bloc/commitment_bloc.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../date_now/date_api_service/date_now_api_service.dart';
-import 'logout/logout_screen.dart';
-import 'account_setting/account_setting._screen.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 
 class EcosystemHistorySupport extends StatefulWidget {
@@ -143,12 +137,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                   ],
                 ),
                 onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CommitmentScreen(),
-                    ),
-                  );
+                  await context.push(AppRoutes.commitment);
                   if (mounted) {
                     setState(() {});
                   }
@@ -179,7 +168,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/TrustVerificationScreen');
+                  context.push(AppRoutes.trustVerification);
                 },
               ),
             ],
@@ -202,12 +191,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                     title: 'My Bookings',
                     subtitle: 'VIEW YOUR BOOKINGS',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MyTicketScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.myBookings);
                     },
                   );
                 },
@@ -227,12 +211,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                     subtitle:
                         '$totalDatesCount UPCOMING DATE${totalDatesCount == 1 ? '' : 'S'}',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RequestsSentScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.myDates);
                     },
                   );
                 },
@@ -260,12 +239,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 title: 'Refer & Earn',
                 subtitle: 'Get ₹100 + ₹500 per friend',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ReferAndEarnScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.referAndEarn);
                 },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
@@ -275,12 +249,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 title: 'Account Settings',
                 subtitle: 'Privacy, Notifications, Security',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AccountSettingScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.accountSettings);
                 },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
@@ -290,12 +259,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 title: 'Help & Support',
                 subtitle: 'FAQ, Chat with Support',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HelpSupportScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.helpSupport);
                 },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
@@ -305,12 +269,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 title: 'Legal & Policies',
                 subtitle: 'Terms, Privacy, Refunds & more',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LegalPoliciesScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.legalPolicy);
                 },
               ),
               Divider(color: Colors.grey.shade100, height: 1),
@@ -321,12 +280,7 @@ class _EcosystemHistorySupportState extends State<EcosystemHistorySupport> {
                 subtitle: 'Sign out of your account',
                 titleColor: Colors.red.shade400,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LogoutScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.logout);
                 },
               ),
             ],

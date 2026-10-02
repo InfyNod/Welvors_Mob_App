@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
 import 'refer_and_earn_screen.dart';
@@ -685,12 +687,7 @@ class _WaitlistConfirmedScreenState extends State<WaitlistConfirmedScreen> {
                     // View referral history Button
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ReferAndEarnScreen(),
-                          ),
-                        );
+                        context.push(AppRoutes.referAndEarn);
                       },
                       child: Container(
                         width: double.infinity,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
@@ -6,7 +8,6 @@ import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
-import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_details.dart';
 import '../../chat_bloc/chat_state.dart';
 import '../chat_format_utils.dart';
 
@@ -79,20 +80,18 @@ class ChatEventInviteCard extends StatelessWidget {
             })
             .toList();
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EventDetailsScreen(
-          eventId: (message.eventId ?? '').toString(),
-          title: (message.eventTitle ?? '').toString(),
-          date: (message.eventDate ?? '').toString(),
-          location: (message.eventFullAddress ?? message.inviteVenue ?? '').toString(),
-          imageUrl: (message.eventHeroImage ?? '').toString(),
-          status: (message.eventType ?? '').toString(),
-          price: getEventPrice(context, message),
-          featureTags: featureTags,
-        ),
-      ),
+    context.push(
+      AppRoutes.eventDetails,
+      extra: {
+        'eventId': (message.eventId ?? '').toString(),
+        'title': (message.eventTitle ?? '').toString(),
+        'date': (message.eventDate ?? '').toString(),
+        'location': (message.eventFullAddress ?? message.inviteVenue ?? '').toString(),
+        'imageUrl': (message.eventHeroImage ?? '').toString(),
+        'status': (message.eventType ?? '').toString(),
+        'price': getEventPrice(context, message),
+        'featureTags': featureTags,
+      },
     );
   }
 

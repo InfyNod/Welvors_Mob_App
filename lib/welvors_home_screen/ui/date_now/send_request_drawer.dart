@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../utils/navigation/app_routes.dart';
 import '../../services/token_helper.dart';
 import 'package:flutter/material.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
@@ -365,7 +367,7 @@ Future<bool> showRequestDateBottomSheet(
                                       );
 
                                   if (context.mounted) {
-                                    Navigator.pop(context, success);
+                                    context.pop(success);
 
                                     if (success) {
                                       // Construct sent request map
@@ -440,7 +442,7 @@ Future<bool> showRequestDateBottomSheet(
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(16),
                                 onTap: () {
-                                  Navigator.pop(context, false);
+                                  context.pop(false);
                                 },
                                 child: const Center(
                                   child: Text(
@@ -751,13 +753,8 @@ void showRequestSentBottomSheet(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
-                      Navigator.pop(context); // Close the bottom sheet
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RequestsSentScreen(),
-                        ),
-                      );
+                      context.pop(); // Close the bottom sheet
+                      context.push(AppRoutes.requestsSent);
                     },
                     child: const Center(
                       child: Text(

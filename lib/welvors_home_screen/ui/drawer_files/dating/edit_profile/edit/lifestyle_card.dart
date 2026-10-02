@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart'; // For GenericListPickerScreen
 import 'package:velvors/onbording_allpage/services/api_service.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
@@ -132,19 +133,17 @@ class _LifestyleSectionState extends State<LifestyleSection> {
             currentValues,
           );
         } else {
-          final result = await Navigator.push<String>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GenericListPickerScreen(
-                title: 'Select ${title.toLowerCase()}',
-                headerText: title,
-                subHeaderText: 'Please select one from the list',
-                options: optionLabels,
-                currentValue: currentValues.isNotEmpty
-                    ? currentValues.first
-                    : '',
-              ),
-            ),
+          final result = await context.push<String>(
+            AppRoutes.genericPicker,
+            extra: {
+              'title': 'Select ${title.toLowerCase()}',
+              'headerText': title,
+              'subHeaderText': 'Please select one from the list',
+              'options': optionLabels,
+              'currentValue': currentValues.isNotEmpty
+                  ? currentValues.first
+                  : '',
+            },
           );
           if (result != null && context.mounted) {
             String? optionId;
@@ -379,7 +378,7 @@ class _LifestyleSectionState extends State<LifestyleSection> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          Navigator.pop(context);
+                          context.pop();
                           List<String> optionIds = [];
                           for (var opt in options) {
                             if (tempSelectedValues.contains(opt['label'])) {

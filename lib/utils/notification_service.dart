@@ -3,11 +3,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velvors/main.dart';
+import 'package:velvors/utils/navigation/app_router.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'package:velvors/welvors_home_screen/ui/home/notification/services/notification_api_service.dart';
 
@@ -133,7 +132,7 @@ class NotificationService {
 
   /// Sends FCM device token to backend API:
   /// POST https://api.welvors.com/api/user/notifications/device-token
-  /// Body: {"deviceToken": "<fcm_token>"}
+  /// Body: {"deviceToken": "`<fcm_token>`"}
   Future<bool> sendDeviceTokenToServer([String? token]) async {
     try {
       String? deviceToken = token;
@@ -312,20 +311,7 @@ class NotificationService {
 
   /// Centralized notification destination router
   void _navigateToDestination(Map<String, dynamic> data) {
-    final context = navigatorKey.currentContext;
-    if (context == null) {
-      AppLogger.w('NotificationService', 'Navigation context is null');
-      return;
-    }
-
-    final type = data['type']?.toString().toUpperCase();
-    AppLogger.d('NotificationService', 'Navigating for notification type: $type');
-
-    // Handle deep linking or route navigation based on notification data
-    if (type == 'CHAT') {
-      // Future navigation: push chat screen
-    } else if (type == 'NOTIFICATION') {
-      // Navigator.pushNamed(context, '/notifications');
-    }
+    AppLogger.d('NotificationService', 'Navigating for notification: $data');
+    AppRouter.handleNotificationRedirection(data);
   }
 }

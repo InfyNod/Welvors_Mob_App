@@ -3,7 +3,8 @@ import 'invoice_drawer.dart';
 import 'cancel_auto_renew.dart';
 import '../../service_account_Setting.dart';
 import 'package:intl/intl.dart';
-import '../../../membership_plan/presentation/choose_plan_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../../membership_plan/model/membership_plan_model.dart';
 
 class MembershipPlanScreen extends StatefulWidget {
@@ -187,13 +188,9 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ChoosePlanScreen(
-                          initialTier: MembershipTier.premiumPlus,
-                        ),
-                      ),
+                    context.push(
+                      AppRoutes.choosePlan,
+                      extra: MembershipTier.premiumPlus,
                     );
                   },
                   style: ElevatedButton.styleFrom(

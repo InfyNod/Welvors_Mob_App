@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../utils/navigation/app_routes.dart';
 import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
 import '../boost_history.dart/performance_screen.dart';
@@ -87,10 +89,9 @@ class _LiveBoostCardWidgetState extends State<LiveBoostCardWidget> {
           child: GestureDetector(
             onTap: () {
               if (latestItem != null) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PerformanceScreen(item: latestItem!),
-                  ),
+                context.push(
+                  AppRoutes.performance,
+                  extra: latestItem!,
                 );
               }
             },

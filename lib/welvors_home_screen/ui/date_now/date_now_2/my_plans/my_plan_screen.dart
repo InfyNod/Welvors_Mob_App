@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../post_a_plan/activity_1.dart';
 import 'dart:ui';
@@ -411,12 +413,7 @@ class _MyPlanScreenState extends State<MyPlanScreen>
           const SizedBox(height: 32),
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Activity1Screen(),
-                ),
-              ).then((_) {
+              context.push(AppRoutes.postDatePlan).then((_) {
                 if (mounted) {
                   _fetchPlans();
                 }
@@ -752,14 +749,12 @@ class _MyPlanScreenState extends State<MyPlanScreen>
                 GestureDetector(
                   onTap: () {
                     final planId = plan['id']?.toString() ?? '';
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => InviteMatchScreen(
-                          isDatePlan: true,
-                          datePlanId: planId,
-                        ),
-                      ),
+                    context.push(
+                      AppRoutes.inviteMatch,
+                      extra: {
+                        'isDatePlan': true,
+                        'datePlanId': planId,
+                      },
                     );
                   },
                   child: Container(
@@ -1054,12 +1049,9 @@ class _MyPlanScreenState extends State<MyPlanScreen>
         children: [
           GestureDetector(
             onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      MyPlanRequesterProfileScreen(request: request),
-                ),
+              final result = await context.push<String>(
+                AppRoutes.requesterProfile,
+                extra: request,
               );
               if (result == 'decline') {
                 setState(() {

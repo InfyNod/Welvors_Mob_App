@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import '../../chat_bloc/chat_state.dart';
 import '../chat_format_utils.dart';
-import '../../location_map_screen.dart';
 
 /// Card for shared location with inline GoogleMap preview and tap to full screen
 class ChatLocationCard extends StatelessWidget {
@@ -29,14 +30,13 @@ class ChatLocationCard extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: hasCoordinates
             ? () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => LocationMapScreen(
-                      latitude: latitude,
-                      longitude: longitude,
-                      label: address,
-                    ),
-                  ),
+                context.push(
+                  AppRoutes.locationMap,
+                  extra: {
+                    'latitude': latitude,
+                    'longitude': longitude,
+                    'label': address,
+                  },
                 );
               }
             : null,

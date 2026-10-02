@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/model/membership_plan_model.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/choose_plan_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/data/membership_plan_repository.dart';
 
 class PrivacySafetyAndMembership extends StatefulWidget {
@@ -350,13 +351,9 @@ class _PrivacySafetyAndMembershipState
           const SizedBox(height: 20),
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const ChoosePlanScreen(
-                    initialTier: MembershipTier.premiumPlus,
-                  ),
-                ),
+              context.push(
+                AppRoutes.choosePlan,
+                extra: MembershipTier.premiumPlus,
               );
             },
             borderRadius: BorderRadius.circular(14),
@@ -518,12 +515,9 @@ class _PrivacySafetyAndMembershipState
           const SizedBox(height: 20),
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      const ChoosePlanScreen(initialTier: MembershipTier.vip),
-                ),
+              context.push(
+                AppRoutes.choosePlan,
+                extra: MembershipTier.vip,
               );
             },
             borderRadius: BorderRadius.circular(14),
@@ -689,12 +683,9 @@ class _PrivacySafetyAndMembershipState
           const SizedBox(height: 20),
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      const ChoosePlanScreen(initialTier: MembershipTier.elite),
-                ),
+              context.push(
+                AppRoutes.choosePlan,
+                extra: MembershipTier.elite,
               );
             },
             borderRadius: BorderRadius.circular(14),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 
-import 'booking_confirm.dart'; // Ensure correct import for booking_confirm.dart
 
 class SplashScreenBook extends StatefulWidget {
   final double totalPayable;
@@ -50,17 +51,15 @@ class _SplashScreenBookState extends State<SplashScreenBook> {
           // Step 4: Navigate to confirmation screen
           _timer = Timer(const Duration(milliseconds: 1000), () {
             if (mounted) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BookingConfirmationScreen(
-                    title: widget.title,
-                    date: widget.date,
-                    location: widget.location,
-                    totalPayable: widget.totalPayable,
-                    bookingId: widget.bookingId,
-                  ),
-                ),
+              context.pushReplacement(
+                AppRoutes.eventBookingConfirm,
+                extra: {
+                  'title': widget.title,
+                  'date': widget.date,
+                  'location': widget.location,
+                  'totalPayable': widget.totalPayable,
+                  'bookingId': widget.bookingId,
+                },
               );
             }
           });

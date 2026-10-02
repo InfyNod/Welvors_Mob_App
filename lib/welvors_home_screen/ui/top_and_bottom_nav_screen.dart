@@ -8,12 +8,10 @@ import 'home/filter/filter_bloc/filter_state.dart';
 import 'package:flutter/rendering.dart';
 import 'package:velvors/welvors_home_screen/ui/admirers/admirers_bloc/admirers_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/admirers/admirers_bloc/admirers_event.dart';
-import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/home/notification/services/notification_api_service.dart';
 import '../home_bloc/home_bloc.dart';
 import 'home/home_screen.dart';
 import 'home/send_compliment/complimenting.dart';
-import 'home/notification/notification_screen.dart';
 import 'date_now/date_now_screen.dart';
 import 'admirers/top_nav_admirers_screen.dart';
 import 'chat/chat_screen.dart';
@@ -21,10 +19,10 @@ import 'event/top_nav_events_screen.dart';
 import 'drawer_files/dating/drawer_screen_dating.dart';
 import 'drawer_files/dating/my_boosts/boost_bloc/boost_bloc.dart';
 import 'drawer_files/dating/my_boosts/boost_bloc/boost_state.dart';
-import 'drawer_files/dating/my_boosts/boost_history.dart/performance_screen.dart';
-import 'drawer_files/dating/my_boosts/boost_wallet_all_screen/boost_wallet_top_nav.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'package:velvors/utils/app_update_helper.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class TopAndBottomNavScreen extends StatefulWidget {
   final bool isPreview;
@@ -429,22 +427,12 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                           return GestureDetector(
                             onTap: () {
                               if (isActive && boostState.history.isNotEmpty) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PerformanceScreen(
-                                      item: boostState.history.first,
-                                    ),
-                                  ),
+                                context.push(
+                                  AppRoutes.performance,
+                                  extra: boostState.history.first,
                                 );
                               } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BoostWalletTopNav(),
-                                  ),
-                                );
+                                context.push(AppRoutes.boostWallet);
                               }
                             },
                             child: _PulsingBoostIcon(
@@ -473,20 +461,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () {
-                          final filterBloc = context.read<FilterBloc>();
-                          final homeBloc = context.read<HomeBloc>();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MultiBlocProvider(
-                                providers: [
-                                  BlocProvider.value(value: filterBloc),
-                                  BlocProvider.value(value: homeBloc),
-                                ],
-                                child: const FilterScreen(),
-                              ),
-                            ),
-                          );
+                          context.push(AppRoutes.filter);
                         },
                         child: BlocBuilder<FilterBloc, FilterState>(
                           builder: (context, filterState) {
@@ -559,19 +534,7 @@ class _TopAndBottomNavViewState extends State<_TopAndBottomNavView> {
   Widget _buildNotificationIcon() {
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NotificationScreen(
-              onMarkAllRead: () {
-                if (!mounted) return;
-                setState(() {
-                  _unreadNotificationCount = 0;
-                });
-              },
-            ),
-          ),
-        );
+        await context.push(AppRoutes.notification);
 
         // Refresh the count after coming back from the notification
         // screen — covers the case where individual notifications

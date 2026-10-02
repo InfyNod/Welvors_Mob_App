@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
@@ -46,15 +48,11 @@ class PromptsSection extends StatelessWidget {
             if (state.prompts.length < 3)
               GestureDetector(
                 onTap: () async {
-                  final result = await Navigator.push<Map<String, String>>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditChoosePromptScreen(
-                        alreadyAddedQuestions: state.prompts
-                            .map((p) => p['question'] ?? '')
-                            .toList(),
-                      ),
-                    ),
+                  final result = await context.push<Map<String, String>>(
+                    AppRoutes.editChoosePrompt,
+                    extra: state.prompts
+                        .map((p) => p['question'] ?? '')
+                        .toList(),
                   );
                   if (result != null && context.mounted) {
                     final newList = List<Map<String, String>>.from(
@@ -284,7 +282,7 @@ class PromptsSection extends StatelessWidget {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => context.pop(),
                         ),
                       ],
                     ),
@@ -362,7 +360,7 @@ class PromptsSection extends StatelessWidget {
                                   context
                                       .read<ProfileEditCubit>()
                                       .updatePrompts(newList);
-                                  Navigator.pop(context);
+                                  context.pop();
                                 }
                               } else {
                                 if (categoryId.isNotEmpty &&
@@ -412,7 +410,7 @@ class PromptsSection extends StatelessWidget {
                                   context
                                       .read<ProfileEditCubit>()
                                       .updatePrompts(newList);
-                                  Navigator.pop(context);
+                                  context.pop();
                                 }
                               }
                             },
@@ -789,9 +787,9 @@ class _EditChoosePromptScreenState extends State<EditChoosePromptScreen> {
 
                       if (context.mounted) {
                         // Close sheet
-                        Navigator.pop(context);
+                        context.pop();
                         // Return full result to parent
-                        Navigator.pop(context, {
+                        context.pop({
                           'question': question,
                           'answer': answer,
                           'categoryId': categoryId,

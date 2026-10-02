@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
-import 'track_refund_status.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
+import 'package:velvors/utils/navigation/app_router.dart';
 
 class CancelConfirmScreen extends StatelessWidget {
   final bool isEligibleForRefund;
@@ -237,12 +238,7 @@ class CancelConfirmScreen extends StatelessWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const TrackRefundScreen(),
-                                    ),
-                                  );
+                                  context.push(AppRoutes.trackRefund);
                                 },
                                 child: Row(
                                   children: const [
@@ -519,13 +515,7 @@ class CancelConfirmScreen extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TopAndBottomNavScreen(initialIndex: 4),
-                          ),
-                          (route) => false,
-                        );
+                        AppRouter.goToHome(tab: 4);
                       },
                       icon: const Icon(
                         Icons.language,

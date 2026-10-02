@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../utils/navigation/app_routes.dart';
 import 'package:lottie/lottie.dart';
 
 class ComplimentIdeasScreen extends StatefulWidget {
@@ -7,12 +9,7 @@ class ComplimentIdeasScreen extends StatefulWidget {
   const ComplimentIdeasScreen({super.key, this.initialText});
 
   static Future<String?> show(BuildContext context, {String? initialText}) {
-    return Navigator.push<String>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ComplimentIdeasScreen(initialText: initialText),
-      ),
-    );
+    return context.push<String>(AppRoutes.complimentIdeas, extra: initialText);
   }
 
   @override
@@ -140,7 +137,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen>
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -426,7 +423,7 @@ class _ComplimentIdeasScreenState extends State<ComplimentIdeasScreen>
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: selectedCompliment != null
-                        ? () => Navigator.pop(context, selectedCompliment)
+                        ? () => context.pop(selectedCompliment)
                         : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryPink,

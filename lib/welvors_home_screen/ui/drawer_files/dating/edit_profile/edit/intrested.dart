@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/interests_screen.dart'
@@ -146,13 +148,9 @@ class InterestsSection extends StatelessWidget {
                 if (state.interests.length < 10)
                   GestureDetector(
                     onTap: () async {
-                      final result = await Navigator.push<List<String>>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditInterestsPickerScreen(
-                            initialSelected: state.interests,
-                          ),
-                        ),
+                      final result = await context.push<List<String>>(
+                        AppRoutes.editInterests,
+                        extra: state.interests,
                       );
                       if (result != null && context.mounted) {
                         context.read<ProfileEditCubit>().updateInterests(
@@ -347,11 +345,11 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                 final savedResult = _selectedInterests
                     .map((i) => '${i.emoji} ${i.label}')
                     .toList();
-                Navigator.pop(context, savedResult);
+                context.pop(savedResult);
                 return false;
               } else if (result == false) {
                 // Discard
-                Navigator.pop(context);
+                context.pop();
                 return false;
               }
             }
@@ -518,7 +516,7 @@ class _EditInterestsPickerScreenState extends State<EditInterestsPickerScreen> {
                       final result = _selectedInterests
                           .map((i) => '${i.emoji} ${i.label}')
                           .toList();
-                      Navigator.pop(context, result);
+                      context.pop(result);
                     }
                   }
                 },

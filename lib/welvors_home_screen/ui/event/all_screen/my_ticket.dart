@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'ticket_screen.dart';
-import 'view_details/event_details.dart';
 import 'cancel/cancel_drawer.dart';
 import 'cancel/track_refund_status.dart';
 import 'service_event/event_api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:velvors/config/app_cached_image.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class MyTicketScreen extends StatefulWidget {
   const MyTicketScreen({super.key});
@@ -848,12 +849,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     if (isCancelled)
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TrackRefundScreen(),
-                            ),
-                          );
+                          context.push(AppRoutes.trackRefund);
                         },
                         child: Container(
                           margin: const EdgeInsets.only(left: 8),
@@ -977,20 +973,17 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                           // View Details Button
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EventDetailsScreen(
-                                    eventId: eventId,
-                                    title: title,
-                                    date: date,
-                                    location: location,
-                                    imageUrl: imageUrl,
-                                    status: status,
-                                    price: price == 'Free' ? 'Free' : '₹$price',
-                                    categories: null,
-                                  ),
-                                ),
+                              context.push(
+                                AppRoutes.eventDetails,
+                                extra: {
+                                  'eventId': eventId,
+                                  'title': title,
+                                  'date': date,
+                                  'location': location,
+                                  'imageUrl': imageUrl,
+                                  'status': status,
+                                  'price': price == 'Free' ? 'Free' : '₹$price',
+                                },
                               );
                             },
                             child: Container(
@@ -1024,17 +1017,15 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                           GestureDetector(
                             onTap: () {
                               if (!isCancelled) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TicketScreen(
-                                        title: title,
-                                        date: date,
-                                        location: location,
-                                        status: status,
-                                        bookingId: bookingId,
-                                      ),
-                                  ),
+                                context.push(
+                                  AppRoutes.eventTicket,
+                                  extra: {
+                                    'title': title,
+                                    'date': date,
+                                    'location': location,
+                                    'status': status,
+                                    'bookingId': bookingId,
+                                  },
                                 );
                               }
                             },

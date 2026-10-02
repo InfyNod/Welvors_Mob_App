@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 // import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/booking_confirm.dart';
-import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/splash_screen_book.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/service_event/event_api_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
@@ -99,17 +100,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             _currentBookingId = verifyResponse.toString(); // Just pass it directly so it might show up in UI, but we'll see it in console now
           }
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SplashScreenBook(
-                totalPayable: _totalPayable,
-                title: widget.title,
-                date: widget.date,
-                location: widget.location,
-                bookingId: _currentBookingId ?? '',
-              ),
-            ),
+          context.pushReplacement(
+            AppRoutes.eventBookingSplash,
+            extra: {
+              'totalPayable': _totalPayable,
+              'title': widget.title,
+              'date': widget.date,
+              'location': widget.location,
+              'bookingId': _currentBookingId ?? '',
+            },
           );
         } else {
           setState(() {

@@ -1,5 +1,7 @@
 import 'dart:math';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import '../../../../../../../../utils/navigation/app_routes.dart';
 import '../../export.dart';
 
 class VideoVerificationScreen extends StatefulWidget {
@@ -47,9 +49,7 @@ class _VideoVerificationScreenState extends State<VideoVerificationScreen>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Verification Completed")));
-      Navigator.of(
-        context,
-      ).popUntil((route) => route.settings.name == '/TrustVerificationScreen');
+      context.go(AppRoutes.trustVerification);
     }
   }
 

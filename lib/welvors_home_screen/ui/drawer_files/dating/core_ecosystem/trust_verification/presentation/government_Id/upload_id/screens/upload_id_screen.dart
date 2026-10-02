@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../../utils/navigation/app_routes.dart';
 import '../bloc/upload_id_bloc.dart';
 import '../bloc/upload_id_event.dart';
 import '../bloc/upload_id_state.dart';
@@ -134,19 +136,17 @@ class _UploadIdViewState extends State<_UploadIdView> {
             IdType.voterId => 'Voter ID submitted for review',
             IdType.passport => 'Passport submitted for review',
           };
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AadhaarVerifiedScreen(
-                title: title,
-                score: 20,
-                icon: Icon(Icons.access_time_rounded),
-                iconcolor: Mycolor.iconyellow,
-                subtitle:
-                    "Your PAN is under review. We’ll notify you within 24–48 hours once it’s approved. You can switch to instant DigiLocker verification anytime.",
-                cardbottomtext: "Pending review · score updates on approval",
-              ),
-            ),
+          context.pushReplacement(
+            AppRoutes.aadhaarVerified,
+            extra: {
+              'title': title,
+              'score': 20,
+              'icon': const Icon(Icons.access_time_rounded),
+              'iconcolor': Mycolor.iconyellow,
+              'subtitle':
+                  "Your PAN is under review. We’ll notify you within 24–48 hours once it’s approved. You can switch to instant DigiLocker verification anytime.",
+              'cardbottomtext': "Pending review · score updates on approval",
+            },
           );
           // Navigator.push(...)
         }
@@ -186,7 +186,7 @@ class _UploadIdViewState extends State<_UploadIdView> {
       leading: Padding(
         padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
         child: InkWell(
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pop(),
           borderRadius: BorderRadius.circular(24),
           child: Container(
             decoration: BoxDecoration(

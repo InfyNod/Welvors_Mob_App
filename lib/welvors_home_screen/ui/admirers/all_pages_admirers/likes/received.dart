@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'dart:ui';
 import 'package:velvors/config/app_cached_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +10,6 @@ import '../../admirers_bloc/admirers_event.dart';
 import '../../admirers_bloc/admirers_state.dart';
 import '../../service_admire/admirers_api_service.dart';
 import 'reveal_drawer.dart';
-import '../profile_view/profile_view.dart';
 import '../../free_limite_screen.dart';
 
 class ReceivedLikesScreen extends StatefulWidget {
@@ -192,14 +193,12 @@ class _ReceivedLikesScreenState extends State<ReceivedLikesScreen> {
               : null,
           isBlurred: card['isBlurred'],
           onTapProfile: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AdmirerProfileView(
-                  userCard: card,
-                  onAction: _handleAction,
-                ),
-              ),
+            context.push(
+              AppRoutes.admirerProfile,
+              extra: {
+                'userCard': card,
+                'onAction': _handleAction,
+              },
             );
           },
           onRevealAction: () {

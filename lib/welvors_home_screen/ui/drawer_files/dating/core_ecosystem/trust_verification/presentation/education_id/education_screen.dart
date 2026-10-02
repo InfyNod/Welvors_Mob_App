@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../../../../../services/logger_service.dart';
 import '../../bloc/Education/education_bloc.dart';
 import '../../bloc/Education/education_state.dart';
@@ -17,7 +19,7 @@ class EducationScreen extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -100,20 +102,10 @@ class EducationScreen extends StatelessWidget {
                         onTap: () {
                           AppLogger.d('EducationScreen', data.methods[index].id);
                           if (data.methods[index].id.toString() == "Instant") {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => InstantEducationScreen(),
-                              ),
-                            );
+                            context.push(AppRoutes.educationInstant);
                           } else if (data.methods[index].id.toString() ==
                               "manual_edu") {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EducationManuallyScreen(),
-                              ),
-                            );
+                            context.push(AppRoutes.educationManually);
                           }
                         },
                       );

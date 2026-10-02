@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../../../../../services/logger_service.dart';
 import '../../export.dart';
 import 'bloc/professional_verfication_bloc.dart';
@@ -34,7 +36,7 @@ class ProfessionalVerficationScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         InkWell(
-                          onTap: () => Navigator.pop(context),
+                          onTap: () => context.pop(),
                           borderRadius: BorderRadius.circular(24),
                           child: Container(
                             width: 40,
@@ -129,28 +131,10 @@ class ProfessionalVerficationScreen extends StatelessWidget {
                                   AppLogger.d('ProfessionalVerficationScreen', method.id);
 
                                   if (method.id == "Professional_Instant") {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => BlocProvider(
-                                          create: (_) => ProfessionalBloc(
-                                            repository:
-                                                ProfessionalRepositoryImpl(),
-                                          ),
-                                          child:
-                                              const ProfessionalEmailScreen(),
-                                        ),
-                                      ),
-                                    );
+                                    context.push(AppRoutes.professionalEmail);
                                   } else if (method.id ==
                                       "manual_Professional") {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            const ProfessionalManuallyScreen(),
-                                      ),
-                                    );
+                                    context.push(AppRoutes.professionalManually);
                                   }
                                 },
                               );

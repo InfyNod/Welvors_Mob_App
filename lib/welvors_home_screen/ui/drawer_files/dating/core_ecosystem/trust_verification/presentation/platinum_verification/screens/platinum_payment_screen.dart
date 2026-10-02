@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import '../bloc/platinum_verification_bloc.dart';
 import '../bloc/platinum_verification_event.dart';
 import '../bloc/platinum_verification_state.dart';
@@ -56,7 +57,7 @@ class PlatinumPaymentScreen extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(

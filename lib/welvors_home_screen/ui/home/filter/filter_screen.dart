@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../services/logger_service.dart';
 import 'all_screen/age.dart';
@@ -59,7 +61,7 @@ class _FilterScreenState extends State<FilterScreen> {
           child: Padding(
             padding: const EdgeInsets.only(left: 20),
             child: GestureDetector(
-              onTap: () => Navigator.pop(context),
+              onTap: () => context.pop(),
               child: Container(
                 width: 40,
                 height: 40,
@@ -147,15 +149,12 @@ class _FilterScreenState extends State<FilterScreen> {
                       'Age',
                       '${state.minAge.round()} – ${state.maxAge.round()}',
                       onTap: () {
-                        // Pass the existing FilterBloc instance to the new route
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const AgeScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const AgeScreen(),
                           ),
                         );
                       },
@@ -166,13 +165,11 @@ class _FilterScreenState extends State<FilterScreen> {
                       '${state.distance.round()} km',
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const DistanceScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const DistanceScreen(),
                           ),
                         );
                       },
@@ -189,13 +186,11 @@ class _FilterScreenState extends State<FilterScreen> {
                           state.showMe,
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const ShowMeScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const ShowMeScreen(),
                           ),
                         );
                       },
@@ -210,13 +205,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const LookingForScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const LookingForScreen(),
                           ),
                         );
                       },
@@ -229,13 +222,11 @@ class _FilterScreenState extends State<FilterScreen> {
                           : '${_formatHeight(state.minHeight!)} - ${_formatHeight(state.maxHeight!)}',
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const HeightScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const HeightScreen(),
                           ),
                         );
                       },
@@ -250,13 +241,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const EducationScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const EducationScreen(),
                           ),
                         );
                       },
@@ -271,13 +260,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const LanguagesScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const LanguagesScreen(),
                           ),
                         );
                       },
@@ -292,13 +279,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const LifestyleScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const LifestyleScreen(),
                           ),
                         );
                       },
@@ -313,13 +298,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const ReligionCommunityScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const ReligionCommunityScreen(),
                           ),
                         );
                       },
@@ -334,13 +317,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 .join(', '),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const ProfessionScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const ProfessionScreen(),
                           ),
                         );
                       },
@@ -354,13 +335,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 state.zodiac.substring(1).toLowerCase(),
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const ZodiacScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const ZodiacScreen(),
                           ),
                         );
                       },
@@ -371,13 +350,11 @@ class _FilterScreenState extends State<FilterScreen> {
                       '${state.minTrustScore.round()} – ${state.maxTrustScore.round()}',
                       onTap: () {
                         final filterBloc = context.read<FilterBloc>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: filterBloc,
-                              child: const TrustScoreScreen(),
-                            ),
+                        context.push(
+                          AppRoutes.filterDetail,
+                          extra: BlocProvider.value(
+                            value: filterBloc,
+                            child: const TrustScoreScreen(),
                           ),
                         );
                       },
@@ -457,13 +434,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 valueColor: Colors.purple,
                                 onTap: () {
                                   final filterBloc = context.read<FilterBloc>();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => BlocProvider.value(
-                                        value: filterBloc,
-                                        child: const IncomeRangeScreen(),
-                                      ),
+                                  context.push(
+                                    AppRoutes.filterDetail,
+                                    extra: BlocProvider.value(
+                                      value: filterBloc,
+                                      child: const IncomeRangeScreen(),
                                     ),
                                   );
                                 },
@@ -477,13 +452,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 valueColor: Colors.purple,
                                 onTap: () {
                                   final filterBloc = context.read<FilterBloc>();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => BlocProvider.value(
-                                        value: filterBloc,
-                                        child: const NetworkingIntentScreen(),
-                                      ),
+                                  context.push(
+                                    AppRoutes.filterDetail,
+                                    extra: BlocProvider.value(
+                                      value: filterBloc,
+                                      child: const NetworkingIntentScreen(),
                                     ),
                                   );
                                 },
@@ -497,13 +470,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                 valueColor: Colors.purple,
                                 onTap: () {
                                   final filterBloc = context.read<FilterBloc>();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => BlocProvider.value(
-                                        value: filterBloc,
-                                        child: const AmbitionScreen(),
-                                      ),
+                                  context.push(
+                                    AppRoutes.filterDetail,
+                                    extra: BlocProvider.value(
+                                      value: filterBloc,
+                                      child: const AmbitionScreen(),
                                     ),
                                   );
                                 },
@@ -1438,7 +1409,7 @@ class _FilterScreenState extends State<FilterScreen> {
               context.read<HomeBloc>().add(
                 LoadHomeDataEvent(isRefresh: true, filters: payload),
               );
-              Navigator.pop(context);
+              context.pop();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFE43A6A),

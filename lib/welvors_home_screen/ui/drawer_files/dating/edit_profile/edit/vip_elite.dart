@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
@@ -236,15 +238,13 @@ class NetworkingIntentSection extends StatelessWidget {
 
   void _openNetworkingEditor(BuildContext context, ProfileEditState state) {
     final cubit = context.read<ProfileEditCubit>();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BlocProvider.value(
-          value: cubit,
-          child: _NetworkingEditorSheet(
-            initialIntents: state.networkingIntents,
-            initialWords: state.networkingInYourWords,
-          ),
+    context.push(
+      AppRoutes.subScreen,
+      extra: BlocProvider.value(
+        value: cubit,
+        child: _NetworkingEditorSheet(
+          initialIntents: state.networkingIntents,
+          initialWords: state.networkingInYourWords,
         ),
       ),
     );
@@ -427,7 +427,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
             child: InkWell(
               onTap: () async {
                 if (await _onWillPop()) {
-                  if (context.mounted) Navigator.pop(context);
+                  if (context.mounted) context.pop();
                 }
               },
               borderRadius: BorderRadius.circular(24),
@@ -596,7 +596,7 @@ class _NetworkingEditorSheetState extends State<_NetworkingEditorSheet> {
                   setState(() => _isLoading = true);
                   final success = await _saveChangesToBackend();
                   if (success && context.mounted) {
-                    Navigator.pop(context);
+                    context.pop();
                   } else if (mounted) {
                     setState(() => _isLoading = false);
                   }

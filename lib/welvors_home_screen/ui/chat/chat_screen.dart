@@ -8,6 +8,8 @@ import 'chat_bloc/chat_bloc.dart';
 import 'chat_bloc/chat_event.dart';
 import 'chat_bloc/chat_state.dart';
 import 'chat_repository.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'chat_detail_screen.dart';
 import 'all_new_matches_screen.dart';
 import 'services/new_matches_service.dart';
@@ -1127,14 +1129,9 @@ String capitalizeFirstLetter(String text) {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<ChatBloc>(),
-                        child: const AllNewMatchesScreen(),
-                      ),
-                    ),
+                  context.push(
+                    AppRoutes.allNewMatches,
+                    extra: context.read<ChatBloc>(),
                   );
                 },
                 child: const Text(
@@ -1324,14 +1321,12 @@ String capitalizeFirstLetter(String text) {
       chatBloc.joinConversation(existingChat.conversationId!);
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: chatBloc,
-          child: ChatDetailScreen(user: userToOpen),
-        ),
-      ),
+    context.push(
+      AppRoutes.chatDetail,
+      extra: {
+        'user': userToOpen,
+        'bloc': chatBloc,
+      },
     ).then((_) {
       if (!mounted) return;
       chatBloc.add(const LoadChatsEvent());
@@ -2064,14 +2059,12 @@ String capitalizeFirstLetter(String text) {
 
     final ChatUser userToOpen = user.copyWith(online: isOnline);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: chatBloc,
-          child: ChatDetailScreen(user: userToOpen),
-        ),
-      ),
+    context.push(
+      AppRoutes.chatDetail,
+      extra: {
+        'user': userToOpen,
+        'bloc': chatBloc,
+      },
     ).then((_) {
       if (!mounted) return;
       chatBloc.clearConversationUnread(conversationId);

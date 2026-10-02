@@ -10,7 +10,8 @@ import '../../../../../../onbording_allpage/theme/app_text.dart';
 import '../../../../../../onbording_allpage/widgets/primary_button.dart';
 import '../edit_profile/bloc/profile_edit_cubit.dart';
 
-import 'splash_logout.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 import 'package:velvors/config/env_config.dart';
 
@@ -46,10 +47,7 @@ class LogoutScreen extends StatelessWidget {
 
           if (context.mounted) {
             context.read<ProfileEditCubit>().reset();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const SplashLogout()),
-            );
+            context.go(AppRoutes.splashLogout);
           }
         } else {
           if (context.mounted) {

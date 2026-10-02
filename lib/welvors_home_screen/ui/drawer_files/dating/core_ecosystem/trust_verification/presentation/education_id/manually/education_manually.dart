@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../export.dart';
 import '../../instant_verification/widget/aadhaarVerifiedScreen.dart';
 
@@ -33,18 +35,16 @@ class _EducationView extends StatelessWidget {
         // SUCCESS
         // =========================
         if (state.status == EducationStatus.success) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AadhaarVerifiedScreen(
-                icon: Icon(Icons.access_time_rounded),
-                title: "Education submitted",
-                subtitle:
-                    "Education details submitted. We’ll review and notify you within 24–48 hours.",
-                cardbottomtext: "Pending review · score updates on approval",
-                score: 20,
-              ),
-            ),
+          context.pushReplacement(
+            AppRoutes.aadhaarVerified,
+            extra: {
+              'icon': const Icon(Icons.access_time_rounded),
+              'title': "Education submitted",
+              'subtitle':
+                  "Education details submitted. We’ll review and notify you within 24–48 hours.",
+              'cardbottomtext': "Pending review · score updates on approval",
+              'score': 20,
+            },
           );
         }
 
@@ -76,7 +76,7 @@ class _EducationView extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
             child: InkWell(
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
               },
               borderRadius: BorderRadius.circular(24),
               child: Container(

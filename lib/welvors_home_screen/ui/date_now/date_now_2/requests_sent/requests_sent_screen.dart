@@ -1,5 +1,7 @@
-import '../../../../services/token_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
+import '../../../../services/token_helper.dart';
 import '../post_a_plan/activity_1.dart';
 import '../history/top_history_screen.dart';
 import '../my_plans/my_plan_screen.dart';
@@ -382,12 +384,7 @@ class _RequestsSentScreenState extends State<RequestsSentScreen>
             child: Center(
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Activity1Screen(),
-                    ),
-                  ).then((_) {
+                  context.push(AppRoutes.postDatePlan).then((_) {
                     if (mounted) {
                       _fetchMySentRequests();
                     }

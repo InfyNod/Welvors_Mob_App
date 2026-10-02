@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'boost/boost_screen.dart';
 import 'super_boost/super_boost_screen.dart';
-import '../boost_wallet_all_screen/boost_wallet_top_nav.dart';
 
 class BoostTopNav extends StatefulWidget {
   final int initialTab;
@@ -69,12 +70,7 @@ class _BoostTopNavState extends State<BoostTopNav> {
             padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
             child: InkWell(
               onTap: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BoostWalletTopNav(),
-                  ),
-                );
+                final result = await context.push(AppRoutes.boostWallet);
                 if (result != null && result is int) {
                   setState(() {
                     _selectedTab = result;

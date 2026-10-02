@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../services/token_helper.dart';
 import 'package:flutter/material.dart';
 import 'send_request_drawer.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
 // import 'date_now_2/my_plans/my_plan_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
-import 'date_now_2/post_a_plan/activity_1.dart';
 import 'package:intl/intl.dart';
-import 'profile/profile_detail.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:velvors/config/env_config.dart';
@@ -330,12 +330,7 @@ class _DateNowScreenState extends State<DateNowScreen>
               child: InkWell(
                 borderRadius: BorderRadius.circular(24),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RequestsSentScreen(),
-                    ),
-                  ).then((_) {
+                  context.push(AppRoutes.myDates).then((_) {
                     if (mounted) {
                       setState(
                         () {},
@@ -615,12 +610,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                       child: InkWell(
                         borderRadius: BorderRadius.circular(24),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Activity1Screen(),
-                            ),
-                          ).then((_) {
+                          context.push(AppRoutes.postDatePlan).then((_) {
                             if (mounted) {
                               _fetchPlans();
                             }
@@ -1015,33 +1005,31 @@ class _DateNowScreenState extends State<DateNowScreen>
                       GestureDetector(
                         onTap: () {
                           if (plan['userId'] != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfileDetailScreen(
-                                  userId: plan['userId'].toString(),
-                                  profileImageUrl: plan['avatarUrl'],
-                                  profileName: plan['name'],
-                                  plan: plan,
-                                  onPlanAction: () {
-                                    setState(() {
-                                      _removedPlanIds.add(
-                                        plan['id'].toString(),
-                                      );
-                                    });
-                                    final remaining = _fetchedPlans
-                                        .where(
-                                          (p) => !_removedPlanIds.contains(
-                                            p['id'].toString(),
-                                          ),
-                                        )
-                                        .length;
-                                    if (remaining == 0) {
-                                      _fetchPlans();
-                                    }
-                                  },
-                                ),
-                              ),
+                            context.push(
+                              AppRoutes.datePlanProfileDetail,
+                              extra: {
+                                'userId': plan['userId'].toString(),
+                                'profileImageUrl': plan['avatarUrl'],
+                                'profileName': plan['name'],
+                                'plan': plan,
+                                'onPlanAction': () {
+                                  setState(() {
+                                    _removedPlanIds.add(
+                                      plan['id'].toString(),
+                                    );
+                                  });
+                                  final remaining = _fetchedPlans
+                                      .where(
+                                        (p) => !_removedPlanIds.contains(
+                                          p['id'].toString(),
+                                        ),
+                                      )
+                                      .length;
+                                  if (remaining == 0) {
+                                    _fetchPlans();
+                                  }
+                                },
+                              },
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(

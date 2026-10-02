@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../../export.dart';
 import '../../../instant_verification/widget/aadhaarVerifiedScreen.dart';
 import '../widgets/professional_info_box.dart';
@@ -24,17 +26,15 @@ class ProfessionalCodeScreen extends StatelessWidget {
         // ==========================================
 
         if (state.status == ProfessionalStatus.success) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AadhaarVerifiedScreen(
-                title: 'Professional verified',
-                subtitle:
-                    'Your work email was verified — your company & role are now confirmed.',
-                score: 30,
-                cardbottomtext: '+ Updated instantly',
-              ),
-            ),
+          context.pushReplacement(
+            AppRoutes.aadhaarVerified,
+            extra: {
+              'title': 'Professional verified',
+              'subtitle':
+                  'Your work email was verified — your company & role are now confirmed.',
+              'score': 30,
+              'cardbottomtext': '+ Updated instantly',
+            },
           );
         }
 
@@ -92,7 +92,7 @@ class ProfessionalCodeScreen extends StatelessWidget {
                 onPressed: () {
                   context.read<ProfessionalBloc>().add(ChangeEmailEvent());
 
-                  Navigator.pop(context);
+                  context.pop();
                 },
                 child: Text(
                   'Change email',
@@ -118,7 +118,7 @@ class ProfessionalCodeScreen extends StatelessWidget {
           leading: Padding(
             padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
             child: InkWell(
-              onTap: () => Navigator.pop(context),
+              onTap: () => context.pop(),
               borderRadius: BorderRadius.circular(24),
               child: Container(
                 decoration: BoxDecoration(

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart'; // For GenericListPickerScreen
 
 class WhoYouAreSeeingSection extends StatelessWidget {
   const WhoYouAreSeeingSection({super.key});
@@ -105,17 +106,15 @@ class WhoYouAreSeeingSection extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GenericListPickerScreen(
-              title: 'Select ${label.toLowerCase()}',
-              headerText: label,
-              subHeaderText: 'Please select one from the list',
-              options: options,
-              currentValue: value,
-            ),
-          ),
+        final result = await context.push<String>(
+          AppRoutes.genericPicker,
+          extra: {
+            'title': 'Select ${label.toLowerCase()}',
+            'headerText': label,
+            'subHeaderText': 'Please select one from the list',
+            'options': options,
+            'currentValue': value,
+          },
         );
         if (result != null) {
           onSelect(result);

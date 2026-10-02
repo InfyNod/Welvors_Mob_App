@@ -8,16 +8,15 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/compliments/c
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'my_boosts/boost_bloc/boost_bloc.dart';
 import 'my_boosts/boost_bloc/boost_state.dart';
-import 'my_wallet/my_wallet_screen.dart';
 import 'my_wallet/service_wallet.dart';
 import 'roses/roses_screen.dart';
 import 'date_plans/date_plan_wallet.dart';
-import 'my_boosts/boost_all_screen/boost_top_nav.dart';
-import 'edit_profile/top_bottom_nav_editscreen.dart';
 import 'dart:io';
 import 'edit_profile/bloc/profile_edit_cubit.dart';
 import 'edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class DrawerScreen extends StatefulWidget {
   const DrawerScreen({super.key});
@@ -672,12 +671,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
           const SizedBox(height: 16),
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const EditProfileScreen(),
-                ),
-              );
+              context.push(AppRoutes.editProfile);
             },
             child: Container(
               width: double.infinity,
@@ -746,12 +740,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     label: 'Roses',
                     hasDot: true,
                     onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RosesScreen(),
-                        ),
-                      );
+                      await context.push(AppRoutes.roses);
                       if (mounted) _fetchBalances();
                     },
                   ),
@@ -765,12 +754,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     label: 'Compliments',
                     hasDot: true,
                     onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ComplimentsScreen(),
-                        ),
-                      );
+                      await context.push(AppRoutes.compliments);
                       if (mounted) _fetchBalances();
                     },
                   ),
@@ -784,12 +768,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     label: 'My Boosts',
                     hasDot: true,
                     onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BoostTopNav(),
-                        ),
-                      );
+                      await context.push(AppRoutes.boost);
                       if (mounted) _fetchBalances();
                     },
                   ),
@@ -805,12 +784,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     label: 'My Wallet',
                     hasDot: false,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MyWalletScreen(),
-                        ),
-                      ).then((_) => _fetchBalances());
+                      context.push(AppRoutes.myWallet).then((_) => _fetchBalances());
                     },
                   ),
                 ),
@@ -916,10 +890,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
       children: [
         GestureDetector(
           onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const DatePlanWallet()),
-            );
+            await context.push(AppRoutes.datePlanWallet);
             // Refresh the drawer to show the updated plan count
             if (mounted) _fetchBalances();
           },
