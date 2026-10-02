@@ -124,16 +124,19 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
                       _buildInsightCard(),
                       const SizedBox(height: 24),
                       HowYouMatchSection(
-                        howYouMatch: matchData?['howYouMatch'] as Map<String, dynamic>?,
+                        howYouMatch:
+                            matchData?['howYouMatch'] as Map<String, dynamic>?,
                         dimensions: matchData?['dimensions'] as List<dynamic>?,
                       ),
                       const SizedBox(height: 24),
                       WhatYouShareSection(
-                        sharedInterests: matchData?['sharedInterests'] as List<dynamic>?,
+                        sharedInterests:
+                            matchData?['sharedInterests'] as List<dynamic>?,
                       ),
                       const SizedBox(height: 24),
                       AFewDifferencesSection(
-                        differences: matchData?['differences'] as List<dynamic>?,
+                        differences:
+                            matchData?['differences'] as List<dynamic>?,
                       ),
                       const SizedBox(height: 24),
                       SideBySideSection(
@@ -173,7 +176,7 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
   Widget _buildMainMatchCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
         color: const Color(0xFFFFF7FC),
         borderRadius: BorderRadius.circular(28),
@@ -191,191 +194,205 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
       ),
       child: Column(
         children: [
-          // Avatars
-          SizedBox(
-            height: 70,
-            width: 130,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned(
-                  left: 0,
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                      image: matchData?['users']?['you']?['photo'] != null
-                          ? DecorationImage(
-                              image: NetworkImage(
-                                matchData!['users']['you']['photo'],
-                              ),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(
-                            0xFF966EB4,
-                          ).withValues(alpha: 0.15),
-                          blurRadius: 15,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: matchData?['users']?['you']?['photo'] == null
-                        ? const Icon(Icons.person, color: Colors.grey, size: 32)
-                        : null,
-                  ),
-                ),
-                Positioned(
-                  right: 0,
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                      image: matchData?['users']?['target']?['photo'] != null
-                          ? DecorationImage(
-                              image: NetworkImage(
-                                matchData!['users']['target']['photo'],
-                              ),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(
-                            0xFF966EB4,
-                          ).withValues(alpha: 0.15),
-                          blurRadius: 15,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: matchData?['users']?['target']?['photo'] == null
-                        ? const Icon(Icons.person, color: Colors.grey, size: 32)
-                        : null,
-                  ),
-                ),
-                // Heart icon in middle
-                const _BlinkingHeart(),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-
-          // Match Percentage Circle
-          Container(
-            width: 150,
-            height: 150,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFF05C91).withValues(alpha: 0.18),
-                  blurRadius: 18,
-                  spreadRadius: 0,
-                ),
-              ],
-            ),
-            child: TweenAnimationBuilder<double>(
-              tween: Tween<double>(
-                begin: 0.0,
-                end: ((matchData?['match']?['score'] as num?) ?? 0) / 100.0,
-              ),
-              duration: const Duration(milliseconds: 1500),
-              curve: Curves.easeOutCubic,
-              builder: (context, value, child) {
-                return Stack(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Avatars
+              SizedBox(
+                height: 90,
+                width: 150,
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    // Background track
-                    Positioned.fill(
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: CircularProgressIndicator(
-                          value: 1.0,
-                          strokeWidth: 12,
-                          backgroundColor: Colors.transparent,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            const Color(0xFFE8D9FF).withValues(alpha: 0.5),
-                          ),
+                    Positioned(
+                      left: 0,
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
+                          image: matchData?['users']?['you']?['photo'] != null
+                              ? DecorationImage(
+                                  image: NetworkImage(
+                                    matchData!['users']['you']['photo'],
+                                  ),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF966EB4,
+                              ).withValues(alpha: 0.15),
+                              blurRadius: 15,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
+                        child: matchData?['users']?['you']?['photo'] == null
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.grey,
+                                size: 36,
+                              )
+                            : null,
                       ),
                     ),
-                    // Highlight part of the circle (animating)
-                    Positioned.fill(
-                      child: ShaderMask(
-                        shaderCallback: (rect) {
-                          return const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFF8B5CF6),
-                              Color(0xFFB95FE8),
-                              Color(0xFFF05C91),
-                            ],
-                          ).createShader(rect);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(6.0),
-                          child: CircularProgressIndicator(
-                            value: value,
-                            strokeWidth: 12,
-                            backgroundColor: Colors.transparent,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
+                          image:
+                              matchData?['users']?['target']?['photo'] != null
+                              ? DecorationImage(
+                                  image: NetworkImage(
+                                    matchData!['users']['target']['photo'],
+                                  ),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF966EB4,
+                              ).withValues(alpha: 0.15),
+                              blurRadius: 15,
+                              offset: const Offset(0, 4),
                             ),
-                            strokeCap: StrokeCap.round,
-                          ),
+                          ],
                         ),
+                        child: matchData?['users']?['target']?['photo'] == null
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.grey,
+                                size: 36,
+                              )
+                            : null,
                       ),
                     ),
-                    // Center Text
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [
-                                Color(0xFF8B5CF6),
-                                Color(0xFFB95FE8),
-                                Color(0xFFF05C91),
-                              ],
-                            ).createShader(bounds),
-                            child: Text(
-                              '${(value * 100).toInt()}%',
-                              style: const TextStyle(
-                                fontSize: 38,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                letterSpacing: -1,
-                              ),
-                            ),
-                          ),
-                          const Text(
-                            'MATCH',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF9B98A7),
-                              letterSpacing: 2.0,
-                            ),
-                          ),
-                        ],
-                      ),
+                    // Heart icon in middle
+                    const _BlinkingHeart(),
+                  ],
+                ),
+              ),
+
+              // Match Percentage Circle
+              Container(
+                width: 85,
+                height: 85,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFF05C91).withValues(alpha: 0.18),
+                      blurRadius: 14,
+                      spreadRadius: 0,
                     ),
                   ],
-                );
-              },
-            ),
+                ),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(
+                    begin: 0.0,
+                    end: ((matchData?['match']?['score'] as num?) ?? 0) / 100.0,
+                  ),
+                  duration: const Duration(milliseconds: 1500),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, child) {
+                    return Stack(
+                      children: [
+                        // Background track
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: CircularProgressIndicator(
+                              value: 1.0,
+                              strokeWidth: 6,
+                              backgroundColor: Colors.transparent,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                const Color(0xFFE8D9FF).withValues(alpha: 0.5),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Highlight part of the circle (animating)
+                        Positioned.fill(
+                          child: ShaderMask(
+                            shaderCallback: (rect) {
+                              return const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFF8B5CF6),
+                                  Color(0xFFB95FE8),
+                                  Color(0xFFF05C91),
+                                ],
+                              ).createShader(rect);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: CircularProgressIndicator(
+                                value: value,
+                                strokeWidth: 6,
+                                backgroundColor: Colors.transparent,
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                                strokeCap: StrokeCap.round,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Center Text
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ShaderMask(
+                                shaderCallback: (bounds) =>
+                                    const LinearGradient(
+                                      colors: [
+                                        Color(0xFF8B5CF6),
+                                        Color(0xFFB95FE8),
+                                        Color(0xFFF05C91),
+                                      ],
+                                    ).createShader(bounds),
+                                child: Text(
+                                  '${(value * 100).toInt()}%',
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    letterSpacing: -1,
+                                  ),
+                                ),
+                              ),
+                              const Text(
+                                'MATCH',
+                                style: TextStyle(
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF9B98A7),
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
 
           // Texts
           Text(
@@ -403,7 +420,7 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
 
           // Stats Card
           _buildStatsCard(),
-          const SizedBox(height: 14),
+          const SizedBox(height: 4),
         ],
       ),
     );
@@ -481,14 +498,14 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           valueWidget,
           const SizedBox(height: 2),
           SizedBox(
-            height: 28, // Fixed height for 1 or 2 lines
+            height: 24, // Fixed height for 1 or 2 lines
             child: Align(
               alignment: Alignment.topCenter,
               child: Text(
@@ -584,14 +601,18 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
               height: 1.6,
             ),
           ),
-          if (matchData?['highlights'] != null && (matchData!['highlights'] as List).isNotEmpty) ...[
+          if (matchData?['highlights'] != null &&
+              (matchData!['highlights'] as List).isNotEmpty) ...[
             const SizedBox(height: 16),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: (matchData!['highlights'] as List).map((highlight) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF1E6FF),
                     borderRadius: BorderRadius.circular(20),
@@ -600,7 +621,11 @@ class _MatchAnalysisScreenState extends State<MatchAnalysisScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.stars_rounded, color: Color(0xFF8B5CF6), size: 14),
+                      const Icon(
+                        Icons.stars_rounded,
+                        color: Color(0xFF8B5CF6),
+                        size: 14,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         highlight.toString(),
