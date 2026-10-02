@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
-import 'package:velvors/welvors_home_screen/ui/chat/chat_image_pdf_viewer_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/shared_bloc/shared_item_bloc.dart';
 
+import '../../../utils/navigation/app_routes.dart';
 import 'shared_bloc/shared_item_model.dart';
 import 'shared_bloc/shared_item_repository.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
@@ -362,9 +363,9 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => ChatImageViewerScreen(imageUrl: url)),
+    context.push(
+      AppRoutes.chatImageViewer,
+      extra: {'imageUrl': url},
     );
   }
 
@@ -384,12 +385,12 @@ class _ChatMediaLinksDocsScreenState extends State<ChatMediaLinksDocsScreen>
     final isPdf = lowerUrl.split('?').first.endsWith('.pdf');
 
     if (isPdf) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              ChatPdfViewerScreen(pdfUrl: url, title: _documentName(item)),
-        ),
+      context.push(
+        AppRoutes.chatPdfViewer,
+        extra: {
+          'pdfUrl': url,
+          'title': _documentName(item),
+        },
       );
 
       return;

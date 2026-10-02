@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -41,15 +43,14 @@ class LocationMapScreen extends StatefulWidget {
     required double longitude,
     String label = 'Current Location',
   }) {
-    return Navigator.of(context).push<LocationPickerResult>(
-      MaterialPageRoute(
-        builder: (_) => LocationMapScreen(
-          latitude: latitude,
-          longitude: longitude,
-          label: label,
-          pickMode: true,
-        ),
-      ),
+    return context.push<LocationPickerResult>(
+      AppRoutes.locationMap,
+      extra: {
+        'latitude': latitude,
+        'longitude': longitude,
+        'label': label,
+        'pickMode': true,
+      },
     );
   }
 
@@ -336,8 +337,7 @@ class _LocationMapScreenState extends State<LocationMapScreen> {
       return;
     }
 
-    Navigator.pop(
-      context,
+    context.pop(
       LocationPickerResult(
         latitude: _selected.latitude,
         longitude: _selected.longitude,

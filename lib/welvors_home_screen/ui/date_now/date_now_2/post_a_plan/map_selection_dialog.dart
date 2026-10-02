@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
@@ -147,7 +148,7 @@ class _MapSelectionDialogState extends State<MapSelectionDialog> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => context.pop(),
                     child: Container(
                       width: 40,
                       height: 40,
@@ -362,7 +363,7 @@ class _MapSelectionDialogState extends State<MapSelectionDialog> {
               child: GestureDetector(
                 onTap: _searchController.text.isNotEmpty
                     ? () {
-                        Navigator.pop(context, _searchController.text);
+                        context.pop(_searchController.text);
                       }
                     : null,
                 child: Container(

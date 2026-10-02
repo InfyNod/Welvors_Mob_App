@@ -9,6 +9,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String verifyNumber = '/verify-number';
   static const String onboardingFlow = '/onboarding-flow';
+  static const String onboardingCompletion = '/onboarding-completion';
   static const String paymentSuccess = '/payment-success';
   static const String waitlistConfirmed = '/waitlist-confirmed';
   static const String referAndEarn = '/refer-and-earn';
@@ -20,6 +21,7 @@ class AppRoutes {
 
   // Chat & Calling
   static const String chatDetail = '/chat-detail';
+  static const String allNewMatches = '/all-new-matches';
   static const String chatMedia = '/chat-media';
   static const String chatImageViewer = '/chat-image-viewer';
   static const String chatPdfViewer = '/chat-pdf-viewer';
@@ -82,8 +84,20 @@ class AppRoutes {
   static const String datePlanProfileDetail = '/date-plan-profile-detail';
   static const String admirerProfile = '/admirer-profile';
   static const String choosePrompt = '/choose-prompt';
+  static const String mapSelection = '/map-selection';
   static const String genericPicker = '/generic-picker';
   static const String editBio = '/edit-bio';
+  static const String editTextInput = '/edit-text-input';
+  static const String editDob = '/edit-dob';
+  static const String editHeight = '/edit-height';
+  static const String editReligionCaste = '/edit-religion-caste';
+  static const String editLanguage = '/edit-language';
+  static const String editGraduationYear = '/edit-graduation-year';
+  static const String editIntentions = '/edit-intentions';
+  static const String editInterests = '/edit-interests';
+  static const String editChoosePrompt = '/edit-choose-prompt';
+  static const String videoRecorder = '/video-recorder';
+  static const String subScreen = '/sub-screen';
 
   // Account Settings
   static const String accountSettings = '/account-settings';

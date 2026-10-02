@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
@@ -337,17 +339,15 @@ class _FamilySectionState extends State<FamilySection> {
   }) {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GenericListPickerScreen(
-              title: 'Select ${label.toLowerCase()}',
-              headerText: label,
-              subHeaderText: 'Please select one from the list',
-              options: options,
-              currentValue: value,
-            ),
-          ),
+        final result = await context.push<String>(
+          AppRoutes.genericPicker,
+          extra: {
+            'title': 'Select ${label.toLowerCase()}',
+            'headerText': label,
+            'subHeaderText': 'Please select one from the list',
+            'options': options,
+            'currentValue': value,
+          },
         );
         if (result != null && result.isNotEmpty) {
           onSelect(result);
@@ -406,16 +406,14 @@ class _FamilySectionState extends State<FamilySection> {
   }) {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MultiStepParentPickerScreen(
-              title: label,
-              occupationOptions: occupationOptions,
-              organizationOptions: organizationOptions,
-              currentOccupation: value.split(' · ').first,
-              currentOrganization: value.split(' · ').length > 1 ? value.split(' · ')[1] : '',
-            ),
+        final result = await context.push<String>(
+          AppRoutes.subScreen,
+          extra: MultiStepParentPickerScreen(
+            title: label,
+            occupationOptions: occupationOptions,
+            organizationOptions: organizationOptions,
+            currentOccupation: value.split(' · ').first,
+            currentOrganization: value.split(' · ').length > 1 ? value.split(' · ')[1] : '',
           ),
         );
 
@@ -474,13 +472,11 @@ class _FamilySectionState extends State<FamilySection> {
   }) {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push<Map<String, dynamic>>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SiblingFlowScreen(
-              title: label == 'SISTERS' ? 'Sisters' : 'Brothers',
-              currentValue: value,
-            ),
+        final result = await context.push<Map<String, dynamic>>(
+          AppRoutes.subScreen,
+          extra: SiblingFlowScreen(
+            title: label == 'SISTERS' ? 'Sisters' : 'Brothers',
+            currentValue: value,
           ),
         );
         if (result != null) {
@@ -650,7 +646,7 @@ class _SiblingFlowScreenState extends State<SiblingFlowScreen> {
 
   void _startDetailsFlow() async {
     if (_siblingCount == null || _siblingCount == 0) {
-      Navigator.pop(context, {
+      context.pop({
         'formatted': '${widget.title} · None',
         'data': {'count': 0, 'details': []},
       });
@@ -659,14 +655,12 @@ class _SiblingFlowScreenState extends State<SiblingFlowScreen> {
 
     // Process each sibling
     for (int i = 0; i < _siblingCount!; i++) {
-      final result = await Navigator.push<SiblingDetail>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SiblingDetailScreen(
-            title: widget.title,
-            siblingIndex: i + 1,
-            totalSiblings: _siblingCount!,
-          ),
+      final result = await context.push<SiblingDetail>(
+        AppRoutes.subScreen,
+        extra: SiblingDetailScreen(
+          title: widget.title,
+          siblingIndex: i + 1,
+          totalSiblings: _siblingCount!,
         ),
       );
 
@@ -689,7 +683,7 @@ class _SiblingFlowScreenState extends State<SiblingFlowScreen> {
     }
 
     if (mounted) {
-      Navigator.pop(context, {
+      context.pop({
         'formatted': formattedResult,
         'data': {
           'count': _siblingCount,
@@ -897,7 +891,7 @@ class _SiblingDetailScreenState extends State<SiblingDetailScreen> {
                                   ..occupation = text
                                   ..maritalId = _getIdFor(_maritalStatus, _maritalOptionsMap)
                                   ..occupationId = _getIdFor(text, _occupationOptionsMap);
-                                Navigator.pop(context, detail);
+                                context.pop(detail);
                               }
                             },
                             child: Container(
@@ -989,7 +983,7 @@ class _MultiStepParentPickerScreenState extends State<MultiStepParentPickerScree
 
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
-      if (mounted) Navigator.pop(context, null);
+      if (mounted) context.pop(null);
       return false;
     }
     return result == false;
@@ -1114,7 +1108,7 @@ class _MultiStepParentPickerScreenState extends State<MultiStepParentPickerScree
                               });
                             } else {
                               // Both steps completed, save and pop
-                              Navigator.pop(context, '$_selectedOccupation · $_selectedOrganization');
+                              context.pop('$_selectedOccupation · $_selectedOrganization');
                             }
                           },
                           style: ElevatedButton.styleFrom(

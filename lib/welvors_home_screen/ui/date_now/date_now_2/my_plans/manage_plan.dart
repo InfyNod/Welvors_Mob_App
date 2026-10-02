@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../post_a_plan/activity_1.dart';
 import '../post_a_plan/bloc/post_plan_state.dart';
 import '../history/card_history.dart';
 import 'my_plan_screen.dart';
@@ -246,7 +247,7 @@ void showManageBottomSheet(
                 title: 'Edit plan details',
                 subtitle: 'Change time, venue or bill',
                 onTap: () {
-                  Navigator.pop(context);
+                  context.pop();
                   PostPlanState? stateToEdit;
 
                   if (plan.containsKey('originalState')) {
@@ -259,14 +260,12 @@ void showManageBottomSheet(
                   }
 
                   if (stateToEdit != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Activity1Screen(
-                          initialState: stateToEdit,
-                          initialStep: 4, // Step 4 is Review4View
-                        ),
-                      ),
+                    context.push(
+                      AppRoutes.postDatePlan,
+                      extra: {
+                        'initialState': stateToEdit,
+                        'initialStep': 4,
+                      },
                     );
                   }
                 },

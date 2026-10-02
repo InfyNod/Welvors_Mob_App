@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
@@ -141,10 +143,7 @@ class _VideoSectionState extends State<VideoSection> {
   Widget _buildEmptyCard() {
     return GestureDetector(
       onTap: _isUploading ? null : () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(builder: (context) => const VideoRecorderScreen()),
-        );
+        final result = await context.push<String>(AppRoutes.videoRecorder);
         if (result != null && mounted) {
           setState(() {
             _isUploading = true;
@@ -450,12 +449,7 @@ class _VideoSectionState extends State<VideoSection> {
                       duration: const Duration(milliseconds: 300),
                       child: GestureDetector(
                         onTap: () async {
-                      final result = await Navigator.push<String>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const VideoRecorderScreen(),
-                        ),
-                      );
+                      final result = await context.push<String>(AppRoutes.videoRecorder);
                       if (result != null && mounted) {
                         setState(() {
                           _isUploading = true;
@@ -670,7 +664,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () => context.pop(),
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -884,7 +878,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.pop(context, _recordedFilePath);
+            context.pop(_recordedFilePath);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),

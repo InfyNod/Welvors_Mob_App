@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,8 +16,7 @@ import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_state.dart';
-import 'package:velvors/welvors_home_screen/ui/chat/chat_media_links_docs_screen.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
+  import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/mycolor.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/utils/sizesboxs.dart';
 
 import 'package:velvors/config/env_config.dart';
@@ -879,14 +880,12 @@ class Sidedrawer {
                               ),
 
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ChatMediaLinksDocsScreen(
-                                      userName: liveName,
-                                      conversationId: conversationId,
-                                    ),
-                                  ),
+                                context.push(
+                                  AppRoutes.chatMedia,
+                                  extra: {
+                                    'userName': liveName,
+                                    'conversationId': conversationId,
+                                  },
                                 );
                               },
                             ),

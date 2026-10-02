@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 class LocationSection extends StatelessWidget {
@@ -80,17 +81,15 @@ class LocationSection extends StatelessWidget {
       BuildContext context, String label, String value, Function(String) onSave) {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditTextInputScreen(
-              title: label == 'AREA / NEIGHBOURHOOD' ? 'Area' : label == 'CITY' ? 'City' : 'State',
-              label: label,
-              headerText: 'What\'s your ${label.toLowerCase()}?',
-              subHeaderText: 'Please enter your ${label.toLowerCase()} for better matches.',
-              currentValue: value,
-            ),
-          ),
+        final result = await context.push<String>(
+          AppRoutes.editTextInput,
+          extra: {
+            'title': label == 'AREA / NEIGHBOURHOOD' ? 'Area' : label == 'CITY' ? 'City' : 'State',
+            'label': label,
+            'headerText': 'What\'s your ${label.toLowerCase()}?',
+            'subHeaderText': 'Please enter your ${label.toLowerCase()} for better matches.',
+            'currentValue': value,
+          },
         );
         if (result != null && context.mounted) {
           onSave(result);

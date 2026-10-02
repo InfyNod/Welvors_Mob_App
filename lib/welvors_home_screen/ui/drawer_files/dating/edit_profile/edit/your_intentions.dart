@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import '../services/edit_profile_api_service.dart';
@@ -68,12 +70,9 @@ class _YourIntentionsSectionState extends State<YourIntentionsSection> {
             const SizedBox(height: 16),
             GestureDetector(
               onTap: () async {
-                final result = await Navigator.push<String>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        EditIntentionsScreen(currentIntention: state.intention),
-                  ),
+                final result = await context.push<String>(
+                  AppRoutes.editIntentions,
+                  extra: state.intention,
                 );
                 if (result != null && context.mounted) {
                   context.read<ProfileEditCubit>().updateIntention(result);
@@ -207,7 +206,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
     setState(() => _isSaving = false);
 
     if (error == null) {
-      Navigator.pop(context, intentionTitle);
+      context.pop(intentionTitle);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error), backgroundColor: Colors.red),
@@ -267,7 +266,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
                   onPressed: _isSaving
                       ? null
                       : () {
-                          Navigator.pop(context, false); // Close dialog
+                          context.pop(false); // Close dialog
                           _saveIntention(_selected);
                         },
                   style: ElevatedButton.styleFrom(
@@ -289,7 +288,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
-                  onPressed: () => Navigator.pop(context, true), // Pop screen
+                  onPressed: () => context.pop(true), // Pop screen
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -303,7 +302,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
-                  onPressed: () => Navigator.pop(context, false), // Stay
+                  onPressed: () => context.pop(false), // Stay
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.grey.shade600,
                   ),
@@ -338,7 +337,7 @@ class _EditIntentionsScreenState extends State<EditIntentionsScreen> {
             child: InkWell(
               onTap: () async {
                 if (await _onWillPop()) {
-                  if (context.mounted) Navigator.pop(context);
+                  if (context.mounted) context.pop();
                 }
               },
               borderRadius: BorderRadius.circular(24),

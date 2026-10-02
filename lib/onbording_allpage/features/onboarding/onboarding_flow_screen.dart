@@ -14,7 +14,6 @@ import 'about_screen.dart';
 import 'prompts_screen.dart';
 import 'location_screen.dart';
 import 'review_screen.dart';
-import 'completion_screen.dart';
 
 class OnboardingFlowScreen extends StatefulWidget {
   final int initialStep;

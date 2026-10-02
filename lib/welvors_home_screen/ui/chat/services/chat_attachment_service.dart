@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,7 +19,6 @@ import '../ChatVideoPlayer.dart';
 import '../chat_bloc/chat_bloc.dart';
 import '../chat_bloc/chat_event.dart';
 import '../chat_bloc/chat_state.dart';
-import '../custom_camera_screen.dart' as custom_camera;
 import '../location_map_screen.dart';
 import '../widgets/sheets/chat_contact_picker_sheet.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
@@ -328,12 +329,7 @@ class ChatAttachmentService {
         AppLogger.w('ChatAttachmentService', '⚠️ ImagePicker returned null, opening CustomCameraScreen');
 
         if (!context.mounted) return;
-        final customResult = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const custom_camera.CustomCameraScreen(),
-          ),
-        );
+        final customResult = await context.push<String>(AppRoutes.customCamera);
 
         if (customResult != null && customResult.isNotEmpty) {
           finalFile = XFile(customResult);

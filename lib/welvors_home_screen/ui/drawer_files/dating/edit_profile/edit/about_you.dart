@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
@@ -33,11 +34,9 @@ class AboutYouSection extends StatelessWidget {
         const SizedBox(height: 16),
         GestureDetector(
           onTap: () async {
-            final result = await Navigator.push<String>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditBioScreen(initialBio: state.bio),
-              ),
+            final result = await context.push<String>(
+              AppRoutes.editBio,
+              extra: state.bio,
             );
             if (result != null && context.mounted) {
               context.read<ProfileEditCubit>().updateBio(result);
@@ -138,7 +137,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
     setState(() => _isLoading = false);
 
     if (error == null) {
-      Navigator.pop(context, newBio);
+      context.pop(newBio);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(error),
@@ -196,7 +195,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : () {
-                    Navigator.pop(context, false); // Close dialog
+                    context.pop(false); // Close dialog
                     _saveBio(_controller.text); // Save and Pop screen
                   },
                   style: ElevatedButton.styleFrom(
@@ -218,7 +217,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
-                  onPressed: () => Navigator.pop(context, true), // Pop screen
+                  onPressed: () => context.pop(true), // Pop screen
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -232,7 +231,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
-                  onPressed: () => Navigator.pop(context, false), // Stay
+                  onPressed: () => context.pop(false), // Stay
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.grey.shade600,
                   ),
@@ -265,7 +264,7 @@ class _EditBioScreenState extends State<EditBioScreen> {
             child: InkWell(
               onTap: () async {
                 if (await _onWillPop()) {
-                  if (context.mounted) Navigator.pop(context);
+                  if (context.mounted) context.pop();
                 }
               },
               borderRadius: BorderRadius.circular(24),

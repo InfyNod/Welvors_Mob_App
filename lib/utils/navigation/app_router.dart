@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:velvors/onbording_allpage/features/onboarding/landing_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/login_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/onboarding_flow_screen.dart';
+import 'package:velvors/onbording_allpage/features/onboarding/completion_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/payment_success_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 import 'package:velvors/onbording_allpage/features/onboarding/splash_screen.dart';
@@ -19,10 +21,25 @@ import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_bloc/chat_state.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_detail_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/all_new_matches_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/chat_media_links_docs_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/chat_pdf_viewer_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/location_map_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/custom_camera_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/chat/YourJourneyScreen.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/video_call_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/voice_call_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/profile/profile_detail.dart';
+import 'package:velvors/onbording_allpage/features/onboarding/choose_prompt_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/career_ambition.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/your_intentions.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/intrested.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/prompts.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/video.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/post_a_plan/activity_1.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/post_a_plan/map_selection_dialog.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/post_a_plan/bloc/post_plan_state.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/requests_sent/requests_sent_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/my_plans/profile.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setting/account_pages/bank_upi.dart';
@@ -37,7 +54,12 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setti
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/commitment_management.dart/commitment_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/compliments/compliments_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/trust_verification_screen.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/bloc/government_verification/government_verification_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/bloc/government_verification/government_verification_event.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/government_verification_repository.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/government_Id/government_verification_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/face_verification/face_verification_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/video_verification/video_verification_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/bloc/Education/education_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/bloc/Education/education_event.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/education_repository.dart';
@@ -120,7 +142,10 @@ import 'package:velvors/welvors_home_screen/ui/home/trust_score/trust_screen.dar
 import 'package:velvors/welvors_home_screen/ui/network/no_internet_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 
+import '../../welvors_home_screen/ui/admirers/all_pages_admirers/profile_view/profile_view.dart';
+import '../../welvors_home_screen/ui/chat/chat_image_pdf_viewer_screen.dart' hide ChatPdfViewerScreen;
 import '../../welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/domain/repositories/professional_repository_impl.dart';
+import '../../welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/about_you.dart';
 
 /// Centralized GoRouter Navigation Configuration for Welvors
 ///
@@ -241,6 +266,15 @@ class AppRouter {
             child: OnboardingFlowScreen(initialStep: initialStep),
           );
         },
+      ),
+
+      GoRoute(
+        path: AppRoutes.onboardingCompletion,
+        name: 'onboardingCompletion',
+        pageBuilder: (context, state) => customTransitionPage(
+          key: state.pageKey,
+          child: const CompletionScreen(),
+        ),
       ),
 
       GoRoute(
@@ -415,6 +449,105 @@ class AppRouter {
               userName: userName,
               conversationId: conversationId,
             ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.allNewMatches,
+        name: 'allNewMatches',
+        pageBuilder: (context, state) {
+          final bloc = state.extra is ChatBloc ? state.extra as ChatBloc : null;
+          Widget child = const AllNewMatchesScreen();
+          if (bloc != null) {
+            child = BlocProvider.value(
+              value: bloc,
+              child: child,
+            );
+          }
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: child,
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.chatImageViewer,
+        name: 'chatImageViewer',
+        pageBuilder: (context, state) {
+          final extra = state.extra is Map<String, dynamic>
+              ? state.extra as Map<String, dynamic>
+              : state.uri.queryParameters;
+          final imageUrl = extra['imageUrl']?.toString() ?? (state.extra is String ? state.extra as String : '');
+          final heroTag = extra['heroTag']?.toString();
+          return customTransitionPage(
+            key: state.pageKey,
+            child: ChatImageViewerScreen(imageUrl: imageUrl, heroTag: heroTag),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.chatPdfViewer,
+        name: 'chatPdfViewer',
+        pageBuilder: (context, state) {
+          final extra = state.extra is Map<String, dynamic>
+              ? state.extra as Map<String, dynamic>
+              : state.uri.queryParameters;
+          final pdfUrl = extra['pdfUrl']?.toString() ?? '';
+          final title = extra['title']?.toString() ?? 'PDF';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: ChatPdfViewerScreen(pdfUrl: pdfUrl, title: title),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.locationMap,
+        name: 'locationMap',
+        pageBuilder: (context, state) {
+          final extra = state.extra is Map<String, dynamic>
+              ? state.extra as Map<String, dynamic>
+              : state.uri.queryParameters;
+          final latitude = (extra['latitude'] as num?)?.toDouble() ??
+              double.tryParse(extra['latitude']?.toString() ?? '0') ??
+              0.0;
+          final longitude = (extra['longitude'] as num?)?.toDouble() ??
+              double.tryParse(extra['longitude']?.toString() ?? '0') ??
+              0.0;
+          final label = extra['label']?.toString() ?? 'Location';
+          final pickMode = extra['pickMode'] == true || extra['pickMode'] == 'true';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: LocationMapScreen(
+              latitude: latitude,
+              longitude: longitude,
+              label: label,
+              pickMode: pickMode,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.customCamera,
+        name: 'customCamera',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const CustomCameraScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.yourJourney,
+        name: 'yourJourney',
+        pageBuilder: (context, state) {
+          final function = state.extra is VoidCallback ? state.extra as VoidCallback : null;
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: YourJourneyScreen(function: function),
           );
         },
       ),
@@ -1071,10 +1204,24 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.postDatePlan,
         name: 'postDatePlan',
-        pageBuilder: (context, state) => slideTransitionPage(
-          key: state.pageKey,
-          child: const Activity1Screen(),
-        ),
+        pageBuilder: (context, state) {
+          PostPlanState? initialState;
+          int initialStep = 1;
+          if (state.extra is Map<String, dynamic>) {
+            final extra = state.extra as Map<String, dynamic>;
+            initialState = extra['initialState'] as PostPlanState?;
+            initialStep = extra['initialStep'] as int? ?? 1;
+          } else if (state.extra is PostPlanState) {
+            initialState = state.extra as PostPlanState;
+          }
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: Activity1Screen(
+              initialState: initialState,
+              initialStep: initialStep,
+            ),
+          );
+        },
       ),
 
       GoRoute(
@@ -1087,6 +1234,270 @@ class AppRouter {
             child: MyPlanRequesterProfileScreen(request: request),
           );
         },
+      ),
+
+      GoRoute(
+        path: AppRoutes.requestsSent,
+        name: 'requestsSent',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const RequestsSentScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.datePlanProfileDetail,
+        name: 'datePlanProfileDetail',
+        pageBuilder: (context, state) {
+          final extra = state.extra is Map<String, dynamic>
+              ? state.extra as Map<String, dynamic>
+              : state.uri.queryParameters;
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: ProfileDetailScreen(
+              userId: extra['userId']?.toString() ?? '',
+              profileImageUrl: extra['profileImageUrl']?.toString() ?? extra['avatarUrl']?.toString(),
+              profileName: extra['profileName']?.toString() ?? extra['name']?.toString(),
+              plan: extra['plan'] as Map<String, dynamic>?,
+              onPlanAction: extra['onPlanAction'] as VoidCallback?,
+              customBottomWidget: extra['customBottomWidget'] as Widget?,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.admirerProfile,
+        name: 'admirerProfile',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final userCard = extra['userCard'] as Map<String, dynamic>? ?? extra;
+          final onAction = extra['onAction'] as Function(dynamic, String)? ?? (id, action) {};
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: AdmirerProfileView(
+              userCard: userCard,
+              onAction: onAction,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.choosePrompt,
+        name: 'choosePrompt',
+        pageBuilder: (context, state) {
+          final extra = state.extra;
+          List<String> addedPromptIds = [];
+          if (extra is List<String>) {
+            addedPromptIds = extra;
+          } else if (extra is List) {
+            addedPromptIds = extra.map((e) => e.toString()).toList();
+          }
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: ChoosePromptScreen(addedPromptIds: addedPromptIds),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.mapSelection,
+        name: 'mapSelection',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const MapSelectionDialog(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.genericPicker,
+        name: 'genericPicker',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: GenericListPickerScreen(
+              title: extra['title'] as String? ?? 'Select',
+              headerText: extra['headerText'] as String? ?? '',
+              subHeaderText: extra['subHeaderText'] as String? ?? '',
+              currentValue: extra['currentValue'] as String? ?? '',
+              options: (extra['options'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+              optionSubtitles: extra['optionSubtitles'] as Map<String, String>?,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editBio,
+        name: 'editBio',
+        pageBuilder: (context, state) {
+          final initialBio = state.extra is String ? state.extra as String : '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditBioScreen(initialBio: initialBio),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editTextInput,
+        name: 'editTextInput',
+        pageBuilder: (context, state) {
+          if (state.extra is EditTextInputScreen) {
+            return slideTransitionPage(
+              key: state.pageKey,
+              child: state.extra as EditTextInputScreen,
+            );
+          }
+          final extra = state.extra as Map<String, dynamic>;
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditTextInputScreen(
+              title: extra['title'] as String? ?? '',
+              label: extra['label'] as String? ?? '',
+              headerText: extra['headerText'] as String? ?? '',
+              subHeaderText: extra['subHeaderText'] as String? ?? '',
+              currentValue: extra['currentValue'] as String? ?? '',
+              keyboardType: extra['keyboardType'] as TextInputType? ?? TextInputType.text,
+              maxLines: extra['maxLines'] as int? ?? 1,
+              maxLength: extra['maxLength'] as int?,
+              validator: extra['validator'] as String? Function(String)?,
+              inputFormatters: extra['inputFormatters'] as List<TextInputFormatter>?,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editDob,
+        name: 'editDob',
+        pageBuilder: (context, state) {
+          final currentValue = state.extra is String
+              ? state.extra as String
+              : (state.extra as Map<String, dynamic>?)?['currentValue'] as String? ?? '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditDobScreen(currentValue: currentValue),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editHeight,
+        name: 'editHeight',
+        pageBuilder: (context, state) {
+          final currentValue = state.extra is String
+              ? state.extra as String
+              : (state.extra as Map<String, dynamic>?)?['currentValue'] as String? ?? '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditHeightScreen(currentValue: currentValue),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editReligionCaste,
+        name: 'editReligionCaste',
+        pageBuilder: (context, state) {
+          final currentValue = state.extra is String
+              ? state.extra as String
+              : (state.extra as Map<String, dynamic>?)?['currentValue'] as String? ?? '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditReligionCasteScreen(currentValue: currentValue),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editLanguage,
+        name: 'editLanguage',
+        pageBuilder: (context, state) {
+          final initialLanguageIds = state.extra is List<int>
+              ? state.extra as List<int>
+              : (state.extra as List<dynamic>?)?.map((e) => (e as num).toInt()).toList() ?? <int>[];
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditLanguageScreen(initialLanguageIds: initialLanguageIds),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editGraduationYear,
+        name: 'editGraduationYear',
+        pageBuilder: (context, state) {
+          final currentValue = state.extra is String
+              ? state.extra as String
+              : (state.extra as Map<String, dynamic>?)?['currentValue'] as String? ?? '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditGraduationYearScreen(currentValue: currentValue),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editIntentions,
+        name: 'editIntentions',
+        pageBuilder: (context, state) {
+          final currentIntention = state.extra is String
+              ? state.extra as String
+              : (state.extra as Map<String, dynamic>?)?['currentIntention'] as String? ?? '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditIntentionsScreen(currentIntention: currentIntention),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editInterests,
+        name: 'editInterests',
+        pageBuilder: (context, state) {
+          final initialSelected = state.extra is List<String>
+              ? state.extra as List<String>
+              : (state.extra as List<dynamic>?)?.map((e) => e.toString()).toList() ?? <String>[];
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditInterestsPickerScreen(initialSelected: initialSelected),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.editChoosePrompt,
+        name: 'editChoosePrompt',
+        pageBuilder: (context, state) {
+          final alreadyAdded = state.extra is List<String>
+              ? state.extra as List<String>
+              : (state.extra as List<dynamic>?)?.map((e) => e.toString()).toList() ?? <String>[];
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: EditChoosePromptScreen(alreadyAddedQuestions: alreadyAdded),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.videoRecorder,
+        name: 'videoRecorder',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const VideoRecorderScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.subScreen,
+        name: 'subScreen',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: state.extra as Widget,
+        ),
       ),
 
       // ========================================================
@@ -1273,19 +1684,19 @@ class AppRouter {
                 childWidget = const ChildSafetyScreen();
                 break;
               case 'moderation':
-                childWidget = const ContentModerationLawScreen();
+                childWidget = const ContentModerationScreen();
                 break;
               case 'verification':
-                childWidget = const VerificationScreen();
+                childWidget = const VerificationPolicyScreen();
                 break;
               case 'refund':
-                childWidget = const RefundCancelationScreen();
+                childWidget = const RefundCancellationScreen();
                 break;
               case 'wallet':
                 childWidget = const WalletCoinTermsScreen();
                 break;
               case '18plus':
-                childWidget = const EighteenPlusAgePolicyScreen();
+                childWidget = const AgePolicyScreen();
                 break;
               case 'forever':
                 childWidget = const ForeverLoveScreen();

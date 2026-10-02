@@ -1129,14 +1129,9 @@ String capitalizeFirstLetter(String text) {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<ChatBloc>(),
-                        child: const AllNewMatchesScreen(),
-                      ),
-                    ),
+                  context.push(
+                    AppRoutes.allNewMatches,
+                    extra: context.read<ChatBloc>(),
                   );
                 },
                 child: const Text(
@@ -1326,14 +1321,12 @@ String capitalizeFirstLetter(String text) {
       chatBloc.joinConversation(existingChat.conversationId!);
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: chatBloc,
-          child: ChatDetailScreen(user: userToOpen),
-        ),
-      ),
+    context.push(
+      AppRoutes.chatDetail,
+      extra: {
+        'user': userToOpen,
+        'bloc': chatBloc,
+      },
     ).then((_) {
       if (!mounted) return;
       chatBloc.add(const LoadChatsEvent());

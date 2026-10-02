@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'map_selection_dialog.dart';
 import 'bloc/post_plan_bloc.dart';
 import 'bloc/post_plan_event.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
@@ -469,11 +470,8 @@ class _Location3ViewState extends State<Location3View> {
                       // Locate on map button
                       GestureDetector(
                         onTap: () async {
-                          final result = await Navigator.push<String>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MapSelectionDialog(),
-                            ),
+                          final result = await context.push<String>(
+                            AppRoutes.mapSelection,
                           );
                           if (result != null) {
                             setState(() {

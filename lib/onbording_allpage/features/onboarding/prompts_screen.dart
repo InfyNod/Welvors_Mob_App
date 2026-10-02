@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../utils/navigation/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/api_service.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'choose_prompt_screen.dart';
 
 class PromptItem {
   final String id;
@@ -221,13 +222,9 @@ class _PromptsScreenState extends State<PromptsScreen> with AutomaticKeepAliveCl
     final isFirst = _prompts.isEmpty;
     return GestureDetector(
       onTap: () async {
-        final selectedPrompt = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChoosePromptScreen(
-              addedPromptIds: _prompts.map((p) => p.id).toList(),
-            ),
-          ),
+        final selectedPrompt = await context.push<PromptItem>(
+          AppRoutes.choosePrompt,
+          extra: _prompts.map((p) => p.id).toList(),
         );
 
         if (selectedPrompt != null && selectedPrompt is PromptItem) {

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_cubit.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/bloc/profile_edit_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/edit/basic_detail_all_screen/basic_details_screens.dart';
@@ -260,17 +262,15 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
   }) {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GenericListPickerScreen(
-              title: 'Select ${label.toLowerCase()}',
-              headerText: label,
-              subHeaderText: 'Please select one from the list',
-              options: options,
-              currentValue: value,
-            ),
-          ),
+        final result = await context.push<String>(
+          AppRoutes.genericPicker,
+          extra: {
+            'title': 'Select ${label.toLowerCase()}',
+            'headerText': label,
+            'subHeaderText': 'Please select one from the list',
+            'options': options,
+            'currentValue': value,
+          },
         );
         if (result != null && result.isNotEmpty) {
           onSelect(result);
@@ -329,19 +329,17 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
   }) {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditTextInputScreen(
-              title: label,
-              headerText: label,
-              subHeaderText: 'Please enter your ${label.toLowerCase()}',
-              label: label,
-              currentValue: value,
-              maxLines: isMultiline ? 5 : 1,
-              maxLength: maxLength,
-            ),
-          ),
+        final result = await context.push<String>(
+          AppRoutes.editTextInput,
+          extra: {
+            'title': label,
+            'headerText': label,
+            'subHeaderText': 'Please enter your ${label.toLowerCase()}',
+            'label': label,
+            'currentValue': value,
+            'maxLines': isMultiline ? 5 : 1,
+            'maxLength': maxLength,
+          },
         );
         if (result != null) {
           onSelect(result);
@@ -393,11 +391,9 @@ class _EducationCareerSectionState extends State<EducationCareerSection> {
   Widget _buildGraduationYearItem(BuildContext context, String value) {
     return InkWell(
       onTap: () async {
-        final result = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditGraduationYearScreen(currentValue: value),
-          ),
+        final result = await context.push<String>(
+          AppRoutes.editGraduationYear,
+          extra: value,
         );
         if (result != null && result.isNotEmpty && context.mounted) {
           context.read<ProfileEditCubit>().updateGraduationYear(result);
@@ -487,7 +483,7 @@ class _EditGraduationYearScreenState extends State<EditGraduationYearScreen> {
     if (hasChanges) {
       final result = await showUnsavedChangesDialog(context);
       if (result == true) {
-        if (mounted) Navigator.pop(context, _selectedYear);
+        if (mounted) context.pop(_selectedYear);
         return false;
       }
       return result == false; // Pop without saving if false
@@ -579,7 +575,7 @@ class _EditGraduationYearScreenState extends State<EditGraduationYearScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, _selectedYear);
+                      context.pop(_selectedYear);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),

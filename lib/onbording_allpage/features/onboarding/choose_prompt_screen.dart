@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
@@ -72,7 +73,7 @@ class _ChoosePromptScreenState extends State<ChoosePromptScreen> {
           padding: const EdgeInsets.only(left: 16.0),
           child: Center(
             child: GestureDetector(
-              onTap: () => Navigator.pop(context),
+              onTap: () => context.pop(),
               child: Container(
                 width: 44,
                 height: 44,
@@ -236,7 +237,7 @@ class _ChoosePromptScreenState extends State<ChoosePromptScreen> {
                                   id: promptId,
                                   question: promptText,
                                 );
-                                Navigator.pop(context, item);
+                                context.pop(item);
                               },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),

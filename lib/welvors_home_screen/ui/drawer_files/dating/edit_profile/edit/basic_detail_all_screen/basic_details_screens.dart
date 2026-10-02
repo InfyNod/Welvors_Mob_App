@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/services/edit_profile_api_service.dart';
 
 // Generic unsaved changes popup method
@@ -51,10 +52,7 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(
-                    context,
-                    true,
-                  ); // User wants to save (we handle save outside)
+                  context.pop(true); // User wants to save (we handle save outside)
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE43A6A),
@@ -76,7 +74,7 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
               width: double.infinity,
               child: TextButton(
                 onPressed: () =>
-                    Navigator.pop(context, false), // User wants to discard
+                    context.pop(false), // User wants to discard
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.red,
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -90,7 +88,7 @@ Future<bool> showUnsavedChangesDialog(BuildContext context) async {
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: () => Navigator.pop(context, null), // Cancel dialog
+                onPressed: () => context.pop(null), // Cancel dialog
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.grey.shade600,
                 ),
@@ -124,7 +122,7 @@ Widget buildCustomAppBar(
       child: InkWell(
         onTap: () async {
           if (await onWillPop()) {
-            if (context.mounted) Navigator.pop(context);
+            if (context.mounted) context.pop();
           }
         },
         borderRadius: BorderRadius.circular(24),
@@ -223,7 +221,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
           return false; // Prevent pop
         }
       }
-      Navigator.pop(context, text);
+      context.pop(text);
       return false; // Already popped
     }
     return result == false; // Pop without saving
@@ -343,7 +341,7 @@ class _EditTextInputScreenState extends State<EditTextInputScreen> {
                           return;
                         }
                       }
-                      Navigator.pop(context, text);
+                      context.pop(text);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -488,7 +486,7 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
 
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
-      if (mounted) Navigator.pop(context, _selected);
+      if (mounted) context.pop(_selected);
       return false; // Already popped
     }
     return result == false; // Pop without saving
@@ -611,7 +609,7 @@ class _GenericListPickerScreenState extends State<GenericListPickerScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, _selected);
+                      context.pop(_selected);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -694,7 +692,7 @@ class _EditDobScreenState extends State<EditDobScreen> {
 
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
-      if (mounted) Navigator.pop(context, _formattedDate);
+      if (mounted) context.pop(_formattedDate);
       return false;
     }
     return result == false;
@@ -804,7 +802,7 @@ class _EditDobScreenState extends State<EditDobScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, _formattedDate);
+                      context.pop(_formattedDate);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -883,7 +881,7 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
 
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
-      if (mounted) Navigator.pop(context, _formattedHeight);
+      if (mounted) context.pop(_formattedHeight);
       return false;
     }
     return result == false;
@@ -972,7 +970,7 @@ class _EditHeightScreenState extends State<EditHeightScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, _formattedHeight);
+                      context.pop(_formattedHeight);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE43A6A),
@@ -1091,7 +1089,7 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
     final result = await showUnsavedChangesDialog(context);
     if (result == true) {
       if (mounted) {
-        Navigator.pop(context, {
+        context.pop({
           'formatted': _currentFormattedValue,
           'religionId': _selectedReligionId,
           'communityId': _selectedCasteId,
@@ -1341,7 +1339,7 @@ class _EditReligionCasteScreenState extends State<EditReligionCasteScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pop(context, {
+                            context.pop({
                               'formatted': _currentFormattedValue,
                               'religionId': _selectedReligionId,
                               'communityId': _selectedCasteId,
@@ -1429,7 +1427,7 @@ class _EditLanguageScreenState extends State<EditLanguageScreen> {
       orElse: () => null,
     );
 
-    Navigator.pop(context, {
+    context.pop({
       'languageIds': selectedLanguageId != null
           ? [selectedLanguageId!]
           : <int>[],

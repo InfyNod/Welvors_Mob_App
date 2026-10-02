@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/config/custom_snackbar.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
 import 'chat_bloc/chat_bloc.dart';
 import 'chat_bloc/chat_state.dart';
-import 'chat_detail_screen.dart';
 import 'services/new_matches_service.dart';
 
 class AllNewMatchesScreen extends StatefulWidget {
@@ -178,19 +179,12 @@ class _AllNewMatchesScreenState extends State<AllNewMatchesScreen> {
       chatBloc.joinConversation(existingChat.conversationId!);
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) {
-          if (chatBloc != null) {
-            return BlocProvider.value(
-              value: chatBloc,
-              child: ChatDetailScreen(user: userToOpen),
-            );
-          }
-          return ChatDetailScreen(user: userToOpen);
-        },
-      ),
+    context.push(
+      AppRoutes.chatDetail,
+      extra: {
+        'user': userToOpen,
+        if (chatBloc != null) 'bloc': chatBloc,
+      },
     );
   }
 
@@ -209,7 +203,7 @@ class _AllNewMatchesScreenState extends State<AllNewMatchesScreen> {
           child: Center(
             child: InkWell(
               borderRadius: BorderRadius.circular(20),
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () => context.pop(),
               child: Container(
                 width: 38,
                 height: 38,
