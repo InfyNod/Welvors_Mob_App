@@ -153,7 +153,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                   ? '${p['distanceKm']} km away'
                   : 'Near you',
               'match': p['matchScore'] != null
-                  ? '${p['matchScore']['score']}% match'
+                  ? '${p['matchScore']['percentage']}% match'
                   : '0% match',
               'date': p['eventDate'] != null ? '📅 ${p['eventDate']}' : '',
               'time': _formatEventTime(p['eventTime']),
@@ -767,44 +767,7 @@ class _DateNowScreenState extends State<DateNowScreen>
                     ],
                   ),
                 ),
-                // Top Right Flag
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: GestureDetector(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Reported successfully',
-                            textAlign: TextAlign.center,
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          margin: EdgeInsets.symmetric(
-                            horizontal: 60,
-                            vertical: 20,
-                          ),
-                          duration: Duration(seconds: 2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.flag_outlined,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ),
+
                 // Bottom Center Match %
                 Positioned(
                   bottom: 12,
