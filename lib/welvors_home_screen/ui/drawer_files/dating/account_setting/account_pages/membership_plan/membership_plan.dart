@@ -20,6 +20,7 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
   List<Map<String, dynamic>> history = [];
   Map<String, dynamic>? summary;
   bool _isLoading = true;
+  bool _isTurningOnAutoRenew = false;
 
   @override
   void initState() {
@@ -244,10 +245,24 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                         width: double.infinity,
                         height: 44,
                         child: OutlinedButton(
-                          onPressed: () {
+                          onPressed: _isTurningOnAutoRenew ? null : () async {
                             setState(() {
-                              isAutoRenewCancelled = false;
+                              _isTurningOnAutoRenew = true;
                             });
+                            bool success = await AccountSettingService.turnOnAutoRenew();
+                            if (mounted) {
+                              setState(() {
+                                _isTurningOnAutoRenew = false;
+                                if (success) {
+                                  isAutoRenewCancelled = false;
+                                }
+                              });
+                              if (!success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Failed to turn on auto-renew. Please try again.')),
+                                );
+                              }
+                            }
                           },
                           style: OutlinedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -256,14 +271,20 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
-                            'Turn auto-renew back on',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFB07D46), // Or brownish
-                            ),
-                          ),
+                          child: _isTurningOnAutoRenew 
+                            ? const SizedBox(
+                                height: 20, 
+                                width: 20, 
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFB07D46))
+                              )
+                            : const Text(
+                                'Turn auto-renew back on',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFB07D46), // Or brownish
+                                ),
+                              ),
                         ),
                       ),
                     ],
@@ -392,30 +413,6 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Text('📧', style: TextStyle(fontSize: 16)),
-                      label: const Text(
-                        'Email all invoices',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: BorderSide(color: Colors.grey.shade300),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -487,8 +484,19 @@ class _MembershipPlanScreenState extends State<MembershipPlanScreen> {
     required BuildContext context,
     required Map<String, dynamic> item,
   }) {
-    final emoji = item['slug'] == 'vip' ? '💎' : '⭐';
-    final bgColor = item['slug'] == 'vip' ? const Color(0xFFE6F0FA) : const Color(0xFFFFF7E6);
+    final planNameUpper = item['name']?.toString().toUpperCase() ?? '';
+    String emoji = '💎';
+    Color bgColor = const Color(0xFFE6F0FA);
+    if (planNameUpper.contains('PREMIUM')) {
+      emoji = '🔥';
+      bgColor = const Color(0xFFFBE4E7);
+    } else if (planNameUpper.contains('ELITE')) {
+      emoji = '💠';
+      bgColor = const Color(0xFFEEEEEE);
+    } else if (planNameUpper.contains('VIP')) {
+      emoji = '👑';
+      bgColor = const Color(0xFFFFF4E0);
+    }
     final title = '${item['name']} · ${item['months']} months';
     final subtitle = '${_formatDate(item['purchasedAt'])} · ${item['paymentMethod']?['displayValue'] ?? 'Online payment'}';
     final status = item['status'] ?? 'UNKNOWN';

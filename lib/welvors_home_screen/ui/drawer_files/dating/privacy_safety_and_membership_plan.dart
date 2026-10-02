@@ -41,157 +41,157 @@ class _PrivacySafetyAndMembershipState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'PRIVACY & SAFETY',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w800,
-            color: Colors.grey.shade600,
-            letterSpacing: 1.2,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: AppColors.shadow, // Using the same premium shadow
-          ),
-          child: Column(
-            children: [
-              // Header: SafeFace
-              InkWell(
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Coming soon!')),
-                  );
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(
-                          255,
-                          251,
-                          219,
-                          236,
-                        ), // Very light pink
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/safefacee.png',
-                          width: 44,
-                          height: 44,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'SafeFace',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Hide your real photo behind an avatar',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(
-                      Icons.chevron_right,
-                      size: 20,
-                      color: Colors.black26,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Divider
-              Divider(color: Colors.grey.shade200, thickness: 1, height: 1),
-              const SizedBox(height: 16),
-              // Safety Mode Toggle
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Safety Mode',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Show avatar until you choose to reveal',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Coming soon!')),
-                      );
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 48,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: _isSafetyModeOn
-                            ? const Color(0xFFE85A7A)
-                            : Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: const EdgeInsets.all(2),
-                      alignment: _isSafetyModeOn
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+        // Text(
+        //   'PRIVACY & SAFETY',
+        //   style: TextStyle(
+        //     fontSize: 11,
+        //     fontWeight: FontWeight.w800,
+        //     color: Colors.grey.shade600,
+        //     letterSpacing: 1.2,
+        //   ),
+        // ),
+        // const SizedBox(height: 12),
+        // Container(
+        //   padding: const EdgeInsets.all(16),
+        //   decoration: BoxDecoration(
+        //     color: Colors.white,
+        //     borderRadius: BorderRadius.circular(20),
+        //     boxShadow: AppColors.shadow, // Using the same premium shadow
+        //   ),
+        //   child: Column(
+        //     children: [
+        //       // Header: SafeFace
+        //       InkWell(
+        //         onTap: () {
+        //           ScaffoldMessenger.of(context).showSnackBar(
+        //             const SnackBar(content: Text('Coming soon!')),
+        //           );
+        //         },
+        //         child: Row(
+        //           children: [
+        //             Container(
+        //               width: 44,
+        //               height: 44,
+        //               decoration: const BoxDecoration(
+        //                 color: Color.fromARGB(
+        //                   255,
+        //                   251,
+        //                   219,
+        //                   236,
+        //                 ), // Very light pink
+        //                 shape: BoxShape.circle,
+        //               ),
+        //               alignment: Alignment.center,
+        //               child: ClipOval(
+        //                 child: Image.asset(
+        //                   'assets/safefacee.png',
+        //                   width: 44,
+        //                   height: 44,
+        //                   fit: BoxFit.cover,
+        //                 ),
+        //               ),
+        //             ),
+        //             const SizedBox(width: 12),
+        //             Expanded(
+        //               child: Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: [
+        //                   const Text(
+        //                     'SafeFace',
+        //                     style: TextStyle(
+        //                       fontSize: 14,
+        //                       fontWeight: FontWeight.w900,
+        //                       color: Colors.black87,
+        //                     ),
+        //                   ),
+        //                   const SizedBox(height: 2),
+        //                   Text(
+        //                     'Hide your real photo behind an avatar',
+        //                     style: TextStyle(
+        //                       fontSize: 11,
+        //                       fontWeight: FontWeight.w500,
+        //                       color: Colors.grey.shade600,
+        //                     ),
+        //                   ),
+        //                 ],
+        //               ),
+        //             ),
+        //             const Icon(
+        //               Icons.chevron_right,
+        //               size: 20,
+        //               color: Colors.black26,
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //       const SizedBox(height: 16),
+        //       // Divider
+        //       Divider(color: Colors.grey.shade200, thickness: 1, height: 1),
+        //       const SizedBox(height: 16),
+        //       // Safety Mode Toggle
+        //       Row(
+        //         children: [
+        //           Expanded(
+        //             child: Column(
+        //               crossAxisAlignment: CrossAxisAlignment.start,
+        //               children: [
+        //                 const Text(
+        //                   'Safety Mode',
+        //                   style: TextStyle(
+        //                     fontSize: 14,
+        //                     fontWeight: FontWeight.w900,
+        //                     color: Colors.black87,
+        //                   ),
+        //                 ),
+        //                 const SizedBox(height: 2),
+        //                 Text(
+        //                   'Show avatar until you choose to reveal',
+        //                   style: TextStyle(
+        //                     fontSize: 11,
+        //                     fontWeight: FontWeight.w500,
+        //                     color: Colors.grey.shade600,
+        //                   ),
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //           GestureDetector(
+        //             onTap: () {
+        //               ScaffoldMessenger.of(context).showSnackBar(
+        //                 const SnackBar(content: Text('Coming soon!')),
+        //               );
+        //             },
+        //             child: AnimatedContainer(
+        //               duration: const Duration(milliseconds: 200),
+        //               width: 48,
+        //               height: 28,
+        //               decoration: BoxDecoration(
+        //                 color: _isSafetyModeOn
+        //                     ? const Color(0xFFE85A7A)
+        //                     : Colors.grey.shade300,
+        //                 borderRadius: BorderRadius.circular(20),
+        //               ),
+        //               padding: const EdgeInsets.all(2),
+        //               alignment: _isSafetyModeOn
+        //                   ? Alignment.centerRight
+        //                   : Alignment.centerLeft,
+        //               child: Container(
+        //                 width: 24,
+        //                 height: 24,
+        //                 decoration: const BoxDecoration(
+        //                   color: Colors.white,
+        //                   shape: BoxShape.circle,
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ],
+        //   ),
+        // ),
 
-        const SizedBox(height: 24),
+        // const SizedBox(height: 24),
 
         Text(
           'MEMBERSHIP PLANS',

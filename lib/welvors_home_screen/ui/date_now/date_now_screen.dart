@@ -5,7 +5,7 @@ import '../../services/token_helper.dart';
 import 'package:flutter/material.dart';
 import 'send_request_drawer.dart';
 import 'date_now_2/requests_sent/requests_sent_screen.dart';
-import 'date_now_2/my_plans/my_plan_screen.dart';
+// import 'date_now_2/my_plans/my_plan_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_api_service/date_now_api_service.dart';
 import 'date_now_2/post_a_plan/activity_1.dart';
 import 'package:intl/intl.dart';
@@ -205,7 +205,6 @@ class _DateNowScreenState extends State<DateNowScreen>
         }
       }
 
-      int sentRequestsCount = RequestsSentScreen.mySentRequests.length;
       final url = Uri.parse('${EnvConfig.apiBaseUrl}/user/my-date-plan-requests');
       final reqResponse = await http.get(
         url,

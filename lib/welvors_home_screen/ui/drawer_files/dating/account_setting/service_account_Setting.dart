@@ -248,6 +248,52 @@ class AccountSettingService {
     }
   }
 
+  static Future<Map<String, dynamic>?> getAutoRenewOffPreview() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/membership-plan/auto-renew/off-preview');
+      final response = await http.get(
+        url,
+        headers: await _headers,
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        AppLogger.e('AccountSettingService', 'Failed to get auto renew off preview: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      AppLogger.e('AccountSettingService', 'Error in getAutoRenewOffPreview: $e');
+      return null;
+    }
+  }
+
+  static Future<bool> turnOnAutoRenew() async {
+    try {
+      debugPrint('==== Calling API to Turn On Auto Renew ====');
+      final url = Uri.parse('$baseUrl/user/membership-plan/auto-renew/turn-on');
+      
+      final response = await http.post(
+        url,
+        headers: await _headers,
+      );
+
+      debugPrint('==== API Response Received ====');
+      debugPrint('Status Code: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Auto renew turned on successfully');
+        return true;
+      } else {
+        debugPrint('Failed to turn on auto renew: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in turnOnAutoRenew: $e');
+      return false;
+    }
+  }
+
   static Future<bool> turnOffAutoRenew(String reason) async {
     try {
       debugPrint('==== Calling API to Turn Off Auto Renew ====');

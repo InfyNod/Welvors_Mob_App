@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../service_account_Setting.dart';
 
 void showCancelAutoRenewBottomSheet(BuildContext context, String planName, VoidCallback onCancelled) {
@@ -211,6 +212,87 @@ class _CancelWarningSheet extends StatefulWidget {
 
 class _CancelWarningSheetState extends State<_CancelWarningSheet> {
   bool _isLoading = false;
+  bool _isFetchingPreview = true;
+  String _expiryDateStr = 'the end of your cycle';
+  String _rawExpiryDateStr = '12 Aug 2026';
+  List<dynamic> _features = [];
+  String _previewError = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPreviewData();
+  }
+
+  Future<void> _fetchPreviewData() async {
+    try {
+      final response = await AccountSettingService.getAutoRenewOffPreview();
+      if (mounted) {
+        if (response != null && response['success'] == true) {
+          final data = response['data'];
+          setState(() {
+            _rawExpiryDateStr = _formatDate(data['expiryDate']);
+            _expiryDateStr = _rawExpiryDateStr;
+            final allFeatures = (data['features'] as List<dynamic>?) ?? [];
+            _features = allFeatures.take(5).toList();
+            _isFetchingPreview = false;
+          });
+        } else {
+           setState(() {
+             _isFetchingPreview = false;
+             _previewError = 'Failed to load preview data';
+           });
+        }
+      }
+    } catch(e) {
+      if(mounted) {
+        setState(() {
+           _isFetchingPreview = false;
+           _previewError = e.toString();
+        });
+      }
+    }
+  }
+
+  String _formatDate(String? isoDate) {
+    if (isoDate == null) return 'end of your billing cycle';
+    try {
+      final date = DateTime.parse(isoDate).toLocal();
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch(e) {
+      return 'end of your billing cycle';
+    }
+  }
+
+  String _getEmoji(String iconName) {
+    switch (iconName) {
+      case 'concierge-bell': return '👑';
+      case 'crown': return '👑';
+      case 'users': return '👥';
+      case 'target': return '🎯';
+      case 'briefcase': return '💼';
+      case 'globe': return '🌎';
+      case 'zap': return '🚀';
+      case 'message-circle': return '💬';
+      case 'sparkles': return '✨';
+      case 'plane': return '✈️';
+      case 'badge-check': return '✅';
+      case 'eye': return '👁️';
+      case 'calendar': return '📅';
+      case 'rose': return '🌹';
+      case 'shield-check': return '🛡️';
+      case 'network': return '🌐';
+      case 'image-off': return '🙈';
+      case 'building': return '🏢';
+      case 'map-pin': return '📍';
+      case 'heart': return '❤️';
+      case 'rotate-ccw': return '🔄';
+      case 'camera': return '📸';
+      case 'coins': return '🪙';
+      case 'calendar-heart': return '🗓️';
+      default: return '💎';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +329,9 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
             ),
             const SizedBox(height: 16),
             // Title
-            const Text(
-              'You\'ll lose these on 12 Aug',
-              style: TextStyle(
+            Text(
+              'You\'ll lose these on $_expiryDateStr',
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -261,7 +343,7 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Auto-renew off means your VIP benefits stop after 12 Aug 2026.',
+                'Auto-renew off means your VIP benefits stop after $_rawExpiryDateStr.',
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade600,
@@ -272,84 +354,46 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
             ),
             const SizedBox(height: 24),
             // Benefits list container
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF2EFE9), // Beige
-                borderRadius: BorderRadius.circular(16),
+            if (_isFetchingPreview)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2EFE9), // Beige
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(child: CircularProgressIndicator(color: Color(0xFFE43A6A))),
+              )
+            else
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2EFE9), // Beige
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _features.isEmpty
+                      ? [
+                          _buildBenefitRow('👑', 'VIP-only discovery pool'),
+                          const SizedBox(height: 8),
+                          _buildBenefitRow('🔎', 'Income & verified-degree filters'),
+                          const SizedBox(height: 8),
+                          _buildBenefitRow('🚀', '1 free boost every week'),
+                          const SizedBox(height: 8),
+                          _buildBenefitRow('🌹', '5 free roses every week'),
+                          const SizedBox(height: 8),
+                          _buildBenefitRow('🥂', 'Member-only events access'),
+                        ]
+                      : _features.map((f) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: _buildBenefitRow(_getEmoji(f['icon'] ?? ''), f['title'] ?? ''),
+                          );
+                        }).toList(),
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildBenefitRow('👑', 'VIP-only discovery pool'),
-                  const SizedBox(height: 8),
-                  _buildBenefitRow('🔎', 'Income & verified-degree filters'),
-                  const SizedBox(height: 8),
-                  _buildBenefitRow('🚀', '1 free boost every week'),
-                  const SizedBox(height: 8),
-                  _buildBenefitRow('🌹', '5 free roses every week'),
-                  const SizedBox(height: 8),
-                  _buildBenefitRow('🥂', 'Member-only events access'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Offer Container
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE43A6A).withValues(alpha: 0.05), // Very light pink
-                border: Border.all(color: const Color(0xFFE43A6A).withValues(alpha: 0.3)),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Stay for 50% off',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Get your next 3 months of ${widget.planName} at ₹999/mo instead of ₹1,999.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                      height: 1.3,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context), // Handled
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE43A6A),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Take the offer',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: 16),
             // Cancel anyway
             SizedBox(
@@ -363,7 +407,17 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
                           _isLoading = true;
                         });
                         
-                        final success = await AccountSettingService.turnOffAutoRenew(widget.reason);
+                        String _mapReasonToEnum(String uiReason) {
+                          if (uiReason == 'Too expensive') return 'TOO_EXPENSIVE';
+                          if (uiReason == 'I found someone 💕') return 'FOUND_SOMEONE';
+                          if (uiReason == 'Taking a break from dating') return 'TAKING_A_BREAK';
+                          if (uiReason == 'Not getting enough matches') return 'NOT_ENOUGH_MATCHES';
+                          if (uiReason == 'Missing features I wanted') return 'MISSING_FEATURES';
+                          return 'SOMETHING_ELSE';
+                        }
+                        
+                        String cleanReason = _mapReasonToEnum(widget.reason);
+                        final success = await AccountSettingService.turnOffAutoRenew(cleanReason);
                         
                         if (!mounted || !context.mounted) return;
                         setState(() {
@@ -372,7 +426,7 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
                         
                         if (success) {
                           Navigator.pop(context);
-                          showCancelConfirmationBottomSheet(context, widget.reason, widget.planName, widget.onCancelled);
+                          showCancelConfirmationBottomSheet(context, widget.reason, widget.planName, _rawExpiryDateStr, widget.onCancelled);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Failed to cancel auto-renew. Please try again.')),
@@ -454,13 +508,13 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
   }
 }
 
-void showCancelConfirmationBottomSheet(BuildContext context, String reason, String planName, VoidCallback onCancelled) {
+void showCancelConfirmationBottomSheet(BuildContext context, String reason, String planName, String expiryDate, VoidCallback onCancelled) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return _CancelConfirmationSheet(reason: reason, planName: planName, onCancelled: onCancelled);
+      return _CancelConfirmationSheet(reason: reason, planName: planName, expiryDate: expiryDate, onCancelled: onCancelled);
     },
   );
 }
@@ -468,8 +522,9 @@ void showCancelConfirmationBottomSheet(BuildContext context, String reason, Stri
 class _CancelConfirmationSheet extends StatelessWidget {
   final String reason;
   final String planName;
+  final String expiryDate;
   final VoidCallback onCancelled;
-  const _CancelConfirmationSheet({required this.reason, required this.planName, required this.onCancelled});
+  const _CancelConfirmationSheet({required this.reason, required this.planName, required this.expiryDate, required this.onCancelled});
 
   @override
   Widget build(BuildContext context) {
@@ -529,7 +584,7 @@ class _CancelConfirmationSheet extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(text: 'Your $planName stays active until '),
-                    const TextSpan(text: '12 Aug 2026', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                    TextSpan(text: expiryDate, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
                     const TextSpan(text: '. After that your account moves to Free — nothing is charged again.'),
                   ],
                 ),
@@ -549,7 +604,7 @@ class _CancelConfirmationSheet extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(child: _buildDetailCol('REASON NOTED', reason)),
-                      Expanded(child: _buildDetailCol('ACCESS UNTIL', '12 Aug 2026')),
+                      Expanded(child: _buildDetailCol('ACCESS UNTIL', expiryDate)),
                     ],
                   ),
                   const SizedBox(height: 16),

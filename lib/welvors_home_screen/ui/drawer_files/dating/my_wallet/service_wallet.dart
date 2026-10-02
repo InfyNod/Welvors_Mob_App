@@ -61,6 +61,32 @@ class WalletApiService {
     } catch (e) {
       AppLogger.e('WalletApiService', 'Error fetching my balances: $e');
       return null;
+      return null;
+    }
+  }
+
+  Future<bool> addMoney(int amount) async {
+    try {
+      final token = await TokenHelper.getToken() ?? "";
+      final uri = Uri.parse('${EnvConfig.apiBaseUrl}/user/wallet/add-money');
+      
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({'amount': amount}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        return data['success'] == true;
+      }
+      return false;
+    } catch (e) {
+      AppLogger.e('WalletApiService', 'Error adding money: $e');
+      return false;
     }
   }
 }
