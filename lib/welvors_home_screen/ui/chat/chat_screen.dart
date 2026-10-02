@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/SocketService.dart';
 
@@ -12,6 +9,9 @@ import 'chat_bloc/chat_event.dart';
 import 'chat_bloc/chat_state.dart';
 import 'chat_repository.dart';
 import 'chat_detail_screen.dart';
+import 'all_new_matches_screen.dart';
+import 'chat_automation_screen.dart';
+import 'services/new_matches_service.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_text.dart';
@@ -39,7 +39,7 @@ class _ChatScreen_State extends State<ChatScreen_>
     final prefs = await SharedPreferences.getInstance();
 
     final savedToken = prefs.getString('auth_token')?.trim() ?? '';
-    final token = savedToken.startsWith('')
+    final token = savedToken.toLowerCase().startsWith('bearer ')
         ? savedToken.substring(7).trim()
         : savedToken;
 
@@ -87,51 +87,10 @@ class _ChatScreen_State extends State<ChatScreen_>
 
 
 // ==========================================================
-// NEW MATCH MODEL
+// NEW MATCH MODEL (ALIASED TO NewMatchItem)
 // ==========================================================
 
-class _NewMatch {
-  final String messageId;
-  final String type;
-  final String content;
-  final String createdAt;
-  final String userId;
-  final String name;
-  final int age;
-  final String image;
-
-  const _NewMatch({
-    required this.messageId,
-    required this.type,
-    required this.content,
-    required this.createdAt,
-    required this.userId,
-    required this.name,
-    required this.age,
-    required this.image,
-  });
-
-  factory _NewMatch.fromJson(Map<String, dynamic> json) {
-    final sender = json['sender'] is Map
-        ? Map<String, dynamic>.from(json['sender'] as Map)
-        : const <String, dynamic>{};
-
-    final ageValue = sender['age'];
-
-    return _NewMatch(
-      messageId: (json['messageId'] ?? '').toString(),
-      type: (json['type'] ?? '').toString(),
-      content: (json['content'] ?? '').toString(),
-      createdAt: (json['createdAt'] ?? '').toString(),
-      userId: (sender['id'] ?? '').toString(),
-      name: (sender['name'] ?? 'Unknown').toString(),
-      age: ageValue is num
-          ? ageValue.toInt()
-          : int.tryParse(ageValue?.toString() ?? '') ?? 0,
-      image: (sender['photo'] ?? '').toString(),
-    );
-  }
-}
+typedef _NewMatch = NewMatchItem;
 
 int? _openSwipeIndex;
 VoidCallback? _closeOpenSwipe;
@@ -186,8 +145,6 @@ class _SwipeDeleteChatTile extends StatefulWidget {
 class _SwipeDeleteChatTileState extends State<_SwipeDeleteChatTile> {
   double _dragOffset = 0.0;
 
-  bool _isOpen = false;
-
   // ===========================================================
   // CLOSE THIS TILE
   // ===========================================================
@@ -201,7 +158,6 @@ class _SwipeDeleteChatTileState extends State<_SwipeDeleteChatTile> {
 
     setState(() {
       _dragOffset = 0.0;
-      _isOpen = false;
     });
 
     widget.onClose(widget.index);
@@ -216,7 +172,6 @@ class _SwipeDeleteChatTileState extends State<_SwipeDeleteChatTile> {
 
     setState(() {
       _dragOffset = maxReveal;
-      _isOpen = true;
     });
 
     // Parent ko batao ki ye tile open hai
@@ -311,10 +266,6 @@ class _SwipeDeleteChatTileState extends State<_SwipeDeleteChatTile> {
 
                     setState(() {
                       _dragOffset = next;
-
-                      if (_dragOffset < maxReveal) {
-                        _isOpen = false;
-                      }
                     });
                   },
 
@@ -336,15 +287,15 @@ class _SwipeDeleteChatTileState extends State<_SwipeDeleteChatTile> {
               ),
 
               // =================================================
-              // FULL WIDTH DIVIDER
+              // INDENTED DIVIDER (matches design line)
               // =================================================
               Positioned(
-                left: 0,
+                left: 75,
                 right: 0,
                 bottom: 0,
 
                 child: IgnorePointer(
-                  child: Container(height: 1, color: AppColors.line),
+                  child: Container(height: 1, color: const Color(0xFFEFECE6)),
                 ),
               ),
             ],
@@ -381,9 +332,6 @@ class _ChatListViewState extends State<_ChatListView>
   // LAYOUT CONSTANTS
   // ==========================================================
 
-  static const double headerHeight = 70;
-  static const double searchHeight = 60;
-  static const double filterHeight = 50;
   static const double firstCardHeight = 132.0;
 
   // ==========================================================
@@ -409,32 +357,6 @@ class _ChatListViewState extends State<_ChatListView>
   late final SocketService _socketService;
 
   // ==========================================================
-  // SEARCH
-  // ==========================================================
-
-  bool _isSearchOpen = false;
-
-  void _toggleSearch() {
-    setState(() {
-      _isSearchOpen = !_isSearchOpen;
-    });
-
-    if (_isSearchOpen) {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        if (mounted) {
-          _searchFocusNode.requestFocus();
-        }
-      });
-    } else {
-      searchController.clear();
-
-      context.read<ChatBloc>().add(const SearchChatsEvent(''));
-
-      _searchFocusNode.unfocus();
-    }
-  }
-
-  // ==========================================================
   // FILTERS
   // ==========================================================
 
@@ -444,16 +366,14 @@ class _ChatListViewState extends State<_ChatListView>
     'Online',
     'Nearby',
     'Date Invites',
-    'Event',
+    'Gifts',
   ];
 
   // ==========================================================
   // NEW MATCHES API
   // ==========================================================
 
-  List<_NewMatch> _newMatchesData = const [];
-  bool _newMatchesLoading = true;
-  String? _newMatchesError;
+  List<_NewMatch> _newMatchesData = [];
   // Guard: ensures the new-matches API is called only once per
   // widget lifetime, even if the tab is switched back and forth.
   bool _newMatchesLoaded = false;
@@ -464,77 +384,27 @@ class _ChatListViewState extends State<_ChatListView>
     // Skip if already successfully loaded (unless explicitly refreshing)
     if (_newMatchesLoaded && !forceRefresh) return;
 
-    setState(() {
-      _newMatchesLoading = true;
-      _newMatchesError = null;
-    });
-
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString("auth_token");
-      final uri = Uri.parse(
-        'https://dating-app-backend-plum.vercel.app/api/user/matches/new',
+      AppLogger.i('ChatScreen', '🌐 Calling new matches API: ${NewMatchesService.endpointPath}');
+      final result = await NewMatchesService.instance.getNewMatches(
+        page: 1,
+        limit: 15,
       );
-
-      final response = await http.get(
-        uri,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          if (token?.isNotEmpty == true)
-            'Authorization': token!.toLowerCase().startsWith('bearer ')
-                ? token
-                : 'Bearer $token',
-        },
-      );
-
-      AppLogger.d('ChatScreen', 'NEW MATCHES status: ${response.statusCode}');
-      AppLogger.d('ChatScreen', 'NEW MATCHES body: ${response.body}');
-
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw Exception('Unable to load new matches (${response.statusCode})');
-      }
-
-      final decoded = jsonDecode(response.body);
-
-      if (decoded is! Map<String, dynamic> || decoded['success'] != true) {
-        throw Exception('New matches API returned success=false');
-      }
-
-      final rawData = decoded['data'];
-      final items = rawData is List
-          ? rawData
-                .whereType<Map>()
-                .map(
-                  (item) => _NewMatch.fromJson(Map<String, dynamic>.from(item)),
-                )
-                .where((item) => item.userId.isNotEmpty)
-                .toList()
-          : <_NewMatch>[];
-
-      // Keep one card per sender. The newest API item wins.
-      final unique = <String, _NewMatch>{};
-      for (final item in items) {
-        unique[item.userId] = item;
-      }
 
       if (!mounted) return;
 
       setState(() {
-        _newMatchesData = unique.values.toList();
-        _newMatchesLoading = false;
-        _newMatchesLoaded = true; // Mark as loaded so we skip next time
+        _newMatchesData = result.matches;
+        _newMatchesLoaded = true;
       });
+      AppLogger.i('ChatScreen', '✅ New matches loaded: count=${_newMatchesData.length}');
     } catch (e) {
-      AppLogger.e('ChatScreen', '❌ NEW MATCHES: $e');
+      AppLogger.e('ChatScreen', '❌ NEW MATCHES ERROR: $e');
 
       if (!mounted) return;
 
       setState(() {
-        _newMatchesData = const [];
-        _newMatchesLoading = false;
-        _newMatchesError = e.toString();
-        // Don't set _newMatchesLoaded = true on error so it retries next time
+        _newMatchesData = [];
       });
     }
   }
@@ -602,6 +472,7 @@ class _ChatListViewState extends State<_ChatListView>
     if (!mounted) return;
     AppLogger.d('ChatScreen', '🔄 Tab refresh signal received - reloading chat list');
     context.read<ChatBloc>().add(const LoadChatsEvent());
+    _loadNewMatches(forceRefresh: true);
   }
 
   // ==========================================================
@@ -1035,19 +906,13 @@ class _ChatListViewState extends State<_ChatListView>
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: const Color(0xFFFAF8F4),
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: headerHeight, child: _header()),
+            _header(),
 
-            AnimatedSize(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOutCubic,
-              child: _isSearchOpen
-                  ? SizedBox(height: searchHeight, child: _search())
-                  : const SizedBox(width: double.infinity, height: 0),
-            ),
+            _search(),
 
             ClipRect(
               child: Align(
@@ -1061,7 +926,7 @@ class _ChatListViewState extends State<_ChatListView>
               ),
             ),
 
-            SizedBox(height: filterHeight, child: _filters()),
+            _filters(),
 
             Expanded(
               child: NotificationListener<ScrollNotification>(
@@ -1085,35 +950,80 @@ class _ChatListViewState extends State<_ChatListView>
 
   Widget _header() {
     return Container(
-      color: AppColors.white,
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+      // color: const Color(0xFFFAF8F4),
+      padding: const EdgeInsets.fromLTRB(18, 6, 18, 12),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-            child: RichText(
-              text: const TextSpan(
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Mess',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  TextSpan(
-                    text: 'ages',
-                    style: TextStyle(color: Color(0xFFE43A6A)), // Pink
-                  ),
-                ],
+          RichText(
+            text: const TextSpan(
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
               ),
+              children: [
+                TextSpan(
+                  text: 'Mess',
+                  style: TextStyle(color: Colors.black),
+                ),
+                TextSpan(
+                  text: 'ages',
+                  style: TextStyle(color: Color(0xFFE43A6A)), // Pink
+                ),
+              ],
             ),
           ),
-          _iconButton(
-            _isSearchOpen ? Icons.close : Icons.search,
-            _toggleSearch,
-          ),
+          // GestureDetector(
+          //   onTap: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (_) => const ChatAutomationScreen(),
+          //       ),
+          //     );
+          //   },
+          //   child: Container(
+          //     width: 38,
+          //     height: 38,
+          //     decoration: BoxDecoration(
+          //       color: Colors.white,
+          //       shape: BoxShape.circle,
+          //       border: Border.all(color: const Color(0xFFEFECE6)),
+          //       boxShadow: const [
+          //         BoxShadow(
+          //           color: Color(0x0A000000),
+          //           blurRadius: 4,
+          //           offset: Offset(0, 1),
+          //         ),
+          //       ],
+          //     ),
+          //     child: Stack(
+          //       alignment: Alignment.center,
+          //       children: [
+          //         const Icon(
+          //           Icons.send_rounded,
+          //           color: Color(0xFFC73A5E),
+          //           size: 18,
+          //         ),
+          //         Positioned(
+          //           top: 6,
+          //           right: 6,
+          //           child: Container(
+          //             width: 7,
+          //             height: 7,
+          //             decoration: BoxDecoration(
+          //               color: const Color(0xFFE85A7A),
+          //               shape: BoxShape.circle,
+          //               border: Border.all(color: Colors.white, width: 1.5),
+          //             ),
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -1125,44 +1035,62 @@ class _ChatListViewState extends State<_ChatListView>
 
   Widget _search() {
     return Container(
-      color: AppColors.canvas,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      margin: EdgeInsets.only(bottom: 10),
-      child: TextField(
-        controller: searchController,
-        focusNode: _searchFocusNode,
-        onChanged: (value) {
-          context.read<ChatBloc>().add(SearchChatsEvent(value));
-        },
-        style: AppText.body.copyWith(fontSize: 15),
-        decoration: InputDecoration(
-          prefixIcon: const Icon(
+      height: 44,
+      margin: const EdgeInsets.fromLTRB(18, 0, 18, 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFEFECE6)),
+      ),
+      child: Row(
+        children: [
+          const Icon(
             Icons.search,
-            color: AppColors.muted,
-            size: 24,
+            color: Color(0xFF8A8680),
+            size: 18,
           ),
-          hintText: 'Search matches or messages',
-          hintStyle: AppText.body.copyWith(
-            color: AppColors.muted,
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
+          const SizedBox(width: 9),
+          Expanded(
+            child: TextField(
+              controller: searchController,
+              focusNode: _searchFocusNode,
+              onChanged: (value) {
+                context.read<ChatBloc>().add(SearchChatsEvent(value));
+              },
+              style: const TextStyle(
+                fontFamily: 'DM Sans',
+                fontSize: 14,
+                color: Color(0xFF1F1F1F),
+              ),
+              decoration: const InputDecoration(
+                hintText: 'Search matches or messages',
+                hintStyle: TextStyle(
+                  fontFamily: 'DM Sans',
+                  color: Color(0xFF8A8680),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
           ),
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: const BorderSide(color: AppColors.line),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: const BorderSide(color: AppColors.line),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: const BorderSide(color: AppColors.primary, width: 1),
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 17),
-        ),
+          if (searchController.text.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                searchController.clear();
+                context.read<ChatBloc>().add(const SearchChatsEvent(''));
+                setState(() {});
+              },
+              child: const Icon(
+                Icons.close,
+                color: Color(0xFF8A8680),
+                size: 18,
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -1172,58 +1100,68 @@ class _ChatListViewState extends State<_ChatListView>
   // ==========================================================
 
   Widget _newMatches() {
-    // Keep the original section height so the rest of the chat list UI does
-    // not jump while the API request is loading.
-    if (!_newMatchesLoading && _newMatchesData.isEmpty) {
+    if (_newMatchesData.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    return SizedBox(
-      height: _newMatchesLoading ? 0 : 154,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 1, 10, 10),
-            child: Row(
-              children: [
-                Text(
-                  'NEW MATCHES',
-                  style: AppText.eyebrow.copyWith(
-                    color: AppColors.primary,
-                    fontSize: 12,
-                    letterSpacing: 1.5,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(18, 0, 18, 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'NEW MATCHES',
+                style: TextStyle(
+                  fontFamily: 'DM Sans',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.4,
+                  color: Color(0xFFE85A7A),
                 ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    'See all →',
-                    style: AppText.body.copyWith(
-                      color: AppColors.muted,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<ChatBloc>(),
+                        child: const AllNewMatchesScreen(),
+                      ),
                     ),
+                  );
+                },
+                child: const Text(
+                  'See all →',
+                  style: TextStyle(
+                    fontFamily: 'DM Sans',
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF8A8680),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          SizedBox(
-            height: _newMatchesLoading ? 0 : 116,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              itemCount: _newMatchesData.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 17),
-              itemBuilder: (_, index) {
-                return _newMatchItem(_newMatchesData[index]);
-              },
-            ),
+        ),
+        SizedBox(
+          height: 96,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: _newMatchesData.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 14),
+            itemBuilder: (_, index) {
+              return _newMatchItem(_newMatchesData[index]);
+            },
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 6),
+      ],
     );
   }
 
@@ -1232,98 +1170,169 @@ class _ChatListViewState extends State<_ChatListView>
   // ==========================================================
 
   Widget _newMatchItem(_NewMatch match) {
-    return SizedBox(
-      width: 88,
-      child: Column(
-        children: [
-          SizedBox(
-            width: 88,
-            height: 88,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 88,
-                  height: 88,
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primary,
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
+    return GestureDetector(
+      onTap: () => _openChatWithNewMatch(match),
+      child: SizedBox(
+        width: 66,
+        child: Column(
+          children: [
+            SizedBox(
+              width: 62,
+              height: 62,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 62,
+                    height: 62,
+                    padding: const EdgeInsets.all(2.5),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: ClipOval(
-                      child: match.image.isNotEmpty
-                          ? CachedNetworkImage(
-                              imageUrl: match.image,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                color: AppColors.line,
-                              ),
-                              errorWidget: (_, _, _) => Container(
-                                color: AppColors.line,
-                                child: const Icon(
-                                  Icons.person,
-                                  color: AppColors.muted,
-                                  size: 32,
-                                ),
-                              ),
-                            )
-                          : Container(
-                              color: AppColors.line,
-                              child: const Icon(
-                                Icons.person,
-                                color: AppColors.muted,
-                                size: 32,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-
-                // API response is a new ROSE match in the supplied endpoint.
-                Positioned(
-                  top: 1,
-                  right: -4,
-                  child: Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.25),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFE85A7A), Color(0xFFF8A0B8)],
                       ),
                     ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      match.type.toUpperCase() == 'ROSE' ? '🌹' : '💖',
-                      style: const TextStyle(fontSize: 16),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFFFAF8F4),
+                      ),
+                      padding: const EdgeInsets.all(2.5),
+                      child: ClipOval(
+                        child: match.image.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: match.image,
+                                fit: BoxFit.cover,
+                                placeholder: (_, _) => Container(
+                                  color: const Color(0xFFEFECE6),
+                                ),
+                                errorWidget: (_, _, _) => Container(
+                                  color: const Color(0xFFEFECE6),
+                                  child: const Icon(
+                                    Icons.person,
+                                    color: Color(0xFF8A8680),
+                                    size: 24,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                color: const Color(0xFFEFECE6),
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Color(0xFF8A8680),
+                                  size: 24,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
-                ),
-              ],
+
+                  // Floating badge
+                  if (match.badgeText.isNotEmpty)
+                    Positioned(
+                      top: -3,
+                      right: -3,
+                      child: Container(
+                        padding: match.badgeText.length > 2
+                            ? const EdgeInsets.symmetric(horizontal: 5, vertical: 2)
+                            : const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: match.isGiftBadge
+                              ? const Color(0xFFE8A53D)
+                              : const Color(0xFFE85A7A),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: const Color(0xFFFAF8F4),
+                            width: 2,
+                          ),
+                        ),
+                        child: Text(
+                          match.badgeText,
+                          style: const TextStyle(
+                            fontFamily: 'DM Sans',
+                            color: Colors.white,
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            match.age > 0 ? '${match.name}, ${match.age}' : match.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: AppText.body.copyWith(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+            const SizedBox(height: 6),
+            Text(
+              match.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'DM Sans',
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1F1F1F),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  void _openChatWithNewMatch(_NewMatch match) {
+    final ChatBloc chatBloc = context.read<ChatBloc>();
+
+    ChatUser? existingChat;
+    for (final chat in chatBloc.state.allChats) {
+      if (chat.userId == match.userId || chat.id == match.userId) {
+        existingChat = chat;
+        break;
+      }
+    }
+
+    final ChatUser userToOpen = existingChat ??
+        ChatUser(
+          id: match.userId,
+          conversationId: null,
+          userId: match.userId,
+          name: match.name,
+          age: match.age,
+          image: match.image,
+          preview: match.content.isNotEmpty ? match.content : 'You matched — say hi 👋',
+          time: 'Now',
+          match: match.matchScore.isNotEmpty ? '${match.matchScore}% Match' : '',
+          trust: match.trustScore.isNotEmpty ? '${match.trustScore}% Trust' : '',
+          online: false,
+          unread: 0,
+          progress: '',
+          reward: '',
+          progressCurrent: 0,
+          progressTarget: 0,
+          progressPercentage: 0,
+          progressLabel: '',
+          progressType: '',
+          giftName: '',
+          progressExpiresAt: null,
+        );
+
+    if (existingChat != null && (existingChat.conversationId?.isNotEmpty ?? false)) {
+      chatBloc.joinConversation(existingChat.conversationId!);
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: chatBloc,
+          child: ChatDetailScreen(user: userToOpen),
+        ),
+      ),
+    ).then((_) {
+      if (!mounted) return;
+      chatBloc.add(const LoadChatsEvent());
+    });
   }
 
   // ==========================================================
@@ -1352,14 +1361,14 @@ class _ChatListViewState extends State<_ChatListView>
 
   Widget _filters() {
     return SizedBox(
-      height: 50,
+      height: 48,
       child: ListView.separated(
         controller: _filterScrollController,
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 7),
+        padding: const EdgeInsets.fromLTRB(18, 4, 18, 8),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: filters.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 18),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, index) {
           return BlocBuilder<ChatBloc, ChatState>(
             buildWhen: (previous, current) => previous.filter != current.filter,
@@ -1372,36 +1381,26 @@ class _ChatListViewState extends State<_ChatListView>
                   final selectedFilter = filters[index];
 
                   String type;
-
                   switch (selectedFilter) {
                     case 'All':
                       type = 'all';
                       break;
-
                     case 'Online':
                       type = 'online';
                       break;
-
                     case 'Unread':
                       type = 'unread';
                       break;
-
                     case 'Nearby':
                       type = 'nearby';
                       break;
-
                     case 'Date Invites':
                       type = 'date_invite';
                       break;
-
+                    case 'Gifts':
                     case 'Gift':
                       type = 'gift';
                       break;
-
-                    case 'Event':
-                      type = 'event';
-                      break;
-
                     default:
                       type = 'all';
                   }
@@ -1409,36 +1408,37 @@ class _ChatListViewState extends State<_ChatListView>
                   AppLogger.d('ChatScreen', '🔎 Filter clicked: $selectedFilter -> $type');
 
                   context.read<ChatBloc>().add(
-                    SelectFilterEvent(selectedFilter),
-                  );
+                        SelectFilterEvent(selectedFilter),
+                      );
 
                   context.read<ChatBloc>().add(LoadChatsEvent(type: type));
 
-                  // Selected filter ko center mein lao
                   _centerSelectedFilter(index);
                 },
                 child: Container(
-                  padding: const EdgeInsets.only(top: 10, bottom: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: selected
-                            ? const Color(0xFFE43A6A)
-                            : Colors.transparent,
-                        width: 3,
-                      ),
+                    color: selected ? const Color(0xFFE85A7A) : Colors.white,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: selected
+                          ? const Color(0xFFE85A7A)
+                          : const Color(0xFFEFECE6),
+                      width: 1.5,
                     ),
                   ),
-                  child: Text(
-                    filters[index],
-                    maxLines: 1,
-                    softWrap: false,
-                    style: AppText.body.copyWith(
-                      fontSize: 14,
-                      color: selected
-                          ? const Color(0xFFE43A6A)
-                          : AppColors.ink60,
-                      fontWeight: FontWeight.w600,
+                  child: Center(
+                    child: Text(
+                      filters[index],
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontFamily: 'DM Sans',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: selected
+                            ? Colors.white
+                            : const Color(0xFF5F5C56),
+                      ),
                     ),
                   ),
                 ),
@@ -1493,25 +1493,23 @@ class _ChatListViewState extends State<_ChatListView>
   // ==========================================================
 
   Widget _chatTile(ChatUser user, {bool isLast = false, required int index}) {
-    final double progress =
+    final double rawProgress =
         (double.tryParse(user.progress.replaceAll('%', '')) ?? 0) / 100;
+    final double progress = rawProgress.clamp(0.0, 1.0);
 
-    final Color progressColor = user.progress == '92%'
-        ? AppColors.green
-        : AppColors.primary;
-
-    // ========================================================
-    // IMPORTANT:
-    //
-    // Typing is now checked using USER ID.
-    //
-    // NO conversationId is used here.
-    // ========================================================
+    final bool isDone = progress >= 0.99 || user.reward.toLowerCase().contains('unlocked');
+    final bool isWarn = user.reward.toLowerCase().contains('deadline');
+    final Color progressFillColor = isDone
+        ? const Color(0xFF2EAF6B)
+        : (isWarn ? const Color(0xFFE05050) : const Color(0xFFE85A7A));
 
     final bool isTyping = _typingUsers[user.userId] == true;
     final bool isOnline = _onlineUsers.containsKey(user.userId)
         ? _onlineUsers[user.userId] == true
         : user.online;
+
+    final bool hasProgress = user.reward.isNotEmpty ||
+        (user.progress.isNotEmpty && user.progress != '0%' && user.progress != '0');
 
     return _SwipeDeleteChatTile(
       index: index,
@@ -1525,210 +1523,237 @@ class _ChatListViewState extends State<_ChatListView>
           _openChat(user);
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: AppColors.line)),
-          ),
+          color: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // =================================================
-              // AVATAR
+              // AVATAR 54x54
               // =================================================
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  _avatar(user.image, 60, user.name, user.age.toString()),
+                  _avatar(user.image, 54, user.name, user.age.toString()),
                   if (isOnline)
                     Positioned(
-                      right: -1,
+                      right: 1,
                       bottom: 1,
                       child: Container(
-                        width: 18,
-                        height: 18,
+                        width: 13,
+                        height: 13,
                         decoration: BoxDecoration(
-                          color: AppColors.green,
+                          color: const Color(0xFF2EAF6B),
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.canvas, width: 3),
+                          border: Border.all(color: Colors.white, width: 2.5),
                         ),
                       ),
                     ),
                 ],
               ),
 
-              const SizedBox(width: 14),
+              const SizedBox(width: 13),
 
               // =================================================
-              // CONTENT
+              // BODY
               // =================================================
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ===========================================
-                    // NAME / MATCH / TIME
-                    // ===========================================
+                    // Top row: name, age, match pill, trust pill, time
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
                           child: Text(
-                            '${user.name}, ${user.age}',
+                            user.age > 0 ? '${user.name}, ${user.age}' : user.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppText.h2.copyWith(fontSize: 15),
-                          ),
-                        ),
-
-                        Wrap(
-                          children: [
-                            const SizedBox(width: 8),
-
-                            if (user.match.isNotEmpty)
-                              _miniPill(
-                                '${user.match}% Match',
-                                AppColors.primarySoft,
-                                AppColors.primaryDark,
-                              ),
-
-                            if (user.match.isNotEmpty) const SizedBox(width: 6),
-
-                            if (user.trust.isNotEmpty)
-                              _miniPill(
-                                '${user.trust}% Trust',
-                                AppColors.greenSoft,
-                                AppColors.green,
-                              ),
-
-                            const SizedBox(width: 6),
-
-                            Text(
-                              user.time,
-                              style: AppText.sub.copyWith(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 5),
-
-                    // ===========================================
-                    // PREVIEW / TYPING
-                    // ===========================================
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 150),
-                            // alignment: Alignment.centerLeft,
-                            transitionBuilder: (child, animation) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
-                            child: Align(
-                              key: ValueKey(
-                                isTyping
-                                    ? 'typing-${user.userId}'
-                                    : 'preview-${user.userId}',
-                              ),
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                isTyping ? 'Typing...' : user.preview,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppText.body.copyWith(
-                                  fontSize: 15,
-                                  color: isTyping
-                                      ? AppColors.green
-                                      : user.unread > 0
-                                      ? Colors.black
-                                      : AppColors.ink60,
-                                  fontWeight: isTyping
-                                      ? FontWeight.w800
-                                      : user.unread > 0
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                ),
-                              ),
+                            style: const TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1F1F1F),
                             ),
                           ),
                         ),
-
-                        // ========================================
-                        // UNREAD
-                        // ========================================
-                        if (user.unread > 0) ...[
-                          const SizedBox(width: 8),
-
+                        if (user.match.isNotEmpty) ...[
+                          const SizedBox(width: 7),
                           Container(
-                            width: 25,
-                            height: 25,
-                            alignment: Alignment.center,
-                            decoration: const BoxDecoration(
-                              color: AppColors.green,
-                              shape: BoxShape.circle,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFEEF2),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              '${user.unread}',
-                              style: AppText.pill.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
+                              user.match.contains('%')
+                                  ? user.match
+                                  : '${user.match}% Match',
+                              style: const TextStyle(
+                                fontFamily: 'DM Sans',
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFFC73A5E),
                               ),
                             ),
                           ),
                         ],
+                        if (user.trust.isNotEmpty) ...[
+                          const SizedBox(width: 5),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F8EF),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              user.trust.contains('%')
+                                  ? user.trust
+                                  : '${user.trust}% Trust',
+                              style: const TextStyle(
+                                fontFamily: 'DM Sans',
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF2EAF6B),
+                              ),
+                            ),
+                          ),
+                        ],
+                        const Spacer(),
+                        Text(
+                          user.time,
+                          style: const TextStyle(
+                            fontFamily: 'DM Sans',
+                            fontSize: 11,
+                            color: Color(0xFF8A8680),
+                          ),
+                        ),
                       ],
                     ),
 
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
 
-                    // ===========================================
-                    // PROGRESS / REWARD
-                    // ===========================================
-                    if (user.reward.isNotEmpty)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                    // Preview row with unread badge
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            isTyping ? 'Typing…' : user.preview,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 13,
+                              color: isTyping
+                                  ? const Color(0xFFE85A7A)
+                                  : const Color(0xFF5F5C56),
+                              fontWeight: isTyping
+                                  ? FontWeight.w700
+                                  : (user.unread > 0
+                                      ? FontWeight.w700
+                                      : FontWeight.w400),
+                            ),
+                          ),
+                        ),
+                        if (user.unread > 0)
                           Container(
-                            padding: EdgeInsets.only(right: 10),
-                            width: MediaQuery.of(context).size.width * 0.50,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: LinearProgressIndicator(
-                                value: progress,
-                                minHeight: 7,
-                                borderRadius: BorderRadius.circular(10),
-                                backgroundColor: Colors.grey.withValues(
-                                  alpha: 0.28,
-                                ),
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  progressColor,
+                            margin: const EdgeInsets.only(left: 6),
+                            constraints: const BoxConstraints(minWidth: 19),
+                            height: 19,
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2EAF6B),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${user.unread}',
+                              style: const TextStyle(
+                                fontFamily: 'DM Sans',
+                                color: Colors.white,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 7),
+
+                    // Progress bar or Meta line
+                    if (hasProgress)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F2EC),
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                              child: FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: progress > 0 ? progress : 0.05,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: progressFillColor,
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          // wSized10,
-                          if (user.reward.isNotEmpty)
-                            Expanded(
-                              child: Text(
-                                user.reward,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppText.sub.copyWith(
-                                  fontSize: 11.5,
-                                  color: user.reward.contains('Deadline')
-                                      ? AppColors.primary
-                                      : AppColors.green,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
+                          const SizedBox(width: 8),
+                          Text(
+                            user.reward.isNotEmpty
+                                ? user.reward
+                                : '${user.progress} for Rose 🌹',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                              color: isDone
+                                  ? const Color(0xFF2EAF6B)
+                                  : (isWarn
+                                      ? const Color(0xFFE05050)
+                                      : const Color(0xFF8A8680)),
                             ),
+                          ),
+                        ],
+                      )
+                    else
+                      Row(
+                        children: [
+                          const Text('🌹 ', style: TextStyle(fontSize: 11)),
+                          RichText(
+                            text: const TextSpan(
+                              style: TextStyle(
+                                fontFamily: 'DM Sans',
+                                fontSize: 11.5,
+                                color: Color(0xFF8A8680),
+                                fontWeight: FontWeight.w600,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: 'Send a rose',
+                                  style: TextStyle(
+                                    color: Color(0xFFC73A5E),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' to make your first impression',
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                   ],
@@ -1995,30 +2020,6 @@ class _ChatListViewState extends State<_ChatListView>
   }
 
   // ==========================================================
-  // MINI PILL
-  // ==========================================================
-
-  Widget _miniPill(String text, Color background, Color foreground) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(13),
-      ),
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: AppText.pill.copyWith(
-          fontSize: 10.5,
-          color: foreground,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-
-  // ==========================================================
   // OPEN CHAT
   //
   // conversationId is still used here because
@@ -2067,24 +2068,5 @@ class _ChatListViewState extends State<_ChatListView>
       chatBloc.add(const LoadChatsEvent());
       AppLogger.d('ChatScreen', '🔙 RETURNED CHAT -> unread cleared: $conversationId');
     });
-  }
-  // ==========================================================
-  // ICON BUTTON
-  // ==========================================================
-
-  Widget _iconButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: AppColors.shadow,
-        ),
-        child: Icon(icon, color: AppColors.ink, size: 25),
-      ),
-    );
   }
 }
