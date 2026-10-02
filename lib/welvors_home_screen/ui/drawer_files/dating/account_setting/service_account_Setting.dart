@@ -248,6 +248,25 @@ class AccountSettingService {
     }
   }
 
+  static Future<Map<String, dynamic>?> getAutoRenewOffPreview() async {
+    try {
+      final url = Uri.parse('$baseUrl/user/membership-plan/auto-renew/off-preview');
+      final response = await http.get(
+        url,
+        headers: await _headers,
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        AppLogger.e('AccountSettingService', 'Failed to get auto renew off preview: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      AppLogger.e('AccountSettingService', 'Error in getAutoRenewOffPreview: $e');
+      return null;
+    }
+  }
+
   static Future<bool> turnOffAutoRenew(String reason) async {
     try {
       debugPrint('==== Calling API to Turn Off Auto Renew ====');
