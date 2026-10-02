@@ -407,7 +407,17 @@ class _CancelWarningSheetState extends State<_CancelWarningSheet> {
                           _isLoading = true;
                         });
                         
-                        final success = await AccountSettingService.turnOffAutoRenew(widget.reason);
+                        String _mapReasonToEnum(String uiReason) {
+                          if (uiReason == 'Too expensive') return 'TOO_EXPENSIVE';
+                          if (uiReason == 'I found someone 💕') return 'FOUND_SOMEONE';
+                          if (uiReason == 'Taking a break from dating') return 'TAKING_A_BREAK';
+                          if (uiReason == 'Not getting enough matches') return 'NOT_ENOUGH_MATCHES';
+                          if (uiReason == 'Missing features I wanted') return 'MISSING_FEATURES';
+                          return 'SOMETHING_ELSE';
+                        }
+                        
+                        String cleanReason = _mapReasonToEnum(widget.reason);
+                        final success = await AccountSettingService.turnOffAutoRenew(cleanReason);
                         
                         if (!mounted || !context.mounted) return;
                         setState(() {
