@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../export.dart';
 import '../../instant_verification/widget/aadhaarVerifiedScreen.dart';
 
@@ -29,7 +31,7 @@ class _InstantEducationView extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -77,17 +79,15 @@ class _InstantEducationView extends StatelessWidget {
             // =========================
 
             if (state.status == EducationStatus.success) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AadhaarVerifiedScreen(
-                    title: 'Education verified',
-                    subtitle:
-                        'Your degree was verified instantly from the National Academic Depository.',
-                    score: 30,
-                    cardbottomtext: '+ Updated instantly',
-                  ),
-                ),
+              context.push(
+                AppRoutes.aadhaarVerified,
+                extra: {
+                  'title': 'Education verified',
+                  'subtitle':
+                      'Your degree was verified instantly from the National Academic Depository.',
+                  'score': 30,
+                  'cardbottomtext': '+ Updated instantly',
+                },
               );
             }
 

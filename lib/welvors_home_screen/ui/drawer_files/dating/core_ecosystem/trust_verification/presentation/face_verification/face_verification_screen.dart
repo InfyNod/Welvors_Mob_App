@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../utils/navigation/app_routes.dart';
 import '../../export.dart';
 
 class FaceVerificationScreen extends StatelessWidget {
@@ -17,7 +19,7 @@ class FaceVerificationScreen extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -54,10 +56,7 @@ class FaceVerificationScreen extends StatelessWidget {
           colors: [Mycolor.pink, Mycolor.pink1],
           title: '📷 Capture Selfie',
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FaceVerifiedScreen()),
-            );
+            context.push(AppRoutes.faceVerified);
           },
         ),
       ),

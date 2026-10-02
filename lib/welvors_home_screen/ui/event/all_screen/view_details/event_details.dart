@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'check_out.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../events_bloc/events_bloc.dart';
 import '../../events_bloc/events_state.dart';
@@ -207,18 +208,16 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 BookEventEvent(title),
                               );
                               double parsedPrice = double.tryParse(price.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CheckoutScreen(
-                                    eventId: widget.eventId,
-                                    title: title,
-                                    date: date,
-                                    location: location,
-                                    imageUrl: imageUrl,
-                                    basePrice: parsedPrice,
-                                  ),
-                                ),
+                              context.push(
+                                AppRoutes.eventCheckout,
+                                extra: {
+                                  'eventId': widget.eventId,
+                                  'title': title,
+                                  'date': date,
+                                  'location': location,
+                                  'imageUrl': imageUrl,
+                                  'basePrice': parsedPrice,
+                                },
                               );
                             },
                             style: ElevatedButton.styleFrom(

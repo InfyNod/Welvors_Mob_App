@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:velvors/welvors_home_screen/ui/event/all_screen/cancel/cancel_confirm.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../service_event/event_api_service.dart';
 
 void showCancelDrawer(BuildContext context, {required bool isRefundEligible, required String bookingId}) {
@@ -268,13 +269,11 @@ class _CancelDrawerContentState extends State<CancelDrawerContent>
                       });
 
                       if (result != null && result['success'] == true) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CancelConfirmScreen(
-                              isEligibleForRefund: widget.isRefundEligible,
-                            ),
-                          ),
+                        context.pushReplacement(
+                          AppRoutes.cancelConfirm,
+                          extra: {
+                            'isEligibleForRefund': widget.isRefundEligible,
+                          },
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

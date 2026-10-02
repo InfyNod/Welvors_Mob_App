@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../utils/navigation/app_routes.dart';
 import 'package:velvors/config/app_cached_image.dart';
 import '../../../drawer_files/dating/roses/roses_screen.dart';
 import '../../admirers_bloc/admirers_bloc.dart';
@@ -137,12 +139,7 @@ class _RoseSendScreenState extends State<RoseSendScreen> {
                 // Get More Button
                 GestureDetector(
                   onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RosesScreen(),
-                      ),
-                    );
+                    await context.push(AppRoutes.roses);
                     setState(() {});
                   },
                   child: Container(

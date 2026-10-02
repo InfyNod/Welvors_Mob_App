@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../utils/navigation/app_routes.dart';
 import '../../export.dart';
 import 'widget/TrustScoreCard.dart';
 
@@ -78,10 +80,7 @@ class FaceVerifiedScreen extends StatelessWidget {
                 height: 54,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).popUntil(
-                      (route) =>
-                          route.settings.name == '/TrustVerificationScreen',
-                    );
+                    context.go(AppRoutes.trustVerification);
                   },
 
                   label: const Text(

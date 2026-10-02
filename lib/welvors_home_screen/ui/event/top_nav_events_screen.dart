@@ -317,15 +317,12 @@ class _EventsScreenViewState extends State<_EventsScreenView> {
                                       context.read<EventsBloc>().add(
                                         SelectFilterEvent(-1),
                                       );
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              FilterEventsScreen(
-                                                category: category,
-                                                cityName: _currentCity,
-                                              ),
-                                        ),
+                                      context.push(
+                                        AppRoutes.filterEvents,
+                                        extra: {
+                                          'category': category,
+                                          'cityName': _currentCity,
+                                        },
                                       );
                                     }
                                   },

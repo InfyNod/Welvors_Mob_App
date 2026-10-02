@@ -849,12 +849,7 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                     if (isCancelled)
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TrackRefundScreen(),
-                            ),
-                          );
+                          context.push(AppRoutes.trackRefund);
                         },
                         child: Container(
                           margin: const EdgeInsets.only(left: 8),
@@ -1022,17 +1017,15 @@ class _MyTicketScreenState extends State<MyTicketScreen> {
                           GestureDetector(
                             onTap: () {
                               if (!isCancelled) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TicketScreen(
-                                        title: title,
-                                        date: date,
-                                        location: location,
-                                        status: status,
-                                        bookingId: bookingId,
-                                      ),
-                                  ),
+                                context.push(
+                                  AppRoutes.eventTicket,
+                                  extra: {
+                                    'title': title,
+                                    'date': date,
+                                    'location': location,
+                                    'status': status,
+                                    'bookingId': bookingId,
+                                  },
                                 );
                               }
                             },

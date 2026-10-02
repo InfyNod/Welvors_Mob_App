@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../my_ticket.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/service_event/event_api_service.dart';
 import '../ticket_screen.dart';
 
@@ -595,12 +596,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
                     ),
                     child: TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MyTicketScreen(),
-                          ),
-                        );
+                        context.pushReplacement(AppRoutes.myBookings);
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.transparent,

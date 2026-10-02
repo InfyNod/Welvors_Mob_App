@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../boost_bloc/boost_event.dart';
 import '../boost_bloc/boost_bloc.dart';
 import '../boost_bloc/boost_state.dart';
-import 'performance_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class BoostHistoryScreen extends StatefulWidget {
   const BoostHistoryScreen({super.key});
@@ -328,12 +329,7 @@ class _BoostHistoryScreenState extends State<BoostHistoryScreen> {
               ),
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PerformanceScreen(item: item),
-                    ),
-                  );
+                  context.push(AppRoutes.performance, extra: item);
                 },
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(

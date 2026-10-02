@@ -1,5 +1,7 @@
+import 'package:go_router/go_router.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/government_Id/upload_id/screens/upload_id_screen.dart';
 
+import '../../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../../../../../../services/logger_service.dart';
 import '../../../export.dart';
 import 'aadhaarVerifiedScreen.dart';
@@ -34,7 +36,7 @@ class _InstantVerificationView extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -315,13 +317,8 @@ class _InstantVerificationView extends StatelessWidget {
                       Center(
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => UploadIdScreen(),
-                              ),
-                            );
+                            context.pop();
+                            context.push(AppRoutes.governmentUploadId);
                           },
                           child: Text(
                             'Upload Manually Instead',
@@ -347,18 +344,16 @@ class _InstantVerificationView extends StatelessWidget {
                 current.status == InstantVerificationStatus.aadhaarVerified;
           },
           listener: (context, state) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AadhaarVerifiedScreen(
-                  title: 'Aadhaar verified',
-                  subtitle:
-                      'Your Aadhaar was fetched from DigiLocker and\n'
-                      'verified instantly. Name & age confirmed —\n'
-                      'you’re now Level 2 verified.',
-                  cardbottomtext: "+ Updated instantly",
-                ),
-              ),
+            context.push(
+              AppRoutes.aadhaarVerified,
+              extra: {
+                'title': 'Aadhaar verified',
+                'subtitle':
+                    'Your Aadhaar was fetched from DigiLocker and\n'
+                    'verified instantly. Name & age confirmed —\n'
+                    'you’re now Level 2 verified.',
+                'cardbottomtext': "+ Updated instantly",
+              },
             );
           },
           child: BlocBuilder<InstantVerificationBloc, InstantVerificationState>(

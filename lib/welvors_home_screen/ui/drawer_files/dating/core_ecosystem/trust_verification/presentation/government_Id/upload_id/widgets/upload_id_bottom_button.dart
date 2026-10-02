@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../../utils/navigation/app_routes.dart';
 import '../bloc/upload_id_state.dart';
 import '../models/upload_id_model.dart';
 import '../../../instant_verification/widget/instant_verification_screen.dart';
@@ -79,11 +81,8 @@ class UploadIdBottomButton extends StatelessWidget {
         hSized10,
         InkWell(
           onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => InstantVerificationScreen()),
-            );
+            context.pop();
+            context.push(AppRoutes.governmentInstant);
           },
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,

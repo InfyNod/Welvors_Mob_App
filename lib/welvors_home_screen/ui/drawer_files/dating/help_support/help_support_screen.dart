@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'all_screen_help/live_chat.dart';
-import 'all_screen_help/call_back.dart';
 import 'service_help.dart';
 
 class HelpSupportScreen extends StatefulWidget {
@@ -130,12 +130,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     statusText: 'Online · ~2 min',
                     statusColor: Colors.green,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LiveChatScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.liveChat);
                     },
                   ),
                 ),
@@ -167,12 +162,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     statusText: 'Mon-Sat, 10am-7pm',
                     statusColor: Colors.grey.shade600,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CallBackScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.callBack);
                     },
                   ),
                 ),

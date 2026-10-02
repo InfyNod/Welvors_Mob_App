@@ -1,9 +1,6 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../utils/navigation/app_routes.dart';
 import '../../export.dart';
-
-import '../platinum_verification/bloc/platinum_verification_bloc.dart';
-import '../platinum_verification/bloc/platinum_verification_event.dart';
-import '../platinum_verification/data/platinum_verification_repository.dart';
-import '../platinum_verification/platinum_verification_flow_screen.dart';
 
 class VerificationTile extends StatelessWidget {
   final String index;
@@ -39,18 +36,7 @@ class VerificationTile extends StatelessWidget {
   void _handleButtonTap(BuildContext context) {
     // Platinum unlock button
     if (isUnlock) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => PlatinumVerificationBloc(
-              repository: PlatinumVerificationRepository(),
-            )..add(LoadPlatinumVerification()),
-            child: const PlatinumVerificationFlowScreen(),
-          ),
-        ),
-      );
-
+      context.push(AppRoutes.platinumVerification);
       return;
     }
 

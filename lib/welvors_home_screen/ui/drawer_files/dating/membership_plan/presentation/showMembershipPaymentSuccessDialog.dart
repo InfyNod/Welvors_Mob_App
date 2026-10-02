@@ -1,9 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
-import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
 
 import '../model/membership_plan_model.dart';
 
@@ -234,13 +235,7 @@ class _MembershipPaymentSuccessDialog extends StatelessWidget {
                       height: 60,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const TopAndBottomNavScreen(),
-                            ),
-                            (route) => false,
-                          );
+                          context.go(AppRoutes.home);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: actionColor,

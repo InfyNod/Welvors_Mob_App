@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
-import 'waitlist_confirmed_screen.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
   const PaymentSuccessScreen({super.key});
@@ -167,12 +168,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                   // Black Button
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const WaitlistConfirmedScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.waitlistConfirmed);
                     },
                     child: Container(
                       width: double.infinity,

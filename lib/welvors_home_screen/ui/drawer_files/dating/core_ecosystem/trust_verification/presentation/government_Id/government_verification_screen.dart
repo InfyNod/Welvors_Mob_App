@@ -1,7 +1,7 @@
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../../../../../services/logger_service.dart';
 import '../../export.dart';
-import 'upload_id/screens/upload_id_screen.dart';
-import '../instant_verification/widget/instant_verification_screen.dart';
 
 class GovernmentVerificationScreen extends StatelessWidget {
   const GovernmentVerificationScreen({super.key});
@@ -17,7 +17,7 @@ class GovernmentVerificationScreen extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
@@ -105,20 +105,10 @@ class GovernmentVerificationScreen extends StatelessWidget {
                               AppLogger.d('GovernmentVerificationScreen', data.methods[index].id.toString());
                               if (data.methods[index].id ==
                                   "instant_verification") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => InstantVerificationScreen(),
-                                  ),
-                                );
+                                context.push(AppRoutes.governmentInstant);
                               } else if (data.methods[index].id ==
                                   "upload_manual") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const UploadIdScreen(),
-                                  ),
-                                );
+                                context.push(AppRoutes.governmentUploadId);
                               }
                             },
                           );

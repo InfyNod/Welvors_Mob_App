@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../../../../../onbording_allpage/theme/app_colors.dart';
 import '../../../../../../onbording_allpage/theme/app_text.dart';
 import '../../../date_now/date_now_2/history/card_history.dart';
@@ -50,7 +52,7 @@ class _SplashLogoutState extends State<SplashLogout> {
               RequestsSentScreen.mySentRequests.clear();
 
               if (mounted) {
-                Navigator.pushNamedAndRemoveUntil(context, '/landing', (route) => false);
+                context.go(AppRoutes.landing);
               }
             }
           });

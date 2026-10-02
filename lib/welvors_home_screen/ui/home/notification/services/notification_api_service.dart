@@ -45,13 +45,7 @@ class NotificationApiService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
 
-    if (navigatorKey.currentContext != null) {
-      Navigator.pushNamedAndRemoveUntil(
-        navigatorKey.currentContext!,
-        '/landing',
-        (route) => false,
-      );
-    }
+    AppRouter.go(AppRoutes.landing);
   }
 
   static Future<List<NotificationModel>> getNotifications({

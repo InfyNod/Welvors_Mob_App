@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../service_account_Setting.dart';
-import '../../logout/splash_logout.dart';
 
 Future<bool?> showPauseAccountBottomSheet(BuildContext context) {
   bool isLoading = false;
@@ -131,11 +132,7 @@ void showDeleteAccountBottomSheet(BuildContext context) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Account deleted successfully.')),
                   );
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SplashLogout()),
-                    (route) => false,
-                  );
+                  context.go(AppRoutes.splashLogout);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Failed to delete account. Please try again.')),

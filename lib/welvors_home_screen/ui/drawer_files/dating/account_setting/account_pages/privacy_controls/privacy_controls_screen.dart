@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'who_message.dart';
-import 'blocked_users.dart';
-import 'mute_account.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../service_account_Setting.dart';
 
 class PrivacyControlsScreen extends StatefulWidget {
@@ -130,11 +129,9 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                       passedOption = 'matches';
                     } else if (_messagePermissionValue == 'VERIFIED_ONLY') passedOption = 'verified';
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WhoMessageScreen(initialOption: passedOption),
-                      ),
+                    context.push(
+                      AppRoutes.whoMessage,
+                      extra: passedOption,
                     ).then((_) {
                       _fetchPrivacyControls(); // Refresh when back
                     });
@@ -209,12 +206,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                     size: 18,
                   ),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BlockedUsersScreen(),
-                      ),
-                    ).then((_) {
+                    context.push(AppRoutes.blockedUsers).then((_) {
                       _fetchPrivacyControls(); // Refresh count when coming back
                     });
                   },
@@ -231,12 +223,7 @@ class _PrivacyControlsScreenState extends State<PrivacyControlsScreen> {
                     size: 18,
                   ),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MuteAccountScreen(),
-                      ),
-                    ).then((_) {
+                    context.push(AppRoutes.muteAccount).then((_) {
                       _fetchPrivacyControls(); // Refresh count when coming back
                     });
                   },

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../../../../../utils/navigation/app_routes.dart';
 import '../../../../utils/mycolor.dart';
 import '../../../../utils/sizesboxs.dart';
 
@@ -35,14 +37,9 @@ class _ProfessionalEmailScreenState extends State<ProfessionalEmailScreen> {
       },
       listener: (context, state) {
         if (state.status == ProfessionalStatus.codeSent) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider.value(
-                value: context.read<ProfessionalBloc>(),
-                child: const ProfessionalCodeScreen(),
-              ),
-            ),
+          context.push(
+            AppRoutes.professionalCode,
+            extra: context.read<ProfessionalBloc>(),
           );
         }
 
@@ -277,7 +274,7 @@ class _ProfessionalEmailScreenState extends State<ProfessionalEmailScreen> {
       leading: Padding(
         padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
         child: InkWell(
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pop(),
           borderRadius: BorderRadius.circular(24),
           child: Container(
             decoration: BoxDecoration(

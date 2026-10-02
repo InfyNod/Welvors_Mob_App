@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../theme/app_dimens.dart';
 import '../../widgets/onboarding_app_bar.dart';
 import 'basics_screen.dart';
@@ -106,10 +108,10 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
+      if (context.canPop()) {
+        context.pop();
       } else {
-        Navigator.pushReplacementNamed(context, '/landing');
+        context.go(AppRoutes.landing);
       }
     }
   }
@@ -146,10 +148,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
                   PromptsScreen(onNext: _nextStep),
                   LocationScreen(onNext: _nextStep),
                   ReviewScreen(onFinish: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const CompletionScreen()),
-                    );
+                    context.push(AppRoutes.onboardingCompletion);
                   }),
                 ],
               ),

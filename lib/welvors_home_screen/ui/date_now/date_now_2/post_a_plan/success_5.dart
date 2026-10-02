@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'bloc/post_plan_bloc.dart';
@@ -272,13 +274,7 @@ class Success5View extends StatelessWidget {
                         RequestsSentScreen.myPlansCount++;
                       }
 
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RequestsSentScreen(initialTabIndex: 1),
-                        ),
-                        (route) => route.isFirst,
-                      );
+                      context.go('${AppRoutes.myDates}?tab=1');
                     },
                     child: Container(
                       width: double.infinity,

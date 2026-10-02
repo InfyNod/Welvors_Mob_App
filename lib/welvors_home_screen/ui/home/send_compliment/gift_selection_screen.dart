@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
@@ -128,7 +129,7 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: const BoxDecoration(
@@ -491,8 +492,7 @@ class _GiftSelectionScreenState extends State<GiftSelectionScreen> {
                     child: FilledButton(
                       onPressed: _selectedGift == null
                           ? null
-                          : () => Navigator.pop(
-                              context,
+                          : () => context.pop(
                               SelectedGift(
                                 id: _selectedGift!.id,
                                 name: _selectedGift!.name,

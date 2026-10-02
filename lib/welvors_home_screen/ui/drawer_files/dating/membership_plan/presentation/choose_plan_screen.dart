@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 import 'package:velvors/onbording_allpage/theme/app_dimens.dart';
@@ -454,12 +456,9 @@ class _ChoosePlanViewState extends State<_ChoosePlanView> {
     MembershipPlanModel plan,
     PlanDuration duration,
   ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            MembershipCheckoutScreen(plan: plan, duration: duration),
-      ),
+    context.push(
+      AppRoutes.membershipCheckout,
+      extra: {'plan': plan, 'duration': duration},
     );
   }
 }

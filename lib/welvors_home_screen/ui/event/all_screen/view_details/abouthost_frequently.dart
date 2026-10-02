@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'Invite_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 
 class AboutHostAndFAQSection extends StatelessWidget {
   final String? termsConditions;
@@ -220,11 +221,9 @@ class AboutHostAndFAQSection extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => InviteMatchScreen(eventId: eventId),
-                      ),
+                    context.push(
+                      AppRoutes.inviteMatch,
+                      extra: {'eventId': eventId},
                     );
                   },
                   style: ElevatedButton.styleFrom(

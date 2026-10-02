@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/welvors_home_screen/ui/home/buttom_free_5.dart';
 import 'package:velvors/welvors_home_screen/ui/home/free_limit_pop.dart';
 import '../../services/logger_service.dart';
 import 'send_compliment/complimenting.dart';
-import 'match/match_analysis_screen.dart';
-import 'trust_score/trust_screen.dart';
 import 'reply/reply_drawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
@@ -395,12 +395,12 @@ class _ProfileDetailsView extends StatelessWidget {
                   Colors.blue,
                   onTap: () {
                     if (isSelfPreview) return;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            MatchAnalysisScreen(userId: profile.id, matchName: profile.name),
-                      ),
+                    context.push(
+                      AppRoutes.matchAnalysis,
+                      extra: {
+                        'userId': profile.id,
+                        'matchName': profile.name,
+                      },
                     );
                   },
                 ),
@@ -410,11 +410,9 @@ class _ProfileDetailsView extends StatelessWidget {
                   Colors.green,
                   onTap: () {
                     if (isSelfPreview) return;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TrustScreen(userId: profile.id),
-                      ),
+                    context.push(
+                      AppRoutes.trustScreen,
+                      extra: profile.id,
                     );
                   },
                 ),

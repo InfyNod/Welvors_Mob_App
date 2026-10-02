@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimens.dart';
 import '../../theme/app_text.dart';
 import '../../widgets/primary_button.dart';
-import 'payment_success_screen.dart';
 
 import '../../services/api_service.dart';
 import 'package:velvors/welvors_home_screen/services/logger_service.dart';
@@ -636,12 +637,7 @@ class _FoundingBatchScreenState extends State<FoundingBatchScreen> {
               child: PrimaryButton(
                 'Pay ₹299 · Join the waitlist',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PaymentSuccessScreen(),
-                    ),
-                  );
+                  context.push(AppRoutes.paymentSuccess);
                 },
               ),
             ),

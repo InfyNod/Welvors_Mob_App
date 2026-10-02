@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:velvors/utils/navigation/app_routes.dart';
 import 'package:velvors/onbording_allpage/theme/app_colors.dart';
 // import 'package:velvors/onbording_allpage/theme/app_text.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/benefits_drawer.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/add_money_screen.dart';
-import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/withdraw_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/transactions_drawer.dart';
-import 'package:velvors/onbording_allpage/features/onboarding/refer_and_earn_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_wallet/service_wallet.dart';
 import 'package:intl/intl.dart';
 
@@ -231,12 +230,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AddMoneyScreen(),
-                              ),
-                            );
+                            context.push(AppRoutes.addMoney);
                           },
                           icon: const Icon(
                             Icons.add,
@@ -266,12 +260,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const WithdrawScreen(),
-                              ),
-                            );
+                            context.push(AppRoutes.withdraw);
                           },
                           icon: const Icon(
                             Icons.arrow_downward,
@@ -313,10 +302,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   Widget _buildTopUpCard() {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ReferAndEarnScreen()),
-        );
+        context.push(AppRoutes.referAndEarn);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

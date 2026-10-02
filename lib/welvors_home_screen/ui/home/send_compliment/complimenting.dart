@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import '../../../../utils/navigation/app_routes.dart';
 import 'package:velvors/onbording_allpage/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvors/welvors_home_screen/home_bloc/home_bloc.dart';
@@ -104,13 +106,9 @@ class ComplimentingBottomSheet extends StatefulWidget {
       }
 
       // Navigate to ChatDetailScreen and wait for the user to return
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => BlocProvider.value(
-            value: chatBloc,
-            child: ChatDetailScreen(user: user),
-          ),
-        ),
+      await context.push(
+        AppRoutes.chatDetail,
+        extra: {'user': user, 'bloc': chatBloc},
       );
 
       // Clean up chatBloc after exiting chat
@@ -626,7 +624,7 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
       // CLOSE CURRENT PROFILE ACTION & PASS NAVIGATION RESULT
       // ==========================================================
 
-      Navigator.of(context).pop({
+      context.pop({
         'action': 'open_chat',
         'user': user,
         'chatBloc': chatBloc,
@@ -925,13 +923,9 @@ class _ComplimentingBottomSheetState extends State<ComplimentingBottomSheet> {
                       child: GestureDetector(
                         onTap: () async {
                           final selectedGift =
-                              await Navigator.push<SelectedGift>(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => GiftSelectionScreen(
-                                    recipientName: widget.profileName,
-                                  ),
-                                ),
+                              await context.push<SelectedGift>(
+                                AppRoutes.giftSelection,
+                                extra: widget.profileName,
                               );
                           if (!mounted || selectedGift == null) return;
                           setState(() {

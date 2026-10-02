@@ -24,6 +24,7 @@ import 'package:velvors/welvors_home_screen/ui/chat/video_call_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/chat/voice_call_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/post_a_plan/activity_1.dart';
 import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/requests_sent/requests_sent_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/date_now/date_now_2/my_plans/profile.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setting/account_pages/bank_upi.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setting/account_pages/membership_plan/membership_plan.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setting/account_pages/personal_info.dart';
@@ -36,16 +37,58 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/account_setti
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/commitment_management.dart/commitment_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/compliments/compliments_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/trust_verification_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/export.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/bloc/Education/education_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/bloc/Education/education_event.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/education_repository.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/education_id/education_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/bloc/professional_verfication_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/bloc/professional_verfication_evnt.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/data/professional_verication_repository.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/professional_verification.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/platinum_verification/bloc/platinum_verification_bloc.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/platinum_verification/data/platinum_verification_repository.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/platinum_verification/screens/platinum_contact_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/platinum_verification/platinum_verification_flow_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/platinum_verification/bloc/platinum_verification_event.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/education_id/education_Instant/education_instant.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/education_id/manually/education_manually.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/government_Id/upload_id/screens/upload_id_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/instant_verification/widget/instant_verification_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/instant_verification/widget/aadhaarVerifiedScreen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/face_verification/FaceVerifiedScreen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/presentation/screens/professional_email_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/presentation/screens/professional_code_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/presentation/bloc/professional_bloc.dart';
+
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/professional_manually/professional_manually_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/date_plans/date_plan_wallet.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/edit_profile/top_bottom_nav_editscreen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/help_support/all_screen_help/call_back.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/help_support/all_screen_help/live_chat.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/help_support/help_support_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/legal_policy_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/18+_age_policy.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/child_safety.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/content_moderation_law.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/delete_your_account.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/community_guidelines.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/cookie_policy.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/data_rights.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/forever_love.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/grievance_officer.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/licenses.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/verification.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/privacy_policy.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/refund_cancelation.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/safety_dating_tips.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/wallet_coin_terms.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/legal_policies/all_page_legal/terms_service.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/logout/logout_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/logout/splash_logout.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/model/membership_plan_model.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/choose_plan_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/membership_plan/presentation/checkout_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_all_screen/boost_top_nav.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_bloc/boost_state.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/my_boosts/boost_history.dart/boost_history.dart';
@@ -58,19 +101,26 @@ import 'package:velvors/welvors_home_screen/ui/drawer_files/dating/roses/roses_s
 import 'package:velvors/welvors_home_screen/ui/drawer_files/marriage/drawer_marriage_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/drawer_files/mature_dating/drawer_mature_dating_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/cancel/track_refund_status.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/cancel/cancel_confirm.dart';
+import 'package:velvors/welvors_home_screen/ui/event/filter_events.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/my_ticket.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/ticket_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/booking_confirm.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/check_out.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/event_details.dart';
+import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/Invite_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/event/all_screen/view_details/splash_screen_book.dart';
 import 'package:velvors/welvors_home_screen/ui/home/filter/filter_bloc/filter_bloc.dart';
 import 'package:velvors/welvors_home_screen/ui/home/filter/filter_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/home/match/match_analysis_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/home/send_compliment/gift_selection_screen.dart';
+import 'package:velvors/welvors_home_screen/ui/home/send_compliment/try_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/home/notification/notification_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/home/trust_score/trust_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/network/no_internet_screen.dart';
 import 'package:velvors/welvors_home_screen/ui/top_and_bottom_nav_screen.dart';
+
+import '../../welvors_home_screen/ui/drawer_files/dating/core_ecosystem/trust_verification/presentation/professional_verification/domain/repositories/professional_repository_impl.dart';
 
 /// Centralized GoRouter Navigation Configuration for Welvors
 ///
@@ -247,12 +297,19 @@ class AppRouter {
         path: AppRoutes.matchAnalysis,
         name: 'matchAnalysis',
         pageBuilder: (context, state) {
-          final name = state.extra is String
-              ? state.extra as String
-              : state.uri.queryParameters['name'] ?? '';
+          String userId = '';
+          String name = 'User';
+          if (state.extra is Map<String, dynamic>) {
+            final map = state.extra as Map<String, dynamic>;
+            userId = map['userId']?.toString() ?? '';
+            name = map['matchName']?.toString() ?? map['name']?.toString() ?? 'User';
+          } else {
+            userId = state.uri.queryParameters['userId'] ?? '';
+            name = state.uri.queryParameters['name'] ?? 'User';
+          }
           return slideTransitionPage(
             key: state.pageKey,
-            child: MatchAnalysisScreen(matchName: name),
+            child: MatchAnalysisScreen(userId: userId, matchName: name),
           );
         },
       ),
@@ -260,10 +317,17 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.trustScreen,
         name: 'trustScreen',
-        pageBuilder: (context, state) => slideTransitionPage(
-          key: state.pageKey,
-          child: const TrustScreen(),
-        ),
+        pageBuilder: (context, state) {
+          final userId = state.extra is String
+              ? state.extra as String
+              : (state.extra is Map<String, dynamic>)
+                  ? (state.extra as Map<String, dynamic>)['userId']?.toString() ?? ''
+                  : state.uri.queryParameters['userId'] ?? '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: TrustScreen(userId: userId),
+          );
+        },
       ),
 
       // ========================================================
@@ -437,6 +501,21 @@ class AppRouter {
         },
       ),
 
+      GoRoute(
+        path: AppRoutes.filterDetail,
+        name: 'filterDetail',
+        pageBuilder: (context, state) {
+          Widget childWidget = const SizedBox.shrink();
+          if (state.extra is Widget) {
+            childWidget = state.extra as Widget;
+          }
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: childWidget,
+          );
+        },
+      ),
+
       // ========================================================
       // EVENTS
       // ========================================================
@@ -578,6 +657,62 @@ class AppRouter {
         ),
       ),
 
+      GoRoute(
+        path: AppRoutes.inviteMatch,
+        name: 'inviteMatch',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final eventId = extra['eventId']?.toString() ??
+              state.uri.queryParameters['eventId'];
+          final datePlanId = extra['datePlanId']?.toString() ??
+              state.uri.queryParameters['datePlanId'];
+          final isDatePlan = extra['isDatePlan'] as bool? ??
+              (state.uri.queryParameters['isDatePlan'] == 'true');
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: InviteMatchScreen(
+              eventId: eventId,
+              datePlanId: datePlanId,
+              isDatePlan: isDatePlan,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.filterEvents,
+        name: 'filterEvents',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final category = extra['category'] as Map<String, String>? ?? {};
+          final cityName = extra['cityName']?.toString() ??
+              state.uri.queryParameters['cityName'] ?? '';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: FilterEventsScreen(
+              category: category,
+              cityName: cityName,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.cancelConfirm,
+        name: 'cancelConfirm',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final isEligible = extra['isEligibleForRefund'] as bool? ??
+              (state.uri.queryParameters['isEligibleForRefund'] == 'true');
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: CancelConfirmScreen(
+              isEligibleForRefund: isEligible,
+            ),
+          );
+        },
+      ),
+
       // ========================================================
       // DRAWER / DATING ECOSYSTEM
       // ========================================================
@@ -605,6 +740,212 @@ class AppRouter {
         pageBuilder: (context, state) => slideTransitionPage(
           key: state.pageKey,
           child: const TrustVerificationScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.governmentVerification,
+        name: 'governmentVerification',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: BlocProvider(
+            create: (_) => GovernmentVerificationBloc(
+              repository: GovernmentVerificationRepository(),
+            )..add(LoadGovernmentVerificationEvent()),
+            child: const GovernmentVerificationScreen(),
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.governmentInstant,
+        name: 'governmentInstant',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const InstantVerificationScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.governmentUploadId,
+        name: 'governmentUploadId',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const UploadIdScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.faceVerification,
+        name: 'faceVerification',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: FaceVerificationScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.faceVerified,
+        name: 'faceVerified',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const FaceVerifiedScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.videoVerification,
+        name: 'videoVerification',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: VideoVerificationScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.educationVerification,
+        name: 'educationVerification',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: BlocProvider(
+            create: (_) => EducationBloc(
+              repository: EducationRepository(),
+            )..add(LoadEducationEvent()),
+            child: const EducationScreen(),
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.educationInstant,
+        name: 'educationInstant',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const InstantEducationScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.educationManually,
+        name: 'educationManually',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const EducationManuallyScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.professionalVerification,
+        name: 'professionalVerification',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: BlocProvider(
+            create: (_) => professional_verfication_bloc(
+              repository: ProfessionalverificationRepository(),
+            )..add(Loadprofessional_verficationEvent()),
+            child: const ProfessionalVerficationScreen(),
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.professionalEmail,
+        name: 'professionalEmail',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: BlocProvider(
+            create: (_) => ProfessionalBloc(
+              repository: ProfessionalRepositoryImpl(),
+            ),
+            child: const ProfessionalEmailScreen(),
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.professionalCode,
+        name: 'professionalCode',
+        pageBuilder: (context, state) {
+          final bloc = state.extra is ProfessionalBloc ? (state.extra as ProfessionalBloc) : null;
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: bloc != null
+                ? BlocProvider.value(
+                    value: bloc,
+                    child: const ProfessionalCodeScreen(),
+                  )
+                : BlocProvider(
+                    create: (_) => ProfessionalBloc(
+                      repository: ProfessionalRepositoryImpl(),
+                    ),
+                    child: const ProfessionalCodeScreen(),
+                  ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.professionalManually,
+        name: 'professionalManually',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: const ProfessionalManuallyScreen(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.aadhaarVerified,
+        name: 'aadhaarVerified',
+        pageBuilder: (context, state) {
+          final extra = state.extra;
+          if (extra is Map<String, dynamic>) {
+            return slideTransitionPage(
+              key: state.pageKey,
+              child: AadhaarVerifiedScreen(
+                icon: extra['icon'] as Icon?,
+                iconcolor: extra['iconcolor'] as Color?,
+                title: extra['title'] as String?,
+                subtitle: extra['subtitle'] as String?,
+                score: extra['score'] as int?,
+                cardbottomtext: extra['cardbottomtext'] as String?,
+              ),
+            );
+          }
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: const AadhaarVerifiedScreen(),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.incomeVerification,
+        name: 'incomeVerification',
+        pageBuilder: (context, state) {
+          final screencall = state.uri.queryParameters['screencall'] == 'true';
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: BlocProvider(
+              create: (_) => PlatinumVerificationBloc(
+                repository: PlatinumVerificationRepository(),
+              ),
+              child: PlatinumContactScreen(screencall: screencall),
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.platinumVerification,
+        name: 'platinumVerification',
+        pageBuilder: (context, state) => slideTransitionPage(
+          key: state.pageKey,
+          child: BlocProvider(
+            create: (_) => PlatinumVerificationBloc(
+              repository: PlatinumVerificationRepository(),
+            )..add(LoadPlatinumVerification()),
+            child: const PlatinumVerificationFlowScreen(),
+          ),
         ),
       ),
 
@@ -689,6 +1030,36 @@ class AppRouter {
       ),
 
       GoRoute(
+        path: AppRoutes.giftSelection,
+        name: 'giftSelection',
+        pageBuilder: (context, state) {
+          final extra = state.extra;
+          String? recipientName;
+          if (extra is String) {
+            recipientName = extra;
+          } else if (extra is Map<String, dynamic>) {
+            recipientName = extra['recipientName'] as String?;
+          }
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: GiftSelectionScreen(recipientName: recipientName),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.complimentIdeas,
+        name: 'complimentIdeas',
+        pageBuilder: (context, state) {
+          final initialText = state.extra is String ? state.extra as String : null;
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: ComplimentIdeasScreen(initialText: initialText),
+          );
+        },
+      ),
+
+      GoRoute(
         path: AppRoutes.datePlanWallet,
         name: 'datePlans',
         pageBuilder: (context, state) => slideTransitionPage(
@@ -704,6 +1075,18 @@ class AppRouter {
           key: state.pageKey,
           child: const Activity1Screen(),
         ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.requesterProfile,
+        name: 'requesterProfile',
+        pageBuilder: (context, state) {
+          final request = state.extra as Map<String, dynamic>? ?? {};
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: MyPlanRequesterProfileScreen(request: request),
+          );
+        },
       ),
 
       // ========================================================
@@ -751,6 +1134,20 @@ class AppRouter {
           return slideTransitionPage(
             key: state.pageKey,
             child: ChoosePlanScreen(initialTier: tier),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.membershipCheckout,
+        name: 'membershipCheckout',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final plan = extra['plan'] as MembershipPlanModel;
+          final duration = extra['duration'] as PlanDuration;
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: MembershipCheckoutScreen(plan: plan, duration: duration),
           );
         },
       ),
@@ -851,6 +1248,72 @@ class AppRouter {
           key: state.pageKey,
           child: const LegalPoliciesScreen(),
         ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.legalPolicyDetail,
+        name: 'legalPolicyDetail',
+        pageBuilder: (context, state) {
+          Widget childWidget = const TermsServiceScreen();
+          if (state.extra is Widget) {
+            childWidget = state.extra as Widget;
+          } else {
+            final type = state.uri.queryParameters['type']?.toLowerCase() ?? '';
+            switch (type) {
+              case 'privacy':
+                childWidget = const PrivacyPolicyScreen();
+                break;
+              case 'community':
+                childWidget = const CommunityGuidelinesScreen();
+                break;
+              case 'safety':
+                childWidget = const SafetyDatingTipsScreen();
+                break;
+              case 'child':
+                childWidget = const ChildSafetyScreen();
+                break;
+              case 'moderation':
+                childWidget = const ContentModerationLawScreen();
+                break;
+              case 'verification':
+                childWidget = const VerificationScreen();
+                break;
+              case 'refund':
+                childWidget = const RefundCancelationScreen();
+                break;
+              case 'wallet':
+                childWidget = const WalletCoinTermsScreen();
+                break;
+              case '18plus':
+                childWidget = const EighteenPlusAgePolicyScreen();
+                break;
+              case 'forever':
+                childWidget = const ForeverLoveScreen();
+                break;
+              case 'data':
+                childWidget = const DataRightsScreen();
+                break;
+              case 'cookie':
+                childWidget = const CookiePolicyScreen();
+                break;
+              case 'licenses':
+                childWidget = const LicensesScreen();
+                break;
+              case 'delete':
+                childWidget = const DeleteYourAccountScreen();
+                break;
+              case 'grievance':
+                childWidget = const GrievanceOfficerScreen();
+                break;
+              default:
+                childWidget = const TermsServiceScreen();
+            }
+          }
+          return slideTransitionPage(
+            key: state.pageKey,
+            child: childWidget,
+          );
+        },
       ),
 
       GoRoute(
