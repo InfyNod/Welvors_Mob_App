@@ -616,14 +616,56 @@ class _DatePlanWalletState extends State<DatePlanWallet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${selectedPkg['title']} PLANS · ${selectedPkg['topTag'] ?? selectedPkg['saveTag'] ?? 'TRY IT OUT'}',
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${selectedPkg['title']} PLANS · ',
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  if (selectedPkg['topTag'] != null)
+                    Text(
+                      selectedPkg['topTag'],
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    )
+                  else if (selectedPkg['saveTag'] != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF4E8),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        selectedPkg['saveTag'].toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xFFF18C28),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    )
+                  else
+                    const Text(
+                      'TRY IT OUT',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                ],
               ),
               Row(
                 children: [

@@ -18,7 +18,8 @@ class _BoostScreenState extends State<BoostScreen> {
   List<dynamic> _whyBoostWorks = [];
   Map<String, dynamic>? _boostVsSuperBoost;
   String _title = 'Be a top profile\nin your area';
-  String _description = 'Get 5× more profile views and stand out to\nyour most compatible matches instantly.';
+  String _description =
+      'Get 5× more profile views and stand out to\nyour most compatible matches instantly.';
   int _timePerBoost = 30;
   String _durationText = '30 MIN';
   String _durationShortText = '30min';
@@ -40,7 +41,7 @@ class _BoostScreenState extends State<BoostScreen> {
         return {
           'title': opt['boostCount'].toString(),
           'subtitle': 'Boosts',
-          'pricePerItem': '₹${opt['discounted_price']}/each',
+          'pricePerItem': '₹${opt['pricePerBoost']}/each',
           'discount':
               opt['discount_percent'] != null && opt['discount_percent'] > 0
               ? 'Save ${opt['discount_percent']}%'
@@ -49,7 +50,8 @@ class _BoostScreenState extends State<BoostScreen> {
               opt['discount_percent'] != null && opt['discount_percent'] > 0
               ? '₹${opt['pricePerBoost']}/each'
               : null,
-          'totalPrice': '₹${opt['totalPrice']} total',
+          'totalPrice':
+              '₹${opt['discounted_price'] ?? opt['totalPrice']} total',
           'tag': opt['is_popular'] == true
               ? 'POPULAR'
               : (opt['is_best_value'] == true ? 'BEST VALUE' : null),
@@ -71,7 +73,8 @@ class _BoostScreenState extends State<BoostScreen> {
         _description = boostData['description'];
       }
       if (boostData['timePerBoost'] != null) {
-        _timePerBoost = int.tryParse(boostData['timePerBoost'].toString()) ?? 30;
+        _timePerBoost =
+            int.tryParse(boostData['timePerBoost'].toString()) ?? 30;
         if (_timePerBoost >= 60 && _timePerBoost % 60 == 0) {
           int hours = _timePerBoost ~/ 60;
           _durationText = '$hours HOUR${hours > 1 ? 'S' : ''}';
@@ -433,10 +436,46 @@ class _BoostScreenState extends State<BoostScreen> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  pkg['totalPrice'],
-                  style: const TextStyle(color: Colors.black45, fontSize: 9),
-                ),
+                pkg['raw']['discount_percent'] != null &&
+                        pkg['raw']['discount_percent'] > 0
+                    ? Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 2,
+                        children: [
+                          Text(
+                            '₹${pkg['raw']['totalPrice']}',
+                            style: const TextStyle(
+                              color: Colors.black45,
+                              fontSize: 9,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                          Text(
+                            '₹${pkg['raw']['discounted_price']}',
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '-${pkg['raw']['discount_percent']}%',
+                            style: const TextStyle(
+                              color: Color(0xFFE43A6A),
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        '₹${pkg['raw']['totalPrice']}',
+                        style: const TextStyle(
+                          color: Colors.black45,
+                          fontSize: 9,
+                        ),
+                      ),
                 const SizedBox(height: 8),
                 // Radio button circle
                 Container(
@@ -520,7 +559,9 @@ class _BoostScreenState extends State<BoostScreen> {
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
+        border: Border(
+          top: BorderSide(color: Colors.black.withValues(alpha: 0.05)),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

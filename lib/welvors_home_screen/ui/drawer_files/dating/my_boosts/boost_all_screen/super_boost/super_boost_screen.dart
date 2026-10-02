@@ -40,14 +40,14 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
         return {
           'title': opt['boostCount'].toString(),
           'subtitle': 'Super Boosts',
-          'pricePerItem': '₹${opt['discounted_price']}/each',
+          'pricePerItem': '₹${opt['pricePerBoost']}/each',
           'discount': opt['discount_percent'] != null && opt['discount_percent'] > 0 
               ? 'Save ${opt['discount_percent']}%' 
               : null,
           'oldPrice': opt['discount_percent'] != null && opt['discount_percent'] > 0 
               ? '₹${opt['pricePerBoost']}/each' 
               : null,
-          'totalPrice': '₹${opt['totalPrice']} total',
+          'totalPrice': '₹${opt['discounted_price'] ?? opt['totalPrice']} total',
           'tag': opt['is_popular'] == true ? 'POPULAR' : (opt['is_best_value'] == true ? 'BEST VALUE' : null),
           'raw': opt,
         };
@@ -414,10 +414,46 @@ class _SuperBoostScreenState extends State<SuperBoostScreen> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  pkg['totalPrice'],
-                  style: const TextStyle(color: Colors.black45, fontSize: 9),
-                ),
+                pkg['raw']['discount_percent'] != null &&
+                        pkg['raw']['discount_percent'] > 0
+                    ? Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 2,
+                        children: [
+                          Text(
+                            '₹${pkg['raw']['totalPrice']}',
+                            style: const TextStyle(
+                              color: Colors.black45,
+                              fontSize: 9,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                          Text(
+                            '₹${pkg['raw']['discounted_price']}',
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '-${pkg['raw']['discount_percent']}%',
+                            style: const TextStyle(
+                              color: Color(0xFFE43A6A),
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        '₹${pkg['raw']['totalPrice']}',
+                        style: const TextStyle(
+                          color: Colors.black45,
+                          fontSize: 9,
+                        ),
+                      ),
                 const SizedBox(height: 8),
                 // Radio button circle
                 Container(

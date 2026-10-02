@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'service_wallet.dart';
 
 class WithdrawScreen extends StatefulWidget {
   const WithdrawScreen({super.key});
@@ -12,8 +13,9 @@ class _WithdrawScreenState extends State<WithdrawScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _amountController =
-      TextEditingController(text: '3240');
-  final int _walletBalance = 3240;
+      TextEditingController(text: '0');
+  int _walletBalance = 0;
+  String _formattedBalance = '₹0';
   String _selectedAccount = 'HDFC';
 
   String _selectedHistoryFilter = 'All';
@@ -110,6 +112,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
   @override
   void initState() {
     super.initState();
+    _fetchWalletBalance();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {});
@@ -117,6 +120,22 @@ class _WithdrawScreenState extends State<WithdrawScreen>
     _amountController.addListener(() {
       setState(() {});
     });
+  }
+
+  Future<void> _fetchWalletBalance() async {
+    final data = await WalletApiService().getWalletData(filter: 'ALL');
+    if (mounted && data != null) {
+      final balanceStr = data['wallet']?['formattedBalance'] ?? '₹0';
+      final balanceNum = int.tryParse(balanceStr.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+      
+      setState(() {
+        _formattedBalance = balanceStr;
+        _walletBalance = balanceNum;
+        if (_amountController.text == '0') {
+          _amountController.text = balanceNum.toString();
+        }
+      });
+    }
   }
 
   @override
@@ -267,7 +286,7 @@ class _WithdrawScreenState extends State<WithdrawScreen>
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'Available balance: ₹$_walletBalance',
+                  'Available balance: $_formattedBalance',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
